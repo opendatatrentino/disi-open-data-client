@@ -31,6 +31,8 @@ public class TestMatchingService {
 		MatchingService mService = new MatchingService();
 		EntityTypeService etypeService = new EntityTypeService();
 
+		ColumnConceptCandidate ccc = new ColumnConceptCandidate(1, 51191L );
+		ccc.
 		List<ColumnConceptCandidate> cccList = new ArrayList<ColumnConceptCandidate>(){
 			{
 				add(new ColumnConceptCandidate(1, 51191L ));//name
@@ -56,7 +58,7 @@ public class TestMatchingService {
 		assertNotNull(attrCorr.get(0));
 	}
 
-	@Test 
+	//@Test 
 	public void testSchemaMatching(){
 		MatchingService mService = new MatchingService();
 		EntityTypeService etypeService = new EntityTypeService();

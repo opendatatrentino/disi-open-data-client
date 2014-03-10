@@ -34,8 +34,8 @@ public class MatchingService {
 	/** Methods run the process of matching. It gets ColumnConceptCandidate (1) and Etypes (many) as input.
 	 *  @return the list of schema corespondences 
 	 */
-	
-	
+
+
 	public List<SchemaCorrespondence> matchSchemas(){
 
 		ITableResource tableResource= new TableResource();
@@ -82,8 +82,8 @@ public class MatchingService {
 
 	}
 
-	
-	
+
+
 	private float computeSchemaCorrespondenceScore(SchemaCorrespondence sCorrespondence){
 		float scoreSum=0;
 		float scScore=0;
@@ -132,7 +132,9 @@ public class MatchingService {
 	public float getConceptsDistance( long source, long target){
 		ConceptClient cClient = new ConceptClient(getClientProtocol());
 		float score  = (float)cClient.getDistanceUsingLca(source,target);
-		score = 1/(score-1);
+		if ((score-1)!=0){
+			score = 1/(score-1);
+		}
 		return score;
 	}
 

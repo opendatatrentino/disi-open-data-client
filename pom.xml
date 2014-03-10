@@ -13,29 +13,33 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
+
 	<name>Disi Open Data Client</name>
-	<!-- <url>https://github.com/opendatatrentino/Jackan</url> -->
-	<!-- <parent> <groupId>org.sonatype.oss</groupId> <artifactId>oss-parent</artifactId> 
-		<version>7</version> </parent> -->
+	<url>https://github.com/opendatatrentino/disi-open-data-client</url>
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>7</version>
+	</parent>
 
 	<!-- <licenses> <license> <name>GNU Lesser General Public License, Version 
 		2.1</name> <url>http://www.gnu.org/licenses/lgpl-2.1.txt</url> <distribution>repo</distribution> 
 		</license> </licenses> -->
 
 	<repositories>
-	<repository>
-            <id>sweb-internal</id>
-            <layout>default</layout>
-            <name>Archiva Managed Internal Repository</name>
-            <url>https://sweb.science.unitn.it/archiva/repository/internal</url>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
+		<repository>
+			<id>sweb-internal</id>
+			<layout>default</layout>
+			<name>Archiva Managed Internal Repository</name>
+			<url>https://sweb.science.unitn.it/archiva/repository/internal</url>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>never</updatePolicy>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
 		<repository>
 			<id>sweb-snapshots</id>
 			<name>Archiva Managed Snapshot Repository</name>
@@ -48,11 +52,11 @@
 				<updatePolicy>never</updatePolicy>
 			</snapshots>
 		</repository>
-		 <repository>
+		<repository>
 			<id>sonatype-nexus-snapshots</id>
 			<name>project</name>
 			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-		</repository> 
+		</repository>
 
 	</repositories>
 
@@ -94,6 +98,7 @@
 
 
 	<build>
+
 		<plugins>
 
 			<plugin>
@@ -184,10 +189,13 @@
 		</pluginManagement>
 
 	</build>
+	<scm>
+		<connection>scm:git:git@github.com:/opendatatrentino/disi-open-data-client.git</connection>
+		<developerConnection>scm:git:git@github.com/opendatatrentino/disi-open-data-client.git</developerConnection>
+		<url>git@github.com:/opendatatrentino/disi-open-data-client.git</url>
+	</scm>
 
-	<!-- <scm> <url>git@github.com:opendatatrentino/Jackan.git</url> <connection>scm:git:git@github.com:opendatatrentino/Jackan.git</connection> 
-		<developerConnection>scm:git:git@github.com:opendatatrentino/Jackan.git</developerConnection> 
-		</scm> -->
+
 	<description>DISI ODR Java Client</description>
 
 	<developers>
@@ -283,30 +291,35 @@
 			<artifactId>joda-time</artifactId>
 			<version>2.3</version>
 		</dependency>
-		 <dependency>
+		<dependency>
 			<groupId>eu.trentorise.opendata</groupId>
 			<artifactId>api</artifactId>
 			<version>1.0-SNAPSHOT</version>
-		</dependency> 
-		<dependency>
-		<groupId>it.unitn.disi.sweb</groupId>
-		<artifactId>sweb-webapi-kb-model</artifactId>
-		<version>3.0.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-		<groupId>it.unitn.disi.sweb</groupId>
-		<artifactId>sweb-webapi-kb-client</artifactId>
-		<version>3.0.0-SNAPSHOT</version>
+			<groupId>it.unitn.disi.sweb</groupId>
+			<artifactId>sweb-webapi-kb-model</artifactId>
+			<version>3.0.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-		<groupId>it.unitn.disi.sweb</groupId>
-		<artifactId>sweb-webapi-eb-model</artifactId>
-		<version>3.0.0-SNAPSHOT</version>
+			<groupId>it.unitn.disi.sweb</groupId>
+			<artifactId>sweb-webapi-kb-client</artifactId>
+			<version>3.0.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-		<groupId>it.unitn.disi.sweb</groupId>
-		<artifactId>sweb-webapi-eb-client</artifactId>
-		<version>3.0.0-SNAPSHOT</version>
+			<groupId>it.unitn.disi.sweb</groupId>
+			<artifactId>sweb-webapi-eb-model</artifactId>
+			<version>3.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>it.unitn.disi.sweb</groupId>
+			<artifactId>sweb-webapi-eb-client</artifactId>
+			<version>3.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>eu.trentorise.opendata</groupId>
+			<artifactId>column-recognizers</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>
