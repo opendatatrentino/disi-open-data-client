@@ -9,11 +9,11 @@ import org.junit.Test;
 import eu.trentorise.opendata.columnrecognizers.ColumnConceptCandidate;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
-import eu.trentorise.opendatarise.semantic.model.entity.EntityType;
-import eu.trentorise.opendatarise.semantic.services.EntityTypeService;
-import eu.trentorise.opendatarise.semantic.services.model.AttributeCorrespondence;
-import eu.trentorise.opendatarise.semantic.services.model.SchemaCorrespondence;
-import eu.trentorise.opendatarise.semantic.services.shematching.MatchingService;
+import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
+import eu.trentorise.opendatarise.semantics.services.EntityTypeService;
+import eu.trentorise.opendatarise.semantics.services.model.AttributeCorrespondence;
+import eu.trentorise.opendatarise.semantics.services.model.SchemaCorrespondence;
+import eu.trentorise.opendatarise.semantics.services.shematching.MatchingService;
 
 
 public class TestMatchingService {

@@ -8,8 +8,8 @@ import org.junit.Test;
 
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
-import eu.trentorise.opendatarise.semantic.model.entity.EntityType;
-import eu.trentorise.opendatarise.semantic.services.EntityTypeService;
+import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
+import eu.trentorise.opendatarise.semantics.services.EntityTypeService;
 
 
 /**
