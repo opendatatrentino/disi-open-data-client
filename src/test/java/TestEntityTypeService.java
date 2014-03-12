@@ -23,7 +23,7 @@ public class TestEntityTypeService {
 	public void testGetEntityTypeByID(){
 		EntityTypeService ets = new EntityTypeService();
 		EntityType etype =(EntityType)ets.getEntityType(4L);
-		assertEquals(etype.getName(Locale.ENGLISH) ,"Location");
+		assertEquals(etype.getName(Locale.ENGLISH) ,"Position");
 	}
 
 	@Test

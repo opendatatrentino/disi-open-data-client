@@ -17,18 +17,18 @@ public class AttributeCorrespondence {
 	HashMap<AttributeDef,Float> attrMap;
 	AttributeDef attrDef;
 	long headerConceptID;
-	
+
 	public float getScore() {
 		return score;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "AttributeCorrespondence [score=" + score + ", attrDef="
 				+ attrDef.getId() + ", headerConceptID=" + headerConceptID + "]";
 	}
-	
-	
+
+
 
 
 
@@ -55,16 +55,28 @@ public class AttributeCorrespondence {
 	}
 
 	public void computeHighestAttrCorrespondence(){
+
 		Map<AttributeDef,Float> atributes = this.attrMap;
+		System.out.println(atributes.size());
+		if (atributes.size()==0){
+			this.attrDef= null;
+			this.score = 0;
+
+		} else{
 		Map.Entry<AttributeDef, Float> maxEntry = null;
 
 		for (Map.Entry<AttributeDef,Float> entry:  atributes.entrySet() ){
+			System.out.println(entry.getValue());
 			if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0)
-		    {
-		        maxEntry = entry;
-		    }
+			{
+				maxEntry = entry;
+			}
 		}
+		System.out.println("MaxEntry:"+maxEntry.getKey());
+		System.out.println(maxEntry.getValue());
+
 		this.attrDef=maxEntry.getKey();
 		this.score = maxEntry.getValue();
-	}
+	}}
+
 }

@@ -14,7 +14,10 @@ import eu.trentorise.opendata.columnrecognizers.ColumnConceptCandidate;
 import eu.trentorise.opendata.columnrecognizers.ColumnRecognizer;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
+import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
 import eu.trentorise.opendata.semantics.model.knowledge.ITableResource;
+import eu.trentorise.opendata.semantics.services.ISemanticMatchingService;
+import eu.trentorise.opendata.semantics.services.model.ICorrespondence;
 import eu.trentorise.opendatarise.semantic.model.entity.AttributeDef;
 import eu.trentorise.opendatarise.semantic.model.entity.EntityType;
 import eu.trentorise.opendatarise.semantic.services.EntityTypeService;
@@ -28,7 +31,7 @@ import eu.trentorise.opendatarise.semantics.model.knowledge.ConceptODR;
  * 
  */
 
-public class MatchingService {
+public class MatchingService implements ISemanticMatchingService {
 
 
 	/** Methods run the process of matching. It gets ColumnConceptCandidate (1) and Etypes (many) as input.
@@ -116,7 +119,9 @@ public class MatchingService {
 				float attrMatchScore = getConceptsDistance(sourceConceptID,targetConceptID);
 				attrMap.put(attr, attrMatchScore);
 			}
+			
 			attrCor.setAttrMap(attrMap);
+		
 			attrCor.computeHighestAttrCorrespondence();
 			attrCorrespondenceList.add(attrCor);
 		}
@@ -132,15 +137,22 @@ public class MatchingService {
 	public float getConceptsDistance( long source, long target){
 		ConceptClient cClient = new ConceptClient(getClientProtocol());
 		float score  = (float)cClient.getDistanceUsingLca(source,target);
+		if (score==-1) return 0;
 		if ((score-1)!=0){
-			score = 1/(score-1);
+			return score = 1/(score-1);
 		}
-		return score;
+		else return 0;
 	}
 
 	private IProtocolClient getClientProtocol(){
 		IProtocolClient api = ProtocolFactory.getHttpClient(Locale.ENGLISH, "opendata.disi.unitn.it", 8080);
 		return api;
+	}
+
+	public List<ICorrespondence> matchSchemas(
+			List<IConcept> sourceHeaderConcepts, List<String> sourceTypes) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

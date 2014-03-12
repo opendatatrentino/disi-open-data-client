@@ -18,105 +18,80 @@ import eu.trentorise.opendatarise.semantic.services.shematching.MatchingService;
 
 public class TestMatchingService {
 
-	//@Test 
+	@Test 
 	public void testGetConceptDistance(){
 		MatchingService mService = new MatchingService();
 		float scoreDist = mService.getConceptsDistance(33292L,2L);
 		System.out.println(scoreDist);
-		assertEquals(3.0, scoreDist, 0.5);
+		assertEquals(0.5,scoreDist,0.1);
 	}
 
-	//@Test 
+	@Test 
 	public void testAttributeMatching(){
 		MatchingService mService = new MatchingService();
 		EntityTypeService etypeService = new EntityTypeService();
-
-		ColumnConceptCandidate ccc = new ColumnConceptCandidate(1, 51191L );
-		ccc.
 		List<ColumnConceptCandidate> cccList = new ArrayList<ColumnConceptCandidate>(){
 			{
 				add(new ColumnConceptCandidate(1, 51191L ));//name
-				add(new ColumnConceptCandidate(2, 27517L ));//position
-				add(new ColumnConceptCandidate(3, 42806L ));//class
+				add(new ColumnConceptCandidate(2, 31361L ));//typeEN (class)
+				add(new ColumnConceptCandidate(3, 34210L ));//orari
+				add(new ColumnConceptCandidate(4, 45422L ));//latitude
+				add(new ColumnConceptCandidate(5, 45427L ));//longitude
 			}
 		};
-
-		EntityType eType = (EntityType) etypeService.getEntityType(4L);//location
-		List<IAttributeDef> attrs = eType.getAttributeDefs();
-		List<IAttributeDef> testAttrs = new ArrayList<IAttributeDef>(); 
-		for (int i=0; i<3; i++){
-			testAttrs.add(attrs.get(i));
+		List<IEntityType> etypeList = etypeService.getAllEntityTypes();
+		List<AttributeCorrespondence> attrCorr = null;
+		for(IEntityType  eType:etypeList){
+			System.out.println(eType.toString());
+			//EntityType eType = (EntityType) etypeService.getEntityType(4L);//location
+			List<IAttributeDef> attrs = eType.getAttributeDefs();
+			//		List<IAttributeDef> testAttrs = new ArrayList<IAttributeDef>(); 
+			//		for (int i=0; i<testAttrs.size(); i++){
+			//			testAttrs.add(attrs.get(i));
+			//		}
+			 attrCorr = mService.attributeMatching(attrs,cccList);
+			//	System.out.println(attrCorr.get(0).getAttrMap().toString());
+			for (AttributeCorrespondence attrc: attrCorr){
+				System.out.println(attrc.getAttrMap().toString());
+			}
+			if(attrs.size()!=0){
+			System.out.println(attrCorr.toString());
+			}
 		}
-		List<AttributeCorrespondence> attrCorr = mService.attributeMatching(testAttrs,cccList);
-		//	System.out.println(attrCorr.get(0).getAttrMap().toString());
-		for (AttributeCorrespondence attrc: attrCorr){
-			System.out.println(attrc.getAttrMap().toString());
-		}
-
-		System.out.println(attrCorr.toString());
-
 		assertNotNull(attrCorr.get(0));
 	}
 
-	//@Test 
+	@Test 
 	public void testSchemaMatching(){
 		MatchingService mService = new MatchingService();
 		EntityTypeService etypeService = new EntityTypeService();
-
+		List<IEntityType> etypeList = etypeService.getAllEntityTypes();
+		
 		List<ColumnConceptCandidate> cccList = new ArrayList<ColumnConceptCandidate>(){
 			{
 				add(new ColumnConceptCandidate(1, 51191L ));//name
-				add(new ColumnConceptCandidate(2, 27517L ));//position
-				add(new ColumnConceptCandidate(3, 42806L ));//class
+				add(new ColumnConceptCandidate(2, 31361L ));//typeEN (class)
+				add(new ColumnConceptCandidate(3, 34210L ));//orari
+				add(new ColumnConceptCandidate(4, 45422L ));//latitude
+				add(new ColumnConceptCandidate(5, 45427L ));//longitude
 			}
 		};
 
-		EntityType eType = (EntityType) etypeService.getEntityType(4L);//location etype
+		//EntityType eType = (EntityType) etypeService.getEntityType(4L);//location etype
+	for (IEntityType etype:etypeList){
+		
+		EntityType eType = (EntityType) etype;
+		
 		List<IAttributeDef> attrs = eType.getAttributeDefs();
-		List<IAttributeDef> testAttrs1 = new ArrayList<IAttributeDef>(); 
-		for (int i=0; i<3; i++){
-			testAttrs1.add(attrs.get(i));
-
-		}
-		List<IAttributeDef> testAttrs2 = new ArrayList<IAttributeDef>(); 
-		for (int i=3; i<6; i++){
-			testAttrs2.add(attrs.get(i));
-
-		}
-		List<IAttributeDef> testAttrs3 = new ArrayList<IAttributeDef>(); 
-		for (int i=6; i<9; i++){
-			testAttrs3.add(attrs.get(i));
-
-		}
-		EntityType testEtype1 =  new EntityType();
-		EntityType testEtype2 =  new EntityType();
-		EntityType testEtype3 =  new EntityType();
-		testEtype1.setAttrs(testAttrs1);
-		testEtype2.setAttrs(testAttrs2);
-		testEtype3.setAttrs(testAttrs3);
-
-		List<IEntityType> etypeList = new ArrayList<IEntityType>(); 
-		etypeList.add(testEtype1);
-		etypeList.add(testEtype2);
-		etypeList.add(testEtype3);
-
-		SchemaCorrespondence scCorr = mService.schemaMatch(testEtype1,cccList);
+		SchemaCorrespondence scCorr = mService.schemaMatch(eType,cccList);
 		//System.out.println(scCorr.toString());
 		System.out.println(scCorr.getScore());
-		//		
-		SchemaCorrespondence scCorr1 = mService.schemaMatch(testEtype2,cccList);
-		//System.out.println(scCorr.toString());
-		System.out.println(scCorr1.getScore());
-
-		SchemaCorrespondence scCorr2 = mService.schemaMatch(testEtype3,cccList);
-		//System.out.println(scCorr.toString());
-		System.out.println(scCorr2.getScore());
+		
+		
 
 		assertNotNull(scCorr.getScore());
 		assertNotNull(scCorr.getAttributeCorrespondence());
 		assertNotNull(scCorr.getEtype());
-
-
-
+	}
 	}
 }
