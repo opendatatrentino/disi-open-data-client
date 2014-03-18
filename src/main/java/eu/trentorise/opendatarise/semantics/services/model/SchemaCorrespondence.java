@@ -2,6 +2,8 @@ package eu.trentorise.opendatarise.semantics.services.model;
 
 import java.util.List;
 
+import eu.trentorise.opendata.semantics.services.model.IAttributeCorrespondence;
+import eu.trentorise.opendata.semantics.services.model.ISchemaCorrespondence;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
 
 /**
@@ -9,11 +11,11 @@ import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
  * @date 24 Feb 2014
  * 
  */
-public class SchemaCorrespondence {
+public class SchemaCorrespondence implements ISchemaCorrespondence {
 
 	EntityType etype;
 	Float score;
-	List<AttributeCorrespondence> attributeCorrespondences;
+	List<IAttributeCorrespondence> attributeCorrespondences;
 	
 	
 	@Override
@@ -34,11 +36,11 @@ public class SchemaCorrespondence {
 	public void setScore(Float score) {
 		this.score = score;
 	}
-	public List<AttributeCorrespondence> getAttributeCorrespondence() {
+	public List<IAttributeCorrespondence> getAttributeCorrespondence() {
 		return attributeCorrespondences;
 	}
 	public void setAttributeCorrespondence(
-			List<AttributeCorrespondence> attributeCorrespondence) {
+			List<IAttributeCorrespondence> attributeCorrespondence) {
 		this.attributeCorrespondences = attributeCorrespondence;
 	}
 	

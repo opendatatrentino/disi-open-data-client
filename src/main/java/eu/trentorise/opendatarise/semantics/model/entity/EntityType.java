@@ -153,13 +153,17 @@ public class EntityType implements IEntityType{
 	}
 
 	public String getURL() {
-		// TODO Postponed due to the lack of the functionality on the API Client
-		return null;
+		String st  = "http://opendata.disi.unitn.it:8080/odt/types/"+this.id+
+			"?includeAttributes=false&includeAttributesAsProperties=false&includeRestrictions=false&includeRules=false&includeTimestamps=false";
+
+		return st;
 	}
 
 	public String getURI() {
-		// TODO Postponed due to the lack of the functionality on the API Client
-		return null;
+		String st  = "http://opendata.disi.unitn.it:8080/odt/types/"+this.id+
+				"?includeAttributes=false&includeAttributesAsProperties=false&includeRestrictions=false&includeRules=false&includeTimestamps=false";
+
+			return st;
 	}
 
 	/** The method returns client protocol 

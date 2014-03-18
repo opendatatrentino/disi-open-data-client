@@ -4,11 +4,14 @@ import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
 import it.unitn.disi.sweb.webapi.client.kb.ConceptClient;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import eu.trentorise.opendata.columnrecognizers.ColumnConceptCandidate;
 import eu.trentorise.opendata.columnrecognizers.ColumnRecognizer;
@@ -16,6 +19,7 @@ import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.model.knowledge.ITableResource;
 import eu.trentorise.opendata.semantics.services.ISemanticMatchingService;
+import eu.trentorise.opendata.semantics.services.model.IAttributeCorrespondence;
 import eu.trentorise.opendata.semantics.services.model.ISchemaCorrespondence;
 import eu.trentorise.opendatarise.semantics.model.entity.AttributeDef;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
@@ -48,8 +52,10 @@ public class MatchingService implements ISemanticMatchingService {
 		List<ISchemaCorrespondence> schemaCorespondences = new ArrayList<ISchemaCorrespondence>();
 		for (IEntityType etype: etypes){
 			EntityType  et = (EntityType) etype; 
-			SchemaCorrespondence sCorrespondence  = schemaMatch(et, odrHeaders);
-			schemaCorespondences.add((ISchemaCorrespondence) sCorrespondence);
+			ISchemaCorrespondence sCorrespondence  =  schemaMatch(et, odrHeaders);
+			if(sCorrespondence.getScore()!=0){
+				schemaCorespondences.add( sCorrespondence);
+			}
 		}
 		sort(schemaCorespondences);
 		return schemaCorespondences;
@@ -61,18 +67,21 @@ public class MatchingService implements ISemanticMatchingService {
 	 * @param columnHeaders column headers from the table
 	 * @return
 	 */
-	public SchemaCorrespondence schemaMatch(EntityType eType, List<ColumnConceptCandidate> columnHeaders){
+	public ISchemaCorrespondence schemaMatch(EntityType eType, List<ColumnConceptCandidate> columnHeaders){
 		SchemaCorrespondence sCorrespondence = new SchemaCorrespondence();
 		sCorrespondence.setEtype(eType);
-		List<AttributeCorrespondence> attrsCor = attributeMatching(eType.getAttributeDefs(),columnHeaders);
-		sCorrespondence.setAttributeCorrespondence(attrsCor);
-		float sScore = computeSchemaCorrespondenceScore(sCorrespondence);
-		sCorrespondence.setScore(sScore);
-
-		return sCorrespondence;
+		if (eType.getAttributeDefs().size()!=0){
+			List<IAttributeCorrespondence> attrsCor = attributeMatching(eType.getAttributeDefs(),columnHeaders);
+			sCorrespondence.setAttributeCorrespondence(attrsCor);
+			float sScore = computeSchemaCorrespondenceScore(sCorrespondence);
+			sCorrespondence.setScore(sScore);
+		} else {
+			//	List<AttributeCorrespondence> attrsCor = attributeMatching(eType.getAttributeDefs(),columnHeaders);
+			sCorrespondence.setAttributeCorrespondence(null);
+			sCorrespondence.setScore((float) 0);
+		}
+		return (ISchemaCorrespondence) sCorrespondence;
 	}
-
-
 
 	/** Sorts the given list of correspondence according to the score of each shema correspondence.
 	 * @param schemaCorespondences
@@ -82,13 +91,11 @@ public class MatchingService implements ISemanticMatchingService {
 
 	}
 
-
-
 	private float computeSchemaCorrespondenceScore(SchemaCorrespondence sCorrespondence){
 		float scoreSum=0;
 		float scScore=0;
-		List<AttributeCorrespondence>  attrCorList = sCorrespondence.getAttributeCorrespondence();
-		for(AttributeCorrespondence atrrCor: attrCorList ){
+		List<IAttributeCorrespondence>  attrCorList = sCorrespondence.getAttributeCorrespondence();
+		for(IAttributeCorrespondence atrrCor: attrCorList ){
 			scoreSum=+atrrCor.getScore();
 		}
 		scScore = scoreSum/attrCorList.size();
@@ -101,30 +108,47 @@ public class MatchingService implements ISemanticMatchingService {
 	 * @param columnHeaders
 	 * @return
 	 */
-	public List<AttributeCorrespondence> attributeMatching(List<IAttributeDef> eTypeAttributes, List<ColumnConceptCandidate> columnHeaders){
-		List<AttributeCorrespondence> attrCorrespondenceList = new ArrayList<AttributeCorrespondence>();		
+	public List<IAttributeCorrespondence> attributeMatching(List<IAttributeDef> eTypeAttributes, List<ColumnConceptCandidate> columnHeaders){
+		List<IAttributeCorrespondence> attrCorrespondenceList = new ArrayList<IAttributeCorrespondence>();	
+		if (eTypeAttributes.size()==0){
+			System.out.println("NULL__________________");
+
+		}
 		//IProtocolClient api = getClientProtocol();
 		for (ColumnConceptCandidate ccc: columnHeaders){
 			AttributeCorrespondence attrCor = new AttributeCorrespondence();
 			HashMap<IAttributeDef, Float> attrMap = new HashMap<IAttributeDef, Float> (); 
 			long sourceConceptID = ccc.getConceptID();
+			System.out.println("Source CONC:"+sourceConceptID);
 			attrCor.setColumnIndex(ccc.getColumnNumber()); 
 			attrCor.setHeaderConceptID(sourceConceptID);
+			List<Entry<Long,Long>> batch =new ArrayList<Entry<Long,Long>>(); 
 			for(IAttributeDef attrDef:eTypeAttributes ){
 				AttributeDef attr = (AttributeDef)attrDef;
-				ConceptODR attrConcept = (ConceptODR)attr.getConcept();
-				long targetConceptID = attrConcept.getId();
-				float attrMatchScore = getConceptsDistance(sourceConceptID,targetConceptID);
-				attrMap.put(attr, attrMatchScore);
+				//ConceptODR attrConcept = (ConceptODR)attr.getConcept();
+				long targetConceptID = attr.getConceptId();
+				Map.Entry<Long,Long> entry = new AbstractMap.SimpleEntry<Long,Long>(sourceConceptID,targetConceptID);
+				batch.add(entry);
 			}
-			
+			String st = batch.toString();
+			System.out.println("BATCH: "+st);
+			List<Integer> distances = getBatchDistance(batch);
+			for(int i=0; i<eTypeAttributes.size(); i++  ){
+				AttributeDef attr = (AttributeDef)eTypeAttributes.get(i);
+				float score = getScore(distances.get(i));
+				attrMap.put(attr, score);
+			}
 			attrCor.setAttrMap(attrMap);
-		
 			attrCor.computeHighestAttrCorrespondence();
 			attrCorrespondenceList.add(attrCor);
 		}
 
 		return attrCorrespondenceList;
+	}
+
+	private List<Integer> getBatchDistance(List<Entry<Long, Long>> batch) {
+		ConceptClient cClient = new ConceptClient(getClientProtocol());
+		return cClient.getDistancesUsingLca(batch);
 	}
 
 	/** Returns the distance between two concept. The method uses LCA approach. 
@@ -141,6 +165,20 @@ public class MatchingService implements ISemanticMatchingService {
 		}
 		else return 0;
 	}
+
+	/** Converts distance between two concepts into score 
+	 * @param distance between two concepts
+	 * @return score of the closeness between attribute concept and header concept 
+	 */
+	public float getScore( int distance){
+		float score  = (float)distance;
+		if (score==-1.0) return 0;
+		if ((score-1)!=0){
+			return score = 1/(score-1);
+		}
+		else return 0;
+	}
+
 
 	private IProtocolClient getClientProtocol(){
 		IProtocolClient api = ProtocolFactory.getHttpClient(Locale.ENGLISH, "opendata.disi.unitn.it", 8080);

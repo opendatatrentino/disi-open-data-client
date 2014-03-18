@@ -27,7 +27,7 @@
 		</license> </licenses> -->
 
 	<repositories>
-		<repository>
+		 <repository>
 			<id>sweb-internal</id>
 			<layout>default</layout>
 			<name>Archiva Managed Internal Repository</name>
@@ -316,10 +316,10 @@
 			<artifactId>sweb-webapi-eb-client</artifactId>
 			<version>3.0.0-SNAPSHOT</version>
 		</dependency>  
-		<!-- <dependency>
+		   <dependency>
 			<groupId>eu.trentorise.opendata</groupId>
 			<artifactId>column-recognizers</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-		</dependency> -->
+		</dependency>  
 	</dependencies>
 </project>

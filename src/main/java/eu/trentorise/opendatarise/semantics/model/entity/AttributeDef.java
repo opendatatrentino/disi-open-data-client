@@ -115,7 +115,6 @@ public class AttributeDef implements IAttributeDef {
 		return this.presence;
 	}
 	public String getRegularExpression() {
-		// TODO Postponed due to the absence of the functionality on the API Client
 		return null;
 	}
 
@@ -125,18 +124,17 @@ public class AttributeDef implements IAttributeDef {
 	}
 
 	public Long getGUID() {
-		// TODO Postponed due to the absence of the functionality on the API Client
-		return null;
+		return this.id;
 	}
 
 	public String getURL() {
-		// TODO Postponed due to the absence of the functionality on the API Client
-		return null;
+		String st = "http://opendata.disi.unitn.it:8080/odt/attributedefinitions/"+this.id+"?includeTimestamps=false&includeRestrictions=false&includeRules=false";
+		return st;
 	}
 
 	public String getURI() {
-		// TODO Postponed due to the absence of the functionality on the API Client
-		return null;
+		String st = "http://opendata.disi.unitn.it:8080/odt/attributedefinitions/"+this.id+"?includeTimestamps=false&includeRestrictions=false&includeRules=false";
+		return st;
 	}
 
 	public AttributeDefinition convertAttributeDefinition(){
@@ -157,6 +155,10 @@ public class AttributeDef implements IAttributeDef {
 
 	public long getId(){
 		return this.id;
+	}
+
+	public long getConceptId(){
+		return this.conceptId;	
 	}
 
 	private AttributeDefinition addAttributeDefinition(){
