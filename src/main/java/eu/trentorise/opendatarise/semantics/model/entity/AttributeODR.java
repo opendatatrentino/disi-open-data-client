@@ -5,6 +5,7 @@ import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
 import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Value;
+import it.unitn.disi.sweb.webapi.model.kb.types.AttributeDefinition;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,8 +53,14 @@ public class AttributeODR implements IAttribute {
 		//client side
 		this.attrDef=ad;
 		//server side
-//		InstanceClient inClient = new InstanceClient(api);
-//		inClient.update(arg0);
+		AttributeDef atrDef = (AttributeDef) ad;
+		AttributeDefinition attrDef = atrDef.convertAttributeDefinition(); 
+		Attribute atr = new Attribute();
+		
+		AttributeClient atClient = new AttributeClient(api);
+		Attribute attribute = atClient.readAttribute(this.id, null);
+		attribute.setDefinitionId(attrDef.getId()); 
+		atClient.update(atr);
 		
 	}
 

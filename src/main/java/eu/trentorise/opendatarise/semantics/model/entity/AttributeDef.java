@@ -115,6 +115,7 @@ public class AttributeDef implements IAttributeDef {
 		return this.presence;
 	}
 	public String getRegularExpression() {
+		// TODO Postponed due to the absence of the functionality on the API Client
 		return null;
 	}
 
@@ -161,10 +162,11 @@ public class AttributeDef implements IAttributeDef {
 		return this.conceptId;	
 	}
 
-	private AttributeDefinition addAttributeDefinition(){
+	public AttributeDefinition addAttributeDefinition(){
 		AttributeDefinitionClient attrDefClient = new AttributeDefinitionClient(getClientProtocol());
 		AttributeDefinition attrDef = attrDefClient.readAttributeDefinition(id, null);
 
+		
 		return attrDef;
 	}
 }

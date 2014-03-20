@@ -19,6 +19,7 @@ public class ConceptODR implements IConcept{
 	private String label;
 	private long globalId;
 	private  Map<String, String> name;
+	private IProtocolClient api;
 
 	public ConceptODR(){}
 
@@ -35,6 +36,16 @@ public class ConceptODR implements IConcept{
 		ConceptClient client = new ConceptClient(getClientProtocol());
 		Concept conc = client.readConcept(conceptId, false);
 		ConceptODR conceptODR = new ConceptODR(conc);
+		return conceptODR;
+	}
+	
+	 public ConceptODR readConceptGlobalID(long glId){
+
+		ConceptClient client = new ConceptClient(getClientProtocol());
+		
+		List<Concept> concepts = client.readConcepts(1L, glId, null, null, null, null);
+		
+		ConceptODR conceptODR = new ConceptODR(concepts.get(0));
 		return conceptODR;
 	}
 

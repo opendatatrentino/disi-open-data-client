@@ -13,10 +13,6 @@ import eu.trentorise.opendatarise.semantics.services.model.SchemaCorrespondence;
 
 	public class CustomComparator implements Comparator<ISchemaCorrespondence> {
 	    public int compare(ISchemaCorrespondence sc1, ISchemaCorrespondence sc2) {
-	        return sc1.getScore().compareTo(sc2.getScore());
+	        return sc2.getScore().compareTo(sc1.getScore());
 	    }
-
-
-		
 	}
-

@@ -2,6 +2,7 @@ package eu.trentorise.opendatarise.semantics.model.entity;
 
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
+import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
 import it.unitn.disi.sweb.webapi.client.kb.ComplexTypeClient;
 import it.unitn.disi.sweb.webapi.model.Pagination;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
@@ -92,22 +93,30 @@ public class Entity implements IEntity {
 	}
 
 	public void setAttributes(List<IAttribute> attributes) {
-	//client side
+		//client side
 		this.attributes=attributes;
 		//server side
-		
-
+		InstanceClient instanceCl= new  InstanceClient(this.api);
+		Instance instance = instanceCl.readInstance(this.id, null);
+		List<Attribute> attrs = new ArrayList<Attribute>();
+		for (IAttribute attr:attributes ){
+			AttributeODR attrODR = (AttributeODR)attr;
+			attrs.add(attrODR.convertToAttribute());
+		}
+		instance.setAttributes(attrs);
+		instanceCl.update(instance);
 	}
 
 	public void addAttribute(IAttribute attribute) {
-	//client side
+		//client side
 		this.attributes.add(attribute);
-		//server side 
+		//server side - create attr 
 		AttributeODR attrODR = (AttributeODR) attribute; 
 		Attribute attr = attrODR.convertToAttribute();
 		AttributeClient attrCl = new AttributeClient(api);
 		attrCl.create(attr);
-		
+		// add attr to the list of existing attrs
+		setAttributes(this.attributes); 
 	}
 
 	public IEntityType getEtype() {
@@ -124,7 +133,13 @@ public class Entity implements IEntity {
 	}
 
 	public void setEtype(IEntityType type) {
+		//locally
 		this.etype=(EntityType) type;
+		//on the server
+		InstanceClient instanceCl= new  InstanceClient(this.api);
+		Instance instance = instanceCl.readInstance(this.id, null);
+		instance.setTypeId(this.typeId);
+		instanceCl.update(instance);
 	}
 
 	private List<IAttribute> convertToAttributeODR(List<Attribute> attributes){
@@ -135,5 +150,5 @@ public class Entity implements IEntity {
 		}
 		return attributesODR;
 	}
-
+	
 }

@@ -1,6 +1,7 @@
 package eu.trentorise.opendatarise.semantics.services.model;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
@@ -31,10 +32,6 @@ public class AttributeCorrespondence implements IAttributeCorrespondence {
 				+ attrDef.getId() + ", headerConceptID=" + headerConceptID + "]";
 	}
 
-
-
-
-
 	public void setScore(float score) {
 		this.score = score;
 	}
@@ -57,9 +54,10 @@ public class AttributeCorrespondence implements IAttributeCorrespondence {
 		this.headerConceptID = headerConceptID;
 	}
 
-	public void computeHighestAttrCorrespondence(){
+	public void computeHighestAttrCorrespondence( List<IAttributeCorrespondence> attrCorrespondenceList  ){
 
 		Map<IAttributeDef,Float> atributes = this.attrMap;
+		
 		System.out.println(atributes.size());
 		if (atributes.size()==0){
 			this.attrDef= null;
@@ -69,14 +67,13 @@ public class AttributeCorrespondence implements IAttributeCorrespondence {
 		Map.Entry<IAttributeDef, Float> maxEntry = null;
 
 		for (Map.Entry<IAttributeDef,Float> entry:  atributes.entrySet() ){
-			System.out.println(entry.getValue());
 			if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0)
 			{
 				maxEntry = entry;
 			}
 		}
 		System.out.println("MaxEntry:"+maxEntry.getKey());
-		System.out.println(maxEntry.getValue());
+	//	System.out.println(maxEntry.getValue());
 
 		this.attrDef=(AttributeDef) maxEntry.getKey();
 		this.score = maxEntry.getValue();

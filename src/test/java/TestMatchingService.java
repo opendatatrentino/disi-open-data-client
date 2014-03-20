@@ -18,6 +18,8 @@ import eu.trentorise.opendatarise.semantics.services.shematching.MatchingService
 
 public class TestMatchingService {
 
+	String resourceName = "IMPIANTI RISALITA";
+	
 	String col1 = "nr";
 	String col2 = "Comune";
 	String col3 = "Insegna";
@@ -25,7 +27,7 @@ public class TestMatchingService {
 	String col5 = "Frazione";
 	String col6 = "Indirizio";
 	String col7 = "Civico";
-
+	
 	List<String> cols = new ArrayList<String>(){
 		{add("nr");
 		add("Comune");
@@ -90,8 +92,9 @@ public class TestMatchingService {
 
 			EntityType eType = (EntityType) etype;
 
-			List<IAttributeDef> attrs = eType.getAttributeDefs();
-			SchemaCorrespondence scCorr = (SchemaCorrespondence) mService.schemaMatch(eType,odrHeaders);
+			//List<IAttributeDef> attrs = eType.getAttributeDefs();
+			long conid = 2923L;
+			SchemaCorrespondence scCorr = (SchemaCorrespondence) mService.schemaMatch(eType,odrHeaders, conid);
 			
 			System.out.println(scCorr.getScore());
 			assertNotNull(scCorr.getScore());

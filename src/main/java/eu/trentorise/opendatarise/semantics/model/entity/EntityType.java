@@ -151,6 +151,10 @@ public class EntityType implements IEntityType{
 	public Long getGUID() {
 		return this.id;
 	}
+	
+	public Long getConceptID(){
+		return this.conceptId;
+	}
 
 	public String getURL() {
 		String st  = "http://opendata.disi.unitn.it:8080/odt/types/"+this.id+
