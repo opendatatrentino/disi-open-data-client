@@ -17,7 +17,7 @@ public class ConceptODR implements IConcept{
 
 	private long id;
 	private String label;
-	private long globalId;
+	private long globalID;
 	private  Map<String, String> name;
 	private IProtocolClient api;
 
@@ -26,7 +26,7 @@ public class ConceptODR implements IConcept{
 	ConceptODR(Concept con){
 		this.label = con.getLabel();
 		this.id = con.getId();
-		this.globalId = con.getGlobalId();
+		this.globalID = con.getGlobalId();
 		this.name=con.getName();
 	}
 

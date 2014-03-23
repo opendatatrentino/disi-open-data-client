@@ -38,6 +38,10 @@ public class AttributeODR implements IAttribute {
 		this.values =convertToValueODR(attribute.getValues());
 	}
 
+	public AttributeODR(IProtocolClient api) {
+		this.api=api;
+	}
+
 	public Long getGUID() {
 		return id;
 	}
@@ -136,6 +140,25 @@ public class AttributeODR implements IAttribute {
 			values.add(value);
 		}
 		return values;
+	}
+
+	public void updateValue(IValue newValue) {
+		//update from server side
+		AttributeClient attrCl = new AttributeClient(api);
+		Attribute attr = attrCl.readAttribute(this.id, null);
+		ValueODR val = (ValueODR) newValue;
+		val.convertToValue();
+		attrCl.update(val.convertToValue());
+		
+		//client side
+		ArrayList<IValue> values = (ArrayList<IValue>) this.values;
+		for(IValue value: values){
+			if(value.getGUID()==newValue.getGUID()){
+				values.remove(value);
+				return;
+			}
+		}
+		values.add(newValue);
 	}
 
 }
