@@ -96,13 +96,11 @@ public class ConceptODR implements IConcept{
 	}
 
 	public String getURL() {
-		// TODO Auto-generated method stub
-		return null;
+		return "http://opendata.disi.unitn.it:8080/testing/concepts/"+this.id+"?includeTimestamps=false";
 	}
 
 	public Long getGUID() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+		return globalID;
+	
 
 }
