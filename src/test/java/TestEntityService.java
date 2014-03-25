@@ -48,7 +48,7 @@ public class TestEntityService {
 		assertEquals(entity.getEtype().getName(Locale.ENGLISH),"Location");
 	}
 
-	//@Test 
+//	@Test 
 	public void testCreateEntity(){
 
 		//initialising variables
@@ -86,7 +86,7 @@ public class TestEntityService {
 		assertEquals(instanceNum+1, instanceNumAfter);
 	}
 
-	@Test
+	//@Test
 	public void testUpdateEntity(){
 		InstanceClient instanceClient = new InstanceClient(api);
 		//Instance inst1 = instanceClient.readInstance(15007L, null);
@@ -114,5 +114,11 @@ public class TestEntityService {
 
 	//@Test public void testDeleteEntity(){
 	//deleteEntity()
+	
+	@Test
+	public void testCreateAttribute(){
+		
+	}
+	
 }
 

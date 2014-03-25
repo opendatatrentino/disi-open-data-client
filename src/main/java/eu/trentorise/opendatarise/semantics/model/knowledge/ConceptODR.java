@@ -61,10 +61,10 @@ public class ConceptODR implements IConcept{
 		return conOdrList;
 	}
 
-	public String getSynsetURI() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	public String getSynsetURI() {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 	public String getCommonlyReferredAs(Locale language) {
 		// TODO Auto-generated method stub
@@ -93,6 +93,16 @@ public class ConceptODR implements IConcept{
 	
 	public Long getId(){
 		return this.id;
+	}
+
+	public String getURL() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Long getGUID() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

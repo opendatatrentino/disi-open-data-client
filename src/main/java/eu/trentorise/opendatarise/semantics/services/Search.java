@@ -1,12 +1,14 @@
 package eu.trentorise.opendatarise.semantics.services;
 
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
+import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
 import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
 import it.unitn.disi.sweb.webapi.model.eb.search.InstanceSearchResult;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
@@ -18,7 +20,7 @@ public class Search implements ISearch {
 
 	IProtocolClient api;
 	public Search(IProtocolClient api){
-		this.api=api;
+		getClientProtocol();
 	}
 	public List<IEntity> searchEQL(String eqlQuery) {
 		// TODO Auto-generated method stub
@@ -63,4 +65,11 @@ public class Search implements ISearch {
 		}
 		return entities;
 	}
+	
+	public void getClientProtocol(){
+		this.api = ProtocolFactory.getHttpClient(Locale.ENGLISH, "opendata.disi.unitn.it", 8080);
+	}
+
+	
+	
 }
