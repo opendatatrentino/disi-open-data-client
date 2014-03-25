@@ -96,7 +96,7 @@ public class ConceptODR implements IConcept{
 	}
 
 	public String getURL() {
-		return "http://opendata.disi.unitn.it:8080/testing/concepts/"+this.id+"?includeTimestamps=false";
+		return "http://opendata.disi.unitn.it:8080/odt/concepts/"+this.id+"?includeTimestamps=false";
 	}
 
 	public Long getGUID() {
