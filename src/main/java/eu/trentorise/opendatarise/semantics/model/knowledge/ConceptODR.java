@@ -101,6 +101,6 @@ public class ConceptODR implements IConcept{
 
 	public Long getGUID() {
 		return globalID;
-	
+	}
 
 }
