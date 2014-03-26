@@ -18,14 +18,17 @@ import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
 
 public class Search implements ISearch {
 
-	IProtocolClient api;
-	public Search(IProtocolClient api){
-		getClientProtocol();
-	}
-	public List<IEntity> searchEQL(String eqlQuery) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    IProtocolClient api;
+    InstanceClient client;
+
+    public Search(IProtocolClient api) {
+        this.api = api;
+        client = new InstanceClient(api);
+    }
+
+    public String[][] searchEQL(String eqlQuery) {
+        return client.searchEql(eqlQuery, 1, null, null, null, null).getResults();
+    }
 
 	public List<List<IEntity>> search(IEntityType entityType,
 			int numCandidates, List<List<IAttribute>> attributes) {
