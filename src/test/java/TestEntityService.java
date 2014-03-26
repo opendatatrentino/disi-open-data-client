@@ -35,17 +35,15 @@ public class TestEntityService {
 
 	@Before
 	public void getClientProtocol(){
-		this.api = ProtocolFactory.getHttpClient(Locale.ENGLISH, "opendata.disi.unitn.it", 8080);
-
+		this.api = ProtocolFactory.getHttpClient(new Locale("all"), "opendata.disi.unitn.it", 8080);
 	}
 
-	//@Test
+	@Test
 	public void testEntityRead(){
 		EntityService es= new EntityService(api);
 		EntityODR entity = (EntityODR) es.readEntity(15001L);
-
-		System.out.println(entity.getEtype().getName(Locale.ENGLISH));
-		assertEquals(entity.getEtype().getName(Locale.ENGLISH),"Location");
+		System.out.println(entity.getEtype().getName(Locale.ITALIAN));
+	//	assertEquals(entity.getEtype().getName(Locale.ENGLISH),"Location");
 	}
 
 //	@Test 

@@ -185,7 +185,7 @@ public class MatchingService implements ISemanticMatchingService {
 
 
 	private IProtocolClient getClientProtocol(){
-		IProtocolClient api = ProtocolFactory.getHttpClient(Locale.ENGLISH, "opendata.disi.unitn.it", 8080);
+		IProtocolClient api = ProtocolFactory.getHttpClient(new Locale("all"), "opendata.disi.unitn.it", 8080);
 		return api;
 	}
 

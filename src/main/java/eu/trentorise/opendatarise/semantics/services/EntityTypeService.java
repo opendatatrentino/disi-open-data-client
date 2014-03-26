@@ -22,7 +22,7 @@ import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
- * @date 27 Mar 2014
+ * @date 27 Feb 2014
  * 
  */
 public class EntityTypeService implements IEntityTypeService {
@@ -87,7 +87,7 @@ public class EntityTypeService implements IEntityTypeService {
 	 */
 	
 	private IProtocolClient getClientProtocol(){
-		IProtocolClient api = ProtocolFactory.getHttpClient(Locale.ENGLISH, "opendata.disi.unitn.it", 8080);
+		IProtocolClient api = ProtocolFactory.getHttpClient(new Locale("all"), "opendata.disi.unitn.it", 8080);
 		return api;
 	}
 

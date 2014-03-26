@@ -1,2 +1,0 @@
-disi-open-data-client
-=====================

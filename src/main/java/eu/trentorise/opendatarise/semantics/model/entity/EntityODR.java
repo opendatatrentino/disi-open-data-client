@@ -54,9 +54,11 @@ public class EntityODR extends Instance implements IEntity {
 
 	public EntityODR() {}
 	public EntityODR(IProtocolClient api, Instance instance){
+
 		this.api=api;
 		super.setId(instance.getId());
 		this.setTypeId(instance.getTypeId());
+		super.setEntityBaseId(instance.getEntityBaseId()) ;
 	}
 
 	public Long getGUID() {
@@ -134,17 +136,17 @@ public class EntityODR extends Instance implements IEntity {
 		this.duration = duration;
 	}
 
-//	public String getURI() {
-//		throw new UnsupportedOperationException("Such a field does not exists in the model.");
-//	}
-//
-//	public String getExternalID() {
-//		throw new UnsupportedOperationException("Such a field does not exists in the model.");
-//	}
-//
-//	public void setExternalID(String externalID) {
-//		throw new UnsupportedOperationException("Such a field does not exists in the model.");
-//	}
+	//	public String getURI() {
+	//		throw new UnsupportedOperationException("Such a field does not exists in the model.");
+	//	}
+	//
+	//	public String getExternalID() {
+	//		throw new UnsupportedOperationException("Such a field does not exists in the model.");
+	//	}
+	//
+	//	public void setExternalID(String externalID) {
+	//		throw new UnsupportedOperationException("Such a field does not exists in the model.");
+	//	}
 
 	public List<IAttribute> getEntityAttributes() {
 		if (super.getAttributes()!=null){
@@ -165,14 +167,14 @@ public class EntityODR extends Instance implements IEntity {
 		//client side
 		super.setAttributes(convertToAttributes(attributes));
 		//server side
-//		InstanceClient instanceCl= new  InstanceClient(api);
-//		Instance instance = instanceCl.readInstance(super.getId(), null);
-//		List<Attribute> attrs = new ArrayList<Attribute>();
-//		for (IAttribute attr:attributes ){
-//			AttributeODR attrODR = (AttributeODR)attr;
-//			attrs.add(attrODR.convertToAttribute());
-//		}
-//		instance.setAttributes(attrs);
+		//		InstanceClient instanceCl= new  InstanceClient(api);
+		//		Instance instance = instanceCl.readInstance(super.getId(), null);
+		//		List<Attribute> attrs = new ArrayList<Attribute>();
+		//		for (IAttribute attr:attributes ){
+		//			AttributeODR attrODR = (AttributeODR)attr;
+		//			attrs.add(attrODR.convertToAttribute());
+		//		}
+		//		instance.setAttributes(attrs);
 		//instanceCl.update(instance);
 	}
 
@@ -208,10 +210,10 @@ public class EntityODR extends Instance implements IEntity {
 		this.etype=(EntityType) type;
 		super.setTypeId(type.getGUID());
 		//on the server
-//		InstanceClient instanceCl= new  InstanceClient(this.api);
-//		Instance instance = instanceCl.readInstance(super.getId(), null);
-//		instance.setTypeId(type.getGUID());
-	//	instanceCl.update(instance);
+		//		InstanceClient instanceCl= new  InstanceClient(this.api);
+		//		Instance instance = instanceCl.readInstance(super.getId(), null);
+		//		instance.setTypeId(type.getGUID());
+		//	instanceCl.update(instance);
 	}
 
 	private List<IAttribute> convertToAttributeODR(List<Attribute> attributes){
@@ -232,7 +234,7 @@ public class EntityODR extends Instance implements IEntity {
 		}
 		return attrs;
 	}
-	
+
 	public Entity convertToEntity() {
 		Entity entity = new Entity();
 		entity.setTypeId(this.getTypeId());
@@ -246,6 +248,7 @@ public class EntityODR extends Instance implements IEntity {
 		entity.setEntityBaseId(this.getEntityBaseId());
 		entity.setStart(this.start);
 		entity.setPartOfId(this.partOfId);
+		entity.setEntityBaseId(1L);
 		//entity.setsUrl(this.sUrl);
 
 		return entity;
@@ -260,7 +263,7 @@ public class EntityODR extends Instance implements IEntity {
 	}
 	public void setExternalID(String externalID) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 

@@ -25,12 +25,13 @@ public class EntityService implements IEntityService {
 		this.api=api;
 	}
 
-	public void createEntity(IEntity entity) {
+	public Long createEntity(IEntity entity) {
 		EntityODR ent = (EntityODR) entity;
 		Entity e = ent.convertToEntity();
 		InstanceClient instanceCl= new  InstanceClient(this.api);
 		Long id = instanceCl.create(e);
-		System.out.println("Created entity ID: "+id);
+		//System.out.println("Created entity ID: "+id);
+		return id;
 	}
 
 	public void updateEntity(IEntity entity) {

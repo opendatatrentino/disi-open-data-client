@@ -55,12 +55,18 @@ public class EntityType implements IEntityType{
 	public String getName(Locale locale) {
 
 		return name.get(locale.toLanguageTag());
+		
 	}
 
+	public Map<String, String> getName1() {
+
+		return name;
+		
+	}
 	public IConcept getConcept() {
 		ConceptODR concept= new ConceptODR();
 		concept = concept.readConcept(conceptId);
-		return null;
+		return concept;
 	}
 
 	public void setConcept(IConcept concept) {
@@ -134,17 +140,16 @@ public class EntityType implements IEntityType{
 	}
 
 	public List<IUniqueIndex> getUniqueIndexes() {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("The metohf is not supported");
 	}
 
 	public void removeUniqueIndex(long uniqueIndexID) {
-		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("The metohf is not supported");
 
 	}
 
 	public void addUniqueIndex(IUniqueIndex uniqueIndex) {
-		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("The metohf is not supported");
 
 	}
 
@@ -174,7 +179,7 @@ public class EntityType implements IEntityType{
 	 * @return returns an instance of ClientProtocol that contains information where to connect(Url adress and port) and locale
 	 */
 	private IProtocolClient getClientProtocol(){
-		IProtocolClient api = ProtocolFactory.getHttpClient(Locale.ENGLISH, "opendata.disi.unitn.it", 8080);
+		IProtocolClient api = ProtocolFactory.getHttpClient(new Locale("all"), "opendata.disi.unitn.it", 8080);
 		return api;
 	}
 

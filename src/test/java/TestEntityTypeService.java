@@ -22,14 +22,17 @@ public class TestEntityTypeService {
 	@Test
 	public void testGetEntityTypeByID(){
 		EntityTypeService ets = new EntityTypeService();
-		EntityType etype =(EntityType)ets.getEntityType(12L);
-		assertEquals(etype.getName(Locale.ENGLISH) ,"Facility");
+		EntityType etype =(EntityType)ets.getEntityType(11L);
+		System.out.println(etype.getName1());
+
+		//assertEquals(etype.getName(Locale.ITALY) ,"Facility");
 	}
 
 	@Test
 	public void testGetAllEntityTypes(){
 		EntityTypeService ets = new EntityTypeService();
 		List<IEntityType> etypes= ets.getAllEntityTypes();
+		System.out.println(etypes.get(0).getConcept().getURL());
 		assertNotNull(etypes.get(0));
 	}
 
@@ -40,7 +43,7 @@ public class TestEntityTypeService {
 		EntityType etypeLoc =(EntityType)ets.getEntityType(4L);
 		List<IAttributeDef> attrs = etypeLoc.getAttributeDefs();
 		
-		String attrName= attrs.get(0).getName(Locale.ENGLISH);
+		String attrName= attrs.get(0).getName(new Locale("all"));
 		System.out.println(attrName);
 		ets.addAttributeDefToEtype(etypeEntity, attrs.get(0));
 		EntityType etypeEntityUpdated =(EntityType)ets.getEntityType(7L);

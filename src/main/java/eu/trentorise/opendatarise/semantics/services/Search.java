@@ -67,7 +67,7 @@ public class Search implements ISearch {
 	}
 	
 	public void getClientProtocol(){
-		this.api = ProtocolFactory.getHttpClient(Locale.ENGLISH, "opendata.disi.unitn.it", 8080);
+		this.api = ProtocolFactory.getHttpClient(new Locale("all"), "opendata.disi.unitn.it", 8080);
 	}
 
 	

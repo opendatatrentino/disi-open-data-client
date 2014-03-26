@@ -27,7 +27,7 @@
 		</license> </licenses> -->
 
 	<repositories>
-		 <repository>
+		<repository>
 			<id>sweb-internal</id>
 			<layout>default</layout>
 			<name>Archiva Managed Internal Repository</name>
@@ -301,7 +301,7 @@
 			<artifactId>sweb-webapi-kb-model</artifactId>
 			<version>3.0.0-SNAPSHOT</version>
 		</dependency>
-		 <dependency>
+		<dependency>
 			<groupId>it.unitn.disi.sweb</groupId>
 			<artifactId>sweb-webapi-kb-client</artifactId>
 			<version>3.0.0-SNAPSHOT</version>
@@ -315,11 +315,16 @@
 			<groupId>it.unitn.disi.sweb</groupId>
 			<artifactId>sweb-webapi-eb-client</artifactId>
 			<version>3.0.0-SNAPSHOT</version>
-		</dependency>  
-		   <dependency>
+		</dependency>
+		<dependency>
 			<groupId>eu.trentorise.opendata</groupId>
 			<artifactId>column-recognizers</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>  
+			<version>0.0.2-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>it.unitn.disi.sweb.odt</groupId>
+			<artifactId>sweb-webapi-odt-client</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 </project>
