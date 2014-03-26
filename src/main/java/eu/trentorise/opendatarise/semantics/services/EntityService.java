@@ -17,11 +17,11 @@ import eu.trentorise.opendatarise.semantics.model.entity.AttributeODR;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
 
 public class EntityService implements IEntityService {
-        
+
 	private IProtocolClient api;
-	
+
 	public EntityService(IProtocolClient api){
-		
+
 		this.api=api;
 	}
 
@@ -32,6 +32,8 @@ public class EntityService implements IEntityService {
 		Long id = instanceCl.create(e);
 		//System.out.println("Created entity ID: "+id);
 		return id;
+
+
 	}
 
 	public void updateEntity(IEntity entity) {
