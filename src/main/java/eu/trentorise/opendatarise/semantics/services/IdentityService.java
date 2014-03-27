@@ -22,7 +22,7 @@ public class IdentityService implements IIdentityService {
 		List<Entity> entities = new ArrayList<Entity>();
 
 		for(IEntity en: ientities){
-			EntityODR ent= new EntityODR();
+			EntityODR ent= (EntityODR) en;
 			Entity entity = ent.convertToEntity();
 			entities.add(entity);	
 		}

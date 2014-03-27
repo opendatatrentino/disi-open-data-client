@@ -26,23 +26,23 @@ public class TestIDManagement {
 		IdentityService idServ = new IdentityService();
 		EntityService enServ = new EntityService(getClientProtocol());
 		EntityODR entity1 = (EntityODR)enServ.readEntity(62841L);
-		EntityODR entity2 = (EntityODR)enServ.readEntity(15008L);
-		EntityODR entity3 = (EntityODR)enServ.readEntity(15009L);
+	//	EntityODR entity2 = (EntityODR)enServ.readEntity(15008L);
+	//	EntityODR entity3 = (EntityODR)enServ.readEntity(15009L);
 
 		entity1.getEntityAttributes();
-		entity2.getEntityAttributes();
-		entity3.getEntityAttributes();
+	//	entity2.getEntityAttributes();
+	//	entity3.getEntityAttributes();
 		
 		entity1.getEtype();
-		entity2.getEtype();
-		entity3.getEtype();
+	//	entity2.getEtype();
+	//	entity3.getEtype();
 		
-		entity1.getNames();
+		//entity1.getNames();
 		
 		List<IEntity> entities = new ArrayList<IEntity>();
 		entities.add(entity1);
-		entities.add(entity2);
-		entities.add(entity3);
+	//	entities.add(entity2);
+	//	entities.add(entity3);
 
 		List<IDResult> results=  idServ.assignID(entities);
 		for (IDResult res: results){
