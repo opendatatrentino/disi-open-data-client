@@ -89,7 +89,7 @@ public class AttributeDef implements IAttributeDef {
 	}
 
 	public IEntityType getRangeEType() {
-		if (this.dataType.equals(DataTypes.COMPLEX_TYPE)){
+		if (this.dataType.equals("COMPLEX_TYPE")){
 			ComplexTypeClient ctc = new ComplexTypeClient(getClientProtocol());
 			//TODO knowledge base assumed to be '1' change of API is required 
 			List<ComplexType> cType = ctc.readComplexTypes(1L, this.conceptId, null, null);

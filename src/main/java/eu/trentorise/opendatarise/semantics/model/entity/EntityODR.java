@@ -248,7 +248,7 @@ public class EntityODR extends Instance implements IEntity {
 		entity.setEntityBaseId(this.getEntityBaseId());
 		entity.setStart(this.start);
 		entity.setPartOfId(this.partOfId);
-		entity.setEntityBaseId(1L);
+		entity.setEntityBaseId(this.getEntityBaseId());
 		//entity.setsUrl(this.sUrl);
 
 		return entity;

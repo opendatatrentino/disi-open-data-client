@@ -38,7 +38,7 @@ public class TestEntityService {
 		this.api = ProtocolFactory.getHttpClient(new Locale("all"), "opendata.disi.unitn.it", 8080);
 	}
 
-	@Test
+	//@Test
 	public void testEntityRead(){
 		EntityService es= new EntityService(api);
 		EntityODR entity = (EntityODR) es.readEntity(15001L);
@@ -46,8 +46,8 @@ public class TestEntityService {
 	//	assertEquals(entity.getEtype().getName(Locale.ENGLISH),"Location");
 	}
 
-//	@Test 
-	public void testCreateEntity(){
+	@Test 
+	public void testCreateDeleteEntity(){
 
 		//initialising variables
 		EntityService es= new EntityService(api);
@@ -71,17 +71,24 @@ public class TestEntityService {
 		entity.setAttributes(attributes);
 		entity.setEtype(etype);
 		entity.setEntityBaseId(101L);
-		//System.out.println("entity: "+entity.toString());
-		es.createEntity(entity);
+		System.out.println("entity: "+entity.toString());
+		//es.createEntity(entity);
 
 		EbClient ebc = new EbClient(api); 
 		EntityBase eb = ebc.readEntityBase(101L, null);
 		int instanceNum = eb.getInstancesNumber();
 
-		es.createEntity(entity);
+		long id=es.createEntity(entity);
+		inst = instanceClient.readInstance(id, null);
 		EntityBase ebafter = ebc.readEntityBase(101L, null);
 		int instanceNumAfter = ebafter.getInstancesNumber();
 		assertEquals(instanceNum+1, instanceNumAfter);
+		
+		es.deleteEntity(id);
+		EntityBase ebafterDel = ebc.readEntityBase(101L, null);
+		int instanceNumAfterDel = ebafterDel.getInstancesNumber();
+		assertEquals(instanceNumAfterDel, instanceNumAfterDel);
+		
 	}
 
 	//@Test
@@ -110,13 +117,5 @@ public class TestEntityService {
 
 	}
 
-	//@Test public void testDeleteEntity(){
-	//deleteEntity()
-	
-	@Test
-	public void testCreateAttribute(){
-		
-	}
-	
 }
 

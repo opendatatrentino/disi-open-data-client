@@ -58,7 +58,6 @@ public class AttributeCorrespondence implements IAttributeCorrespondence {
 
 		Map<IAttributeDef,Float> atributes = this.attrMap;
 		
-		System.out.println(atributes.size());
 		if (atributes.size()==0){
 			this.attrDef= null;
 			this.score = 0;
@@ -72,8 +71,6 @@ public class AttributeCorrespondence implements IAttributeCorrespondence {
 				maxEntry = entry;
 			}
 		}
-		System.out.println("MaxEntry:"+maxEntry.getKey());
-	//	System.out.println(maxEntry.getValue());
 
 		this.attrDef=(AttributeDef) maxEntry.getKey();
 		this.score = maxEntry.getValue();

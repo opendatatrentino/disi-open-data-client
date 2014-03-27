@@ -30,7 +30,7 @@ public class Search implements ISearch {
 //        return client.searchEql(eqlQuery, 1, null, null, null, null).getResults();
 //    }
 
-    public List<IEntity> searchEQL(String eqlQuery) {
+    public String[][] searchEQL(String eqlQuery) {
 		// TODO Auto-generated method stub
 		return null;
 	}
