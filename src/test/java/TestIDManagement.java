@@ -1,5 +1,11 @@
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
+import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
+import it.unitn.disi.sweb.webapi.client.eb.IDManagementClient;
+import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
+import it.unitn.disi.sweb.webapi.model.eb.Attribute;
+import it.unitn.disi.sweb.webapi.model.eb.Entity;
+import it.unitn.disi.sweb.webapi.model.eb.Instance;
 import it.unitn.disi.sweb.webapi.model.odt.IDResult;
 
 import java.util.ArrayList;
@@ -21,7 +27,7 @@ import eu.trentorise.opendatarise.semantics.services.IdentityService;
  */
 public class TestIDManagement {
 
-	@Test
+	//@Test
 	public void testIdService(){
 		IdentityService idServ = new IdentityService();
 		EntityService enServ = new EntityService(getClientProtocol());
@@ -50,6 +56,28 @@ public class TestIDManagement {
 		}
 	}
 
+	@Test
+	public void testIdManServiceDISIClient(){
+		AttributeClient attrClient = new AttributeClient(getClientProtocol());
+		InstanceClient instanceCl= new  InstanceClient(getClientProtocol());
+		Entity entity1 = (Entity) instanceCl.readInstance(62841L, null);
+		List<Attribute> attributes = new ArrayList<Attribute>();
+
+		attributes = attrClient.readAttributes(62841L, null,null);
+		
+		entity1.setAttributes(attributes);
+		
+		IDManagementClient idManCl = new IDManagementClient(getClientProtocol());
+		List<Entity> entities = new ArrayList<Entity>();
+		entities.add(entity1);
+		List<IDResult> results =idManCl.assignIdentifier(entities, 0);
+
+		for (IDResult res: results){
+			System.out.println(res.getResult());
+		}
+		
+	}
+	
 	private IProtocolClient getClientProtocol(){
 		IProtocolClient api = ProtocolFactory.getHttpClient(new Locale("all"), "opendata.disi.unitn.it", 8080);
 		return api;
