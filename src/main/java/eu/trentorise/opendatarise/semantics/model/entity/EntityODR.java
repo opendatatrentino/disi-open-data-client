@@ -14,6 +14,7 @@ import it.unitn.disi.sweb.webapi.model.eb.sstring.SemanticString;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -26,7 +27,7 @@ import eu.trentorise.opendata.semantics.model.entity.IEntityType;
  * @date 12 Mar 2014 refactored 22.03.2014
  * 
  */
-public class EntityODR extends Instance implements IEntity {
+public class EntityODR extends Structure implements IEntity {
 
 	private List<Name> names;
 
@@ -252,48 +253,55 @@ public class EntityODR extends Instance implements IEntity {
 
 		return entity;
 	}
-	public String getURI() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	public String getExternalID() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	public void setExternalID(String externalID) {
-		// TODO Auto-generated method stub
 
+	public String getName(Locale locale) {
+
+		Map<String,List<String>>  name = this.names.get(0).getNames();
+		List<String> stName = name.get(locale.toLanguageTag());
+		return stName.get(0);
 	}
-	public List<IAttribute> getStructureAttributes() {
-		if (super.getAttributes()!=null){
-			List<IAttribute> atrs = convertToAttributeODR(super.getAttributes());
-			return atrs;
-		}else 
-		{
-			AttributeClient attrCl = new AttributeClient(this.api);
-			Pagination page = new Pagination(1,10);
-			List<Attribute> attrs =attrCl.readAttributes(super.getId(), null, null);
-			super.setAttributes(attrs);
-			List<IAttribute> attrODR = convertToAttributeODR(attrs);
-			return attrODR;
+
+	public void setName(Locale locale, String name) {
+		if (this.names==null){
+			List<Name> names = new ArrayList<Name>();
+			Name nam = new Name();
+			Map<String,List<String>> nameMap = new HashMap<String,List<String>>();
+			List<String> strs = new ArrayList<String>();
+			strs.add(name);
+			nameMap.put(locale.toLanguageTag(), strs);
+			nam.setNames(nameMap);
+			names.add(nam);
+			this.names=names;
+
+		} else{ 
+
+			List<Name> names=this.names;
+			Map<String,List<String>> decomposedNames = names.get(0).getNames();
+
+			if (decomposedNames.containsKey(locale.toLanguageTag())){
+				List<String> strs = decomposedNames.get(locale.toLanguageTag());
+				strs.add(name);
+				decomposedNames.put(locale.toLanguageTag(), strs);
+			}
+
+			else {
+				List<String> strs = new ArrayList<String>();
+				strs.add(name);
+				decomposedNames.put(locale.toLanguageTag(), strs);
+			} 
 		}
 	}
-	public void setStructureAttributes(List<IAttribute> attributes) {
-		super.setAttributes(convertToAttributes(attributes));		
-	}
-	public String getName(Locale locale) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	public void setName(Locale locale, String name) {
-		// TODO Auto-generated method stub
 
-	}
 	public String getDescription(Locale language) {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 	public String setDescription(Locale language, String description) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	public String getURI() {
 		// TODO Auto-generated method stub
 		return null;
 	}
