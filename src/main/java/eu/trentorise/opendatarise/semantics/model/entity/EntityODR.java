@@ -61,6 +61,20 @@ public class EntityODR extends Structure implements IEntity {
 		super.setEntityBaseId(instance.getEntityBaseId()) ;
 	}
 
+	
+	
+	@Override
+	public String toString() {
+		
+		return "EntityODR [names=" + names + ", descriptions=" + descriptions
+				+ ", start=" + start + ", end=" + end + ", duration="
+				+ duration + ", classConceptId=" + classConceptId
+				+ ", partOfId=" + partOfId + ", globalId=" + globalId
+				+ ", sUrl=" + sUrl + ", etype=" + etype + ",attributes="+
+				super.getStructureAttributes().toString()+ "]";
+	}
+	
+	
 	public Long getGUID() {
 		return globalId;
 	}

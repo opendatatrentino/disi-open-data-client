@@ -37,6 +37,15 @@ public class AttributeODR implements IAttribute {
 		this.values =convertToValueODR(attribute.getValues());
 	}
 
+	@Override
+	public String toString() {
+		return "AttributeODR [api=" + api + ", values=" + values + ", id=" + id
+				+ ", attrDef=" + attrDef + ", attrDefId=" + attrDefId
+				+ ", conceptId=" + conceptId + ", instanceID=" + instanceID
+				+ "]";
+	}
+
+	
 	public AttributeODR(IProtocolClient api) {
 		this.api=api;
 	}

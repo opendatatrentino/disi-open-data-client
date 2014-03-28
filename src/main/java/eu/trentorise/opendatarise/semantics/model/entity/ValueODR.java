@@ -19,6 +19,14 @@ public class ValueODR implements IValue {
 	private Object value;
 	IProtocolClient api;
 
+	
+	
+	@Override
+	public String toString() {
+		return "ValueODR [id=" + id + ", attrId=" + attrId + ", value=" + value
+				+ ", api=" + api + "]";
+	}
+
 	public ValueODR(IProtocolClient api, Value value ){
 		this.id=value.getId();
 		this.attrId=value.getAttributeId();
