@@ -53,19 +53,37 @@ public class EntityODR extends Structure implements IEntity {
 
 
 	public EntityODR() {}
-	public EntityODR(IProtocolClient api, Instance instance){
+	public EntityODR(IProtocolClient api, Entity entity){
 
 		this.api=api;
-		super.setId(instance.getId());
-		this.setTypeId(instance.getTypeId());
-		super.setEntityBaseId(instance.getEntityBaseId()) ;
+		super.setId(entity.getId());
+		this.setTypeId(entity.getTypeId());
+		super.setEntityBaseId(entity.getEntityBaseId()) ;
+		super.setAttributes(entity.getAttributes());
+		this.setNames(entity.getNames());
+		this.setDescriptions(entity.getDescriptions());
+		this.setPartOfId(entity.getPartOfId());
+		this.setURL(entity.getsUrl());
+		this.setDuration(entity.getDuration());
+		this.setStart(entity.getStart());
+		this.setEnd(entity.getEnd());
+		this.setClassConceptId(entity.getClassConceptId());
+		this.setGlobalId(entity.getGlobalId());
+
 	}
 
-	
-	
+
+//	public EntityODR(IProtocolClient api, Instance instance){
+//
+//		this.api=api;
+//		super.setId(instance.getId());
+//		this.setTypeId(instance.getTypeId());
+//		super.setEntityBaseId(instance.getEntityBaseId()) ;
+//	}
+
 	@Override
 	public String toString() {
-		
+
 		return "EntityODR [names=" + names + ", descriptions=" + descriptions
 				+ ", start=" + start + ", end=" + end + ", duration="
 				+ duration + ", classConceptId=" + classConceptId
@@ -73,8 +91,8 @@ public class EntityODR extends Structure implements IEntity {
 				+ ", sUrl=" + sUrl + ", etype=" + etype + ",attributes="+
 				super.getStructureAttributes().toString()+ "]";
 	}
-	
-	
+
+
 	public Long getGUID() {
 		return globalId;
 	}
@@ -258,7 +276,7 @@ public class EntityODR extends Structure implements IEntity {
 		entity.setEnd(this.end);
 		entity.setGlobalId(this.globalId);
 		entity.setId(super.getId());
-		entity.setNames(this.names);
+		//entity.setNames(this.names);
 		entity.setEntityBaseId(this.getEntityBaseId());
 		entity.setStart(this.start);
 		entity.setPartOfId(this.partOfId);
@@ -289,8 +307,9 @@ public class EntityODR extends Structure implements IEntity {
 
 		} else{ 
 
-			List<Name> names=this.names;
-			Map<String,List<String>> decomposedNames = names.get(0).getNames();
+			Name nam=this.names.get(0);
+			
+			Map<String,List<String>> decomposedNames = nam.getNames();
 
 			if (decomposedNames.containsKey(locale.toLanguageTag())){
 				List<String> strs = decomposedNames.get(locale.toLanguageTag());
@@ -302,8 +321,13 @@ public class EntityODR extends Structure implements IEntity {
 				List<String> strs = new ArrayList<String>();
 				strs.add(name);
 				decomposedNames.put(locale.toLanguageTag(), strs);
+				System.out.println(decomposedNames);
+				nam.setNames(decomposedNames);
+				//EntityService
 			} 
 		}
+		
+		
 	}
 
 	public String getDescription(Locale language) {

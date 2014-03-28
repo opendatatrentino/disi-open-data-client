@@ -3,6 +3,7 @@ package eu.trentorise.opendatarise.semantics.services;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
 import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
+import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
 import it.unitn.disi.sweb.webapi.model.eb.search.InstanceSearchResult;
 
@@ -68,8 +69,9 @@ public class Search implements ISearch {
 	private List<IEntity> convertInstancesToEntities( List<Instance> instances){
 		List<IEntity> entities = new ArrayList<IEntity>();
 		for(Instance instance: instances ){
-			EntityODR entity = new EntityODR(this.api, instance);
-			entities.add(entity);
+			Entity entity =  (Entity) instance;
+			EntityODR entityODR = new EntityODR(api, entity);
+			entities.add(entityODR);
 		}
 		return entities;
 	}
