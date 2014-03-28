@@ -83,13 +83,24 @@ public class EntityODR extends Structure implements IEntity {
 
 	@Override
 	public String toString() {
-
-		return "EntityODR [names=" + names + ", descriptions=" + descriptions
-				+ ", start=" + start + ", end=" + end + ", duration="
-				+ duration + ", classConceptId=" + classConceptId
-				+ ", partOfId=" + partOfId + ", globalId=" + globalId
-				+ ", sUrl=" + sUrl + ", etype=" + etype + ",attributes="+
-				super.getStructureAttributes().toString()+ "]";
+            String str = "EntityODR [\n"
+                        + "names=" + names + 
+                        ", descriptions=" + descriptions
+			+ ", start=" + start 
+                        + ", end=" + end + ", duration="
+			+ duration + ", classConceptId=" 
+                        + classConceptId
+			+ ", partOfId=" + partOfId 
+                        + ", globalId=" + globalId
+			+ ", sUrl=" + sUrl + ","
+                        + "\n etype=" + etype + ",\nattributes="+
+				"]";
+            for(IAttribute attr:super.getStructureAttributes()){
+                str += "\t"+attr+"\n";
+            }
+            
+            str+="]";
+            return str;
 	}
 
 
