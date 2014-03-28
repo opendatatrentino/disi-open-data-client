@@ -27,7 +27,7 @@ import eu.trentorise.opendatarise.semantics.services.IdentityService;
  */
 public class TestIDManagement {
 
-	//@Test
+	@Test
 	public void testIdService(){
 		IdentityService idServ = new IdentityService();
 		EntityService enServ = new EntityService(getClientProtocol());
@@ -56,7 +56,7 @@ public class TestIDManagement {
 		}
 	}
 
-	@Test
+	//@Test
 	public void testIdManServiceDISIClient(){
 		AttributeClient attrClient = new AttributeClient(getClientProtocol());
 		InstanceClient instanceCl= new  InstanceClient(getClientProtocol());
@@ -71,13 +71,10 @@ public class TestIDManagement {
 		List<Entity> entities = new ArrayList<Entity>();
 		entities.add(entity1);
 		List<IDResult> results =idManCl.assignIdentifier(entities, 0);
-
 		for (IDResult res: results){
 			System.out.println(res.getResult());
 		}
-		
 	}
-	
 	private IProtocolClient getClientProtocol(){
 		IProtocolClient api = ProtocolFactory.getHttpClient(new Locale("all"), "opendata.disi.unitn.it", 8080);
 		return api;

@@ -56,6 +56,7 @@ public class TestEntityService {
 		ComplexTypeClient ctypecl = new ComplexTypeClient(api);
 
 		Instance inst = instanceClient.readInstance(15007L, null);
+
 		EntityODR entity = new EntityODR();
 		List<Attribute> attributes = new ArrayList<Attribute>();
 		ComplexType cType = ctypecl.readComplexType(inst.getTypeId(), null);

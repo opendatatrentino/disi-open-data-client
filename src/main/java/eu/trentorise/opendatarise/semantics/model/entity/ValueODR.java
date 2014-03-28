@@ -32,7 +32,7 @@ public class ValueODR implements IValue {
 		this.value=value.getValue();
 	}
 
-	public Long getGUID() {
+	public Long getLocalID() {
 		return this.id;
 	}
 

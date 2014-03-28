@@ -2,26 +2,25 @@ package eu.trentorise.opendatarise.semantics.model.entity;
 
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
-import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
 import it.unitn.disi.sweb.webapi.client.kb.ComplexTypeClient;
 import it.unitn.disi.sweb.webapi.model.Pagination;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Duration;
+import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
 import it.unitn.disi.sweb.webapi.model.eb.Moment;
 import it.unitn.disi.sweb.webapi.model.eb.Name;
-import it.unitn.disi.sweb.webapi.model.eb.Entity;
+import it.unitn.disi.sweb.webapi.model.eb.sstring.SemanticString;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
-import it.unitn.disi.sweb.webapi.model.eb.sstring.SemanticString;
-
-import java.util.Map;
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
  * @date 12 Mar 2014 refactored 22.03.2014
@@ -264,6 +263,30 @@ public class EntityODR extends Instance implements IEntity {
 	public void setExternalID(String externalID) {
 		// TODO Auto-generated method stub
 
+	}
+	public List<IAttribute> getStructureAttributes() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	public void setStructureAttributes(List<IAttribute> attributes) {
+		// TODO Auto-generated method stub
+		
+	}
+	public String getName(Locale locale) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	public void setName(Locale locale, String name) {
+		// TODO Auto-generated method stub
+		
+	}
+	public String getDescription(Locale language) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	public String setDescription(Locale language, String description) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

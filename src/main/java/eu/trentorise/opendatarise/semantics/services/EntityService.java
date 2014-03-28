@@ -44,7 +44,7 @@ public class EntityService implements IEntityService {
 
 		instance.setTypeId(ent.getEtype().getGUID());
 		instance.setId(entity.getLocalID());
-		List<IAttribute> attrs = entity.getEntityAttributes();
+		List<IAttribute> attrs = entity.getStructureAttributes();
 		List<Attribute> attributes = ent.convertToAttributes(attrs);
 		instance.setAttributes(attributes);
 		instanceCl.update(instance);

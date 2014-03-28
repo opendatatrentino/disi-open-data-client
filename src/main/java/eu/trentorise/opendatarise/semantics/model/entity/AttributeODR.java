@@ -90,7 +90,7 @@ public class AttributeODR implements IAttribute {
 		//client side
 		ArrayList<IValue> values = (ArrayList<IValue>) this.values;
 		for(IValue val: values){
-			if(val.getGUID()==valueID){
+			if(val.getLocalID()==valueID){
 				values.remove(val);
 				return;
 			}
@@ -153,12 +153,17 @@ public class AttributeODR implements IAttribute {
 		//client side
 		ArrayList<IValue> values = (ArrayList<IValue>) this.values;
 		for(IValue value: values){
-			if(value.getGUID()==newValue.getGUID()){
+			if(value.getLocalID()==newValue.getLocalID()){
 				values.remove(value);
 				return;
 			}
 		}
 		values.add(newValue);
+	}
+
+	public Long getLocalID() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

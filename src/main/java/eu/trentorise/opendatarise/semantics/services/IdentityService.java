@@ -11,6 +11,7 @@ import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.odt.IDResult;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.services.IIdentityService;
+import eu.trentorise.opendata.semantics.services.model.IIDResult;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
 
 public class IdentityService implements IIdentityService {
@@ -25,10 +26,10 @@ public class IdentityService implements IIdentityService {
 			EntityODR ent= (EntityODR) en;
 			Entity entity = ent.convertToEntity();
 			entities.add(entity);	
+			
 		}
 
 		List<IDResult> results = idManCl.assignIdentifier(entities, 0);
-		//results.get(0).g
 
 		return results;
 	}
@@ -39,6 +40,11 @@ public class IdentityService implements IIdentityService {
 	}
 
 	public Long createGUID(IEntity entity) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<IIDResult> assignGUID(List<IEntity> entities, int numCandidates) {
 		// TODO Auto-generated method stub
 		return null;
 	}
