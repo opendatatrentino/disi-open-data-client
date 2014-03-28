@@ -35,11 +35,11 @@ public class TestIDManagement {
 	//	EntityODR entity2 = (EntityODR)enServ.readEntity(15008L);
 	//	EntityODR entity3 = (EntityODR)enServ.readEntity(15009L);
 
-		entity1.getEntityAttributes();
+	//	entity1.getEntityAttributes();
 	//	entity2.getEntityAttributes();
 	//	entity3.getEntityAttributes();
 		
-		entity1.getEtype();
+	//	entity1.getEtype();
 	//	entity2.getEtype();
 	//	entity3.getEtype();
 		
@@ -80,6 +80,7 @@ public class TestIDManagement {
 		List<IDResult> results =idManCl.assignIdentifier(entities, 0);
 		for (IDResult res: results){
 			System.out.println(res.getResult());
+			//System.out.println(res.);
 		}
 	}
 	private IProtocolClient getClientProtocol(){

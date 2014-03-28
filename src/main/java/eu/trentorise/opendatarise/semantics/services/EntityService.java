@@ -5,6 +5,8 @@ import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
+import it.unitn.disi.sweb.webapi.model.filters.AttributeFilterType;
+import it.unitn.disi.sweb.webapi.model.filters.InstanceFilter;
 
 import java.io.Writer;
 import java.util.List;
@@ -38,14 +40,14 @@ public class EntityService implements IEntityService {
 
 		EntityODR ent = (EntityODR) entity;
 		InstanceClient instanceCl= new  InstanceClient(this.api);
-		Instance instance = instanceCl.readInstance(ent.getLocalID(), null);
-
-		instance.setTypeId(ent.getEtype().getGUID());
-		instance.setId(entity.getLocalID());
-		List<IAttribute> attrs = entity.getStructureAttributes();
-		List<Attribute> attributes = ent.convertToAttributes(attrs);
-		instance.setAttributes(attributes);
-		instanceCl.update(instance);
+	//	Instance instance = instanceCl.readInstance(ent.getLocalID(), null);
+//
+//		instance.setTypeId(ent.getEtype().getGUID());
+//		instance.setId(entity.getLocalID());
+//		List<IAttribute> attrs = entity.getStructureAttributes();
+//		List<Attribute> attributes = ent.convertToAttributes(attrs);
+//		instance.setAttributes(attributes);
+		instanceCl.update(ent);
 	}
 
 	public void deleteEntity(long entityID) {
@@ -56,9 +58,14 @@ public class EntityService implements IEntityService {
 
 	public IEntity readEntity(long entityID) {
 		InstanceClient instanceCl= new  InstanceClient(this.api);
-		Instance instance = instanceCl.readInstance(entityID, null);
-		IEntity entity = new EntityODR(api, instance); 
-		return entity;
+
+		InstanceFilter instFilter = new InstanceFilter();
+		instFilter.setIncludeAttributes(true);
+		instFilter.setIncludeAttributesAsProperties(true);
+		Instance instance = instanceCl.readInstance(entityID, instFilter);
+		Entity entity =  (Entity)instance; 
+		EntityODR en = new EntityODR(this.api,entity);
+		return en;
 	}
 
 	public void addAttribute(IEntity entity, IAttribute attribute) {

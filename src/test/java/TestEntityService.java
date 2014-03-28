@@ -6,6 +6,7 @@ import it.unitn.disi.sweb.webapi.client.eb.EbClient;
 import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
 import it.unitn.disi.sweb.webapi.client.kb.ComplexTypeClient;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
+import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.EntityBase;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
@@ -97,7 +98,8 @@ public class TestEntityService {
 		InstanceClient instanceClient = new InstanceClient(api);
 		//Instance inst1 = instanceClient.readInstance(15007L, null);
 		Instance instPreModif = instanceClient.readInstance(189701L, null);
-		EntityODR ePreMod = new EntityODR(api,instPreModif);
+		Entity ent = (Entity)instPreModif;
+		EntityODR ePreMod = new EntityODR(api,ent);
 		List<IAttribute> attrs = ePreMod.getEntityAttributes();
 		System.out.println(attrs.size());
 		EntityService es = new EntityService(api);
@@ -107,11 +109,13 @@ public class TestEntityService {
 		newListAttrs.add(attrs.get(0));
 		newListAttrs.add(attrs.get(1));
 		
-		EntityODR ie = new EntityODR(api, instPreModif);
+		EntityODR ie = new EntityODR(api, ent);
 		ie.setEntityAttributes(newListAttrs);
 		es.updateEntity(ie);
 		Instance instPostModif = instanceClient.readInstance(189701L, null);
-		EntityODR ePostMod = new EntityODR(api,instPostModif);
+		Entity entPost = (Entity) instPostModif;
+
+		EntityODR ePostMod = new EntityODR(api,entPost);
 		List<IAttribute> attrsPost = ePostMod.getEntityAttributes();
 		System.out.println(attrsPost.size());
 
