@@ -764,3 +764,17 @@
 2014-03-28 18:57:08,493 DEBUG [it.unitn.disi.sweb.webapi.client.HttpClient] - Webapi client executes GET request on http://opendata.disi.unitn.it:8080/odr/instances/64000?includeAttributes=true&maxDepth=1&attributeFilterType=ATTRIBUTE_DEF_ID&includeAttributesAsProperties=true&maxValues=10&locale=all
 2014-03-28 18:57:09,540 INFO [it.unitn.disi.sweb.webapi.client.HttpClient] - Web API client connects to sweb-webapi server running on http://opendata.disi.unitn.it:8080
 2014-03-28 18:57:09,540 DEBUG [it.unitn.disi.sweb.webapi.client.HttpClient] - Webapi client executes POST request on http://opendata.disi.unitn.it:8080/odr/idmanagement/assign?owner=0
+2014-03-28 19:18:18,398 INFO [it.unitn.disi.sweb.webapi.model.Configuration] - Loading property file 'sweb-webapi-model.properties' from path 'D:\ikke\Documents\NetBeansProjects\ODR\disi-open-data-client\conf\'
+2014-03-28 19:18:18,757 INFO [it.unitn.disi.sweb.webapi.client.HttpClient] - Web API client connects to sweb-webapi server running on http://opendata.disi.unitn.it:8080
+2014-03-28 19:18:18,763 INFO [it.unitn.disi.sweb.webapi.model.Configuration] - Loading property file 'sweb-webapi-eb-model.properties' from CLASSPATH
+2014-03-28 19:18:18,770 DEBUG [it.unitn.disi.sweb.webapi.client.HttpClient] - Webapi client executes GET request on http://opendata.disi.unitn.it:8080/odr/instances/64000?includeAttributes=true&maxDepth=1&attributeFilterType=ATTRIBUTE_DEF_ID&includeAttributesAsProperties=true&maxValues=10&locale=all
+2014-03-28 19:18:19,802 INFO [it.unitn.disi.sweb.webapi.client.HttpClient] - Web API client connects to sweb-webapi server running on http://opendata.disi.unitn.it:8080
+2014-03-28 19:18:19,806 INFO [it.unitn.disi.sweb.webapi.client.HttpClient] - Web API client connects to sweb-webapi server running on http://opendata.disi.unitn.it:8080
+2014-03-28 19:18:19,806 DEBUG [it.unitn.disi.sweb.webapi.client.HttpClient] - Webapi client executes POST request on http://opendata.disi.unitn.it:8080/odr/idmanagement/assign?owner=0
+2014-03-28 19:19:23,272 INFO [it.unitn.disi.sweb.webapi.model.Configuration] - Loading property file 'sweb-webapi-model.properties' from path 'D:\ikke\Documents\NetBeansProjects\ODR\disi-open-data-client\conf\'
+2014-03-28 19:19:23,625 INFO [it.unitn.disi.sweb.webapi.client.HttpClient] - Web API client connects to sweb-webapi server running on http://opendata.disi.unitn.it:8080
+2014-03-28 19:19:23,630 INFO [it.unitn.disi.sweb.webapi.model.Configuration] - Loading property file 'sweb-webapi-eb-model.properties' from CLASSPATH
+2014-03-28 19:19:23,638 DEBUG [it.unitn.disi.sweb.webapi.client.HttpClient] - Webapi client executes GET request on http://opendata.disi.unitn.it:8080/odr/instances/64000?includeAttributes=true&maxDepth=1&attributeFilterType=ATTRIBUTE_DEF_ID&includeAttributesAsProperties=true&maxValues=10&locale=all
+2014-03-28 19:19:24,611 INFO [it.unitn.disi.sweb.webapi.client.HttpClient] - Web API client connects to sweb-webapi server running on http://opendata.disi.unitn.it:8080
+2014-03-28 19:19:24,615 INFO [it.unitn.disi.sweb.webapi.client.HttpClient] - Web API client connects to sweb-webapi server running on http://opendata.disi.unitn.it:8080
+2014-03-28 19:19:24,615 DEBUG [it.unitn.disi.sweb.webapi.client.HttpClient] - Webapi client executes POST request on http://opendata.disi.unitn.it:8080/odr/idmanagement/assign?owner=0

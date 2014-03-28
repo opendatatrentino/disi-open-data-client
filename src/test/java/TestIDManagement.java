@@ -55,11 +55,13 @@ public class TestIDManagement {
 	//	entities.add(entity3);
 
                 System.out.println("The result is:");
+                IProtocolClient clientApi = getClientProtocol();
 		List<IDResult> results=  idServ.assignID(entities);
 		for (IDResult res: results){
-			System.out.println("result "+res.getResult());
-                        System.out.println("new sweb id "+res.getSwebID());
-                        System.out.println("for entity: "+res.getEntity());
+                    EntityODR entityODR = new EntityODR(clientApi,res.getEntity());
+                    System.out.println("result "+res.getResult());
+                    System.out.println("new sweb id "+res.getSwebID());
+                    System.out.println("for entity: "+entityODR);
 		}
 	}
 
