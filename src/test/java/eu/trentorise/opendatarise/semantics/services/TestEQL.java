@@ -42,7 +42,7 @@
 //     */
 //    @Test
 //    public void testDescriptionValue() {
-//        IProtocolClient api = ProtocolFactory.getHttpClient(Locale.ENGLISH, "opendata.disi.unitn.it", 8080);
+//        IProtocolClient api = ProtocolFactory.getHttpClient(Locale.ENGLISH, SERVER, PORT);
 //        Search searchService = new Search(api);
 //
 //        String[][] results = searchService.searchEQL("from locations[description:administrative division] location1");
