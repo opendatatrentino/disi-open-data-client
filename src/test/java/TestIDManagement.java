@@ -31,7 +31,7 @@ public class TestIDManagement {
 	public void testIdService(){
 		IdentityService idServ = new IdentityService();
 		EntityService enServ = new EntityService(getClientProtocol());
-		EntityODR entity1 = (EntityODR)enServ.readEntity(62841L);
+		EntityODR entity1 = (EntityODR)enServ.readEntity(64000L);
 	//	EntityODR entity2 = (EntityODR)enServ.readEntity(15008L);
 	//	EntityODR entity3 = (EntityODR)enServ.readEntity(15009L);
 
@@ -47,12 +47,19 @@ public class TestIDManagement {
 		
 		List<IEntity> entities = new ArrayList<IEntity>();
 		entities.add(entity1);
+                System.out.println("Will try to asign IDs to:");
+                for(IEntity entityInList: entities){
+                    System.out.println(entityInList);
+                }
 	//	entities.add(entity2);
 	//	entities.add(entity3);
 
+                System.out.println("The result is:");
 		List<IDResult> results=  idServ.assignID(entities);
 		for (IDResult res: results){
-			System.out.println(res.getResult());
+			System.out.println("result "+res.getResult());
+                        System.out.println("new sweb id "+res.getSwebID());
+                        System.out.println("for entity: "+res.getEntity());
 		}
 	}
 
