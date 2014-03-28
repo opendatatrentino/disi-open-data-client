@@ -21,7 +21,7 @@ import eu.trentorise.opendatarise.semantics.services.EntityService;
  */
 public class TestEntity {
 
-	@Test
+//	@Test
 	public void testGetEntityName(){
 		
 		EntityService entServ = new EntityService(getClientProtocol());
