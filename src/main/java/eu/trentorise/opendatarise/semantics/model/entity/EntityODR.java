@@ -265,12 +265,21 @@ public class EntityODR extends Instance implements IEntity {
 
 	}
 	public List<IAttribute> getStructureAttributes() {
-		// TODO Auto-generated method stub
-		return null;
+		if (super.getAttributes()!=null){
+			List<IAttribute> atrs = convertToAttributeODR(super.getAttributes());
+			return atrs;
+		}else 
+		{
+			AttributeClient attrCl = new AttributeClient(this.api);
+			Pagination page = new Pagination(1,10);
+			List<Attribute> attrs =attrCl.readAttributes(super.getId(), null, null);
+			super.setAttributes(attrs);
+			List<IAttribute> attrODR = convertToAttributeODR(attrs);
+			return attrODR;
+		}
 	}
 	public void setStructureAttributes(List<IAttribute> attributes) {
-		// TODO Auto-generated method stub
-		
+		super.setAttributes(convertToAttributes(attributes));		
 	}
 	public String getName(Locale locale) {
 		// TODO Auto-generated method stub
@@ -278,7 +287,7 @@ public class EntityODR extends Instance implements IEntity {
 	}
 	public void setName(Locale locale, String name) {
 		// TODO Auto-generated method stub
-		
+
 	}
 	public String getDescription(Locale language) {
 		// TODO Auto-generated method stub
