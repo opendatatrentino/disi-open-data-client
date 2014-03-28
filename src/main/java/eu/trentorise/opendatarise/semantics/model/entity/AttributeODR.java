@@ -39,9 +39,11 @@ public class AttributeODR implements IAttribute {
 
 	@Override
 	public String toString() {
-		return "AttributeODR [api=" + api + ", values=" + values + ", id=" + id
+		return "AttributeODR [api=" + api + ", id=" + id
 				+ ", attrDef=" + attrDef + ", attrDefId=" + attrDefId
-				+ ", conceptId=" + conceptId + ", instanceID=" + instanceID
+				+ ", conceptId=" + conceptId 
+                                + ", instanceID=" + instanceID
+                                + ", values=" + values 
 				+ "]";
 	}
 

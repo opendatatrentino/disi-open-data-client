@@ -18,6 +18,7 @@ import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
 import eu.trentorise.opendatarise.semantics.services.EntityService;
 import eu.trentorise.opendatarise.semantics.services.IdentityService;
+import it.unitn.disi.sweb.webapi.model.eb.Value;
 
 
 /**
@@ -31,8 +32,8 @@ public class TestIDManagement {
 	public void testIdService(){
 		IdentityService idServ = new IdentityService();
 		EntityService enServ = new EntityService(getClientProtocol());
-		EntityODR entity1 = (EntityODR)enServ.readEntity(62841L);
-	//	EntityODR entity2 = (EntityODR)enServ.readEntity(15008L);
+		EntityODR entity1 = (EntityODR)enServ.readEntity(64000L);
+		EntityODR entity2 = (EntityODR)enServ.readEntity(64005L);
 	//	EntityODR entity3 = (EntityODR)enServ.readEntity(15009L);
 
 	//	entity1.getEntityAttributes();
@@ -47,14 +48,50 @@ public class TestIDManagement {
 		
 		List<IEntity> entities = new ArrayList<IEntity>();
 		entities.add(entity1);
+                entities.add(entity2);
+                System.out.println("Will try to asign IDs to:");
+                for(IEntity entityInList: entities){
+                    System.out.println(entityInList);
+                }
 	//	entities.add(entity2);
 	//	entities.add(entity3);
 
+                System.out.println("The result is:");
+                IProtocolClient clientApi = getClientProtocol();
 		List<IDResult> results=  idServ.assignID(entities);
 		for (IDResult res: results){
-			System.out.println(res.getResult());
+                    EntityODR entityODR = new EntityODR(clientApi,res.getEntity());
+                    System.out.println("result "+res.getResult());
+                    System.out.println("new sweb id "+res.getSwebID());
+                    System.out.println("for entity(webAPI): "+entityToString(res.getEntity()));
+//                    System.out.println("for entity(ODR): "+entityODR);
 		}
 	}
+        
+        private String entityToString(Entity e){
+            String str = "id:"+e.getId()+
+                    ", gID:"+e.getGlobalId()+
+                    ", names:"+e.getNames()+
+                    ", attributes:"+attributesToString(e.getAttributes());
+            return str;
+        }
+        
+        private String attributesToString(List<Attribute> attributes){
+            String str = "[";
+            for(Attribute attr:attributes){
+                str+=attributeToString(attr)+"\n";
+            }
+            return str+"]";
+        }
+        
+        private String attributeToString(Attribute attr) {
+            String str = "attr concept_id:"+attr.getConceptId()+
+                    ", datatype:"+attr.getDataType()+" values[";
+            for(Value v:attr.getValues()){
+                str+=v.getValue()+", ";
+            }
+            return str+"]";
+        }
 
 	//@Test
 	public void testIdManServiceDISIClient(){
@@ -80,5 +117,7 @@ public class TestIDManagement {
 		IProtocolClient api = ProtocolFactory.getHttpClient(new Locale("all"), "opendata.disi.unitn.it", 8080);
 		return api;
 	}
+
+   
 
 }
