@@ -188,4 +188,6 @@ public class EntityType implements IEntityType{
 		addAttributeD(atDef);
 
 	}
+
+
 }

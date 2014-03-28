@@ -276,12 +276,12 @@ public class EntityODR extends Structure implements IEntity {
 		entity.setEnd(this.end);
 		entity.setGlobalId(this.globalId);
 		entity.setId(super.getId());
-		//entity.setNames(this.names);
+		entity.setNames(this.names);
 		entity.setEntityBaseId(this.getEntityBaseId());
 		entity.setStart(this.start);
 		entity.setPartOfId(this.partOfId);
 		entity.setEntityBaseId(this.getEntityBaseId());
-		//entity.setsUrl(this.sUrl);
+		entity.setsUrl(this.sUrl);
 
 		return entity;
 	}

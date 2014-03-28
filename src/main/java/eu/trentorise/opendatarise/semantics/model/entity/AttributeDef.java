@@ -165,8 +165,12 @@ public class AttributeDef implements IAttributeDef {
 	public AttributeDefinition addAttributeDefinition(){
 		AttributeDefinitionClient attrDefClient = new AttributeDefinitionClient(getClientProtocol());
 		AttributeDefinition attrDef = attrDefClient.readAttributeDefinition(id, null);
-
-		
 		return attrDef;
 	}
+
+	public Long getEType() {
+		return this.typeId;
+	}
+
+
 }
