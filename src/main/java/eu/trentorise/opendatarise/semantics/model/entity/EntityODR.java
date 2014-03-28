@@ -94,7 +94,7 @@ public class EntityODR extends Structure implements IEntity {
                         + ", globalId=" + globalId
 			+ ", sUrl=" + sUrl + ","
                         + "\n etype=" + etype + ",\nattributes="+
-				"]";
+				"[\n";
             for(IAttribute attr:super.getStructureAttributes()){
                 str += "\t"+attr+"\n";
             }
