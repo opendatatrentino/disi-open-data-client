@@ -5,6 +5,7 @@ import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
+import it.unitn.disi.sweb.webapi.model.eb.Name;
 import it.unitn.disi.sweb.webapi.model.filters.AttributeFilterType;
 import it.unitn.disi.sweb.webapi.model.filters.InstanceFilter;
 
@@ -39,6 +40,8 @@ public class EntityService implements IEntityService {
 	public void updateEntity(IEntity entity) {
 
 		EntityODR ent = (EntityODR) entity;
+		//Entity en=(Entity)ent;
+		
 		InstanceClient instanceCl= new  InstanceClient(this.api);
 	//	Instance instance = instanceCl.readInstance(ent.getLocalID(), null);
 //
@@ -47,7 +50,25 @@ public class EntityService implements IEntityService {
 //		List<IAttribute> attrs = entity.getStructureAttributes();
 //		List<Attribute> attributes = ent.convertToAttributes(attrs);
 //		instance.setAttributes(attributes);
-		instanceCl.update(ent);
+		Entity e = ent.convertToEntity();
+		instanceCl.update(e);
+	}
+	
+	public void updateEntity(Name name) {
+
+		//EntityODR ent = (EntityODR) name;
+		//Entity en=(Entity)ent;
+		
+		InstanceClient instanceCl= new  InstanceClient(this.api);
+	//	Instance instance = instanceCl.readInstance(ent.getLocalID(), null);
+//
+//		instance.setTypeId(ent.getEtype().getGUID());
+//		instance.setId(entity.getLocalID());
+//		List<IAttribute> attrs = entity.getStructureAttributes();
+//		List<Attribute> attributes = ent.convertToAttributes(attrs);
+//		instance.setAttributes(attributes);
+		//Entity e = ent.convertToEntity();
+		instanceCl.update(name);
 	}
 
 	public void deleteEntity(long entityID) {

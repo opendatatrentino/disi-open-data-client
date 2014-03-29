@@ -22,6 +22,7 @@ import java.util.Map;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
+import eu.trentorise.opendatarise.semantics.services.EntityService;
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
  * @date 12 Mar 2014 refactored 22.03.2014
@@ -287,12 +288,12 @@ public class EntityODR extends Structure implements IEntity {
 		entity.setEnd(this.end);
 		entity.setGlobalId(this.globalId);
 		entity.setId(super.getId());
-		//entity.setNames(this.names);
+		entity.setNames(this.names);
 		entity.setEntityBaseId(this.getEntityBaseId());
 		entity.setStart(this.start);
 		entity.setPartOfId(this.partOfId);
 		entity.setEntityBaseId(this.getEntityBaseId());
-		//entity.setsUrl(this.sUrl);
+		entity.setsUrl(this.sUrl);
 
 		return entity;
 	}
@@ -305,9 +306,11 @@ public class EntityODR extends Structure implements IEntity {
 	}
 
 	public void setName(Locale locale, String name) {
+		EntityService entServ = new EntityService(this.api);
+		Name nam;
 		if (this.names==null){
 			List<Name> names = new ArrayList<Name>();
-			Name nam = new Name();
+			 nam = new Name();
 			Map<String,List<String>> nameMap = new HashMap<String,List<String>>();
 			List<String> strs = new ArrayList<String>();
 			strs.add(name);
@@ -318,7 +321,7 @@ public class EntityODR extends Structure implements IEntity {
 
 		} else{ 
 
-			Name nam=this.names.get(0);
+			 nam=this.names.get(0);
 			
 			Map<String,List<String>> decomposedNames = nam.getNames();
 
@@ -334,8 +337,9 @@ public class EntityODR extends Structure implements IEntity {
 				decomposedNames.put(locale.toLanguageTag(), strs);
 				System.out.println(decomposedNames);
 				nam.setNames(decomposedNames);
-				//EntityService
+				
 			} 
+			entServ.updateEntity(nam);
 		}
 		
 		
