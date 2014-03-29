@@ -17,15 +17,14 @@ import eu.trentorise.opendata.semantics.model.entity.IStructure;
 
 public class Structure  extends Instance implements IStructure
 {
-	
+
 	private IProtocolClient api;
 
 
 	public Long getLocalID() {
-		// TODO Auto-generated method stub
-		return null;
+		return super.getId();
 	}
-	
+
 	Structure(){
 		this.api = getClientProtocol();
 	}
@@ -76,7 +75,7 @@ public class Structure  extends Instance implements IStructure
 		}
 		return attrs;
 	}
-	
+
 	private IProtocolClient getClientProtocol(){
 		IProtocolClient api = ProtocolFactory.getHttpClient(new Locale("all"), "opendata.disi.unitn.it", 8080);
 		return api;

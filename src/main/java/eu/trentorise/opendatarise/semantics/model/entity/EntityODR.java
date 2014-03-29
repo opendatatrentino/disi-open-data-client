@@ -46,18 +46,19 @@ public class EntityODR extends Structure implements IEntity {
 
 	private Long globalId;
 
+	private Long localId;
+
 	private String sUrl;
 
 	private IEntityType etype;
 
 	private IProtocolClient api;
 
-
 	public EntityODR() {}
 	public EntityODR(IProtocolClient api, Entity entity){
 
 		this.api=api;
-		super.setId(entity.getId());
+		super.setId((Long)entity.getId());
 		this.setTypeId(entity.getTypeId());
 		super.setEntityBaseId(entity.getEntityBaseId()) ;
 		super.setAttributes(entity.getAttributes());

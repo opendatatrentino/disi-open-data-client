@@ -15,6 +15,7 @@ import java.util.Locale;
 import org.junit.Test;
 
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
+import eu.trentorise.opendata.semantics.services.model.IIDResult;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
 import eu.trentorise.opendatarise.semantics.services.EntityService;
 import eu.trentorise.opendatarise.semantics.services.IdentityService;
@@ -44,18 +45,18 @@ public class TestIDManagement {
 		//	entity2.getEtype();
 		//	entity3.getEtype();
 
-//		EntityODR entity1 = (EntityODR)enServ.readEntity(64010L);
-//		EntityODR entity2 = (EntityODR)enServ.readEntity(64015L);
-	//	EntityODR entity3 = (EntityODR)enServ.readEntity(15009L);
+		//		EntityODR entity1 = (EntityODR)enServ.readEntity(64010L);
+		//		EntityODR entity2 = (EntityODR)enServ.readEntity(64015L);
+		//	EntityODR entity3 = (EntityODR)enServ.readEntity(15009L);
 
-	//	entity1.getEntityAttributes();
-	//	entity2.getEntityAttributes();
-	//	entity3.getEntityAttributes();
-		
-	//	entity1.getEtype();
-	//	entity2.getEtype();
-	//	entity3.getEtype();
-		
+		//	entity1.getEntityAttributes();
+		//	entity2.getEntityAttributes();
+		//	entity3.getEntityAttributes();
+
+		//	entity1.getEtype();
+		//	entity2.getEtype();
+		//	entity3.getEtype();
+
 		//entity1.getNames();
 
 		List<IEntity> entities = new ArrayList<IEntity>();
@@ -69,13 +70,13 @@ public class TestIDManagement {
 		//	entities.add(entity3);
 
 		System.out.println("The result is:");
-		IProtocolClient clientApi = getClientProtocol();
-		List<IDResult> results=  idServ.assignID(entities);
-		for (IDResult res: results){
-			EntityODR entityODR = new EntityODR(clientApi,res.getEntity());
-			System.out.println("result "+res.getResult());
-			System.out.println("new sweb id "+res.getSwebID());
-			System.out.println("for entity(webAPI): "+entityToString(res.getEntity()));
+		//IProtocolClient clientApi = getClientProtocol();
+		List<IIDResult> results=  idServ.assignGUID(entities);
+		for (IIDResult res: results){
+			EntityODR entityODR =  (EntityODR) res.getResultEntity();
+			System.out.println("result "+res.getAssignmentResult());
+			//System.out.println("new sweb id "+res.getSwebID());
+			//System.out.println("for entity(webAPI): "+entityToString(res.getEntity()));
 			System.out.println("for entity(ODR): "+entityODR);
 		}
 	}

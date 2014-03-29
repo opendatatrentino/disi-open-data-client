@@ -13,35 +13,27 @@ import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.services.IIdentityService;
 import eu.trentorise.opendata.semantics.services.model.IIDResult;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
+import eu.trentorise.opendatarise.semantics.services.model.IDRes;
 
 public class IdentityService implements IIdentityService {
 
 
-	public List<IDResult> assignID(List<IEntity> ientities) {
+	public List<IIDResult> assignGUID(List<IEntity> ientities) {
 		IDManagementClient idManCl = new IDManagementClient(getClientProtocol());
-
 		List<Entity> entities = new ArrayList<Entity>();
-
 		for(IEntity en: ientities){
 			EntityODR ent= (EntityODR) en;
 			Entity entity = ent.convertToEntity();
 			entities.add(entity);	
-			
+
 		}
-
 		List<IDResult> results = idManCl.assignIdentifier(entities, 0);
-
-		return results;
-	}
-
-	private IProtocolClient getClientProtocol(){
-		IProtocolClient api = ProtocolFactory.getHttpClient(new Locale("all"), "opendata.disi.unitn.it", 8080);
-		return api;
-	}
-
-	public Long createGUID(IEntity entity) {
-		// TODO Auto-generated method stub
-		return null;
+		List<IIDResult> idResults = new ArrayList<IIDResult>();
+		for(IDResult res: results){
+			IDRes idRes =new IDRes(res);
+			idResults.add(idRes);
+		}
+		return idResults;
 	}
 
 	public List<IIDResult> assignGUID(List<IEntity> entities, int numCandidates) {
@@ -49,4 +41,8 @@ public class IdentityService implements IIdentityService {
 		return null;
 	}
 
+	private IProtocolClient getClientProtocol(){
+		IProtocolClient api = ProtocolFactory.getHttpClient(new Locale("all"), "opendata.disi.unitn.it", 8080);
+		return api;
+	}
 }
