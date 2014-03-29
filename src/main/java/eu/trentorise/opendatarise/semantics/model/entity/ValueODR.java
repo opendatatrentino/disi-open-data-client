@@ -14,8 +14,8 @@ import eu.trentorise.opendata.semantics.model.entity.IValue;
  * 
  */
 public class ValueODR implements IValue {
-	private long id;
-	private long attrId;
+	private Long id;
+	private Long attrId;
 	private Object value;
 	IProtocolClient api;
 

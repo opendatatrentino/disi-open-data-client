@@ -74,34 +74,34 @@ public class EntityODR extends Structure implements IEntity {
 	}
 
 
-//	public EntityODR(IProtocolClient api, Instance instance){
-//
-//		this.api=api;
-//		super.setId(instance.getId());
-//		this.setTypeId(instance.getTypeId());
-//		super.setEntityBaseId(instance.getEntityBaseId()) ;
-//	}
+	//	public EntityODR(IProtocolClient api, Instance instance){
+	//
+	//		this.api=api;
+	//		super.setId(instance.getId());
+	//		this.setTypeId(instance.getTypeId());
+	//		super.setEntityBaseId(instance.getEntityBaseId()) ;
+	//	}
 
 	@Override
 	public String toString() {
-            String str = "EntityODR [\n"
-                        + "names=" + names + 
-                        ", descriptions=" + descriptions
-			+ ", start=" + start 
-                        + ", end=" + end + ", duration="
-			+ duration + ", classConceptId=" 
-                        + classConceptId
-			+ ", partOfId=" + partOfId 
-                        + ", globalId=" + globalId
-			+ ", sUrl=" + sUrl + ","
-                        + "\n etype=" + etype + ",\nattributes="+
+		String str = "EntityODR [\n"+"id"+super.getId()
+				+ "names=" + names + 
+				", descriptions=" + descriptions
+				+ ", start=" + start 
+				+ ", end=" + end + ", duration="
+				+ duration + ", classConceptId=" 
+				+ classConceptId
+				+ ", partOfId=" + partOfId 
+				+ ", globalId=" + globalId
+				+ ", sUrl=" + sUrl + ","
+				+ "\n etype=" + etype + ",\nattributes="+
 				"[\n";
-            for(IAttribute attr:super.getStructureAttributes()){
-                str += "\t"+attr+"\n";
-            }
-            
-            str+="]";
-            return str;
+		for(IAttribute attr:super.getStructureAttributes()){
+			str += "\t"+attr+"\n";
+		}
+
+		str+="]";
+		return str;
 	}
 
 
@@ -310,7 +310,7 @@ public class EntityODR extends Structure implements IEntity {
 		Name nam;
 		if (this.names==null){
 			List<Name> names = new ArrayList<Name>();
-			 nam = new Name();
+			nam = new Name();
 			Map<String,List<String>> nameMap = new HashMap<String,List<String>>();
 			List<String> strs = new ArrayList<String>();
 			strs.add(name);
@@ -321,8 +321,8 @@ public class EntityODR extends Structure implements IEntity {
 
 		} else{ 
 
-			 nam=this.names.get(0);
-			
+			nam=this.names.get(0);
+
 			Map<String,List<String>> decomposedNames = nam.getNames();
 
 			if (decomposedNames.containsKey(locale.toLanguageTag())){
@@ -337,12 +337,12 @@ public class EntityODR extends Structure implements IEntity {
 				decomposedNames.put(locale.toLanguageTag(), strs);
 				System.out.println(decomposedNames);
 				nam.setNames(decomposedNames);
-				
+
 			} 
 			entServ.updateEntity(nam);
 		}
-		
-		
+
+
 	}
 
 	public String getDescription(Locale language) {

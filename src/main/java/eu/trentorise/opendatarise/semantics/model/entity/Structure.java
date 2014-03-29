@@ -1,6 +1,7 @@
 package eu.trentorise.opendatarise.semantics.model.entity;
 
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
+import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
 import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
 import it.unitn.disi.sweb.webapi.model.Pagination;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
@@ -8,6 +9,7 @@ import it.unitn.disi.sweb.webapi.model.eb.Instance;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
@@ -15,12 +17,17 @@ import eu.trentorise.opendata.semantics.model.entity.IStructure;
 
 public class Structure  extends Instance implements IStructure
 {
+	
 	private IProtocolClient api;
 
 
 	public Long getLocalID() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	Structure(){
+		this.api = getClientProtocol();
 	}
 
 	public List<IAttribute> getStructureAttributes() {
@@ -29,7 +36,7 @@ public class Structure  extends Instance implements IStructure
 			return atrs;
 		}else 
 		{
-			AttributeClient attrCl = new AttributeClient(this.api);
+			AttributeClient attrCl = new AttributeClient(getClientProtocol());
 			Pagination page = new Pagination(1,10);
 			List<Attribute> attrs =attrCl.readAttributes(super.getId(), null, null);
 			super.setAttributes(attrs);
@@ -54,7 +61,7 @@ public class Structure  extends Instance implements IStructure
 	private List<IAttribute> convertToAttributeODR(List<Attribute> attributes){
 		List<IAttribute> attributesODR = new ArrayList<IAttribute>();
 		for(Attribute attr: attributes){
-			AttributeODR attrODR = new AttributeODR(api, attr);
+			AttributeODR attrODR = new AttributeODR(getClientProtocol(), attr);
 			attributesODR.add(attrODR);
 		}
 		return attributesODR;
@@ -69,4 +76,10 @@ public class Structure  extends Instance implements IStructure
 		}
 		return attrs;
 	}
+	
+	private IProtocolClient getClientProtocol(){
+		IProtocolClient api = ProtocolFactory.getHttpClient(new Locale("all"), "opendata.disi.unitn.it", 8080);
+		return api;
+	}
+
 }

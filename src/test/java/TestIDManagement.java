@@ -34,64 +34,64 @@ public class TestIDManagement {
 		EntityService enServ = new EntityService(getClientProtocol());
 		EntityODR entity1 = (EntityODR)enServ.readEntity(64000L);
 		EntityODR entity2 = (EntityODR)enServ.readEntity(64005L);
-	//	EntityODR entity3 = (EntityODR)enServ.readEntity(15009L);
+		//	EntityODR entity3 = (EntityODR)enServ.readEntity(15009L);
 
-	//	entity1.getEntityAttributes();
-	//	entity2.getEntityAttributes();
-	//	entity3.getEntityAttributes();
-		
-	//	entity1.getEtype();
-	//	entity2.getEtype();
-	//	entity3.getEtype();
-		
+		//	entity1.getEntityAttributes();
+		//	entity2.getEntityAttributes();
+		//	entity3.getEntityAttributes();
+
+		//	entity1.getEtype();
+		//	entity2.getEtype();
+		//	entity3.getEtype();
+
 		//entity1.getNames();
-		
+
 		List<IEntity> entities = new ArrayList<IEntity>();
 		entities.add(entity1);
-                entities.add(entity2);
-                System.out.println("Will try to asign IDs to:");
-                for(IEntity entityInList: entities){
-                    System.out.println(entityInList);
-                }
-	//	entities.add(entity2);
-	//	entities.add(entity3);
+		entities.add(entity2);
+		System.out.println("Will try to asign IDs to:");
+		for(IEntity entityInList: entities){
+			System.out.println(entityInList);
+		}
+		//	entities.add(entity2);
+		//	entities.add(entity3);
 
-                System.out.println("The result is:");
-                IProtocolClient clientApi = getClientProtocol();
+		System.out.println("The result is:");
+		IProtocolClient clientApi = getClientProtocol();
 		List<IDResult> results=  idServ.assignID(entities);
 		for (IDResult res: results){
-                    EntityODR entityODR = new EntityODR(clientApi,res.getEntity());
-                    System.out.println("result "+res.getResult());
-                    System.out.println("new sweb id "+res.getSwebID());
-                    System.out.println("for entity(webAPI): "+entityToString(res.getEntity()));
-//                    System.out.println("for entity(ODR): "+entityODR);
+			EntityODR entityODR = new EntityODR(clientApi,res.getEntity());
+			System.out.println("result "+res.getResult());
+			System.out.println("new sweb id "+res.getSwebID());
+			System.out.println("for entity(webAPI): "+entityToString(res.getEntity()));
+			System.out.println("for entity(ODR): "+entityODR);
 		}
 	}
-        
-        private String entityToString(Entity e){
-            String str = "id:"+e.getId()+
-                    ", gID:"+e.getGlobalId()+
-                    ", names:"+e.getNames()+
-                    ", attributes:"+attributesToString(e.getAttributes());
-            return str;
-        }
-        
-        private String attributesToString(List<Attribute> attributes){
-            String str = "[";
-            for(Attribute attr:attributes){
-                str+=attributeToString(attr)+"\n";
-            }
-            return str+"]";
-        }
-        
-        private String attributeToString(Attribute attr) {
-            String str = "attr concept_id:"+attr.getConceptId()+
-                    ", datatype:"+attr.getDataType()+" values[";
-            for(Value v:attr.getValues()){
-                str+=v.getValue()+", ";
-            }
-            return str+"]";
-        }
+
+	private String entityToString(Entity e){
+		String str = "id:"+e.getId()+
+				", gID:"+e.getGlobalId()+
+				", names:"+e.getNames()+
+				", attributes:"+attributesToString(e.getAttributes());
+		return str;
+	}
+
+	private String attributesToString(List<Attribute> attributes){
+		String str = "[";
+		for(Attribute attr:attributes){
+			str+=attributeToString(attr)+"\n";
+		}
+		return str+"]";
+	}
+
+	private String attributeToString(Attribute attr) {
+		String str = "attr concept_id:"+attr.getConceptId()+
+				", datatype:"+attr.getDataType()+" values[";
+		for(Value v:attr.getValues()){
+			str+=v.getValue()+", ";
+		}
+		return str+"]";
+	}
 
 	//@Test
 	public void testIdManServiceDISIClient(){
@@ -101,9 +101,9 @@ public class TestIDManagement {
 		List<Attribute> attributes = new ArrayList<Attribute>();
 
 		attributes = attrClient.readAttributes(62841L, null,null);
-		
+
 		entity1.setAttributes(attributes);
-		
+
 		IDManagementClient idManCl = new IDManagementClient(getClientProtocol());
 		List<Entity> entities = new ArrayList<Entity>();
 		entities.add(entity1);
@@ -118,6 +118,6 @@ public class TestIDManagement {
 		return api;
 	}
 
-   
+
 
 }

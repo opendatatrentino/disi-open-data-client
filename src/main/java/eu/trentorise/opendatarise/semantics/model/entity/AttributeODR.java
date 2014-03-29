@@ -22,15 +22,18 @@ public class AttributeODR implements IAttribute {
 
 	private IProtocolClient api;
 	private List<IValue> values; 
-	private long id;
+	private Long id;
 	private IAttributeDef attrDef;
-	private long attrDefId;
-	private long conceptId;
-	private long instanceID;
+	private Long attrDefId;
+	private Long conceptId;
+	private Long instanceID;
 
 	public AttributeODR(IProtocolClient api, Attribute attribute){
 		this.api=api;
-		this.id=attribute.getId();
+		if ( attribute.getId() != null ) {
+			this.id=attribute.getId();
+		} 
+		
 		this.attrDefId = attribute.getDefinitionId();
 		this.conceptId =attribute.getConceptId();
 		this.instanceID=attribute.getInstanceId();
