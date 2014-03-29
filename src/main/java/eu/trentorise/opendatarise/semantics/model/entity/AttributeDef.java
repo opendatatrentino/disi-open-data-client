@@ -94,8 +94,10 @@ public class AttributeDef implements IAttributeDef {
 			//TODO knowledge base assumed to be '1' change of API is required 
 			List<ComplexType> cType = ctc.readComplexTypes(1L, this.conceptId, null, null);
 			//TODO we take the first one from the list change of API is required 
-			EntityType  etype = new EntityType(cType.get(0));
-			return etype;
+			if(cType.size()>0){
+				EntityType  etype = new EntityType(cType.get(0));
+				return etype;} else 
+					return null;
 		} 
 		else return null;
 	}
