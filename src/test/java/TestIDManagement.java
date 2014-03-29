@@ -44,6 +44,18 @@ public class TestIDManagement {
 		//	entity2.getEtype();
 		//	entity3.getEtype();
 
+//		EntityODR entity1 = (EntityODR)enServ.readEntity(64010L);
+//		EntityODR entity2 = (EntityODR)enServ.readEntity(64015L);
+	//	EntityODR entity3 = (EntityODR)enServ.readEntity(15009L);
+
+	//	entity1.getEntityAttributes();
+	//	entity2.getEntityAttributes();
+	//	entity3.getEntityAttributes();
+		
+	//	entity1.getEtype();
+	//	entity2.getEtype();
+	//	entity3.getEtype();
+		
 		//entity1.getNames();
 
 		List<IEntity> entities = new ArrayList<IEntity>();
