@@ -32,8 +32,8 @@ public class TestIDManagement {
 	public void testIdService(){
 		IdentityService idServ = new IdentityService();
 		EntityService enServ = new EntityService(getClientProtocol());
-		EntityODR entity1 = (EntityODR)enServ.readEntity(64000L);
-		EntityODR entity2 = (EntityODR)enServ.readEntity(64005L);
+		EntityODR entity1 = (EntityODR)enServ.readEntity(64010L);
+		EntityODR entity2 = (EntityODR)enServ.readEntity(64015L);
 	//	EntityODR entity3 = (EntityODR)enServ.readEntity(15009L);
 
 	//	entity1.getEntityAttributes();
