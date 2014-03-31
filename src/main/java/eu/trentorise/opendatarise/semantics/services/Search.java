@@ -5,6 +5,7 @@ import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
 import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
+import it.unitn.disi.sweb.webapi.model.eb.Name;
 import it.unitn.disi.sweb.webapi.model.eb.search.InstanceSearchResult;
 
 import java.util.ArrayList;
@@ -19,36 +20,36 @@ import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
 
 public class Search implements ISearch {
 
-    IProtocolClient api;
-    InstanceClient client;
+	IProtocolClient api;
+	InstanceClient client;
 
-    public Search(IProtocolClient api) {
-        this.api = api;
-        client = new InstanceClient(api);
-    }
+	public Search(IProtocolClient api) {
+		this.api = api;
+		client = new InstanceClient(api);
+	}
 
-//    public String[][] searchEQL(String eqlQuery) {
-//        return client.searchEql(eqlQuery, 1, null, null, null, null).getResults();
-//    }
+	//    public String[][] searchEQL(String eqlQuery) {
+	//        return client.searchEql(eqlQuery, 1, null, null, null, null).getResults();
+	//    }
 
-    public String[][] searchEQL(String eqlQuery) {
+	public String[][] searchEQL(String eqlQuery) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-    
+
 	public List<List<IEntity>> search(IEntityType entityType,
 			int numCandidates, List<List<IAttribute>> attributes) {
-		
-//		InstanceClient client = new InstanceClient(api);
-//		Query query = new Query();
-//		
-//		AttributeQuery aQuery = new AttributeQuery();
-//		aQuery.setConceptId(conceptId);
-//		
-//		QueryNode queryNode = new QueryNode();
-//		queryNode.setAttributeQueries(attributeQueries);
-//		query.setQueryNode(queryNode);
-		
+
+		//		InstanceClient client = new InstanceClient(api);
+		//		Query query = new Query();
+		//		
+		//		AttributeQuery aQuery = new AttributeQuery();
+		//		aQuery.setConceptId(conceptId);
+		//		
+		//		QueryNode queryNode = new QueryNode();
+		//		queryNode.setAttributeQueries(attributeQueries);
+		//		query.setQueryNode(queryNode);
+
 		//InstanceSearchResult result = client.searchInstances(query, 1L, entityType.getGUID(), null, null, null);
 
 		return null;
@@ -69,19 +70,23 @@ public class Search implements ISearch {
 	private List<IEntity> convertInstancesToEntities( List<Instance> instances){
 		List<IEntity> entities = new ArrayList<IEntity>();
 		for(Instance instance: instances ){
-			Entity entity =  (Entity) instance;
-			EntityODR entityODR = new EntityODR(api, entity);
-			entities.add(entityODR);
+			if(instance.getTypeId()!=10){
+				System.out.println(instance.getTypeId());
+				Entity entity =  (Entity) instance;
+				EntityODR entityODR = new EntityODR(api, entity);
+				entities.add(entityODR);}
+			else 
+			{Name name =  (Name) instance;}
 		}
 		return entities;
 	}
-	
+
 	public void getClientProtocol(){
 		this.api = ProtocolFactory.getHttpClient(new Locale("all"), "opendata.disi.unitn.it", 8080);
 	}
 
-	
 
-	
-	
+
+
+
 }
