@@ -85,7 +85,8 @@ public class AttributeDef implements IAttributeDef {
 	}
 
 	public String getDataType() {
-		return this.dataType;
+		if (this.dataType.equals("COMPLEX_TYPE")) return "STRUCTURE";
+		else return this.dataType;
 	}
 
 	public IEntityType getRangeEType() {
