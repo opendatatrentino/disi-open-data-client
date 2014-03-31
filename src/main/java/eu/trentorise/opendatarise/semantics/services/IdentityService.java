@@ -19,21 +19,25 @@ public class IdentityService implements IIdentityService {
 
 
 	public List<IIDResult> assignGUID(List<IEntity> ientities) {
-		IDManagementClient idManCl = new IDManagementClient(getClientProtocol());
-		List<Entity> entities = new ArrayList<Entity>();
-		for(IEntity en: ientities){
-			EntityODR ent= (EntityODR) en;
-			Entity entity = ent.convertToEntity();
-			entities.add(entity);	
+		if(ientities==null){
+			return null;
+		} else {
+			IDManagementClient idManCl = new IDManagementClient(getClientProtocol());
+			List<Entity> entities = new ArrayList<Entity>();
+			for(IEntity en: ientities){
+				EntityODR ent= (EntityODR) en;
+				Entity entity = ent.convertToEntity();
+				entities.add(entity);	
 
+			}
+			List<IDResult> results = idManCl.assignIdentifier(entities, 0);
+			List<IIDResult> idResults = new ArrayList<IIDResult>();
+			for(IDResult res: results){
+				IDRes idRes =new IDRes(res);
+				idResults.add(idRes);
+			}
+			return idResults;
 		}
-		List<IDResult> results = idManCl.assignIdentifier(entities, 0);
-		List<IIDResult> idResults = new ArrayList<IIDResult>();
-		for(IDResult res: results){
-			IDRes idRes =new IDRes(res);
-			idResults.add(idRes);
-		}
-		return idResults;
 	}
 
 	public List<IIDResult> assignGUID(List<IEntity> entities, int numCandidates) {
