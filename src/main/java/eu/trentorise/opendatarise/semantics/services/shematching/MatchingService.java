@@ -125,7 +125,7 @@ public class MatchingService implements ISemanticMatchingService {
 			HashMap<IAttributeDef, Float> attrMap = new HashMap<IAttributeDef, Float> (); 
 
 			long sourceConceptID =codr.getId();
-			attrCor.setColumnIndex(ccc.getColumnNumber()+1); 
+			attrCor.setColumnIndex(ccc.getColumnNumber()-1); 
 			attrCor.setHeaderConceptID(sourceConceptID);
 			List<Entry<Long,Long>> batch =new ArrayList<Entry<Long,Long>>(); 
 			for(IAttributeDef attrDef:eTypeAttributes ){
