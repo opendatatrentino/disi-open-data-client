@@ -35,7 +35,7 @@ public class IDRes  extends IDResult implements IIDResult {
 		return en;
 	}
 
-	public Set<IEntity> getEntities() {
+	public Set<IEntity> getEntities() { 
 		if (this.api==null){
 			getClientProtocol();
 		}

@@ -5,6 +5,8 @@ import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
 import it.unitn.disi.sweb.webapi.client.kb.AttributeDefinitionClient;
 import it.unitn.disi.sweb.webapi.client.kb.ComplexTypeClient;
 import it.unitn.disi.sweb.webapi.client.kb.KbClient;
+import it.unitn.disi.sweb.webapi.model.filters.AttributeDefinitionFilter;
+import it.unitn.disi.sweb.webapi.model.filters.ComplexTypeFilter;
 import it.unitn.disi.sweb.webapi.model.kb.KnowledgeBase;
 import it.unitn.disi.sweb.webapi.model.kb.types.AttributeDefinition;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
@@ -33,21 +35,32 @@ public class EntityTypeService implements IEntityTypeService {
 		List<KnowledgeBase> kbList = kbClient.readKnowledgeBases(null);
 		long kbId =  kbList.get(0).getId();
 		ComplexTypeClient ctc = new ComplexTypeClient(getClientProtocol());
-		List<ComplexType> complexTypeList= ctc.readComplexTypes(kbId, null,null,null);
+		ComplexTypeFilter ctFilter= new ComplexTypeFilter();
+		ctFilter.setIncludeRestrictions(true);
+		ctFilter.setIncludeAttributes(true);
+		ctFilter.setIncludeAttributesAsProperties(true);
+
+		List<ComplexType> complexTypeList= ctc.readComplexTypes(kbId, null,null,ctFilter);
+
 		AttributeDefinitionClient attrDefs = new AttributeDefinitionClient(getClientProtocol());
 		List<IEntityType> etypes = new ArrayList<IEntityType>();
 
 		for(ComplexType cType: complexTypeList){
 			EntityType eType = new EntityType(cType);
-			List<AttributeDefinition>  attrDefList = attrDefs.readAttributeDefinitions(cType.getId(), null, null, null);
+			AttributeDefinitionFilter adf = new AttributeDefinitionFilter();
+			adf.setIncludeRestrictions(true);
+			
+			List<AttributeDefinition>  attrDefList = attrDefs.readAttributeDefinitions(cType.getId(), null, null, adf);
 
 			List<IAttributeDef> attributeDefList = new ArrayList<IAttributeDef>();
 			for (AttributeDefinition attrDef: attrDefList){
 				IAttributeDef attributeDef = new AttributeDef(attrDef);
+				System.out.println(attributeDef.toString());
+				//System.out.println("RESTRICTION: "+attrDef.getRestrictionOnList().getDefaultValue().toString());
 				attributeDefList.add(attributeDef);
 			}
 			eType.setAttrs(attributeDefList);
-			System.out.println(eType.toString());
+		//	System.out.println(eType.toString());
 
 			etypes.add(eType);
 		}
@@ -71,10 +84,10 @@ public class EntityTypeService implements IEntityTypeService {
 
 	public void addAttributeDefToEtype(IEntityType entityType,
 			IAttributeDef attrDef) {
-	    EntityType eType = (EntityType)entityType;
-	    
+		EntityType eType = (EntityType)entityType;
+
 		eType.addAttributeDef(attrDef);
-		
+
 	}
 
 	public void addUniqueIndexToEtype(IEntityType entityType,
@@ -85,7 +98,7 @@ public class EntityTypeService implements IEntityTypeService {
 	/** The method returns client protocol 
 	 * @return returns an instance of ClientProtocol that contains information where to connect(Url adress and port) and locale
 	 */
-	
+
 	private IProtocolClient getClientProtocol(){
 		IProtocolClient api = ProtocolFactory.getHttpClient(new Locale("all"), "opendata.disi.unitn.it", 8080);
 		return api;

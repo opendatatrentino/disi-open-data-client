@@ -34,6 +34,7 @@ public class AttributeDef implements IAttributeDef {
 	private long typeId;
 	private boolean presence;
 	private boolean isSet;
+	private Integer entityTypeID;
 
 	public AttributeDef(AttributeDefinition attrDef){
 		this.isSet = attrDef.isSet();
@@ -44,7 +45,9 @@ public class AttributeDef implements IAttributeDef {
 		this.description = attrDef.getDescription();
 		this.name = attrDef.getName();
 		this.typeId=attrDef.getTypeId();
-
+		if(attrDef.getRestrictionOnList()!=null){
+			this.entityTypeID=(Integer) attrDef.getRestrictionOnList().getDefaultValue();
+		}
 		if ((attrDef.getPresence().equals("STRICTLY_MANDATORY"))||(attrDef.getPresence().equals("MANDATORY")))
 		{this.presence=true;}
 		else {this.presence=false;}		
@@ -92,20 +95,35 @@ public class AttributeDef implements IAttributeDef {
 	public IEntityType getRangeEType() {
 		if (this.dataType.equals("COMPLEX_TYPE")){
 			ComplexTypeClient ctc = new ComplexTypeClient(getClientProtocol());
-			//TODO knowledge base assumed to be '1' change of API is required 
-			if (this.conceptId==5){
-				ComplexType cType = ctc.readComplexType(21L, null);
+			if (this.entityTypeID!=null){
+				ComplexType cType = ctc.readComplexType(this.entityTypeID, null);
 				EntityType  etype = new EntityType(cType);
-				return etype; 
-			}
-			List<ComplexType> cType = ctc.readComplexTypes(1L, this.conceptId, null, null);
-			//TODO we take the first one from the list change of API is required 
-			if(cType.size()>0){
-				EntityType  etype = new EntityType(cType.get(0));
-				return etype;} else 
-					return null;
-		} 
-		else return null;
+				return etype;
+			} 	else return null;
+			//			//TODO knowledge base assumed to be '1' change of API is required 
+			//			if (this.conceptId==5){
+			//				ComplexType cType = ctc.readComplexType(21L, null);
+			//				EntityType  etype = new EntityType(cType);
+			//				return etype; 
+			//			}  else
+			//				if ((this.conceptId==73462)||(this.conceptId==73562)){
+			//					ComplexType cType = ctc.readComplexType(16L, null);
+			//					EntityType  etype = new EntityType(cType);
+			//					return etype; 
+			//				}  else
+			//					if (this.conceptId==72844){
+			//						ComplexType cType = ctc.readComplexType(3L, null);
+			//						EntityType  etype = new EntityType(cType);
+			//						return etype; 
+			//					}  					
+			//			List<ComplexType> cType = ctc.readComplexTypes(1L, this.conceptId, null, null);
+			//			//TODO we take the first one from the list change of API is required 
+			//			if(cType.size()>0){
+			//				EntityType  etype = new EntityType(cType.get(0));
+			//				return etype;} else 
+			//					return null;
+			//		} 
+		} else return null;
 	}
 
 	public IConcept getConcept() {

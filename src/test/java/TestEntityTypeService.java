@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
+import eu.trentorise.opendatarise.semantics.model.entity.AttributeDef;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
 import eu.trentorise.opendatarise.semantics.services.EntityTypeService;
 
@@ -19,7 +20,7 @@ import eu.trentorise.opendatarise.semantics.services.EntityTypeService;
  */
 public class TestEntityTypeService {
 
-	@Test
+	//@Test
 	public void testGetEntityTypeByID(){
 		EntityTypeService ets = new EntityTypeService();
 		EntityType etype =(EntityType)ets.getEntityType(11L);
@@ -32,7 +33,15 @@ public class TestEntityTypeService {
 	public void testGetAllEntityTypes(){
 		EntityTypeService ets = new EntityTypeService();
 		List<IEntityType> etypes= ets.getAllEntityTypes();
-		System.out.println(etypes.get(0).getConcept().getURL());
+		for(IEntityType etype:etypes){
+			List<IAttributeDef>atdefs=etype.getAttributeDefs();
+			for(IAttributeDef atr:atdefs){
+				if(atr.getRangeEType()!=null)
+				System.out.println(atr.getRangeEType().getName(Locale.ENGLISH));
+			}
+		}
+		//System.out.println(etypes.get(0).getConcept().getURL());
+		
 		assertNotNull(etypes.get(0));
 	}
 
