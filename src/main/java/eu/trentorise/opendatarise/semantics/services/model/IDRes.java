@@ -24,6 +24,7 @@ public class IDRes  extends IDResult implements IIDResult {
 		super.setEntity(result.getEntity());
 		super.setResult(result.getResult());
 		super.setEntitiesWithSameSwebID(result.getEntitiesWithSameSwebID());
+		super.setSwebID(result.getSwebID());
 	}
 
 	public IEntity getResultEntity() {
@@ -61,5 +62,10 @@ public class IDRes  extends IDResult implements IIDResult {
 	private IProtocolClient getClientProtocol(){
 		IProtocolClient api = ProtocolFactory.getHttpClient(new Locale("all"), "opendata.disi.unitn.it", 8080);
 		return api;
+	}
+
+	public Long getGUID() {
+		
+		return super.getSwebID();
 	}
 }

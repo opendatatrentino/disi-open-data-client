@@ -33,25 +33,15 @@ public class EntityService implements IEntityService {
 		Entity e = ent.convertToEntity();
 		InstanceClient instanceCl= new  InstanceClient(this.api);
 		Long id = instanceCl.create(e);
-		//System.out.println("Created entity ID: "+id);
 		return id;
 	}
 
-	public void updateEntity(IEntity entity) {
+	public Long createEntity(Name name) {
 
-		EntityODR ent = (EntityODR) entity;
-		//Entity en=(Entity)ent;
-		
 		InstanceClient instanceCl= new  InstanceClient(this.api);
-	//	Instance instance = instanceCl.readInstance(ent.getLocalID(), null);
-//
-//		instance.setTypeId(ent.getEtype().getGUID());
-//		instance.setId(entity.getLocalID());
-//		List<IAttribute> attrs = entity.getStructureAttributes();
-//		List<Attribute> attributes = ent.convertToAttributes(attrs);
-//		instance.setAttributes(attributes);
-		Entity e = ent.convertToEntity();
-		instanceCl.update(e);
+		Long id = instanceCl.create(name);
+		return id;
+		
 	}
 	
 	public void updateEntity(Name name) {
@@ -123,6 +113,11 @@ public class EntityService implements IEntityService {
 	public void exportToCsv(List<Long> entityIds, Writer writer) {
 		// TODO Auto-generated method stub
 
+	}
+
+	public void updateEntity(IEntity entity) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -6,7 +6,6 @@ import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
 import it.unitn.disi.sweb.webapi.model.Pagination;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -25,7 +24,7 @@ public class Structure  extends Instance implements IStructure
 		return super.getId();
 	}
 
-	Structure(){
+	public Structure(){
 		this.api = getClientProtocol();
 	}
 

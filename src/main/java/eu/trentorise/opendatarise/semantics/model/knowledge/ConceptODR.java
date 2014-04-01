@@ -48,6 +48,12 @@ public class ConceptODR implements IConcept{
 		ConceptODR conceptODR = new ConceptODR(concepts.get(0));
 		return conceptODR;
 	}
+	 
+	 public Long readConceptGUID(long glId){
+			ConceptClient client = new ConceptClient(getClientProtocol());
+			List<Concept> concepts = client.readConcepts(1L, glId, null, null, null, null);
+			return concepts.get(0).getId();
+		}
 
 	private List<ConceptODR> readConcepts(String label){
 		ConceptClient client = new ConceptClient(getClientProtocol());

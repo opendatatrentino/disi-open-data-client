@@ -19,6 +19,10 @@ public class ODRDataType {
     public static final String SSTRING = "SSTRING";
     public static final String NLSTRING = "NLSTRING";
     public static final String COMPLEX_TYPE = "COMPLEX_TYPE";
+    public static final String STRUCTURE = "STRUCTURE";
+    public static final String ENTITY = "ENTITY";
+    
+
 	
 	
 
@@ -29,6 +33,7 @@ DataType convertDataType(String dataType){
 	if (dataType.equals(ODRDataType.SSTRING)) return DataType.SSTRING;
 	if (dataType.equals(ODRDataType.BOOLEAN)) return DataType.BOOLEAN;
 	if (dataType.equals(ODRDataType.COMPLEX_TYPE)) return DataType.COMPLEX_TYPE;
+
 	if (dataType.equals(ODRDataType.CONCEPT)) return DataType.CONCEPT;
 	if (dataType.equals(ODRDataType.DATE)) return DataType.DATE;
 	if (dataType.equals(ODRDataType.FLOAT)) return DataType.FLOAT;

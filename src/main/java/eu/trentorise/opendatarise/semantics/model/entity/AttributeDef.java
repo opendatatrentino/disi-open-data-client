@@ -93,6 +93,11 @@ public class AttributeDef implements IAttributeDef {
 		if (this.dataType.equals("COMPLEX_TYPE")){
 			ComplexTypeClient ctc = new ComplexTypeClient(getClientProtocol());
 			//TODO knowledge base assumed to be '1' change of API is required 
+			if (this.conceptId==5){
+				ComplexType cType = ctc.readComplexType(21L, null);
+				EntityType  etype = new EntityType(cType);
+				return etype; 
+			}
 			List<ComplexType> cType = ctc.readComplexTypes(1L, this.conceptId, null, null);
 			//TODO we take the first one from the list change of API is required 
 			if(cType.size()>0){

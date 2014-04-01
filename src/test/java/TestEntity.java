@@ -3,10 +3,12 @@ import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
 import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
 import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
+import it.unitn.disi.sweb.webapi.client.kb.ComplexTypeClient;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.Name;
 import it.unitn.disi.sweb.webapi.model.eb.Value;
+import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,7 +39,16 @@ public class TestEntity {
 	private final long latitudeAtDef=69;
 	private final long longitudeAtDef=68;
 
-
+	//
+	//	@Test
+	//	public void testCType(){
+	//
+	//		ComplexTypeClient ctc = new ComplexTypeClient(getClientProtocol());
+	//		List<ComplexType> cType = ctc.readComplexTypes(1L, 111001L, null, null);
+	//		System.out.println("Name ID:"+cType.size());
+	//
+	//
+	//	}
 
 	//@Test
 	public void testGetEntityName(){
@@ -63,7 +74,6 @@ public class TestEntity {
 		long id  =ic.create(nameStructure);
 		System.out.println("Name ID:"+id);
 
-
 		Entity entity = new Entity();
 		entity.setEntityBaseId(1L);
 		entity.setTypeId(12L);
@@ -82,15 +92,13 @@ public class TestEntity {
 		EntityService entServ = new EntityService(getClientProtocol());
 		id  =ic.create(entity);
 		System.out.println("INSTANCE ID: "+id);
-
-
 	}
 
-	//@Test
-	public void testCreationImpianti(){
 
+	@Test
+	public void testCreationImpianti(){
 		ImpiantoDiRisalitaFacade idrf = new ImpiantoDiRisalitaFacade(getClientProtocol());
-		long id =idrf.createEntity("Ivan", 111009L, 12.356f, 20.9087f, "8:00", "17:00");
+		long id =idrf.createEntity("Ivan", "Cabinovia", 12.356f, 20.9087f, "8:00", "17:00");
 		System.out.println("ID of entity: "+ id);
 
 	}

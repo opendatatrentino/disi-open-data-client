@@ -54,6 +54,7 @@ public class MatchingService implements ISemanticMatchingService {
 		List<ISchemaCorrespondence> schemaCorespondences = new ArrayList<ISchemaCorrespondence>();
 		for (IEntityType etype: etypes){
 			EntityType  et = (EntityType) etype; 
+			System.out.println("etype:"+et.getName(Locale.ENGLISH));
 			ISchemaCorrespondence sCorrespondence  =  schemaMatch(et, odrHeaders, odrName);
 			if(sCorrespondence.getScore()!=0){
 				schemaCorespondences.add( sCorrespondence);
