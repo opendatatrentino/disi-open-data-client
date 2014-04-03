@@ -37,12 +37,12 @@ public class TestEntityTypeService {
 			List<IAttributeDef>atdefs=etype.getAttributeDefs();
 			for(IAttributeDef atr:atdefs){
 				if(atr.getRangeEType()!=null)
-				System.out.println(atr.getRangeEType().getName(Locale.ENGLISH));
-				System.out.println(atr.getRangeEType().);
+					System.out.println(atr.getRangeEType().getName(Locale.ENGLISH));
+				//System.out.println(atr.getRangeEType());
 			}
 		}
 		//System.out.println(etypes.get(0).getConcept().getURL());
-		
+
 		assertNotNull(etypes.get(0));
 	}
 
@@ -52,7 +52,7 @@ public class TestEntityTypeService {
 		EntityType etypeEntity =(EntityType)ets.getEntityType(7L);
 		EntityType etypeLoc =(EntityType)ets.getEntityType(4L);
 		List<IAttributeDef> attrs = etypeLoc.getAttributeDefs();
-		
+
 		String attrName= attrs.get(0).getName(new Locale("all"));
 		System.out.println(attrName);
 		ets.addAttributeDefToEtype(etypeEntity, attrs.get(0));
@@ -60,9 +60,9 @@ public class TestEntityTypeService {
 		String addedAttrName =etypeEntityUpdated.getAttributeDefs().get(0).getName(Locale.ENGLISH);
 		System.out.println(addedAttrName);
 		assertEquals(attrName,addedAttrName);
-		
+
 	}
 
-	
+
 
 }
