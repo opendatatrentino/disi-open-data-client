@@ -2,11 +2,9 @@ package eu.trentorise.opendatarise.semantics.services;
 
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
-import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
 import it.unitn.disi.sweb.webapi.model.eb.Name;
-import it.unitn.disi.sweb.webapi.model.filters.AttributeFilterType;
 import it.unitn.disi.sweb.webapi.model.filters.InstanceFilter;
 
 import java.io.Writer;
@@ -37,26 +35,24 @@ public class EntityService implements IEntityService {
 	}
 
 	public Long createEntity(Name name) {
-
 		InstanceClient instanceCl= new  InstanceClient(this.api);
 		Long id = instanceCl.create(name);
 		return id;
-		
 	}
-	
+
 	public void updateEntity(Name name) {
 
 		//EntityODR ent = (EntityODR) name;
 		//Entity en=(Entity)ent;
-		
+
 		InstanceClient instanceCl= new  InstanceClient(this.api);
-	//	Instance instance = instanceCl.readInstance(ent.getLocalID(), null);
-//
-//		instance.setTypeId(ent.getEtype().getGUID());
-//		instance.setId(entity.getLocalID());
-//		List<IAttribute> attrs = entity.getStructureAttributes();
-//		List<Attribute> attributes = ent.convertToAttributes(attrs);
-//		instance.setAttributes(attributes);
+		//	Instance instance = instanceCl.readInstance(ent.getLocalID(), null);
+		//
+		//		instance.setTypeId(ent.getEtype().getGUID());
+		//		instance.setId(entity.getLocalID());
+		//		List<IAttribute> attrs = entity.getStructureAttributes();
+		//		List<Attribute> attributes = ent.convertToAttributes(attrs);
+		//		instance.setAttributes(attributes);
 		//Entity e = ent.convertToEntity();
 		instanceCl.update(name);
 	}
@@ -117,7 +113,7 @@ public class EntityService implements IEntityService {
 
 	public void updateEntity(IEntity entity) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

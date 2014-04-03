@@ -1,30 +1,20 @@
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
-import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
 import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
-import it.unitn.disi.sweb.webapi.client.kb.ComplexTypeClient;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.Name;
 import it.unitn.disi.sweb.webapi.model.eb.Value;
-import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
-import org.junit.Test;
-
-import en.trentorise.opendatarise.semantics.model.facade.ImpiantoDiRisalitaFacade;
-import eu.trentorise.opendata.semantics.model.entity.IAttribute;
-import eu.trentorise.opendata.semantics.model.entity.IValue;
+import eu.trentorise.opendatarise.semantics.model.facade.ImpiantoDiRisalitaFacade;
 import eu.trentorise.opendatarise.semantics.model.entity.AttributeDef;
 import eu.trentorise.opendatarise.semantics.model.entity.AttributeODR;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
-import eu.trentorise.opendatarise.semantics.model.entity.ValueODR;
 import eu.trentorise.opendatarise.semantics.services.EntityService;
 
 

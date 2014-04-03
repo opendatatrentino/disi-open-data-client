@@ -38,6 +38,7 @@ public class TestEntityTypeService {
 			for(IAttributeDef atr:atdefs){
 				if(atr.getRangeEType()!=null)
 				System.out.println(atr.getRangeEType().getName(Locale.ENGLISH));
+				System.out.println(atr.getRangeEType().);
 			}
 		}
 		//System.out.println(etypes.get(0).getConcept().getURL());

@@ -9,6 +9,8 @@ import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.EntityBase;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
+import it.unitn.disi.sweb.webapi.model.eb.Name;
+import it.unitn.disi.sweb.webapi.model.eb.Value;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
 
 import java.util.ArrayList;
@@ -44,7 +46,7 @@ public class TestEntityService {
 		EntityService es= new EntityService(api);
 		EntityODR entity = (EntityODR) es.readEntity(15001L);
 		System.out.println(entity.getEtype().getName(Locale.ITALIAN));
-	//	assertEquals(entity.getEtype().getName(Locale.ENGLISH),"Location");
+		//	assertEquals(entity.getEtype().getName(Locale.ENGLISH),"Location");
 	}
 
 	//@Test 
@@ -85,13 +87,34 @@ public class TestEntityService {
 		EntityBase ebafter = ebc.readEntityBase(101L, null);
 		int instanceNumAfter = ebafter.getInstancesNumber();
 		assertEquals(instanceNum+1, instanceNumAfter);
-		
+
 		es.deleteEntity(id);
 		EntityBase ebafterDel = ebc.readEntityBase(101L, null);
 		int instanceNumAfterDel = ebafterDel.getInstancesNumber();
 		assertEquals(instanceNumAfterDel, instanceNumAfterDel);
-		
+
 	}
+
+	@Test 
+	public void testCreateEntityODR(){
+
+		//	InstanceClient  ic = new InstanceClient(api);
+		Name nameStructure = new Name();
+		List<Attribute> nameAttributes = new ArrayList<Attribute>();
+		nameStructure.setEntityBaseId(1L);
+		Attribute nameAttribute = new Attribute();
+		nameAttribute.setDefinitionId(55L);
+		nameAttributes.add(nameAttribute);
+		List<Value>nameValues=new ArrayList<Value>();
+		//	nameValues.add(new Value(name, 1L));
+		//BE CAREFULL WITH VOCABULARY
+		nameAttribute.setValues(nameValues);
+		//	this.getAttributes().add(nameAttribute);
+		//nameStructure.setAttributes(nameAttributes);
+		//	long id  =ic.create(nameStructure);
+		//System.out.println("Name ID:"+id);
+	}
+
 
 	//@Test
 	public void testUpdateEntity(){
@@ -108,7 +131,7 @@ public class TestEntityService {
 		List<IAttribute> newListAttrs = new ArrayList<IAttribute>();
 		newListAttrs.add(attrs.get(0));
 		newListAttrs.add(attrs.get(1));
-		
+
 		EntityODR ie = new EntityODR(api, ent);
 		ie.setEntityAttributes(newListAttrs);
 		es.updateEntity(ie);
