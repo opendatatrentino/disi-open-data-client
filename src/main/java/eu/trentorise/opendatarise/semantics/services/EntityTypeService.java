@@ -55,8 +55,7 @@ public class EntityTypeService implements IEntityTypeService {
 			List<IAttributeDef> attributeDefList = new ArrayList<IAttributeDef>();
 			for (AttributeDefinition attrDef: attrDefList){
 				IAttributeDef attributeDef = new AttributeDef(attrDef);
-				System.out.println(attributeDef.toString());
-				//System.out.println("RESTRICTION: "+attrDef.getRestrictionOnList().getDefaultValue().toString());
+				//System.out.println(attributeDef.toString());
 				attributeDefList.add(attributeDef);
 			}
 			eType.setAttrs(attributeDefList);
@@ -67,7 +66,7 @@ public class EntityTypeService implements IEntityTypeService {
 		return etypes;
 	}
 
-	public IEntityType getEntityType(long id){
+	public EntityType getEntityType(long id){
 		ComplexTypeClient ctc = new ComplexTypeClient(getClientProtocol());
 		ComplexType complexType = ctc.readComplexType(id, null);
 		EntityType eType = new EntityType(complexType);
@@ -100,8 +99,17 @@ public class EntityTypeService implements IEntityTypeService {
 	 */
 
 	private IProtocolClient getClientProtocol(){
-		IProtocolClient api = ProtocolFactory.getHttpClient(new Locale("all"), "opendata.disi.unitn.it", 8080);
-		return api;
+		return  WebServiceURLs.getClientProtocol();
+	}
+
+	public List<IEntityType> getEntityTypes(List<String> URLs) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public IEntityType getEntityType(String URL) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

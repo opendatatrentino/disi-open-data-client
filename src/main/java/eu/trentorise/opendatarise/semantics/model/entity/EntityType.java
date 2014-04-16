@@ -8,6 +8,7 @@ import it.unitn.disi.sweb.webapi.model.kb.types.AttributeDefinition;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -16,7 +17,10 @@ import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.model.entity.IUniqueIndex;
 import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
+import eu.trentorise.opendata.semantics.model.knowledge.IDict;
 import eu.trentorise.opendatarise.semantics.model.knowledge.ConceptODR;
+import eu.trentorise.opendatarise.semantics.model.knowledge.Dict;
+import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
@@ -39,12 +43,8 @@ public class EntityType implements IEntityType{
 		this.name=cType.getName();
 	}
 
-
 	public EntityType() {
-		
 	}
-
-
 	@Override
 	public String toString() {
 		return "EntityType [conceptId=" + conceptId + ", attrs=" + attrs
@@ -53,16 +53,14 @@ public class EntityType implements IEntityType{
 	}
 
 	public String getName(Locale locale) {
-
 		return name.get(locale.toLanguageTag());
-		
 	}
 
 	public Map<String, String> getName1() {
 
 		return name;
-		
 	}
+
 	public IConcept getConcept() {
 		ConceptODR concept= new ConceptODR();
 		concept = concept.readConcept(conceptId);
@@ -72,7 +70,7 @@ public class EntityType implements IEntityType{
 	public void setConcept(IConcept concept) {
 
 		ConceptODR conc = (ConceptODR) concept;
-		ComplexTypeClient ctypeCl = new ComplexTypeClient( getClientProtocol());
+		ComplexTypeClient ctypeCl = new ComplexTypeClient(WebServiceURLs.getClientProtocol());
 		ComplexType ctype  =ctypeCl.readComplexType(this.conceptId, null);
 		// set concept on server-side 
 		ctype.setConceptId(conc.getId());
@@ -82,14 +80,14 @@ public class EntityType implements IEntityType{
 
 	public void setAttrs(List<IAttributeDef> attrs) {
 		this.attrs = attrs;
-//		List<AttributeDefinition> attrList  = new ArrayList<AttributeDefinition>();
-//		for(IAttributeDef attrDef: attrs){
-//			AttributeDef attr =(AttributeDef) attrDef;
-//			attrList.add(attr.convertAttributeDefinition());
-//		}
-//		ComplexTypeClient ctypeCl = new ComplexTypeClient( getClientProtocol());
-//		ComplexType ctype  =ctypeCl.readComplexType(this.id, null);
-//		ctype.setAttributes(attrList);
+		//		List<AttributeDefinition> attrList  = new ArrayList<AttributeDefinition>();
+		//		for(IAttributeDef attrDef: attrs){
+		//			AttributeDef attr =(AttributeDef) attrDef;
+		//			attrList.add(attr.convertAttributeDefinition());
+		//		}
+		//		ComplexTypeClient ctypeCl = new ComplexTypeClient( getClientProtocol());
+		//		ComplexType ctype  =ctypeCl.readComplexType(this.id, null);
+		//		ctype.setAttributes(attrList);
 	}
 
 
@@ -103,11 +101,11 @@ public class EntityType implements IEntityType{
 		attrDefList.add(attrDef);
 		this.attrs = attrDefList;
 		//adding attribute on server side
-		AttributeDefinitionClient attrDefCl = new AttributeDefinitionClient(getClientProtocol());
+		AttributeDefinitionClient attrDefCl = new AttributeDefinitionClient(WebServiceURLs.getClientProtocol());
 		List<AttributeDefinition> attrList  = attrDefCl.readAttributeDefinitions(this.id, null, null, null);
 		ArrayList<AttributeDefinition> atrList = new ArrayList<AttributeDefinition>(attrList);
 		atrList.add(attrDef.convertAttributeDefinition());
-		ComplexTypeClient ctypeCl = new ComplexTypeClient( getClientProtocol());
+		ComplexTypeClient ctypeCl = new ComplexTypeClient(WebServiceURLs.getClientProtocol());
 		ComplexType ctype  =ctypeCl.readComplexType(this.id, null);
 		ctype.setAttributes(attrList);
 	}
@@ -125,7 +123,7 @@ public class EntityType implements IEntityType{
 		//adding attribute on client side
 		this.attrs = attrDefList;
 		//adding attribute on server side
-		AttributeDefinitionClient attrDefCl = new AttributeDefinitionClient( getClientProtocol());
+		AttributeDefinitionClient attrDefCl = new AttributeDefinitionClient(WebServiceURLs.getClientProtocol());
 		List<AttributeDefinition> attrList  =attrDefCl.readAttributeDefinitions(this.id, null, null, null);
 		//TODO properly test this part
 		for(int i=0; i<attrList.size(); i++){
@@ -134,7 +132,7 @@ public class EntityType implements IEntityType{
 				break;
 			}
 		}
-		ComplexTypeClient ctypeCl = new ComplexTypeClient( getClientProtocol());
+		ComplexTypeClient ctypeCl = new ComplexTypeClient(WebServiceURLs.getClientProtocol());
 		ComplexType ctype  =ctypeCl.readComplexType(this.conceptId, null);
 		ctype.setAttributes(attrList);
 	}
@@ -156,36 +154,58 @@ public class EntityType implements IEntityType{
 	public Long getGUID() {
 		return this.id;
 	}
-	
+
 	public Long getConceptID(){
 		return this.conceptId;
 	}
 
 	public String getURL() {
-		String st  = "http://opendata.disi.unitn.it:8080/odt/types/"+this.id+
-			"?includeAttributes=false&includeAttributesAsProperties=false&includeRestrictions=false&includeRules=false&includeTimestamps=false";
+		String fullUrl = WebServiceURLs.getURL();
+		String url  = fullUrl+"/types/"+this.id+
+				"?locale="+(WebServiceURLs.getClientProtocol()).getLocale();
 
-		return st;
-	}
-
-	public String getURI() {
-		String st  = "http://opendata.disi.unitn.it:8080/odt/types/"+this.id+
-				"?includeAttributes=false&includeAttributesAsProperties=false&includeRestrictions=false&includeRules=false&includeTimestamps=false";
-
-			return st;
-	}
-
-	/** The method returns client protocol 
-	 * @return returns an instance of ClientProtocol that contains information where to connect(Url adress and port) and locale
-	 */
-	private IProtocolClient getClientProtocol(){
-		IProtocolClient api = ProtocolFactory.getHttpClient(new Locale("all"), "opendata.disi.unitn.it", 8080);
-		return api;
+		return url;
 	}
 
 	public void addAttributeDef(IAttributeDef attr) {
 		AttributeDef atDef =(AttributeDef) attr; 
 		addAttributeD(atDef);
+
+	}
+
+
+	public IDict getName() {
+		Dict dict = new Dict();
+		Iterator it = this.name.entrySet().iterator();
+		while(it.hasNext()){
+			Map.Entry pairs = (Map.Entry)it.next();
+			Locale l = Locale.forLanguageTag((String)pairs.getKey());
+			dict = dict.putTranslation(l, (String)pairs.getValue());
+
+		}
+		return dict;
+	}
+
+	public IDict getDescription() {
+		Dict dict = new Dict();
+		Iterator it = this.description.entrySet().iterator();
+		while(it.hasNext()){
+			Map.Entry pairs = (Map.Entry)it.next();
+			Locale l = Locale.forLanguageTag((String)pairs.getKey());
+			dict = dict.putTranslation(l, (String)pairs.getValue());
+		}
+		return dict;
+	}
+
+
+	public void removeAttributeDef(String attrDefURL) {
+		// TODO Auto-generated method stub
+
+	}
+
+
+	public void removeUniqueIndex(String uniqueIndexURL) {
+		// TODO Auto-generated method stub
 
 	}
 

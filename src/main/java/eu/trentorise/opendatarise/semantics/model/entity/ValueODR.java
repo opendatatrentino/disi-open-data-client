@@ -13,7 +13,7 @@ import eu.trentorise.opendata.semantics.model.entity.IValue;
  * @date 13 Mar 2014
  * 
  */
-public class ValueODR implements IValue {
+public class ValueODR extends Value implements IValue {
 	private Long id;
 	private Long attrId;
 	private Object value;

@@ -15,10 +15,10 @@ import java.util.Locale;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
-import eu.trentorise.opendata.semantics.services.ISearch;
+import eu.trentorise.opendata.semantics.services.ISearchService;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
 
-public class Search implements ISearch {
+public class Search implements ISearchService {
 
 	IProtocolClient api;
 	InstanceClient client;
@@ -27,10 +27,6 @@ public class Search implements ISearch {
 		this.api = api;
 		client = new InstanceClient(api);
 	}
-
-	//    public String[][] searchEQL(String eqlQuery) {
-	//        return client.searchEql(eqlQuery, 1, null, null, null, null).getResults();
-	//    }
 
 	public String[][] searchEQL(String eqlQuery) {
 		// TODO Auto-generated method stub

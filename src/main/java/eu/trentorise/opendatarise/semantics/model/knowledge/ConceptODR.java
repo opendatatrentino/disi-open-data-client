@@ -12,6 +12,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
+import eu.trentorise.opendata.semantics.model.knowledge.IDict;
+import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
 
 public class ConceptODR implements IConcept{
 
@@ -33,30 +35,30 @@ public class ConceptODR implements IConcept{
 
 	public ConceptODR readConcept(long conceptId){
 
-		ConceptClient client = new ConceptClient(getClientProtocol());
+		ConceptClient client = new ConceptClient(WebServiceURLs.getClientProtocol());
 		Concept conc = client.readConcept(conceptId, false);
 		ConceptODR conceptODR = new ConceptODR(conc);
 		return conceptODR;
 	}
-	
-	 public ConceptODR readConceptGlobalID(long glId){
 
-		ConceptClient client = new ConceptClient(getClientProtocol());
-		
+	public ConceptODR readConceptGlobalID(long glId){
+
+		ConceptClient client = new ConceptClient(WebServiceURLs.getClientProtocol());
+
 		List<Concept> concepts = client.readConcepts(1L, glId, null, null, null, null);
-		
+
 		ConceptODR conceptODR = new ConceptODR(concepts.get(0));
 		return conceptODR;
 	}
-	 
-	 public Long readConceptGUID(long glId){
-			ConceptClient client = new ConceptClient(getClientProtocol());
-			List<Concept> concepts = client.readConcepts(1L, glId, null, null, null, null);
-			return concepts.get(0).getId();
-		}
+
+	public Long readConceptGUID(long glId){
+		ConceptClient client = new ConceptClient(WebServiceURLs.getClientProtocol());
+		List<Concept> concepts = client.readConcepts(1L, glId, null, null, null, null);
+		return concepts.get(0).getId();
+	}
 
 	private List<ConceptODR> readConcepts(String label){
-		ConceptClient client = new ConceptClient(getClientProtocol());
+		ConceptClient client = new ConceptClient(WebServiceURLs.getClientProtocol());
 		List <ConceptODR> conOdrList = new ArrayList<ConceptODR>();
 		Pagination page = new Pagination();
 		List<Concept> concList = client.readConcepts(1L, null, null, label, null, null);
@@ -67,46 +69,24 @@ public class ConceptODR implements IConcept{
 		return conOdrList;
 	}
 
-//	public String getSynsetURI() {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-
-	public String getCommonlyReferredAs(Locale language) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public String getSummary(Locale language) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public String getDescription(Locale language) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public String getPartOfSpeech(Locale language) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	private IProtocolClient getClientProtocol(){
-		IProtocolClient api = ProtocolFactory.getHttpClient(Locale.ENGLISH, "opendata.disi.unitn.it", 8080);
-		return api;
-	}
-	
 	public Long getId(){
 		return this.id;
 	}
 
 	public String getURL() {
-		return "http://opendata.disi.unitn.it:8080/odt/concepts/"+this.id+"?includeTimestamps=false";
+		String fullUrl = WebServiceURLs.getURL();
+		String url  = fullUrl+"/concepts/"+this.id+
+				"?locale="+(WebServiceURLs.getClientProtocol()).getLocale();
+		return url;
 	}
 
 	public Long getGUID() {
 		return globalID;
+	}
+
+	public IDict getDescription() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

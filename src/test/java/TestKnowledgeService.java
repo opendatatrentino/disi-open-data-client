@@ -21,11 +21,9 @@ public class TestKnowledgeService {
 	@Test
 	public void testGetConcept(){
 		KnowledgeService kserv= new KnowledgeService();
-		List<IConcept> concepts = kserv.getConcepts(guids);
-		Assert.assertEquals(3, concepts.size());
-		Assert.assertNotNull(concepts.get(0));
-		Assert.assertNotNull(concepts.get(1));
-		Assert.assertNotNull(concepts.get(2));
+		String url = "http://opendata.disi.unitn.it:8080/odr/concepts/120?includeTimestamps=false";
+		IConcept con = kserv.getConcept(url);
+
 	}
 
 }

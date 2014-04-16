@@ -8,6 +8,7 @@ import it.unitn.disi.sweb.webapi.model.kb.types.AttributeDefinition;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
 import it.unitn.disi.sweb.webapi.model.kb.types.Presence;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -15,8 +16,11 @@ import java.util.Map;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
+import eu.trentorise.opendata.semantics.model.knowledge.IDict;
 import eu.trentorise.opendata.semantics.services.model.DataTypes;
 import eu.trentorise.opendatarise.semantics.model.knowledge.ConceptODR;
+import eu.trentorise.opendatarise.semantics.model.knowledge.Dict;
+import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
 
 /** 
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
@@ -79,8 +83,7 @@ public class AttributeDef implements IAttributeDef {
 	}
 
 	private IProtocolClient getClientProtocol(){
-		IProtocolClient api = ProtocolFactory.getHttpClient(Locale.ENGLISH, "opendata.disi.unitn.it", 8080);
-		return api;
+		return WebServiceURLs.getClientProtocol();
 	}
 
 	public String getName(Locale locale) {
@@ -98,9 +101,11 @@ public class AttributeDef implements IAttributeDef {
 			if (this.entityTypeID!=null){
 				ComplexType cType = ctc.readComplexType(this.entityTypeID, null);
 				EntityType  etype = new EntityType(cType);
+
 				return etype;
-			} 	else return null;
-			//			//TODO knowledge base assumed to be '1' change of API is required 
+			} 	
+			else return null;
+
 			//			if (this.conceptId==5){
 			//				ComplexType cType = ctc.readComplexType(21L, null);
 			//				EntityType  etype = new EntityType(cType);
@@ -117,7 +122,6 @@ public class AttributeDef implements IAttributeDef {
 			//						return etype; 
 			//					}  					
 			//			List<ComplexType> cType = ctc.readComplexTypes(1L, this.conceptId, null, null);
-			//			//TODO we take the first one from the list change of API is required 
 			//			if(cType.size()>0){
 			//				EntityType  etype = new EntityType(cType.get(0));
 			//				return etype;} else 
@@ -155,13 +159,10 @@ public class AttributeDef implements IAttributeDef {
 	}
 
 	public String getURL() {
-		String st = "http://opendata.disi.unitn.it:8080/odt/attributedefinitions/"+this.id+"?includeTimestamps=false&includeRestrictions=false&includeRules=false";
-		return st;
-	}
-
-	public String getURI() {
-		String st = "http://opendata.disi.unitn.it:8080/odt/attributedefinitions/"+this.id+"?includeTimestamps=false&includeRestrictions=false&includeRules=false";
-		return st;
+		String fullUrl = WebServiceURLs.getURL();
+		String url  = fullUrl+"/attributedefinitions/"+this.id+
+				"?locale="+(WebServiceURLs.getClientProtocol()).getLocale();
+		return url;	
 	}
 
 	public AttributeDefinition convertAttributeDefinition(){
@@ -197,6 +198,47 @@ public class AttributeDef implements IAttributeDef {
 	public Long getEType() {
 		return this.typeId;
 	}
+
+	public String getETypeURL() {
+		if (this.entityTypeID==null)
+		{return null;} 
+		else {
+			String fullUrl = WebServiceURLs.getURL();
+			String url  = fullUrl+"/types/"+this.entityTypeID+
+					"?locale="+(WebServiceURLs.getClientProtocol()).getLocale();
+			return url;}
+	}
+
+	public String getRangeETypeURL() {
+		String fullUrl = WebServiceURLs.getURL();
+		String url  = fullUrl+"/types/"+this.id+
+				"?locale="+(WebServiceURLs.getClientProtocol()).getLocale();
+		return url;
+	}
+
+	public IDict getName() {
+		Dict dict = new Dict();
+		Iterator it = this.name.entrySet().iterator();
+		while(it.hasNext()){
+			Map.Entry pairs = (Map.Entry)it.next();
+			Locale l = Locale.forLanguageTag((String)pairs.getKey());
+			dict = dict.putTranslation(l, (String)pairs.getValue());
+
+		}
+		return dict;
+	}
+
+	public IDict getDescription() {
+		Dict dict = new Dict();
+		Iterator it = this.description.entrySet().iterator();
+		while(it.hasNext()){
+			Map.Entry pairs = (Map.Entry)it.next();
+			Locale l = Locale.forLanguageTag((String)pairs.getKey());
+			dict = dict.putTranslation(l, (String)pairs.getValue());
+		}
+		return dict;
+	}
+
 
 
 }

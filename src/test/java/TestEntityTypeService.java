@@ -23,45 +23,42 @@ public class TestEntityTypeService {
 	//@Test
 	public void testGetEntityTypeByID(){
 		EntityTypeService ets = new EntityTypeService();
-		EntityType etype =(EntityType)ets.getEntityType(11L);
-		System.out.println(etype.getName1());
-
-		//assertEquals(etype.getName(Locale.ITALY) ,"Facility");
+		EntityType etype =(EntityType)ets.getEntityType(12L);
+		//		System.out.println("URL:"+etype.getURL());
+		//		System.out.println(etype.getName1());
+		assertEquals(etype.getName1().get("it") ,"Infrastruttura");
 	}
 
 	@Test
 	public void testGetAllEntityTypes(){
 		EntityTypeService ets = new EntityTypeService();
 		List<IEntityType> etypes= ets.getAllEntityTypes();
-		for(IEntityType etype:etypes){
-			List<IAttributeDef>atdefs=etype.getAttributeDefs();
-			for(IAttributeDef atr:atdefs){
-				if(atr.getRangeEType()!=null)
-					System.out.println(atr.getRangeEType().getName(Locale.ENGLISH));
-				//System.out.println(atr.getRangeEType());
-			}
-		}
-		//System.out.println(etypes.get(0).getConcept().getURL());
-
+//		for(IEntityType etype:etypes){
+//			List<IAttributeDef>atdefs=etype.getAttributeDefs();
+//			for (IAttributeDef ad:atdefs){
+//			System.out.println(ad.getName());
+//			} 
+//		}
 		assertNotNull(etypes.get(0));
 	}
 
+
 	//@Test
-	public void testAddAttributeDefToEtype(){
-		EntityTypeService ets = new EntityTypeService();
-		EntityType etypeEntity =(EntityType)ets.getEntityType(7L);
-		EntityType etypeLoc =(EntityType)ets.getEntityType(4L);
-		List<IAttributeDef> attrs = etypeLoc.getAttributeDefs();
-
-		String attrName= attrs.get(0).getName(new Locale("all"));
-		System.out.println(attrName);
-		ets.addAttributeDefToEtype(etypeEntity, attrs.get(0));
-		EntityType etypeEntityUpdated =(EntityType)ets.getEntityType(7L);
-		String addedAttrName =etypeEntityUpdated.getAttributeDefs().get(0).getName(Locale.ENGLISH);
-		System.out.println(addedAttrName);
-		assertEquals(attrName,addedAttrName);
-
-	}
+	//	public void testAddAttributeDefToEtype(){
+	//		EntityTypeService ets = new EntityTypeService();
+	//		EntityType etypeEntity =(EntityType)ets.getEntityType(7L);
+	//		EntityType etypeLoc =(EntityType)ets.getEntityType(4L);
+	//		List<IAttributeDef> attrs = etypeLoc.getAttributeDefs();
+	//
+	//		String attrName= attrs.get(0).getName(new Locale("all"));
+	//		System.out.println(attrName);
+	//		ets.addAttributeDefToEtype(etypeEntity, attrs.get(0));
+	//		EntityType etypeEntityUpdated =(EntityType)ets.getEntityType(7L);
+	//		String addedAttrName =etypeEntityUpdated.getAttributeDefs().get(0).getName(Locale.ENGLISH);
+	//		System.out.println(addedAttrName);
+	//		assertEquals(attrName,addedAttrName);
+	//
+	//	}
 
 
 

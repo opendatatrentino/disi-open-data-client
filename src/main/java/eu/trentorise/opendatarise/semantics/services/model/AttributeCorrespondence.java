@@ -85,4 +85,9 @@ public class AttributeCorrespondence implements IAttributeCorrespondence {
 		
 	}
 
+	public String getHeaderConceptURL() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

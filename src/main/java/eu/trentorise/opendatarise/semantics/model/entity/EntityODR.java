@@ -10,19 +10,25 @@ import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
 import it.unitn.disi.sweb.webapi.model.eb.Moment;
 import it.unitn.disi.sweb.webapi.model.eb.Name;
+import it.unitn.disi.sweb.webapi.model.eb.Value;
 import it.unitn.disi.sweb.webapi.model.eb.sstring.SemanticString;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
+import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
+import eu.trentorise.opendata.semantics.model.knowledge.IDict;
+import eu.trentorise.opendatarise.semantics.model.knowledge.Dict;
 import eu.trentorise.opendatarise.semantics.services.EntityService;
+import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
  * @date 12 Mar 2014 refactored 22.03.2014
@@ -83,6 +89,10 @@ public class EntityODR extends Structure implements IEntity {
 	//		super.setEntityBaseId(instance.getEntityBaseId()) ;
 	//	}
 
+	private void setClassConceptId(Long classConceptId) {
+		this.classConceptId = classConceptId;
+
+	}
 	@Override
 	public String toString() {
 		String str = "EntityODR [\n"+"id"+super.getId()
@@ -118,8 +128,10 @@ public class EntityODR extends Structure implements IEntity {
 	}
 
 	public String getURL() {
-		return sUrl;
-	}
+		String fullUrl = WebServiceURLs.getURL();
+		String url  = fullUrl+"/instances/"+this.globalId+
+				"?locale="+(WebServiceURLs.getClientProtocol()).getLocale();
+		return url;	}
 
 	public void setURL(String sUrl) {
 		this.sUrl = sUrl;
@@ -127,6 +139,25 @@ public class EntityODR extends Structure implements IEntity {
 
 	public List<Name> getNames() {
 		return names;
+	}
+
+	public IDict getName() {
+		Dict dict = new Dict();
+		for (Name name: this.names)
+		{
+			Map<String,List<String>> nameMap = name.getNames();
+
+
+			Iterator it = nameMap.entrySet().iterator();
+			while(it.hasNext()){
+				Map.Entry pairs = (Map.Entry)it.next();
+				Locale l = Locale.forLanguageTag((String)pairs.getKey());
+				dict = dict.putTranslation(l, (String)pairs.getValue());
+
+			}
+
+		}
+		return dict;
 	}
 
 	public void setNames(List<Name> names) {
@@ -145,8 +176,34 @@ public class EntityODR extends Structure implements IEntity {
 		return classConceptId;
 	}
 
-	public void setClassConceptId(Long classConceptId) {
+	public void setClassConceptId(Long classConceptId, AttributeDef classAttributeDef) {
 		this.classConceptId = classConceptId;
+		List<IAttribute> attributes =  super.getStructureAttributes() ;
+		if (attributes.size()!=0){
+			for (IAttribute attr: attributes){
+				AttributeDef ad = (AttributeDef) attr;
+				if (ad.getName(Locale.ENGLISH).equals("Class")){
+					ValueODR val = new ValueODR();
+					val.setValue(classConceptId);
+					attr.addValue(val);
+				} else 
+				{
+					ValueODR val = new ValueODR();
+					val.setValue(classConceptId);
+					AttributeODR at = new AttributeODR(classAttributeDef, val);
+					attributes.add(at);
+				}
+			}
+		} else {
+			List<IAttribute> attrs = new ArrayList<IAttribute>();
+			ValueODR val = new ValueODR();
+			val.setValue(classConceptId);
+			AttributeODR at = new AttributeODR(classAttributeDef, val);
+			attrs.add(at);
+			super.setStructureAttributes(attrs);
+		}
+
+
 	}
 
 	public Long getPartOfId() {
@@ -252,8 +309,9 @@ public class EntityODR extends Structure implements IEntity {
 
 	public void setEtype(IEntityType type) {
 		//locally
-		this.etype=(EntityType) type;
-		super.setTypeId(type.getGUID());
+		EntityType etype = (EntityType) type;
+		this.etype=etype;
+		super.setTypeId(etype.getGUID());
 		//on the server
 		//		InstanceClient instanceCl= new  InstanceClient(this.api);
 		//		Instance instance = instanceCl.readInstance(super.getId(), null);
@@ -306,62 +364,45 @@ public class EntityODR extends Structure implements IEntity {
 		return stName.get(0);
 	}
 
+	//	public void setName(Locale locale, String name) {
+	//
+	//		EntityService entServ = new EntityService(this.api);
+	//		Name nameStructure = new Name();
+	//		List<Attribute> attributes = super.getAttributes();
+	//		Attribute nameAttribute = new Attribute();
+	//		List<IAttributeDef> attrs = this.getEtype().getAttributeDefs();
+	//		Long nameAttrDefID= 0L;
+	//		for (IAttributeDef atd:attrs){
+	//			AttributeDef ad = (AttributeDef) atd;
+	//			if (ad.getName(locale.ENGLISH).equals("Name"))
+	//				//				AttributeDef ad = (AttributeDef) atd;
+	//				//				nameAttrDefID =ad.getGUID();
+	//		}
+	//		nameAttribute.setDefinitionId(nameAttrDefID);
+	//		attributes.add(nameAttribute);
+	//		List<Value>nameValues=new ArrayList<Value>();
+	//		nameValues.add(new Value(name, 1L));
+	//		nameAttribute.setValues(nameValues);
+	//		attributes.add(nameAttribute);
+	//
+	//	}
+
+	public void setName(Locale locale, List<String> names) {
+		// TODO Auto-generated method stub
+
+	}
+	public IDict getDescription() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	public void setName(Locale locale, String name) {
-		EntityService entServ = new EntityService(this.api);
-		Name nam;
-		if (this.names==null){
-			List<Name> names = new ArrayList<Name>();
-			nam = new Name();
-			Map<String,List<String>> nameMap = new HashMap<String,List<String>>();
-			List<String> strs = new ArrayList<String>();
-			strs.add(name);
-			nameMap.put(locale.toLanguageTag(), strs);
-			nam.setNames(nameMap);
-			names.add(nam);
-			this.names=names;
-
-		} else{ 
-
-			nam=this.names.get(0);
-
-			Map<String,List<String>> decomposedNames = nam.getNames();
-
-			if (decomposedNames.containsKey(locale.toLanguageTag())){
-				List<String> strs = decomposedNames.get(locale.toLanguageTag());
-				strs.add(name);
-				decomposedNames.put(locale.toLanguageTag(), strs);
-			}
-
-			else {
-				List<String> strs = new ArrayList<String>();
-				strs.add(name);
-				decomposedNames.put(locale.toLanguageTag(), strs);
-				System.out.println(decomposedNames);
-				nam.setNames(decomposedNames);
-
-			} 
-			entServ.updateEntity(nam);
-		}
-
-
-	}
-
-	public String getDescription(Locale language) {
 		// TODO Auto-generated method stub
-		return null;
-	}
 
-	public String setDescription(Locale language, String description) {
+	}
+	public void setDescription(Locale language, String description) {
 		// TODO Auto-generated method stub
-		return null;
+
 	}
-	public String getURI() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-
 }
 
 

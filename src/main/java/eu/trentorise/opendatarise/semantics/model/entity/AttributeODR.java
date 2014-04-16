@@ -12,13 +12,14 @@ import java.util.List;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IValue;
+import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
  * @date 13 Mar 2014
  * 
  */
-public class AttributeODR implements IAttribute {
+public class AttributeODR  implements IAttribute {
 
 	private IProtocolClient api;
 	private List<IValue> values; 
@@ -28,12 +29,14 @@ public class AttributeODR implements IAttribute {
 	private Long conceptId;
 	private Long instanceID;
 
+	public AttributeODR(){}
+
 	public AttributeODR(IProtocolClient api, Attribute attribute){
 		this.api=api;
 		if ( attribute.getId() != null ) {
 			this.id=attribute.getId();
 		} 
-		
+
 		this.attrDefId = attribute.getDefinitionId();
 		this.conceptId =attribute.getConceptId();
 		this.instanceID=attribute.getInstanceId();
@@ -45,14 +48,25 @@ public class AttributeODR implements IAttribute {
 		return "AttributeODR [api=" + api + ", id=" + id
 				+ ", attrDef=" + attrDef + ", attrDefId=" + attrDefId
 				+ ", conceptId=" + conceptId 
-                                + ", instanceID=" + instanceID
-                                + ", values=" + values 
+				+ ", instanceID=" + instanceID
+				+ ", values=" + values 
 				+ "]";
 	}
 
-	
+
 	public AttributeODR(IProtocolClient api) {
 		this.api=api;
+	}
+
+	public AttributeODR(IAttributeDef attrDef, ValueODR val){
+		this.attrDef=attrDef;
+		this.attrDefId=attrDef.getGUID();
+		this.conceptId=attrDef.getConcept().getGUID();
+
+		List<IValue> vals = new ArrayList<IValue>();
+		vals.add(val);
+		this.values=vals;
+
 	}
 
 	public Long getGUID() {
@@ -69,29 +83,38 @@ public class AttributeODR implements IAttribute {
 	public void setAttributeDefinition(IAttributeDef ad) {
 		//client side
 		this.attrDef=ad;
+		this.attrDefId=attrDef.getGUID();
+		this.conceptId=attrDef.getConcept().getGUID();
 		//server side
-		AttributeDef atrDef = (AttributeDef) ad;
-		AttributeDefinition attrDef = atrDef.convertAttributeDefinition(); 
-		Attribute atr = new Attribute();
-		
-		AttributeClient atClient = new AttributeClient(api);
-		Attribute attribute = atClient.readAttribute(this.id, null);
-		attribute.setDefinitionId(attrDef.getId()); 
-		atClient.update(atr);
-		
+		//	AttributeDef atrDef = (AttributeDef) ad;
+		//	AttributeDefinition attrDef = atrDef.convertAttributeDefinition(); 
+		//	Attribute atr = new Attribute();
+
+		//AttributeClient atClient = new AttributeClient(api);
+		//	Attribute attribute = atClient.readAttribute(this.id, null);
+		//attribute.setDefinitionId(attrDef.getId()); 
+		//	atClient.update(atr);
+
 	}
 
 	public void addValue(IValue value) {
 		//client side
-		this.values.add(value);
+		if(this.values!=null){
+			this.values.add(value);}
+		else {
+			List<IValue> vals = new ArrayList<IValue>();
+			vals.add(value);
+			this.values=vals;
+
+		}
 		//server side
-		ValueODR valODR = (ValueODR)value;
-		Value val = valODR.convertToValue();
-		AttributeClient attrCl = new AttributeClient(api);
-		Attribute attr = attrCl.readAttribute(this.id, null);
-		List<Value> vals = attr.getValues();
-		vals.add(val);
-		attr.setValues(vals);
+		//		ValueODR valODR = (ValueODR)value;
+		//		Value val = valODR.convertToValue();
+		//		AttributeClient attrCl = new AttributeClient(api);
+		//		Attribute attr = attrCl.readAttribute(this.id, null);
+		//		List<Value> vals = attr.getValues();
+		//		vals.add(val);
+		//		attr.setValues(vals);
 	}                                                                    
 
 	public void removeValue(long valueID) {
@@ -131,19 +154,19 @@ public class AttributeODR implements IAttribute {
 		}
 		return values;
 	}
-	
+
 	public Attribute convertToAttribute(){
-		
+
 		Attribute attribute = new Attribute();
 		attribute.setConceptId(this.conceptId);
 		attribute.setId(this.id);
 		attribute.setInstanceId(this.instanceID);
 		attribute.setDefinitionId(this.attrDefId);
 		attribute.setValues(this.convertValuesList());
-		
+
 		return attribute;
 	}
-	
+
 	private List<Value> convertValuesList(){
 		List<IValue> valuesODR = this.values;
 		List<Value> values = new ArrayList<Value>();
@@ -162,7 +185,7 @@ public class AttributeODR implements IAttribute {
 		ValueODR val = (ValueODR) newValue;
 		val.convertToValue();
 		attrCl.update(val.convertToValue());
-		
+
 		//client side
 		ArrayList<IValue> values = (ArrayList<IValue>) this.values;
 		for(IValue value: values){
@@ -175,8 +198,14 @@ public class AttributeODR implements IAttribute {
 	}
 
 	public Long getLocalID() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.id;
+	}
+
+	public String getAttributeDefURL() {
+		String fullUrl = WebServiceURLs.getURL();
+		String url  = fullUrl+"/attributes/"+this.id+
+				"?locale="+(WebServiceURLs.getClientProtocol()).getLocale();
+		return url;	
 	}
 
 }

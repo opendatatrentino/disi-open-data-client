@@ -19,6 +19,7 @@ import eu.trentorise.opendata.semantics.services.model.IIDResult;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
 import eu.trentorise.opendatarise.semantics.services.EntityService;
 import eu.trentorise.opendatarise.semantics.services.IdentityService;
+import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
 import it.unitn.disi.sweb.webapi.model.eb.Value;
 
 
@@ -127,8 +128,7 @@ public class TestIDManagement {
 		}
 	}
 	private IProtocolClient getClientProtocol(){
-		IProtocolClient api = ProtocolFactory.getHttpClient(new Locale("all"), "opendata.disi.unitn.it", 8080);
-		return api;
+		return  WebServiceURLs.getClientProtocol();
 	}
 
 

@@ -24,6 +24,7 @@ import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
 import eu.trentorise.opendatarise.semantics.services.EntityService;
+import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
 
 
 /**
@@ -38,14 +39,14 @@ public class TestEntityService {
 
 	@Before
 	public void getClientProtocol(){
-		this.api = ProtocolFactory.getHttpClient(new Locale("all"), "opendata.disi.unitn.it", 8080);
+		this.api = WebServiceURLs.getClientProtocol();
 	}
 
 	//@Test
 	public void testEntityRead(){
 		EntityService es= new EntityService(api);
 		EntityODR entity = (EntityODR) es.readEntity(15001L);
-		System.out.println(entity.getEtype().getName(Locale.ITALIAN));
+		//System.out.println(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0));
 		//	assertEquals(entity.getEtype().getName(Locale.ENGLISH),"Location");
 	}
 
@@ -95,10 +96,10 @@ public class TestEntityService {
 
 	}
 
-	@Test 
+	//@Test 
 	public void testCreateEntityODR(){
-
-		//	InstanceClient  ic = new InstanceClient(api);
+		String name = "Test name";
+		InstanceClient  ic = new InstanceClient(api);
 		Name nameStructure = new Name();
 		List<Attribute> nameAttributes = new ArrayList<Attribute>();
 		nameStructure.setEntityBaseId(1L);
@@ -106,13 +107,13 @@ public class TestEntityService {
 		nameAttribute.setDefinitionId(55L);
 		nameAttributes.add(nameAttribute);
 		List<Value>nameValues=new ArrayList<Value>();
-		//	nameValues.add(new Value(name, 1L));
+		nameValues.add(new Value(name, 1L));
 		//BE CAREFULL WITH VOCABULARY
 		nameAttribute.setValues(nameValues);
-		//	this.getAttributes().add(nameAttribute);
-		//nameStructure.setAttributes(nameAttributes);
-		//	long id  =ic.create(nameStructure);
-		//System.out.println("Name ID:"+id);
+		//this.getAttributes().add(nameAttribute);
+		nameStructure.setAttributes(nameAttributes);
+		long id  =ic.create(nameStructure);
+		System.out.println("Name ID:"+id);
 	}
 
 

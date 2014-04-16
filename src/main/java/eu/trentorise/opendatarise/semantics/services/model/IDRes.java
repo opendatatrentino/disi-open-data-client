@@ -13,6 +13,7 @@ import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.services.model.AssignmentResult;
 import eu.trentorise.opendata.semantics.services.model.IIDResult;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
+import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
 
 public class IDRes  extends IDResult implements IIDResult {
 
@@ -29,15 +30,15 @@ public class IDRes  extends IDResult implements IIDResult {
 
 	public IEntity getResultEntity() {
 		if (this.api==null){
-			getClientProtocol();
+			this.api = WebServiceURLs.getClientProtocol();
 		}
-		EntityODR en = new EntityODR( getClientProtocol(), super.getEntity());
+		EntityODR en = new EntityODR( api, super.getEntity());
 		return en;
 	}
 
 	public Set<IEntity> getEntities() { 
 		if (this.api==null){
-			getClientProtocol();
+			WebServiceURLs.getClientProtocol();
 		}
 		Set<IEntity> entities = new HashSet<IEntity>();
 		Set<Entity> ients =super.getEntitiesWithSameSwebID();
@@ -59,13 +60,13 @@ public class IDRes  extends IDResult implements IIDResult {
 		}
 	}
 
-	private IProtocolClient getClientProtocol(){
-		IProtocolClient api = ProtocolFactory.getHttpClient(new Locale("all"), "opendata.disi.unitn.it", 8080);
-		return api;
-	}
-
 	public Long getGUID() {
-		
 		return super.getSwebID();
 	}
+
+	public String getURL() {
+		String fullUrl = WebServiceURLs.getURL();
+		String url  = fullUrl+"/instances/"+super.getSwebID()+
+				"?locale="+(WebServiceURLs.getClientProtocol()).getLocale();
+		return url;	}
 }

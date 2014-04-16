@@ -49,4 +49,9 @@ public class IdentityService implements IIdentityService {
 		IProtocolClient api = ProtocolFactory.getHttpClient(new Locale("all"), "opendata.disi.unitn.it", 8080);
 		return api;
 	}
+
+	public List<IIDResult> assignURL(List<IEntity> entities, int numCandidates) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

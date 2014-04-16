@@ -21,18 +21,15 @@ public class TestSearch {
 		this.api = ProtocolFactory.getHttpClient(Locale.ENGLISH, "opendata.disi.unitn.it", 8080);
 	}
 	
-	@Test
-	public void conceptSearchTest(){
-		Search searchService = new Search(api);
-		List<IEntity>  entities = searchService.conceptSearch("Trento");
-		IEntity entity = entities.get(0);
-		System.out.println(entity.getEtype().getName(Locale.ENGLISH));
-		assertNotNull(entity);
-		assertEquals("Location",entity.getEtype().getName(Locale.ENGLISH));
-	}
-	
 //	@Test
-	public void searchTest(){
-		
-	}
+//	public void conceptSearchTest(){
+//		Search searchService = new Search(api);
+//		List<IEntity>  entities = searchService.conceptSearch("Trento");
+//		IEntity entity = entities.get(0);
+//		System.out.println(entity.getEtype().getName(Locale.ENGLISH));
+//		assertNotNull(entity);
+//		assertEquals("Location",entity.getEtype().getName(Locale.ENGLISH));
+//	}
+	
+
 }

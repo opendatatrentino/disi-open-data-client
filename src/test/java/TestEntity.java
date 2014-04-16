@@ -11,11 +11,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.junit.Test;
+
+import eu.trentorise.opendata.semantics.model.entity.IAttribute;
+import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendatarise.semantics.model.facade.ImpiantoDiRisalitaFacade;
 import eu.trentorise.opendatarise.semantics.model.entity.AttributeDef;
 import eu.trentorise.opendatarise.semantics.model.entity.AttributeODR;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
+import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
+import eu.trentorise.opendatarise.semantics.model.entity.ValueODR;
 import eu.trentorise.opendatarise.semantics.services.EntityService;
+import eu.trentorise.opendatarise.semantics.services.EntityTypeService;
+import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
 
 
 /**
@@ -25,9 +33,13 @@ import eu.trentorise.opendatarise.semantics.services.EntityService;
  */
 public class TestEntity {
 
-
-	private final long latitudeAtDef=69;
-	private final long longitudeAtDef=68;
+	public static final Long ATTR_TYPE_LATITUDE = 69L;
+	public static final Long ATTR_TYPE_LONGITUDE = 68L;
+	public static final Long ATTR_TYPE_OPENING_HOUR = 30L;
+	public static final Long ATTR_TYPE_CLOSING_HOUR = 31L;
+	public static final Long ATTR_TYPE_OPENING_HOURS = 66L;
+	public static final Long CLASS = 58L;
+	public static final Long NAME = 55L;
 
 	//
 	//	@Test
@@ -85,14 +97,87 @@ public class TestEntity {
 	}
 
 
-//	@Test
+
+
+	//@Test
 	public void testCreationImpianti(){
 		ImpiantoDiRisalitaFacade idrf = new ImpiantoDiRisalitaFacade(getClientProtocol());
 		long id =idrf.createEntity("Ivan", "Cabinovia", 12.356f, 20.9087f, "8:00", "17:00");
 		System.out.println("ID of entity: "+ id);
+	}
+
+	//@Test 
+	public void testCreationEntity(){
+		IProtocolClient api = ProtocolFactory.getHttpClient(new Locale("all"), "opendata.disi.unitn.it", 8080);
+		EntityODR entity = new EntityODR();
+		entity.setEntityBaseId(1L);
+		EntityTypeService ets = new EntityTypeService();
+		//set facility etype - 12L
+		EntityType etype = ets.getEntityType(12L);
+		entity.setEtype(etype);
+		entity.setName(Locale.ENGLISH, "My name");
+		//entity.setDescription(language, description);
+		//entity.setClassConceptId(CLASS);
+		List<AttributeODR> attributes = new ArrayList<AttributeODR>();
+		//Attribute
+		AttributeODR latitudeAttr = new AttributeODR(api);
+		AttributeODR longitudeAttr = new AttributeODR(api);
+		AttributeODR structureOpeningHour = new AttributeODR(api);
+		AttributeDef lattitudeAtDef = new AttributeDef(ATTR_TYPE_LATITUDE);
+		AttributeDef longitudeAtDef = new AttributeDef(ATTR_TYPE_LONGITUDE);
+		AttributeDef structureOpeningHourAtDef = new AttributeDef(ATTR_TYPE_OPENING_HOURS);
+		AttributeDef openHourAtDef = new AttributeDef(ATTR_TYPE_OPENING_HOUR);
+		AttributeDef closeHourAtDef = new AttributeDef(ATTR_TYPE_CLOSING_HOUR);
+		//TODO class is strictly mandatory, where to take this information?
+		AttributeDef classConceptIdAtDef = new AttributeDef(CLASS);
+		latitudeAttr.setAttributeDefinition(lattitudeAtDef);
+		longitudeAttr.setAttributeDefinition(longitudeAtDef);
+		structureOpeningHour.setAttributeDefinition(structureOpeningHourAtDef);
+		List<ValueODR> latValues = new ArrayList<ValueODR>();
+		List<ValueODR> lonValues = new ArrayList<ValueODR>();
+		List<ValueODR> OpenHourValues = new ArrayList<ValueODR>();
+
+		ValueODR latitudeVal = new ValueODR();
+		ValueODR longitudeVal = new ValueODR();
+		//		ValueODR structureOpeningHourVal = new ValueODR();
+
+		latValues.add(latitudeVal);
+		lonValues.add(longitudeVal);
+	}
+
+	//@Test
+	public void testCreateAttributeEntity(){
+		EntityODR entity = new EntityODR();
+		entity.setEntityBaseId(1L);
+		EntityTypeService ets = new EntityTypeService();
+		EntityService es = new EntityService(getClientProtocol());
+		//set facility etype - 12L
+		EntityType etype = ets.getEntityType(12L);
+		entity.setEtype(etype);
+		AttributeDef lattitudeAtDef = new AttributeDef(ATTR_TYPE_LATITUDE);
+		AttributeDef longitudeAtDef = new AttributeDef(ATTR_TYPE_LONGITUDE);
+		AttributeDef classConceptIdAtDef = new AttributeDef(CLASS);
+		AttributeDef nameAtDef = new AttributeDef(NAME);
+		List<IAttribute> ats = new ArrayList<IAttribute>();
+
+		AttributeODR atName = (AttributeODR) es.createAttribute(nameAtDef, "First Name");
+		AttributeODR atClass = (AttributeODR) es.createAttribute(classConceptIdAtDef, 123L);
+		AttributeODR atLat = (AttributeODR) es.createAttribute(lattitudeAtDef,  12.356f);
+		AttributeODR atLon = (AttributeODR) es.createAttribute(longitudeAtDef, 20.9087f);
+
+		ats.add(atName);
+		ats.add(atClass);
+		ats.add(atLat);
+		ats.add(atLon);
+
+		entity.setStructureAttributes(ats);
+
+		long id = es.createEntity(entity);
+		System.out.println(id);
 
 	}
 
+	//@Test
 	public Attribute addAttribute(Name name, long id){
 		Attribute atr = new Attribute();
 		atr.setDefinitionId(id);
@@ -123,19 +208,18 @@ public class TestEntity {
 	//	@Test
 	public void testEntityAttributeCreate(){
 
-		Entity en = new Entity();
-		AttributeODR attr = new AttributeODR(getClientProtocol());
-		AttributeDef adLat = new AttributeDef(latitudeAtDef);
-		//AttributeDef adLon = new AttributeDef(longitudeAtDef);
-		attr.setAttributeDefinition(adLat);
+		//		Entity en = new Entity();
+		//		AttributeODR attr = new AttributeODR(getClientProtocol());
+		//		AttributeDef adLat = new AttributeDef(latitudeAtDef);
+		//		//AttributeDef adLon = new AttributeDef(longitudeAtDef);
+		//		attr.setAttributeDefinition(adLat);
 		//		ValueODR val = new ValueODR();
 		//		attr.addValue(value);
 		//		
 	}
 
 	private IProtocolClient getClientProtocol(){
-		IProtocolClient api = ProtocolFactory.getHttpClient(new Locale("all"), "opendata.disi.unitn.it", 8080);
-		return api;
+		return WebServiceURLs.getClientProtocol();
 	}
 
 	//	private <T> void createAttribute(Long attributeTypeId, Object value, Class<T> clazz) {
