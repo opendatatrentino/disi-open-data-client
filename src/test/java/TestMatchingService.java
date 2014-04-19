@@ -96,7 +96,7 @@ public class TestMatchingService {
 			long conid = 2923L;
 			SchemaCorrespondence scCorr = (SchemaCorrespondence) mService.schemaMatch(eType,odrHeaders, conid);
 			
-			System.out.println(scCorr.getScore());
+			//System.out.println(scCorr.getScore());
 			assertNotNull(scCorr.getScore());
 		//	assertNotNull(scCorr.getAttributeCorrespondence());
 			assertNotNull(scCorr.getEtype());}

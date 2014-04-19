@@ -22,7 +22,7 @@ public class IdentityService implements IIdentityService {
 		if(ientities==null){
 			return null;
 		} else {
-			IDManagementClient idManCl = new IDManagementClient(getClientProtocol());
+			IDManagementClient idManCl = new IDManagementClient(WebServiceURLs.getClientProtocol());
 			List<Entity> entities = new ArrayList<Entity>();
 			for(IEntity en: ientities){
 				EntityODR ent= (EntityODR) en;
@@ -43,11 +43,6 @@ public class IdentityService implements IIdentityService {
 	public List<IIDResult> assignGUID(List<IEntity> entities, int numCandidates) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	private IProtocolClient getClientProtocol(){
-		IProtocolClient api = ProtocolFactory.getHttpClient(new Locale("all"), "opendata.disi.unitn.it", 8080);
-		return api;
 	}
 
 	public List<IIDResult> assignURL(List<IEntity> entities, int numCandidates) {

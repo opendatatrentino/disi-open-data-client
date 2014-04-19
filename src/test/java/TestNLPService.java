@@ -78,51 +78,51 @@ public class TestNLPService {
 	}
 
 	//@Test
-	public void testRunNLP(){
-		String inputStr = "Hello World";
-		NLPService nlpService = new NLPService();
-		NLText output= nlpService.runNLP(inputStr);
-		assertNotNull(output);
-	}
+//	public void testRunNLP(){
+//		String inputStr = "Hello World";
+//		NLPService nlpService = new NLPService();
+//		NLText output= nlpService.runNLP(inputStr);
+//		assertNotNull(output);
+//	}
 
 
 
 
-	@Test    
-	public void testNLPService() {
-
-		
-		String testText = "Formaggio fresco a pasta filata, molle e a fermentazione lattica. Viene impiegato latte vaccino e caglio bovino liquido."
-				+ "La filatura viene fatta con acqua calda eventualmente addizionata di sale.La forma puÃ² essere sferoidale (peso 20-250 g), "
-				+ "eventualmente con testina, o a treccia (peso 125-250 g).La crosta Ã¨ assente e presenta una pelle di consistenza tenera, superficie "
-				+ "liscia e lucente, omogenea, di color bianco latte.La pasta ha una struttura fibrosa, che al taglio rilascia liquido lattiginoso, non "
-				+ "presenta occhiatura e il colore Ã¨ omogeneo bianco latte. La consistenza Ã¨ morbida e leggermente elastica.Il sapore Ã¨ caratteristico, sapido, "
-				+ "fresco, delicatamente acidulo.Viene confezionata in involucro protettivo e commercializzata in contatto con un liquido di governo, costituito da "
-				+ "acqua con eventuale aggiunta di sale.";
-		
-		NLPService nlpService = new NLPService();
-		NLText processedText = new NLText();
-		List<NLText> processedTexts = new ArrayList<NLText>();
-
-			processedText = nlpService.runNLP(testText);
-			processedTexts.add(processedText);
-			int selectedMeaningCount = 0;
-			int nonEmptyMeaningsCount = 0;
-			for (NLSentence sentence : processedText.getSentences()){
-				for (NLToken token : sentence.getTokens()){
-
-					if (token.getSelectedMeaning() != null){
-						selectedMeaningCount += 1;
-					}
-
-					if (token.getMeanings().size() > 0){
-						nonEmptyMeaningsCount += 1;
-					}
-
-				}
-			};
-		System.out.println(selectedMeaningCount);
-		}
+//	@Test    
+//	public void testNLPService() {
+//
+//		
+//		String testText = "Formaggio fresco a pasta filata, molle e a fermentazione lattica. Viene impiegato latte vaccino e caglio bovino liquido."
+//				+ "La filatura viene fatta con acqua calda eventualmente addizionata di sale.La forma puÃ² essere sferoidale (peso 20-250 g), "
+//				+ "eventualmente con testina, o a treccia (peso 125-250 g).La crosta Ã¨ assente e presenta una pelle di consistenza tenera, superficie "
+//				+ "liscia e lucente, omogenea, di color bianco latte.La pasta ha una struttura fibrosa, che al taglio rilascia liquido lattiginoso, non "
+//				+ "presenta occhiatura e il colore Ã¨ omogeneo bianco latte. La consistenza Ã¨ morbida e leggermente elastica.Il sapore Ã¨ caratteristico, sapido, "
+//				+ "fresco, delicatamente acidulo.Viene confezionata in involucro protettivo e commercializzata in contatto con un liquido di governo, costituito da "
+//				+ "acqua con eventuale aggiunta di sale.";
+//		
+//		NLPService nlpService = new NLPService();
+//		NLText processedText = new NLText();
+//		List<NLText> processedTexts = new ArrayList<NLText>();
+//
+//			processedText = nlpService.runNLP(testText);
+//			processedTexts.add(processedText);
+//			int selectedMeaningCount = 0;
+//			int nonEmptyMeaningsCount = 0;
+//			for (NLSentence sentence : processedText.getSentences()){
+//				for (NLToken token : sentence.getTokens()){
+//
+//					if (token.getSelectedMeaning() != null){
+//						selectedMeaningCount += 1;
+//					}
+//
+//					if (token.getMeanings().size() > 0){
+//						nonEmptyMeaningsCount += 1;
+//					}
+//
+//				}
+//			};
+//		System.out.println(selectedMeaningCount);
+//		}
 		
 	}
 

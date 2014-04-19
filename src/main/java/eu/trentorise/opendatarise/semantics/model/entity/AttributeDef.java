@@ -91,7 +91,18 @@ public class AttributeDef implements IAttributeDef {
 	}
 
 	public String getDataType() {
-		if (this.dataType.equals("COMPLEX_TYPE")) return "STRUCTURE";
+		if (this.dataType.equals("COMPLEX_TYPE")) return DataTypes.STRUCTURE;
+		if (this.dataType.equals("STRUCTURE")) return DataTypes.STRUCTURE;
+		if (this.dataType.equals("STRING")) return DataTypes.STRING;
+		if (this.dataType.equals("BOOLEAN")) return DataTypes.BOOLEAN;
+		if (this.dataType.equals("DATE")) return DataTypes.DATE;
+		if (this.dataType.equals("INTEGER")) return DataTypes.INTEGER;
+		if (this.dataType.equals("FLOAT")) return DataTypes.FLOAT;
+		if (this.dataType.equals("LONG")) return DataTypes.LONG;
+		if (this.dataType.equals("CONCEPT")) return DataTypes.CONCEPT;
+		if (this.dataType.equals("SSTRING")) return DataTypes.SEMANTIC_TEXT;
+		if (this.dataType.equals("NLSTRING")) return DataTypes.NLSTRING;
+		if (this.dataType.equals("ENTITY")) return DataTypes.ENTITY;
 		else return this.dataType;
 	}
 
@@ -101,7 +112,6 @@ public class AttributeDef implements IAttributeDef {
 			if (this.entityTypeID!=null){
 				ComplexType cType = ctc.readComplexType(this.entityTypeID, null);
 				EntityType  etype = new EntityType(cType);
-
 				return etype;
 			} 	
 			else return null;

@@ -13,6 +13,7 @@ import java.util.Locale;
 
 import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
 import eu.trentorise.opendata.semantics.model.knowledge.IResourceContext;
+import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
 import eu.trentorise.opendata.semantics.model.knowledge.ITableResource;
 import eu.trentorise.opendata.semantics.services.INLPService;
 
@@ -39,7 +40,7 @@ public class NLPService implements INLPService {
 
 	}
 
-	public List<NLText> disambiguateColumns(ITableResource table,
+	public List<ISemanticText> disambiguateColumns(ITableResource table,
 			IResourceContext context) {
 		throw new UnsupportedOperationException("Service is not suported yet.");
 		// TODO implementation is required
@@ -50,22 +51,22 @@ public class NLPService implements INLPService {
 		// TODO implementation is required
 	}
 
-	public NLText runNLP(String nlText) {
-
-		PipelineClient pipClient = new PipelineClient(getClientProtocol());
-		NLPInput input = new NLPInput();
-		List<String> text = new ArrayList<String>();
-		text.add(nlText);
-		input.setText(text);
-		NLText[] processedText = pipClient.run("FullTextPipeline", input, 1l, "it");
-		int i =0;
-		  for (NLText nlext : processedText) {
-			  i++;
-              System.out.println(nlext.toString());
-          }
-		
-		return processedText[0];
-	}
+//	public ISemanticText runNLP(String nlText) {
+//
+//		PipelineClient pipClient = new PipelineClient(getClientProtocol());
+//		NLPInput input = new NLPInput();
+//		List<String> text = new ArrayList<String>();
+//		text.add(nlText);
+//		input.setText(text);
+//		NLText[] processedText = pipClient.run("FullTextPipeline", input, 1l, "it");
+//		int i =0;
+//		  for (NLText nlext : processedText) {
+//			  i++;
+//              System.out.println(nlext.toString());
+//          }
+//		
+//		return processedText[0];
+//	}
 	
 	/** For italian text and 1st knowledge base 
 	 * @param nlText
@@ -98,6 +99,16 @@ public class NLPService implements INLPService {
 	private IProtocolClient getClientProtocol(){
 		IProtocolClient api = ProtocolFactory.getHttpClient(new Locale("all"), "opendata.disi.unitn.it", 8080);
 		return api;
+	}
+
+	public List<ISemanticText> runNLP(List<String> texts) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ISemanticText runNLP(String text) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

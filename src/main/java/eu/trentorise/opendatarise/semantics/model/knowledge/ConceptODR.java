@@ -89,4 +89,9 @@ public class ConceptODR implements IConcept{
 		return null;
 	}
 
+	public IDict getName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
