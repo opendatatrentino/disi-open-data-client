@@ -21,7 +21,7 @@ public class TestKnowledgeService {
 	@Test
 	public void testGetConcept(){
 		KnowledgeService kserv= new KnowledgeService();
-		String url = "http://opendata.disi.unitn.it:8080/odr/concepts/120?includeTimestamps=false";
+		String url = "http://opendata.disi.unitn.it:8080/odr/concepts/120";
 		IConcept con = kserv.getConcept(url);
 
 	}
