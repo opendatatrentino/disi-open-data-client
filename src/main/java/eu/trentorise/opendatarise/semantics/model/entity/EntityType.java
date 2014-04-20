@@ -161,8 +161,7 @@ public class EntityType implements IEntityType{
 
 	public String getURL() {
 		String fullUrl = WebServiceURLs.getURL();
-		String url  = fullUrl+"/types/"+this.id+
-				"?locale="+(WebServiceURLs.getClientProtocol()).getLocale();
+		String url  = fullUrl+"/types/"+this.id;
 
 		return url;
 	}

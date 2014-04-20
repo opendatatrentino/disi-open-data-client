@@ -215,8 +215,7 @@ public class EntityService implements IEntityService {
 		Long id = createEntity(entity);
 
 		String fullUrl = WebServiceURLs.getURL();
-		String url  = fullUrl+"/instances/"+id+
-				"?locale="+(WebServiceURLs.getClientProtocol()).getLocale();
+		String url  = fullUrl+"/instances/"+id;
 		return url;
 	}
 

@@ -68,7 +68,9 @@ public class AttributeDef implements IAttributeDef {
 		this.description = attrDef.getDescription();
 		this.name = attrDef.getName();
 		this.typeId=attrDef.getTypeId();
-
+		if(attrDef.getRestrictionOnList()!=null){
+			this.entityTypeID=(Integer) attrDef.getRestrictionOnList().getDefaultValue();
+		}
 		if ((attrDef.getPresence().equals("STRICTLY_MANDATORY"))||(attrDef.getPresence().equals("MANDATORY")))
 		{this.presence=true;}
 		else {this.presence=false;}		
@@ -170,8 +172,7 @@ public class AttributeDef implements IAttributeDef {
 
 	public String getURL() {
 		String fullUrl = WebServiceURLs.getURL();
-		String url  = fullUrl+"/attributedefinitions/"+this.id+
-				"?locale="+(WebServiceURLs.getClientProtocol()).getLocale();
+		String url  = fullUrl+"/attributedefinitions/"+this.id;
 		return url;	
 	}
 
@@ -214,15 +215,13 @@ public class AttributeDef implements IAttributeDef {
 		{return null;} 
 		else {
 			String fullUrl = WebServiceURLs.getURL();
-			String url  = fullUrl+"/types/"+this.entityTypeID+
-					"?locale="+(WebServiceURLs.getClientProtocol()).getLocale();
+			String url  = fullUrl+"/types/"+this.entityTypeID;
 			return url;}
 	}
 
 	public String getRangeETypeURL() {
 		String fullUrl = WebServiceURLs.getURL();
-		String url  = fullUrl+"/types/"+this.id+
-				"?locale="+(WebServiceURLs.getClientProtocol()).getLocale();
+		String url  = fullUrl+"/types/"+this.id;
 		return url;
 	}
 

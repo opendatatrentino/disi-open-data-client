@@ -26,6 +26,7 @@ import eu.trentorise.opendatarise.semantics.model.entity.AttributeDef;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
 import eu.trentorise.opendatarise.semantics.model.knowledge.ConceptODR;
 import eu.trentorise.opendatarise.semantics.services.EntityTypeService;
+import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
 import eu.trentorise.opendatarise.semantics.services.model.AttributeCorrespondence;
 import eu.trentorise.opendatarise.semantics.services.model.SchemaCorrespondence;
 
@@ -54,7 +55,7 @@ public class MatchingService implements ISemanticMatchingService {
 		List<ISchemaCorrespondence> schemaCorespondences = new ArrayList<ISchemaCorrespondence>();
 		for (IEntityType etype: etypes){
 			EntityType  et = (EntityType) etype; 
-			System.out.println("etype:"+et.getName(Locale.ENGLISH));
+			//System.out.println("etype:"+et.getName(Locale.ENGLISH));
 			ISchemaCorrespondence sCorrespondence  =  schemaMatch(et, odrHeaders, odrName);
 			if(sCorrespondence.getScore()!=0){
 				schemaCorespondences.add( sCorrespondence);
@@ -186,8 +187,7 @@ public class MatchingService implements ISemanticMatchingService {
 
 
 	private IProtocolClient getClientProtocol(){
-		IProtocolClient api = ProtocolFactory.getHttpClient(new Locale("all"), "opendata.disi.unitn.it", 8080);
-		return api;
+		return  WebServiceURLs.getClientProtocol();
 	}
 
 }

@@ -29,7 +29,7 @@ public class KnowledgeService implements IKnowledgeService {
 
 	public IConcept getConcept(String URL) {
 		String s = URL.substring(URL.indexOf("ts/") + 3);
-		s = s.substring(0, s.indexOf("?"));
+	//	s = s.substring(0, s.indexOf("?"));
 		Long conceptId = Long.parseLong(s);
 		ConceptODR concept = new ConceptODR();
 		concept = concept.readConcept(conceptId);

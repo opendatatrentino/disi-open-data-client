@@ -14,6 +14,7 @@ import java.util.Locale;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.model.entity.IStructure;
+import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
 
 public class Structure  extends Instance implements IStructure
 {
@@ -77,8 +78,7 @@ public class Structure  extends Instance implements IStructure
 	}
 
 	private IProtocolClient getClientProtocol(){
-		IProtocolClient api = ProtocolFactory.getHttpClient(new Locale("all"), "opendata.disi.unitn.it", 8080);
-		return api;
+		return  WebServiceURLs.getClientProtocol();
 	}
 
 	public String getURL() {

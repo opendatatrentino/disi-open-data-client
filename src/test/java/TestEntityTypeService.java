@@ -42,13 +42,27 @@ public class TestEntityTypeService {
 		for(IEntityType etype:etypes){
 			List<IAttributeDef>atdefs=etype.getAttributeDefs();
 			for (IAttributeDef ad:atdefs){
-				System.out.println(ad.getName());
-				System.out.println(ad.getDataType());
+				System.out.println("AttributeDef Name:"+ad.getName().getString(Locale.ENGLISH));
+				System.out.println("AttributeDef URL:"+ad.getURL());
+				System.out.println("AttributeDef Etype URL:"+ad.getETypeURL());
 			} 
 		}
 		assertNotNull(etypes.get(0));
 	}
 
+	//@Test
+	public void testGetEntityTypeByURL(){
+		EntityTypeService ets = new EntityTypeService();
+		List<IEntityType> etypes= ets.getAllEntityTypes();
+		for(IEntityType etype:etypes){
+			
+				//System.out.println(etype.getName());
+				//System.out.println(etype.getURL());
+				IEntityType et =ets.getEntityType(etype.getURL());
+			//	System.out.println(et.getName());
+				assertNotNull(et);
+		}
+	}
 
 	//@Test
 	//	public void testAddAttributeDefToEtype(){

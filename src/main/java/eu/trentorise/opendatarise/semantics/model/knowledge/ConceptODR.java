@@ -75,8 +75,7 @@ public class ConceptODR implements IConcept{
 
 	public String getURL() {
 		String fullUrl = WebServiceURLs.getURL();
-		String url  = fullUrl+"/concepts/"+this.id+
-				"?locale="+(WebServiceURLs.getClientProtocol()).getLocale();
+		String url  = fullUrl+"/concepts/"+this.id;
 		return url;
 	}
 

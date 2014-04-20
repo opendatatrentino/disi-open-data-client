@@ -78,7 +78,7 @@ public class Search implements ISearchService {
 	}
 
 	public void getClientProtocol(){
-		this.api = ProtocolFactory.getHttpClient(new Locale("all"), "opendata.disi.unitn.it", 8080);
+		this.api =  WebServiceURLs.getClientProtocol();
 	}
 
 

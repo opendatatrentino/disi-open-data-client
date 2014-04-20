@@ -49,7 +49,7 @@ public class EntityTypeService implements IEntityTypeService {
 			EntityType eType = new EntityType(cType);
 			AttributeDefinitionFilter adf = new AttributeDefinitionFilter();
 			adf.setIncludeRestrictions(true);
-			
+
 			List<AttributeDefinition>  attrDefList = attrDefs.readAttributeDefinitions(cType.getId(), null, null, adf);
 
 			List<IAttributeDef> attributeDefList = new ArrayList<IAttributeDef>();
@@ -59,7 +59,7 @@ public class EntityTypeService implements IEntityTypeService {
 				attributeDefList.add(attributeDef);
 			}
 			eType.setAttrs(attributeDefList);
-		//	System.out.println(eType.toString());
+			//	System.out.println(eType.toString());
 
 			etypes.add(eType);
 		}
@@ -103,13 +103,18 @@ public class EntityTypeService implements IEntityTypeService {
 	}
 
 	public List<IEntityType> getEntityTypes(List<String> URLs) {
-		// TODO Auto-generated method stub
-		return null;
+		List<IEntityType> etypes = new ArrayList<IEntityType>();
+
+		for (String url: URLs){
+			etypes.add(getEntityType(url));
+		}
+		return etypes;
 	}
 
 	public IEntityType getEntityType(String URL) {
-		// TODO Auto-generated method stub
-		return null;
+		String s = URL.substring(URL.indexOf("es/") + 3);
+		Long typeID = Long.parseLong(s);
+		return getEntityType(typeID);
 	}
 
 }

@@ -97,8 +97,8 @@ public class NLPService implements INLPService {
 
 
 	private IProtocolClient getClientProtocol(){
-		IProtocolClient api = ProtocolFactory.getHttpClient(new Locale("all"), "opendata.disi.unitn.it", 8080);
-		return api;
+		
+		return  WebServiceURLs.getClientProtocol();
 	}
 
 	public List<ISemanticText> runNLP(List<String> texts) {

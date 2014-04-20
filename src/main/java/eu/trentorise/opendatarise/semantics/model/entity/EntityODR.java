@@ -129,8 +129,7 @@ public class EntityODR extends Structure implements IEntity {
 
 	public String getURL() {
 		String fullUrl = WebServiceURLs.getURL();
-		String url  = fullUrl+"/instances/"+this.globalId+
-				"?locale="+(WebServiceURLs.getClientProtocol()).getLocale();
+		String url  = fullUrl+"/instances/"+this.globalId;
 		return url;	}
 
 	public void setURL(String sUrl) {
