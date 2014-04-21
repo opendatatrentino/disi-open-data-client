@@ -211,7 +211,7 @@ public class AttributeDef implements IAttributeDef {
 	}
 
 	public String getETypeURL() {
-		if (this.entityTypeID==null)
+		if (this.typeId==null)
 		{return null;} 
 		else {
 			String fullUrl = WebServiceURLs.getURL();
