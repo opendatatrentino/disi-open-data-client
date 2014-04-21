@@ -18,12 +18,14 @@
 package eu.trentorise.opendatarise.semantics.model.knowledge;
 
 import eu.trentorise.opendata.semantics.model.knowledge.IDict;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
@@ -196,5 +198,10 @@ public class Dict implements IDict {
 
 		}
 		return sb.toString();
+	}
+
+	public boolean contains(String text) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

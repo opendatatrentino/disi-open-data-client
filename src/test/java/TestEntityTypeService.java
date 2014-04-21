@@ -1,6 +1,7 @@
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -8,9 +9,11 @@ import org.junit.Test;
 
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
+import eu.trentorise.opendata.semantics.services.model.IEtypeSearchResult;
 import eu.trentorise.opendatarise.semantics.model.entity.AttributeDef;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
 import eu.trentorise.opendatarise.semantics.services.EntityTypeService;
+import eu.trentorise.opendatarise.semantics.services.model.EtypeSearchResult;
 
 
 /**
@@ -20,7 +23,7 @@ import eu.trentorise.opendatarise.semantics.services.EntityTypeService;
  */
 public class TestEntityTypeService {
 
-	//@Test
+	@Test
 	public void testGetEntityTypeByID(){
 		EntityTypeService ets = new EntityTypeService();
 		EntityType etype =(EntityType)ets.getEntityType(12L);
@@ -39,18 +42,18 @@ public class TestEntityTypeService {
 	public void testGetAllEntityTypes(){
 		EntityTypeService ets = new EntityTypeService();
 		List<IEntityType> etypes= ets.getAllEntityTypes();
-		for(IEntityType etype:etypes){
-			List<IAttributeDef>atdefs=etype.getAttributeDefs();
-			for (IAttributeDef ad:atdefs){
-				System.out.println("AttributeDef Name:"+ad.getName().getString(Locale.ENGLISH));
-				System.out.println("AttributeDef URL:"+ad.getURL());
-				System.out.println("AttributeDef Etype URL:"+ad.getETypeURL());
-			} 
-		}
+//		for(IEntityType etype:etypes){
+//			List<IAttributeDef>atdefs=etype.getAttributeDefs();
+//			for (IAttributeDef ad:atdefs){
+//				System.out.println("AttributeDef Name:"+ad.getName().getString(Locale.ENGLISH));
+//				System.out.println("AttributeDef URL:"+ad.getURL());
+//				System.out.println("AttributeDef Etype URL:"+ad.getETypeURL());
+//			} 
+//		}
 		assertNotNull(etypes.get(0));
 	}
 
-	//@Test
+	@Test
 	public void testGetEntityTypeByURL(){
 		EntityTypeService ets = new EntityTypeService();
 		List<IEntityType> etypes= ets.getAllEntityTypes();
@@ -64,6 +67,14 @@ public class TestEntityTypeService {
 		}
 	}
 
+	@Test
+	public void testFuzzySearchEtype(){
+		EntityTypeService ets = new EntityTypeService();
+		List<IEtypeSearchResult> searchEtypes = ets.searchEntityTypes("Lcaton");
+		assertEquals("Location",searchEtypes.get(0).getName().getString(Locale.ENGLISH));
+
+	}
+	
 	//@Test
 	//	public void testAddAttributeDefToEtype(){
 	//		EntityTypeService ets = new EntityTypeService();

@@ -221,7 +221,7 @@ public class AttributeDef implements IAttributeDef {
 
 	public String getRangeETypeURL() {
 		String fullUrl = WebServiceURLs.getURL();
-		String url  = fullUrl+"/types/"+this.id;
+		String url  = fullUrl+"/types/"+this.entityTypeID;
 		return url;
 	}
 
