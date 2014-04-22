@@ -106,7 +106,7 @@ public class EntityService implements IEntityService {
 	}
 
 
-	public IAttribute createAttribute(IAttributeDef attrDef, List<Object> values){
+	public AttributeODR createAttribute(IAttributeDef attrDef, List<Object> values){
 
 		ValueODR value = new ValueODR();
 		value.setValue(value);
@@ -118,12 +118,12 @@ public class EntityService implements IEntityService {
 	}
 
 
-	public IAttribute createAttribute(IAttributeDef attrDef, Object value){
+	public AttributeODR createAttribute(IAttributeDef attrDef, Object value){
 		AttributeDef ad = (AttributeDef) attrDef;
 
 		if (ad.getName(Locale.ENGLISH).equals("Name"))
 		{
-			return createNameAttribute(attrDef, value);
+			return createNameAttribute(attrDef, (String)value);
 		} else 
 		{
 			ValueODR val = new ValueODR();
@@ -134,44 +134,21 @@ public class EntityService implements IEntityService {
 
 	}
 
-	private IAttribute createNameAttribute(IAttributeDef attrDef, Object value){
+	private AttributeODR createNameAttribute(IAttributeDef attrDef, String name){
 
-		Name nameStructure = new Name();
-		nameStructure.setEntityBaseId(1L);
-		nameStructure.setTypeId(10L);
+		InstanceClient  ic = new InstanceClient(api);
+		//Name nameStructure = new Name();
+		//List<Attribute> nameAttributes = new ArrayList<Attribute>();
+		//nameStructure.setEntityBaseId(1L);
 		Attribute nameAttribute = new Attribute();
-
-		AttributeDef ad = (AttributeDef) attrDef; 
-
-		List<Attribute> nameAttributes = new ArrayList<Attribute>();
 		nameAttribute.setDefinitionId(attrDef.getGUID());
-		List<Value> nameValues=new ArrayList<Value>();
-		ValueODR val = new ValueODR();
-		String input = (String) value;
-		Value v = new Value(input, 1L);
-
-		nameValues.add(v);
+	//	nameAttributes.add(nameAttribute);
+		List<Value>nameValues=new ArrayList<Value>();
+		nameValues.add(new Value(name, 1L));
+		//BE CAREFULL WITH VOCABULARY
 		nameAttribute.setValues(nameValues);
-		nameAttributes.add(nameAttribute);
-
-		List<Attribute>nameAttrs=new ArrayList<Attribute>();
-		nameStructure.setAttributes(nameAttrs);
-
-		EntityService es = new EntityService(api);
-		long id =es.createEntity(nameStructure);
-		//create entity as a client object
-
-
-		AttributeODR a = new AttributeODR();
-
-		a.setAttributeDefinition(attrDef);
-		ValueODR valueNam = new ValueODR();
-		valueNam.setValue(id);
-
-
-		a.addValue(valueNam);
-
-		return a;
+		AttributeODR nameAttributeODR = new AttributeODR(api,nameAttribute);
+		return nameAttributeODR;
 	}
 
 

@@ -96,7 +96,7 @@ public class TestEntityService {
 
 	}
 
-	//@Test 
+	@Test 
 	public void testCreateEntityODR(){
 		String name = "Test name";
 		InstanceClient  ic = new InstanceClient(api);

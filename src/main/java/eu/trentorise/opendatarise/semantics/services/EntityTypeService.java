@@ -80,12 +80,21 @@ public class EntityTypeService implements IEntityTypeService {
 
 	public EntityType getEntityType(long id){
 		ComplexTypeClient ctc = new ComplexTypeClient(getClientProtocol());
-		ComplexType complexType = ctc.readComplexType(id, null);
+		ComplexTypeFilter ctFilter= new ComplexTypeFilter();
+		ctFilter.setIncludeRestrictions(true);
+		ctFilter.setIncludeAttributes(true);
+		ctFilter.setIncludeAttributesAsProperties(true);
+		ComplexType complexType = ctc.readComplexType(id, ctFilter);
+		
 		EntityType eType = new EntityType(complexType);
 		AttributeDefinitionClient attrDefs = new AttributeDefinitionClient(getClientProtocol());
-		List<AttributeDefinition>  attrDefList = attrDefs.readAttributeDefinitions(id, null, null, null);
+		AttributeDefinitionFilter adf = new AttributeDefinitionFilter();
+		adf.setIncludeRestrictions(true);
+		List<AttributeDefinition>  attrDefList = attrDefs.readAttributeDefinitions(id, null, null, adf);
 		List<IAttributeDef> attributeDefList = new ArrayList<IAttributeDef>();
+		
 		for (AttributeDefinition attrDef: attrDefList){
+			
 			IAttributeDef attributeDef = new AttributeDef(attrDef);
 			attributeDefList.add(attributeDef);
 		}

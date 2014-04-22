@@ -149,12 +149,12 @@ public class ImpiantoDiRisalitaFacade extends EntityODR {
 
 	public void setName(String name) {
 		InstanceClient  ic = new InstanceClient(api);
-		Name nameStructure = new Name();
-		List<Attribute> nameAttributes = new ArrayList<Attribute>();
-		nameStructure.setEntityBaseId(1L);
+		//Name nameStructure = new Name();
+		//List<Attribute> nameAttributes = new ArrayList<Attribute>();
+		//nameStructure.setEntityBaseId(1L);
 		Attribute nameAttribute = new Attribute();
 		nameAttribute.setDefinitionId(55L);
-		nameAttributes.add(nameAttribute);
+	//	nameAttributes.add(nameAttribute);
 		List<Value>nameValues=new ArrayList<Value>();
 		nameValues.add(new Value(name, 1L));
 		//BE CAREFULL WITH VOCABULARY

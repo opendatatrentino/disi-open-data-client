@@ -99,7 +99,7 @@ public class TestEntity {
 
 
 
-	//@Test
+	@Test
 	public void testCreationImpianti(){
 		ImpiantoDiRisalitaFacade idrf = new ImpiantoDiRisalitaFacade(getClientProtocol());
 		long id =idrf.createEntity("Ivan", "Cabinovia", 12.356f, 20.9087f, "8:00", "17:00");

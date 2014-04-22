@@ -30,15 +30,19 @@ public class TestEntityTypeService {
 		List<IAttributeDef>atdefs=etype.getAttributeDefs();
 		for (IAttributeDef ad:atdefs){
 
-			System.out.println(ad.getRangeEType());
 			System.out.println(ad.getName());
+			System.out.println(ad.getDataType());
+
+			System.out.println(ad.getRangeEType());
+			
+			
 		} 
 		//		System.out.println("URL:"+etype.getURL());
 		//		System.out.println(etype.getName1());
 		//	assertEquals(etype.getName1().get("it") ,"Infrastruttura");
 	}
 
-	@Test
+	//@Test
 	public void testGetAllEntityTypes(){
 		EntityTypeService ets = new EntityTypeService();
 		List<IEntityType> etypes= ets.getAllEntityTypes();
@@ -53,7 +57,7 @@ public class TestEntityTypeService {
 		assertNotNull(etypes.get(0));
 	}
 
-	@Test
+	//@Test
 	public void testGetEntityTypeByURL(){
 		EntityTypeService ets = new EntityTypeService();
 		List<IEntityType> etypes= ets.getAllEntityTypes();
@@ -67,7 +71,8 @@ public class TestEntityTypeService {
 		}
 	}
 
-	@Test
+	
+	//@Test
 	public void testFuzzySearchEtype(){
 		EntityTypeService ets = new EntityTypeService();
 		List<IEtypeSearchResult> searchEtypes = ets.searchEntityTypes("Lcaton");
