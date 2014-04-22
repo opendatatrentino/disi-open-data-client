@@ -67,15 +67,15 @@ public class TestNLPService {
 	};
 
 	//@Test
-	public void testGetAllPipelinesDescription(){
-		NLPService nlpService = new NLPService();
-		List<PipelineDescription> pipelines = nlpService.readPipelinesDesription();
-		System.out.println("NLP Pipelines : ");
-		for (PipelineDescription pipeline : pipelines) {
-			System.out.println(pipeline.getName());
-		}
-		assertNotNull(pipelines.get(0));
-	}
+//	public void testGetAllPipelinesDescription(){
+//		NLPService nlpService = new NLPService();
+//		List<PipelineDescription> pipelines = nlpService.readPipelinesDesription();
+//		System.out.println("NLP Pipelines : ");
+//		for (PipelineDescription pipeline : pipelines) {
+//			System.out.println(pipeline.getName());
+//		}
+//		assertNotNull(pipelines.get(0));
+//	}
 
 	//@Test
 //	public void testRunNLP(){
@@ -123,6 +123,6 @@ public class TestNLPService {
 //			};
 //		System.out.println(selectedMeaningCount);
 //		}
-		
+//		
 	}
 

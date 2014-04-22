@@ -23,37 +23,33 @@ import eu.trentorise.opendatarise.semantics.services.model.EtypeSearchResult;
  */
 public class TestEntityTypeService {
 
-	@Test
+	//@Test
 	public void testGetEntityTypeByID(){
 		EntityTypeService ets = new EntityTypeService();
 		EntityType etype =(EntityType)ets.getEntityType(12L);
 		List<IAttributeDef>atdefs=etype.getAttributeDefs();
 		for (IAttributeDef ad:atdefs){
-
 			System.out.println(ad.getName());
 			System.out.println(ad.getDataType());
-
-			System.out.println(ad.getRangeEType());
-			
-			
+			System.out.println("AttributeDef Etype URL:"+ad.getETypeURL());
 		} 
 		//		System.out.println("URL:"+etype.getURL());
 		//		System.out.println(etype.getName1());
 		//	assertEquals(etype.getName1().get("it") ,"Infrastruttura");
 	}
 
-	//@Test
+	@Test
 	public void testGetAllEntityTypes(){
 		EntityTypeService ets = new EntityTypeService();
 		List<IEntityType> etypes= ets.getAllEntityTypes();
-//		for(IEntityType etype:etypes){
-//			List<IAttributeDef>atdefs=etype.getAttributeDefs();
-//			for (IAttributeDef ad:atdefs){
-//				System.out.println("AttributeDef Name:"+ad.getName().getString(Locale.ENGLISH));
-//				System.out.println("AttributeDef URL:"+ad.getURL());
-//				System.out.println("AttributeDef Etype URL:"+ad.getETypeURL());
-//			} 
-//		}
+		for(IEntityType etype:etypes){
+			List<IAttributeDef>atdefs=etype.getAttributeDefs();
+			for (IAttributeDef ad:atdefs){
+				System.out.println("AttributeDef Name:"+ad.getName().getString(Locale.ENGLISH));
+				//System.out.println("AttributeDef URL:"+ad.getURL());
+				System.out.println("AttributeDef Etype URL:"+ad.getETypeURL());
+			} 
+		}
 		assertNotNull(etypes.get(0));
 	}
 

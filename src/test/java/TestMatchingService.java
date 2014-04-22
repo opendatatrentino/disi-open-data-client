@@ -87,7 +87,7 @@ public class TestMatchingService {
 
 		List<ColumnConceptCandidate> odrHeaders =
 				ColumnRecognizer.computeScoredCandidates(cols, bodies);
-		System.out.println(odrHeaders.get(1).toString());
+	//	System.out.println(odrHeaders.get(1).toString());
 		for (IEntityType etype:etypeList){
 
 			EntityType eType = (EntityType) etype;
@@ -107,7 +107,7 @@ public class TestMatchingService {
 	public void testGetConceptDistance(){
 		MatchingService mService = new MatchingService();
 		float scoreDist = mService.getConceptsDistance(33292L,2L);
-		System.out.println(scoreDist);
+	//	System.out.println(scoreDist);
 		assertEquals(0,scoreDist,0.1);
 	}
 //

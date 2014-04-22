@@ -133,6 +133,8 @@ public class MatchingService implements ISemanticMatchingService {
 			for(IAttributeDef attrDef:eTypeAttributes ){
 				AttributeDef attr = (AttributeDef)attrDef;
 				//ConceptODR attrConcept = (ConceptODR)attr.getConcept();
+//				System.out.println(attr.getName(Locale.ENGLISH));
+//				System.out.println(attr.getETypeURL());
 				long targetConceptID = attr.getConceptId();
 				Map.Entry<Long,Long> entry = new AbstractMap.SimpleEntry<Long,Long>(sourceConceptID,targetConceptID);
 				batch.add(entry);
