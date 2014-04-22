@@ -2,16 +2,13 @@ package eu.trentorise.opendatarise.semantics.services;
 
 import it.unitn.disi.sweb.core.nlp.model.NLText;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
-import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
 import it.unitn.disi.sweb.webapi.client.nlp.PipelineClient;
 import it.unitn.disi.sweb.webapi.model.NLPInput;
 import it.unitn.disi.sweb.webapi.model.PipelineDescription;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
-import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
 import eu.trentorise.opendata.semantics.model.knowledge.IResourceContext;
 import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
 import eu.trentorise.opendata.semantics.model.knowledge.ITableResource;
@@ -24,22 +21,6 @@ import eu.trentorise.opendata.semantics.services.INLPService;
  */
 public class NLPService implements INLPService {
 
-	public void namedEntityRecognition(NLText nlText) {
-		throw new UnsupportedOperationException("Named Entity Recognition service is not suported on the server yet.");
-		// TODO implement NER as soon as it will be ready
-	}
-
-	public void namedEntityDisambiguate(NLText nlText) {
-		throw new UnsupportedOperationException("Named Entity Disambiguation service is not suported on the server yet.");
-		// TODO implement NE disambiguation as soon as it will be ready
-	}
-
-	public void wordSenseDisambiguate(NLText nlText, List<IConcept> context) {
-		throw new UnsupportedOperationException("Service is not suported yet.");
-		// TODO implementation is required
-
-	}
-
 	public List<ISemanticText> disambiguateColumns(ITableResource table,
 			IResourceContext context) {
 		throw new UnsupportedOperationException("Service is not suported yet.");
@@ -51,23 +32,23 @@ public class NLPService implements INLPService {
 		// TODO implementation is required
 	}
 
-//	public ISemanticText runNLP(String nlText) {
-//
-//		PipelineClient pipClient = new PipelineClient(getClientProtocol());
-//		NLPInput input = new NLPInput();
-//		List<String> text = new ArrayList<String>();
-//		text.add(nlText);
-//		input.setText(text);
-//		NLText[] processedText = pipClient.run("FullTextPipeline", input, 1l, "it");
-//		int i =0;
-//		  for (NLText nlext : processedText) {
-//			  i++;
-//              System.out.println(nlext.toString());
-//          }
-//		
-//		return processedText[0];
-//	}
-	
+	//	public ISemanticText runNLP(String nlText) {
+	//
+	//		PipelineClient pipClient = new PipelineClient(getClientProtocol());
+	//		NLPInput input = new NLPInput();
+	//		List<String> text = new ArrayList<String>();
+	//		text.add(nlText);
+	//		input.setText(text);
+	//		NLText[] processedText = pipClient.run("FullTextPipeline", input, 1l, "it");
+	//		int i =0;
+	//		  for (NLText nlext : processedText) {
+	//			  i++;
+	//              System.out.println(nlext.toString());
+	//          }
+	//		
+	//		return processedText[0];
+	//	}
+
 	/** For italian text and 1st knowledge base 
 	 * @param nlText
 	 * @return
@@ -80,16 +61,14 @@ public class NLPService implements INLPService {
 		text.add(nlText);
 		input.setText(text);
 		NLText[] processedText = pipClient.run("KeywordTextPipeline", input, 1l, "it");
-		
-		  for (NLText nlext : processedText) {
-           //   System.out.println(nlext.toString());
-          }
-		
+		//		for (NLText nlext : processedText) {
+		//		   System.out.println(nlext.toString());
+		//		}
 		return processedText[0];
 	}
 
-	
-	
+
+
 	public List<PipelineDescription> readPipelinesDesription(){
 		PipelineClient pipClient = new PipelineClient(getClientProtocol());
 		return pipClient.readPipelines();
@@ -97,18 +76,23 @@ public class NLPService implements INLPService {
 
 
 	private IProtocolClient getClientProtocol(){
-		
+
 		return  WebServiceURLs.getClientProtocol();
 	}
 
 	public List<ISemanticText> runNLP(List<String> texts) {
-		// TODO Auto-generated method stub
-		return null;
+		List<ISemanticText> sTextList = new ArrayList<ISemanticText>();
+		for (String st : texts){
+			ISemanticText stexts = runNLP(st);
+			sTextList.add(stexts);
+		}
+		return sTextList;
 	}
 
 	public ISemanticText runNLP(String text) {
-		// TODO Auto-generated method stub
-		return null;
+		NLText nltxt = runNlpIt(text);
+		ISemanticText sText = SemanticTextFactory.semanticText(nltxt);
+		return sText;
 	}
 
 

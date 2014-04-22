@@ -2,6 +2,7 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import it.unitn.disi.sweb.core.nlp.model.NLSentence;
 import it.unitn.disi.sweb.core.nlp.model.NLText;
@@ -12,6 +13,9 @@ import org.junit.Test;
 
 
 
+
+
+import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
 import eu.trentorise.opendatarise.semantics.services.NLPService;
 
 
@@ -67,62 +71,67 @@ public class TestNLPService {
 	};
 
 	//@Test
-//	public void testGetAllPipelinesDescription(){
-//		NLPService nlpService = new NLPService();
-//		List<PipelineDescription> pipelines = nlpService.readPipelinesDesription();
-//		System.out.println("NLP Pipelines : ");
-//		for (PipelineDescription pipeline : pipelines) {
-//			System.out.println(pipeline.getName());
-//		}
-//		assertNotNull(pipelines.get(0));
-//	}
+	public void testGetAllPipelinesDescription(){
+		NLPService nlpService = new NLPService();
+		List<PipelineDescription> pipelines = nlpService.readPipelinesDesription();
+		System.out.println("NLP Pipelines : ");
+		for (PipelineDescription pipeline : pipelines) {
+			System.out.println(pipeline.getName());
+		}
+		assertNotNull(pipelines.get(0));
+	}
+
+	@Test
+	public void testRunBatchNLP(){
+		
+		NLPService nlpService = new NLPService();
+
+		List<ISemanticText> output= nlpService.runNLP(prodotti_certificati);
+		System.out.println(output.get(0).getSentences().get(0).getWords().get(0).getMeanings().get(0).getURL());
+		System.out.println(output.get(0).getSentences().get(0).getWords().get(0).getMeanings().get(0).getProbability());
+
+		System.out.println(output.get(0).getSentences().get(0).getStartOffset());
+		System.out.println(output.get(0).getSentences().get(0).getEndOffset());
+
+		assertEquals("it", output.get(0).getLocale().toLanguageTag().toString());
+		assertEquals(0,output.get(0).getSentences().get(0).getStartOffset());
+		assertEquals(104,output.get(0).getSentences().get(0).getEndOffset());
+	}
+
 
 	//@Test
-//	public void testRunNLP(){
-//		String inputStr = "Hello World";
-//		NLPService nlpService = new NLPService();
-//		NLText output= nlpService.runNLP(inputStr);
-//		assertNotNull(output);
-//	}
+	public void testRunNLP(){
+		String inputStr = "Hello World";
+		NLPService nlpService = new NLPService();
 
+		ISemanticText output= nlpService.runNLP(inputStr);
+		System.out.println(output.getLocale());
+		System.out.println(output.getText());
+		assertEquals("it",output.getLocale().toLanguageTag().toString());
+		assertEquals(inputStr,output.getText());
+		assertEquals(0,output.getSentences().get(0).getStartOffset());
+		assertEquals(11,output.getSentences().get(0).getEndOffset());
 
-
-
-//	@Test    
-//	public void testNLPService() {
-//
-//		
-//		String testText = "Formaggio fresco a pasta filata, molle e a fermentazione lattica. Viene impiegato latte vaccino e caglio bovino liquido."
-//				+ "La filatura viene fatta con acqua calda eventualmente addizionata di sale.La forma puÃ² essere sferoidale (peso 20-250 g), "
-//				+ "eventualmente con testina, o a treccia (peso 125-250 g).La crosta Ã¨ assente e presenta una pelle di consistenza tenera, superficie "
-//				+ "liscia e lucente, omogenea, di color bianco latte.La pasta ha una struttura fibrosa, che al taglio rilascia liquido lattiginoso, non "
-//				+ "presenta occhiatura e il colore Ã¨ omogeneo bianco latte. La consistenza Ã¨ morbida e leggermente elastica.Il sapore Ã¨ caratteristico, sapido, "
-//				+ "fresco, delicatamente acidulo.Viene confezionata in involucro protettivo e commercializzata in contatto con un liquido di governo, costituito da "
-//				+ "acqua con eventuale aggiunta di sale.";
-//		
-//		NLPService nlpService = new NLPService();
-//		NLText processedText = new NLText();
-//		List<NLText> processedTexts = new ArrayList<NLText>();
-//
-//			processedText = nlpService.runNLP(testText);
-//			processedTexts.add(processedText);
-//			int selectedMeaningCount = 0;
-//			int nonEmptyMeaningsCount = 0;
-//			for (NLSentence sentence : processedText.getSentences()){
-//				for (NLToken token : sentence.getTokens()){
-//
-//					if (token.getSelectedMeaning() != null){
-//						selectedMeaningCount += 1;
-//					}
-//
-//					if (token.getMeanings().size() > 0){
-//						nonEmptyMeaningsCount += 1;
-//					}
-//
-//				}
-//			};
-//		System.out.println(selectedMeaningCount);
-//		}
-//		
+		assertNotNull(output);
 	}
+
+
+	//@Test    
+	public void testNLPService() {
+
+
+		String testText = "Formaggio fresco a pasta filata, molle e a fermentazione lattica. Viene impiegato latte vaccino e caglio bovino liquido."
+				+ "La filatura viene fatta con acqua calda eventualmente addizionata di sale.La forma puÃ² essere sferoidale (peso 20-250 g), "
+				+ "eventualmente con testina, o a treccia (peso 125-250 g).La crosta Ã¨ assente e presenta una pelle di consistenza tenera, superficie "
+				+ "liscia e lucente, omogenea, di color bianco latte.La pasta ha una struttura fibrosa, che al taglio rilascia liquido lattiginoso, non "
+				+ "presenta occhiatura e il colore Ã¨ omogeneo bianco latte. La consistenza Ã¨ morbida e leggermente elastica.Il sapore Ã¨ caratteristico, sapido, "
+				+ "fresco, delicatamente acidulo.Viene confezionata in involucro protettivo e commercializzata in contatto con un liquido di governo, costituito da "
+				+ "acqua con eventuale aggiunta di sale.";
+
+		NLPService nlpService = new NLPService();
+		NLText processedText = new NLText();
+		ISemanticText sText= nlpService.runNLP(testText);
+
+	}
+}
 
