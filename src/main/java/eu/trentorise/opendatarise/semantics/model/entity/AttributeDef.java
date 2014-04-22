@@ -211,18 +211,19 @@ public class AttributeDef implements IAttributeDef {
 	}
 
 	public String getETypeURL() {
-		if (this.entityTypeID==null)
-		{return null;} 
-		else {
-			String fullUrl = WebServiceURLs.getURL();
-			String url  = fullUrl+"/types/"+this.typeId;
-			return url;}
+		String fullUrl = WebServiceURLs.getURL();
+		String url  = fullUrl+"/types/"+this.typeId;
+		return url;
 	}
 
 	public String getRangeETypeURL() {
-		String fullUrl = WebServiceURLs.getURL();
-		String url  = fullUrl+"/types/"+this.entityTypeID;
-		return url;
+		if (this.entityTypeID==null)
+		{return null;} 
+		else {		
+			String fullUrl = WebServiceURLs.getURL();
+			String url  = fullUrl+"/types/"+this.entityTypeID;
+			return url;
+		}
 	}
 
 	public IDict getName() {
