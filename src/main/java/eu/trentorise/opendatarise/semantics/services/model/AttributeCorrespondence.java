@@ -8,6 +8,7 @@ import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.services.model.IAttributeCorrespondence;
 import eu.trentorise.opendatarise.semantics.model.entity.AttributeDef;
 import eu.trentorise.opendatarise.semantics.model.knowledge.ConceptODR;
+import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
@@ -86,8 +87,9 @@ public class AttributeCorrespondence implements IAttributeCorrespondence {
 	}
 
 	public String getHeaderConceptURL() {
-		// TODO Auto-generated method stub
-		return null;
+		String fullUrl = WebServiceURLs.getURL();
+		String url  = fullUrl+"/concepts/"+this.headerConceptID;
+		return url;
 	}
 
 }

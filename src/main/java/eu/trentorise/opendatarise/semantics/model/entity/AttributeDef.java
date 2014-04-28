@@ -214,13 +214,13 @@ public class AttributeDef implements IAttributeDef {
 		return this.entityTypeID.longValue();
 	}
 	
-	public String getETypeURL() {
+	public String getEtypeURL() {
 		String fullUrl = WebServiceURLs.getURL();
 		String url  = fullUrl+"/types/"+this.typeId;
 		return url;
 	}
 
-	public String getRangeETypeURL() {
+	public String getRangeEtypeURL() {
 		if (this.entityTypeID==null)
 		{return null;} 
 		else {		
@@ -252,7 +252,5 @@ public class AttributeDef implements IAttributeDef {
 		}
 		return dict;
 	}
-
-
 
 }

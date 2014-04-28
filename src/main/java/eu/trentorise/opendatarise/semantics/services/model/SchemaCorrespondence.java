@@ -30,20 +30,21 @@ public class SchemaCorrespondence implements ISchemaCorrespondence {
 	public void setEtype(EntityType etype) {
 		this.etype = etype;
 	}
-	public Float getScore() {
+	public float getScore() {
 		return score;
 	}
 	public void setScore(Float score) {
 		this.score = score;
 	}
-	public List<IAttributeCorrespondence> getAttributeCorrespondence() {
-		return attributeCorrespondences;
-	}
 	public void setAttributeCorrespondence(
 			List<IAttributeCorrespondence> attributeCorrespondence) {
 		this.attributeCorrespondences = attributeCorrespondence;
 	}
-	
-	
+	public List<IAttributeCorrespondence> getAttributeCorrespondences() {
+		return attributeCorrespondences;
+	}
+	public List<IAttributeCorrespondence> getAttributeCorrespondence() {
+		return attributeCorrespondences;
+	}
 	
 }

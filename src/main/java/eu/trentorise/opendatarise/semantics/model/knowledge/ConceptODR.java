@@ -7,6 +7,7 @@ import it.unitn.disi.sweb.webapi.model.Pagination;
 import it.unitn.disi.sweb.webapi.model.kb.concepts.Concept;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -20,7 +21,8 @@ public class ConceptODR implements IConcept{
 	private long id;
 	private String label;
 	private long globalID;
-	private  Map<String, String> name;
+	private Map<String, String> name;
+	private Map<String, String> description;
 	private IProtocolClient api;
 
 	public ConceptODR(){}
@@ -30,6 +32,7 @@ public class ConceptODR implements IConcept{
 		this.id = con.getId();
 		this.globalID = con.getGlobalId();
 		this.name=con.getName();
+		this.description=con.getDescription();
 	}
 
 
@@ -63,6 +66,7 @@ public class ConceptODR implements IConcept{
 		Pagination page = new Pagination();
 		List<Concept> concList = client.readConcepts(1L, null, null, label, null, null);
 		for (Concept con: concList){
+		
 			ConceptODR conceptODR = new ConceptODR(con);	
 			conOdrList.add(conceptODR);
 		}
@@ -84,13 +88,27 @@ public class ConceptODR implements IConcept{
 	}
 
 	public IDict getDescription() {
-		// TODO Auto-generated method stub
-		return null;
+		Dict dict = new Dict();
+		Iterator it = this.description.entrySet().iterator();
+		while(it.hasNext()){
+			Map.Entry pairs = (Map.Entry)it.next();
+			Locale l = Locale.forLanguageTag((String)pairs.getKey());
+			dict = dict.putTranslation(l, (String)pairs.getValue());
+
+		}
+		return dict;
 	}
 
 	public IDict getName() {
-		// TODO Auto-generated method stub
-		return null;
+		Dict dict = new Dict();
+		Iterator it = this.name.entrySet().iterator();
+		while(it.hasNext()){
+			Map.Entry pairs = (Map.Entry)it.next();
+			Locale l = Locale.forLanguageTag((String)pairs.getKey());
+			dict = dict.putTranslation(l, (String)pairs.getValue());
+
+		}
+		return dict;
 	}
 
 }

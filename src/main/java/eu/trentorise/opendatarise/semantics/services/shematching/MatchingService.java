@@ -86,8 +86,8 @@ public class MatchingService implements ISemanticMatchingService {
 			sScore= (sScore+nameMatchScore)/(sCorrespondence.getAttributeCorrespondence().size()+1);
 			sCorrespondence.setScore(sScore);
 		} else {
-			//	List<AttributeCorrespondence> attrsCor = attributeMatching(eType.getAttributeDefs(),columnHeaders);
-			sCorrespondence.setAttributeCorrespondence(null);
+			List<IAttributeCorrespondence> attrsCor = new ArrayList<IAttributeCorrespondence>();
+			sCorrespondence.setAttributeCorrespondence(attrsCor);
 			sCorrespondence.setScore((float) 0);
 		}
 		return (ISchemaCorrespondence) sCorrespondence;
