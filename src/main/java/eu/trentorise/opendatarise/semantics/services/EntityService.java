@@ -6,13 +6,17 @@ import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
 import it.unitn.disi.sweb.webapi.model.eb.Name;
+import it.unitn.disi.sweb.webapi.model.eb.Structure;
 import it.unitn.disi.sweb.webapi.model.eb.Value;
 import it.unitn.disi.sweb.webapi.model.filters.InstanceFilter;
 
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
@@ -22,6 +26,7 @@ import eu.trentorise.opendata.semantics.services.IEntityService;
 import eu.trentorise.opendatarise.semantics.model.entity.AttributeDef;
 import eu.trentorise.opendatarise.semantics.model.entity.AttributeODR;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
+import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
 import eu.trentorise.opendatarise.semantics.model.entity.ValueODR;
 
 public class EntityService implements IEntityService {
@@ -110,46 +115,108 @@ public class EntityService implements IEntityService {
 
 		ValueODR value = new ValueODR();
 		value.setValue(value);
-
 		AttributeODR attribute = new AttributeODR(attrDef, value);
-
 		return attribute;
-
 	}
-
 
 	public AttributeODR createAttribute(IAttributeDef attrDef, Object value){
 		AttributeDef ad = (AttributeDef) attrDef;
-
+		System.out.println(attrDef.getDataType());
 		if (ad.getName(Locale.ENGLISH).equals("Name"))
 		{
-			return createNameAttribute(attrDef, (String)value);
+			return createNameAttributeODR(attrDef, (String)value);
 		} else 
-		{
-			ValueODR val = new ValueODR();
-			val.setValue(value);
-			AttributeODR attribute = new AttributeODR(attrDef, val);
-			return attribute;
+			if (attrDef.getDataType().equals("oe:structure")){
+
+				return createStructureAttribute(attrDef, (HashMap<IAttributeDef, Object>) value);
+
+			} else 
+
+			{
+				ValueODR val = new ValueODR();
+				val.setValue(value);
+				AttributeODR attribute = new AttributeODR(attrDef, val);
+				return attribute;
+			}
+	}
+
+	private AttributeODR createStructureAttribute(IAttributeDef attrDef,
+			HashMap<IAttributeDef, Object> atributes) {
+		List<Attribute> attrs = new ArrayList<Attribute>();
+		Structure attributeStructure = new Structure();
+		attributeStructure.setEntityBaseId(1L);
+
+		AttributeDef adef =(AttributeDef)attrDef;
+		attributeStructure.setTypeId(adef.getRangeEntityTypeID());
+
+		Iterator it = atributes.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry pairs = (Map.Entry)it.next();
+			AttributeODR aodr = createAttribute((IAttributeDef)pairs.getKey(), pairs.getValue());
+			attrs.add(aodr.convertToAttribute());
+			it.remove();
 		}
+		attributeStructure.setAttributes(attrs);
 
+
+		Attribute nAtr =new Attribute();
+		nAtr.setDefinitionId(attrDef.getGUID());
+		List<Value>values=new ArrayList<Value>();
+		values.add(new Value(attributeStructure)); 
+		nAtr.setValues(values);
+
+		AttributeODR a = new AttributeODR(api, nAtr);
+
+		return a;
 	}
 
-	private AttributeODR createNameAttribute(IAttributeDef attrDef, String name){
+	private AttributeODR createNameAttributeODR(IAttributeDef attrDef, String name){
 
-		InstanceClient  ic = new InstanceClient(api);
-		//Name nameStructure = new Name();
-		//List<Attribute> nameAttributes = new ArrayList<Attribute>();
-		//nameStructure.setEntityBaseId(1L);
+		EntityTypeService ets = new EntityTypeService();
+		//get Name Etype
+		EntityType etpe =	ets.getEntityType(attrDef.getRangeEType().getURL());
+		Name nameStructure = new Name();
+		List<Attribute> entityNameattributes = new ArrayList<Attribute>();
+		nameStructure.setEntityBaseId(1L);
 		Attribute nameAttribute = new Attribute();
-		nameAttribute.setDefinitionId(attrDef.getGUID());
-	//	nameAttributes.add(nameAttribute);
+
+		List<IAttributeDef>atsd = etpe.getAttributeDefs();
+		// here we take the only one attribute definition from Name etype 
+		nameAttribute.setDefinitionId(atsd.get(0).getGUID());
 		List<Value>nameValues=new ArrayList<Value>();
-		nameValues.add(new Value(name, 1L));
 		//BE CAREFULL WITH VOCABULARY
+		nameValues.add(new Value(name, 1L));
 		nameAttribute.setValues(nameValues);
-		AttributeODR nameAttributeODR = new AttributeODR(api,nameAttribute);
-		return nameAttributeODR;
+		//AttributeODR nameAttributeODR = new AttributeODR(api,nameAttribute);
+
+		entityNameattributes.add(nameAttribute);
+		nameStructure.setAttributes(entityNameattributes);
+		AttributeODR atODR = new  AttributeODR();
+		Attribute nAtr =new Attribute();
+		nAtr.setDefinitionId(attrDef.getGUID());
+		List<Value>values=new ArrayList<Value>();
+		values.add(new Value(nameStructure)); 
+		nAtr.setValues(values);
+		AttributeODR a = new AttributeODR(api, nAtr);
+		return a;
 	}
+	//
+	//	private Attribute createNameAttribute(IAttributeDef attrDef, String name){
+	//
+	//		InstanceClient  ic = new InstanceClient(api);
+	//		//Name nameStructure = new Name();
+	//		//List<Attribute> nameAttributes = new ArrayList<Attribute>();
+	//		//nameStructure.setEntityBaseId(1L);
+	//		Attribute nameAttribute = new Attribute();
+	//		nameAttribute.setDefinitionId(attrDef.getGUID());
+	//		//	nameAttributes.add(nameAttribute);
+	//		List<Value>nameValues=new ArrayList<Value>();
+	//		nameValues.add(new Value(name, 1L));
+	//		//BE CAREFULL WITH VOCABULARY
+	//		nameAttribute.setValues(nameValues);
+	//		return nameAttribute;
+	//
+	//	}
 
 
 	public void updateAttributeValue(IEntity entity, IAttribute attribute,

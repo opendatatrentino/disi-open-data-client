@@ -1,6 +1,5 @@
 import static org.junit.Assert.assertEquals;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
-import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
 import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
 import it.unitn.disi.sweb.webapi.client.eb.EbClient;
 import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
@@ -14,6 +13,7 @@ import it.unitn.disi.sweb.webapi.model.eb.Value;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -21,9 +21,14 @@ import org.junit.Before;
 import org.junit.Test;
 
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
+import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
+import eu.trentorise.opendata.semantics.model.entity.IEntityType;
+import eu.trentorise.opendatarise.semantics.model.entity.AttributeDef;
+import eu.trentorise.opendatarise.semantics.model.entity.AttributeODR;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
 import eu.trentorise.opendatarise.semantics.services.EntityService;
+import eu.trentorise.opendatarise.semantics.services.EntityTypeService;
 import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
 
 
@@ -36,6 +41,8 @@ public class TestEntityService {
 
 	private IProtocolClient api;
 	private Long entityID;
+	static final Long ATTR_TYPE_OPENING_HOUR = 31L;
+	public static final Long ATTR_TYPE_CLOSING_HOUR = 30L;
 
 	@Before
 	public void getClientProtocol(){
@@ -96,7 +103,7 @@ public class TestEntityService {
 
 	}
 
-	@Test 
+	//@Test 
 	public void testCreateEntityODR(){
 		String name = "Test name";
 		InstanceClient  ic = new InstanceClient(api);
@@ -142,9 +149,80 @@ public class TestEntityService {
 		EntityODR ePostMod = new EntityODR(api,entPost);
 		List<IAttribute> attrsPost = ePostMod.getEntityAttributes();
 		System.out.println(attrsPost.size());
-
-
 	}
 
+	@Test
+	public void testCreateAttributeEntity(){
+		EntityService es = new EntityService(api);
+		EntityTypeService ets = new EntityTypeService();
+		EntityType etype = ets.getEntityType(12L);
+		List<IAttributeDef>attrDefList=etype.getAttributeDefs();
+		List<Attribute> attrs = new ArrayList<Attribute>();
+
+		for (IAttributeDef atd: attrDefList){
+			//			if (atd.getName().getString(Locale.ENGLISH).equals("Name")){
+			//				System.out.println(atd.getName());
+			//				System.out.println(atd.getGUID());
+			//				System.out.println(atd.getDataType());
+			//				if (atd.getDataType().equals("oe:structure")){
+			//					System.out.println(atd.getRangeEType().getURL());
+			//					EntityType etpe =	ets.getEntityType(atd.getRangeEType().getURL());
+			//					List<IAttributeDef>atsd = etpe.getAttributeDefs();
+			//					for (IAttributeDef a:atsd){
+			//						System.out.println(a.getGUID());
+			//					}
+			//
+			//				}
+
+			if (atd.getName().getString(Locale.ENGLISH).equals("Name")){
+				System.out.println(atd.getName());
+				AttributeODR attr = es.createAttribute(atd,"My test name");
+				Attribute a=attr.convertToAttribute();
+				attrs.add(a);
+			}
+
+			if (atd.getName().getString(Locale.ENGLISH).equals("Class")){
+				System.out.println(atd.getName());
+				AttributeODR attr = es.createAttribute(atd,123L);
+				Attribute a=attr.convertToAttribute();
+				attrs.add(a);
+			}
+
+			if (atd.getName().getString(Locale.ENGLISH).equals("Latitude")){
+				System.out.println(atd.getName());
+				AttributeODR attr = es.createAttribute(atd,12.123F);
+				Attribute a=attr.convertToAttribute();
+				attrs.add(a);
+			}
+			if (atd.getName().getString(Locale.ENGLISH).equals("Longitude")){
+				System.out.println(atd.getName());
+				AttributeODR attr = es.createAttribute(atd,56.567F);
+				Attribute a=attr.convertToAttribute();
+				attrs.add(a);
+			}
+			if (atd.getName().getString(Locale.ENGLISH).equals("Opening hours")){
+				System.out.println(atd.getName());
+				AttributeDef openHourAtDef = new AttributeDef(ATTR_TYPE_OPENING_HOUR);
+				AttributeDef closeHourAtDef = new AttributeDef(ATTR_TYPE_CLOSING_HOUR);
+				
+				HashMap<AttributeDef, Object> attrMap = new HashMap<AttributeDef,Object>();
+				attrMap.put(openHourAtDef, "8:00");
+				attrMap.put(closeHourAtDef, "18:00");
+				
+				AttributeODR attr = es.createAttribute(atd,attrMap);
+				Attribute a=attr.convertToAttribute();
+				attrs.add(a);
+			}
+			
+			
+
+		}
+		EntityODR e = new EntityODR();
+		e.setEntityBaseId(1L);
+		e.setTypeId(18L);
+		e.setAttributes(attrs);
+		long id = es.createEntity(e);
+		System.out.println("Entity id:"+id);
+	}
 }
 

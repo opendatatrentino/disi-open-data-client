@@ -8,6 +8,8 @@ import it.unitn.disi.sweb.core.nlp.model.NLSentence;
 import it.unitn.disi.sweb.core.nlp.model.NLText;
 import it.unitn.disi.sweb.core.nlp.model.NLToken;
 import it.unitn.disi.sweb.webapi.model.PipelineDescription;
+import it.unitn.disi.sweb.webapi.model.eb.sstring.ComplexConcept;
+import it.unitn.disi.sweb.webapi.model.eb.sstring.SemanticString;
 
 import org.junit.Test;
 
@@ -15,8 +17,12 @@ import org.junit.Test;
 
 
 
+
+
+
 import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
 import eu.trentorise.opendatarise.semantics.services.NLPService;
+import eu.trentorise.opendatarise.semantics.services.SemanticTextFactory;
 
 
 /** Testing the client implementaion of NLP services. 
@@ -74,28 +80,29 @@ public class TestNLPService {
 	public void testGetAllPipelinesDescription(){
 		NLPService nlpService = new NLPService();
 		List<PipelineDescription> pipelines = nlpService.readPipelinesDesription();
-		System.out.println("NLP Pipelines : ");
+		//System.out.println("NLP Pipelines : ");
 		for (PipelineDescription pipeline : pipelines) {
-			System.out.println(pipeline.getName());
+		//	System.out.println(pipeline.getName());
 		}
 		assertNotNull(pipelines.get(0));
 	}
 
-	@Test
+	//@Test
 	public void testRunBatchNLP(){
 		
 		NLPService nlpService = new NLPService();
 
 		List<ISemanticText> output= nlpService.runNLP(prodotti_certificati);
-		System.out.println(output.get(0).getSentences().get(0).getWords().get(0).getMeanings().get(0).getURL());
-		System.out.println(output.get(0).getSentences().get(0).getWords().get(0).getMeanings().get(0).getProbability());
-
-		System.out.println(output.get(0).getSentences().get(0).getStartOffset());
-		System.out.println(output.get(0).getSentences().get(0).getEndOffset());
+//		System.out.println(output.get(0).getSentences().get(0).getWords().get(0).getMeanings().get(0).getURL());
+//		System.out.println(output.get(0).getSentences().get(0).getWords().get(0).getMeanings().get(0).getProbability());
+//
+//		System.out.println(output.get(0).getSentences().get(0).getStartOffset());
+//		System.out.println(output.get(0).getSentences().get(0).getEndOffset());
 
 		assertEquals("it", output.get(0).getLocale().toLanguageTag().toString());
 		assertEquals(0,output.get(0).getSentences().get(0).getStartOffset());
 		assertEquals(104,output.get(0).getSentences().get(0).getEndOffset());
+		
 	}
 
 
@@ -116,10 +123,8 @@ public class TestNLPService {
 	}
 
 
-	//@Test    
+	@Test    
 	public void testNLPService() {
-
-
 		String testText = "Formaggio fresco a pasta filata, molle e a fermentazione lattica. Viene impiegato latte vaccino e caglio bovino liquido."
 				+ "La filatura viene fatta con acqua calda eventualmente addizionata di sale.La forma puÃ² essere sferoidale (peso 20-250 g), "
 				+ "eventualmente con testina, o a treccia (peso 125-250 g).La crosta Ã¨ assente e presenta una pelle di consistenza tenera, superficie "
@@ -129,8 +134,27 @@ public class TestNLPService {
 				+ "acqua con eventuale aggiunta di sale.";
 
 		NLPService nlpService = new NLPService();
-		NLText processedText = new NLText();
+		//from NLText to SemanticText
 		ISemanticText sText= nlpService.runNLP(testText);
+		System.out.println("Sentences1:"+sText.getSentences().size());
+		System.out.println("Words1:"+sText.getSentences().get(0).getWords().size());
+		System.out.println("Words1:"+sText.getSentences().get(0).getWords().get(0).getMeanings().get(0).getURL());
+
+
+		//from SemanticText to SemanticString
+		SemanticString sstring = SemanticTextFactory.semanticString(sText);
+		
+		System.out.println("Complex concepts:"+sstring.getComplexConcepts().size());
+		System.out.println("Complex concepts:"+sstring.getComplexConcepts().get(0).getTerms().get(0).getConceptTerms().get(0).getValue());
+
+
+		List<ComplexConcept> ccList =  sstring.getComplexConcepts();
+		
+		//from SemanticString to SemanticText
+		ISemanticText semText = SemanticTextFactory.semanticText(sstring);
+		System.out.println("Sentences2:"+semText.getSentences().size());
+		System.out.println("Words2:"+semText.getSentences().get(0).getWords().get(0).getMeanings().get(0).getURL());
+
 
 	}
 }

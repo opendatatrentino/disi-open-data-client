@@ -132,7 +132,7 @@ public class EntityTypeService implements IEntityTypeService {
 		return etypes;
 	}
 
-	public IEntityType getEntityType(String URL) {
+	public EntityType getEntityType(String URL) {
 		String s = URL.substring(URL.indexOf("es/") + 3);
 		Long typeID = Long.parseLong(s);
 		return getEntityType(typeID);

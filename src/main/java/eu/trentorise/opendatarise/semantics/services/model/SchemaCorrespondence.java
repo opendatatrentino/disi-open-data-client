@@ -14,7 +14,7 @@ import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
 public class SchemaCorrespondence implements ISchemaCorrespondence {
 
 	EntityType etype;
-	Float score;
+	float score;
 	List<IAttributeCorrespondence> attributeCorrespondences;
 	
 	

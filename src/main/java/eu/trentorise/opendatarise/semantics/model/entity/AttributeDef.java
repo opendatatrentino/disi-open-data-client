@@ -108,7 +108,7 @@ public class AttributeDef implements IAttributeDef {
 		else return this.dataType;
 	}
 
-	public IEntityType getRangeEType() {
+	public EntityType getRangeEType() {
 		if (this.dataType.equals("COMPLEX_TYPE")){
 			ComplexTypeClient ctc = new ComplexTypeClient(getClientProtocol());
 			if (this.entityTypeID!=null){
@@ -210,6 +210,10 @@ public class AttributeDef implements IAttributeDef {
 		return this.typeId;
 	}
 
+	public long getRangeEntityTypeID(){
+		return this.entityTypeID.longValue();
+	}
+	
 	public String getETypeURL() {
 		String fullUrl = WebServiceURLs.getURL();
 		String url  = fullUrl+"/types/"+this.typeId;
