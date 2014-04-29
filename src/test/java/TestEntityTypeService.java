@@ -1,19 +1,15 @@
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
-import org.junit.Test;
-
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.services.model.IEtypeSearchResult;
-import eu.trentorise.opendatarise.semantics.model.entity.AttributeDef;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
 import eu.trentorise.opendatarise.semantics.services.EntityTypeService;
-import eu.trentorise.opendatarise.semantics.services.model.EtypeSearchResult;
+import org.junit.Test;
+
+import java.util.List;
+import java.util.Locale;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 
 /**
@@ -38,7 +34,7 @@ public class TestEntityTypeService {
 		//	assertEquals(etype.getName1().get("it") ,"Infrastruttura");
 	}
 
-	@Test
+	//@Test
 	public void testGetAllEntityTypes(){
 		EntityTypeService ets = new EntityTypeService();
 		List<IEntityType> etypes= ets.getAllEntityTypes();
@@ -68,10 +64,10 @@ public class TestEntityTypeService {
 	}
 
 	
-	//@Test
+	@Test
 	public void testFuzzySearchEtype(){
 		EntityTypeService ets = new EntityTypeService();
-		List<IEtypeSearchResult> searchEtypes = ets.searchEntityTypes("Lcaton");
+		List<IEtypeSearchResult> searchEtypes = ets.searchEntityTypes("Lcalit");
 		assertEquals("Location",searchEtypes.get(0).getName().getString(Locale.ENGLISH));
 
 	}
