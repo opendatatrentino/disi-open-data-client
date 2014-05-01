@@ -1,0 +1,1 @@
+You need to put in this directory a file named sweb-webapi-model.properties 
