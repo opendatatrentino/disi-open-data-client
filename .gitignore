@@ -7,6 +7,7 @@
 
 target/
 logs/
+conf/sweb-webapi-model.properties
 src/main/resources/META-INF/sweb-webapi-model.properties
 
 
@@ -36,8 +37,6 @@ local.properties
 .classpath
 .settings/
 .loadpath
-conf/
-logs/
 /src/main/resources/rebel.xml
 # External tool builders
 .externalToolBuilders/

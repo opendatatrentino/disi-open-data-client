@@ -9,16 +9,10 @@ import eu.trentorise.opendata.semantics.services.IKnowledgeService;
 import eu.trentorise.opendata.semantics.services.INLPService;
 import eu.trentorise.opendata.semantics.services.ISearchService;
 import eu.trentorise.opendata.semantics.services.ISemanticMatchingService;
-import eu.trentorise.opendatarise.semantics.services.EntityService;
-import eu.trentorise.opendatarise.semantics.services.EntityTypeService;
-import eu.trentorise.opendatarise.semantics.services.IdentityService;
-import eu.trentorise.opendatarise.semantics.services.KnowledgeService;
-import eu.trentorise.opendatarise.semantics.services.NLPService;
-import eu.trentorise.opendatarise.semantics.services.Search;
 import eu.trentorise.opendatarise.semantics.services.shematching.MatchingService;
-import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -37,6 +31,7 @@ public class Ekb implements IEkb {
     private  IEntityTypeService entityTypeService;
     private  IEntityService entityService;
     private  ISearchService searchService;
+    private List<Locale> defaultLocales;
 
     public Ekb() {        
         this.NLPService = new NLPService();
@@ -46,15 +41,18 @@ public class Ekb implements IEkb {
         this.semanticMatchingService = new MatchingService();      
         this.entityService = new EntityService(WebServiceURLs.getClientProtocol());
         this.searchService = new Search(WebServiceURLs.getClientProtocol());
+        List<Locale> locs = new ArrayList();
+        locs.add(Locale.ENGLISH);
+        this.defaultLocales = Collections.unmodifiableList(locs);
     }
     
 
     public void setDefaultLocales(List<Locale> locales) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.defaultLocales = Collections.unmodifiableList(new ArrayList(locales));
     }
 
     public List<Locale> getDefaultLocales() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return defaultLocales;
     }
 
     public INLPService getNLPService() {

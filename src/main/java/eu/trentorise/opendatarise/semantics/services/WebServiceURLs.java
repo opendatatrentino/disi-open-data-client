@@ -2,7 +2,7 @@ package eu.trentorise.opendatarise.semantics.services;
 
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
-
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
@@ -16,7 +16,8 @@ import java.util.Properties;
  */
 public class WebServiceURLs {
     
-    public static final String PROPERTIES_PATH = "META-INF/sweb-webapi-model.properties";    
+    public static final String PROPERTIES_FILE_NAME = "sweb-webapi-model.properties";    
+    
     
 	private static String url;
 	private static int port;
@@ -54,9 +55,18 @@ public class WebServiceURLs {
                            
 		try {
                     
-                    input = Thread.currentThread().getContextClassLoader().
-                            getResourceAsStream(PROPERTIES_PATH);
-			// input = new FileInputStream("conf/sweb-webapi-model.properties");
+                    input = new FileInputStream("conf/" + PROPERTIES_FILE_NAME);
+                    
+                    if (input == null){
+                        System.out.println("Couldn't find file conf/" + PROPERTIES_FILE_NAME + ", trying in WEB-INF/");
+                        input = Thread.currentThread().getContextClassLoader().
+                            getResourceAsStream("META-INF/" + PROPERTIES_FILE_NAME);
+                        if (input == null){
+                            throw new IOException("Couldn't find file META-INF/" + PROPERTIES_FILE_NAME);
+                        }
+                    }
+                    
+		
                     
                     prop.load(input);
                     url = prop.getProperty("sweb.webapi.url");
@@ -64,7 +74,7 @@ public class WebServiceURLs {
                     root = prop.getProperty("sweb.webapi.root");
 
 		} catch (IOException ex) {
-			throw new RuntimeException("Couldn't read properties file: " + PROPERTIES_PATH, ex);
+			throw new RuntimeException("Couldn't read properties file: " + PROPERTIES_FILE_NAME, ex);
 		} finally {
 			if (input != null) {
 				try {
