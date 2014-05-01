@@ -2,6 +2,7 @@ package eu.trentorise.opendatarise.semantics.services;
 
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,10 +55,10 @@ public class WebServiceURLs {
 		InputStream input = null;
                            
 		try {
-                    
-                    input = new FileInputStream("conf/" + PROPERTIES_FILE_NAME);
-                    
-                    if (input == null){
+                                              
+                    if (new File("conf/" + PROPERTIES_FILE_NAME).exists()){
+                        input = new FileInputStream("conf/" + PROPERTIES_FILE_NAME);
+                    } else {                        
                         System.out.println("Couldn't find file conf/" + PROPERTIES_FILE_NAME + ", trying in WEB-INF/");
                         input = Thread.currentThread().getContextClassLoader().
                             getResourceAsStream("META-INF/" + PROPERTIES_FILE_NAME);
@@ -65,9 +66,7 @@ public class WebServiceURLs {
                             throw new IOException("Couldn't find file META-INF/" + PROPERTIES_FILE_NAME);
                         }
                     }
-                    
-		
-                    
+                                        		                    
                     prop.load(input);
                     url = prop.getProperty("sweb.webapi.url");
                     port= Integer.parseInt(prop.getProperty("sweb.webapi.port"));
