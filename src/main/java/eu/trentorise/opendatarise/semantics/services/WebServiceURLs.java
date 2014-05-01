@@ -3,7 +3,6 @@ package eu.trentorise.opendatarise.semantics.services;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
@@ -11,12 +10,14 @@ import java.util.Properties;
 
 /** The class reads property file and create singletone with relatted to url information
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
- * @date 11 Apr 2014
+ * @author David Leoni <david.leoni@unitn.it>
+ * @date 1 May 2014
  * 
  */
-
 public class WebServiceURLs {
-
+    
+    public static final String PROPERTIES_PATH = "META-INF/sweb-webapi-model.properties";    
+    
 	private static String url;
 	private static int port;
 	private static Locale locale;
@@ -50,16 +51,20 @@ public class WebServiceURLs {
 	private static void readProperties(){
 		Properties prop = new Properties();
 		InputStream input = null;
-
+                           
 		try {
-			input = new FileInputStream("conf/sweb-webapi-model.properties");
-			prop.load(input);
-			url = prop.getProperty("sweb.webapi.url");
-			port= Integer.parseInt(prop.getProperty("sweb.webapi.port"));
-			root = prop.getProperty("sweb.webapi.root");
+                    
+                    input = Thread.currentThread().getContextClassLoader().
+                            getResourceAsStream(PROPERTIES_PATH);
+			// input = new FileInputStream("conf/sweb-webapi-model.properties");
+                    
+                    prop.load(input);
+                    url = prop.getProperty("sweb.webapi.url");
+                    port= Integer.parseInt(prop.getProperty("sweb.webapi.port"));
+                    root = prop.getProperty("sweb.webapi.root");
 
 		} catch (IOException ex) {
-			ex.printStackTrace();
+			throw new RuntimeException("Couldn't read properties file: " + PROPERTIES_PATH, ex);
 		} finally {
 			if (input != null) {
 				try {
@@ -67,7 +72,7 @@ public class WebServiceURLs {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-			}
+                        }
 		}
 
 	}

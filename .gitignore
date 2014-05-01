@@ -7,7 +7,8 @@
 
 target/
 logs/
-conf/
+src/main/resources/META-INF/sweb-webapi-model.properties
+
 
 ##### NETBEANS
 
@@ -21,8 +22,6 @@ nb-configuration.xml
 
 ##### ECLIPSE 
 
-conf/sweb-webapi-model.properties
-logs/sweb-webapi-client.log
 *.pydevproject
 .project
 .metadata
