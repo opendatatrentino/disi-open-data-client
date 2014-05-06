@@ -1,18 +1,5 @@
 package eu.trentorise.opendatarise.semantics.model.entity;
 
-import it.unitn.disi.sweb.webapi.client.IProtocolClient;
-import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
-import it.unitn.disi.sweb.webapi.client.kb.AttributeDefinitionClient;
-import it.unitn.disi.sweb.webapi.client.kb.ComplexTypeClient;
-import it.unitn.disi.sweb.webapi.model.kb.types.AttributeDefinition;
-import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
-import it.unitn.disi.sweb.webapi.model.kb.types.Presence;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
@@ -20,7 +7,20 @@ import eu.trentorise.opendata.semantics.model.knowledge.IDict;
 import eu.trentorise.opendata.semantics.services.model.DataTypes;
 import eu.trentorise.opendatarise.semantics.model.knowledge.ConceptODR;
 import eu.trentorise.opendatarise.semantics.model.knowledge.Dict;
+import eu.trentorise.opendatarise.semantics.services.NLPService;
+import static eu.trentorise.opendatarise.semantics.services.NLPService.localeToLanguageTag;
 import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
+import it.unitn.disi.sweb.webapi.client.IProtocolClient;
+import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
+import it.unitn.disi.sweb.webapi.client.kb.AttributeDefinitionClient;
+import it.unitn.disi.sweb.webapi.client.kb.ComplexTypeClient;
+import it.unitn.disi.sweb.webapi.model.kb.types.AttributeDefinition;
+import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
+import it.unitn.disi.sweb.webapi.model.kb.types.Presence;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /** 
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
@@ -89,7 +89,7 @@ public class AttributeDef implements IAttributeDef {
 	}
 
 	public String getName(Locale locale) {
-		return this.name.get(locale.toLanguageTag());
+		return this.name.get(localeToLanguageTag(locale));
 	}
 
 	public String getDataType() {
@@ -235,7 +235,7 @@ public class AttributeDef implements IAttributeDef {
 		Iterator it = this.name.entrySet().iterator();
 		while(it.hasNext()){
 			Map.Entry pairs = (Map.Entry)it.next();
-			Locale l = Locale.forLanguageTag((String)pairs.getKey());
+			Locale l = NLPService.languageTagToLocale((String)pairs.getKey());
 			dict = dict.putTranslation(l, (String)pairs.getValue());
 
 		}
@@ -247,7 +247,7 @@ public class AttributeDef implements IAttributeDef {
 		Iterator it = this.description.entrySet().iterator();
 		while(it.hasNext()){
 			Map.Entry pairs = (Map.Entry)it.next();
-			Locale l = Locale.forLanguageTag((String)pairs.getKey());
+			Locale l = NLPService.languageTagToLocale((String)pairs.getKey());
 			dict = dict.putTranslation(l, (String)pairs.getValue());
 		}
 		return dict;

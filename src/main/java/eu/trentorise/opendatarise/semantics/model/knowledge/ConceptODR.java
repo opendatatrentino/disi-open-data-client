@@ -1,20 +1,19 @@
 package eu.trentorise.opendatarise.semantics.model.knowledge;
 
+import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
+import eu.trentorise.opendata.semantics.model.knowledge.IDict;
+import eu.trentorise.opendatarise.semantics.services.NLPService;
+import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
 import it.unitn.disi.sweb.webapi.client.kb.ConceptClient;
 import it.unitn.disi.sweb.webapi.model.Pagination;
 import it.unitn.disi.sweb.webapi.model.kb.concepts.Concept;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
-import eu.trentorise.opendata.semantics.model.knowledge.IDict;
-import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
 
 public class ConceptODR implements IConcept{
 
@@ -92,7 +91,7 @@ public class ConceptODR implements IConcept{
 		Iterator it = this.description.entrySet().iterator();
 		while(it.hasNext()){
 			Map.Entry pairs = (Map.Entry)it.next();
-			Locale l = Locale.forLanguageTag((String)pairs.getKey());
+			Locale l = NLPService.languageTagToLocale((String)pairs.getKey());
 			dict = dict.putTranslation(l, (String)pairs.getValue());
 
 		}
@@ -104,7 +103,7 @@ public class ConceptODR implements IConcept{
 		Iterator it = this.name.entrySet().iterator();
 		while(it.hasNext()){
 			Map.Entry pairs = (Map.Entry)it.next();
-			Locale l = Locale.forLanguageTag((String)pairs.getKey());
+			Locale l = NLPService.languageTagToLocale((String)pairs.getKey());
 			dict = dict.putTranslation(l, (String)pairs.getValue());
 
 		}
