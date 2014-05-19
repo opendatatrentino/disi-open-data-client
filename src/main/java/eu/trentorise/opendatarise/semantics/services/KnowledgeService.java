@@ -14,6 +14,7 @@ import eu.trentorise.opendatarise.semantics.model.knowledge.ConceptODR;
  */
 public class KnowledgeService implements IKnowledgeService {
 
+	private static final long rootConceptID=1;
 	//	public List<IConcept> getConcepts(List<Long> GUIDs) {
 	//		List<IConcept> iconcepts = new ArrayList<IConcept>();
 	//
@@ -33,7 +34,7 @@ public class KnowledgeService implements IKnowledgeService {
 		Long conceptId = Long.parseLong(s);
 		ConceptODR concept = new ConceptODR();
 		concept = concept.readConcept(conceptId);
-		System.out.println(concept.getURL());
+		//System.out.println(concept.getURL());
 
 		return concept;
 	}
@@ -48,6 +49,14 @@ public class KnowledgeService implements IKnowledgeService {
 			concepts.add(c);
 		}
 		return concepts;
+	}
+
+
+
+	public IConcept getRootConcept() {
+		ConceptODR concept = new ConceptODR();
+		concept = concept.readConcept(rootConceptID);
+		return concept;
 	}
 
 }

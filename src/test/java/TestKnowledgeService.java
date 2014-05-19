@@ -23,7 +23,12 @@ public class TestKnowledgeService {
 		KnowledgeService kserv= new KnowledgeService();
 		String url = "http://opendata.disi.unitn.it:8080/odr/concepts/120";
 		IConcept con = kserv.getConcept(url);
-
 	}
 
+	@Test
+	public void testGetRootConcept(){
+		KnowledgeService kserv= new KnowledgeService();
+		IConcept concept = kserv.getRootConcept();
+		System.out.println(concept.getURL());
+	}
 }

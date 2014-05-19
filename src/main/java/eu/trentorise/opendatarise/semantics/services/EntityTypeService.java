@@ -17,6 +17,7 @@ import it.unitn.disi.sweb.webapi.model.filters.ComplexTypeFilter;
 import it.unitn.disi.sweb.webapi.model.kb.KnowledgeBase;
 import it.unitn.disi.sweb.webapi.model.kb.types.AttributeDefinition;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
+
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
@@ -190,5 +191,26 @@ public class EntityTypeService implements IEntityTypeService {
 		public int compare(Map.Entry<?, V> o1, Map.Entry<?, V> o2) {
 			return o2.getValue().compareTo(o1.getValue());
 		}
+	}
+
+	public IEntityType getRootStructure() {
+		List<IEntityType> etypes= getAllEntityTypes();
+		for (IEntityType etype: etypes){
+			
+			if (etype.getName().getString(Locale.ENGLISH).equals("Structure"))
+			{return etype;}
+		}
+		return null;
+	}
+	
+
+	public IEntityType getRootEtype() {
+		List<IEntityType> etypes= getAllEntityTypes();
+		for (IEntityType etype: etypes){
+			
+			if (etype.getName().getString(Locale.ENGLISH).equals("Entity"))
+			{return etype;}
+		}
+		return null;
 	}
 }

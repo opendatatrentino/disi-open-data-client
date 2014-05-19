@@ -87,7 +87,7 @@ public class IntegritiCheckerTest {
 	/**Check the integration 
 	 * 
 	 */
-	//@Test 
+	@Test 
 	public void testCheckSchemaCorrespondence(){
 		MatchingService mService = new MatchingService();
 		EntityTypeService etypeService = new EntityTypeService();
@@ -100,7 +100,7 @@ public class IntegritiCheckerTest {
 			EntityType eType = (EntityType) etype;
 
 			if (etype.getName().getString(Locale.ENGLISH).equals("Name")){
-				System.out.println(etype.getName().getString(Locale.ENGLISH));
+				//System.out.println(etype.getName().getString(Locale.ENGLISH));
 			}
 			long conid = 2923L;
 			SchemaCorrespondence scCorr = (SchemaCorrespondence) mService.schemaMatch(eType,odrHeaders, conid);
@@ -113,7 +113,7 @@ public class IntegritiCheckerTest {
 			assertNotNull(scCorr.getEtype());}
 	}
 
-	//@Test
+	@Test
 	public void testCheckEtypesWithAttrDef(){
 		EntityTypeService ets = new EntityTypeService();
 		List<IEntityType> etypes= ets.getAllEntityTypes();
@@ -136,10 +136,10 @@ public class IntegritiCheckerTest {
 		assertNotNull(etypes.get(0));
 	}
 	
-	@Test
-	public void testCheckEKB(){
-		IEkb ekb = new Ekb(); 
-	iChecker.checkEkbQuick(ekb);
-	}
+//	@Test
+//	public void testCheckEKB(){
+//		IEkb ekb = new Ekb(); 
+//	iChecker.checkEkbQuick(ekb);
+//	}
 
 }

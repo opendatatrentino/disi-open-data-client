@@ -9,6 +9,7 @@ import it.unitn.disi.sweb.webapi.model.PipelineDescription;
 import java.util.ArrayList;
 import java.util.List;
 
+import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
 import eu.trentorise.opendata.semantics.model.knowledge.IResourceContext;
 import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
 import eu.trentorise.opendata.semantics.model.knowledge.ITableResource;
@@ -93,6 +94,11 @@ public class NLPService implements INLPService {
 		NLText nltxt = runNlpIt(text);
 		ISemanticText sText = SemanticTextFactory.semanticText(nltxt);
 		return sText;
+	}
+
+	public List<ISemanticText> runNLP(List<String> texts, IConcept parentConcept) {
+		//TODO consider the parentConcept parameter as soon as NLP pipeline  will be ready to process it
+		return  runNLP(texts);
 	}
 
 

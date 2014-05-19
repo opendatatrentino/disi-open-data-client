@@ -208,5 +208,27 @@ public class EntityType implements IEntityType{
 
 	}
 
+	public IAttributeDef getNameAttrDef() {
+		List<IAttributeDef> attrDefs =getAttributeDefs();
+		for (IAttributeDef attr: attrDefs){
+			AttributeDef ad = (AttributeDef) attr;
+			if (ad.getName(Locale.ENGLISH).equals("Name")){
+				return attr;
+			}
+		}
+		return null;
+	}
+
+	public IAttributeDef getDescriptionAttrDef() {
+		List<IAttributeDef> attrDefs = getAttributeDefs();
+		for (IAttributeDef attr: attrDefs){
+			AttributeDef ad = (AttributeDef) attr;
+			if (ad.getName(Locale.ENGLISH).equals("Description")){
+				return attr;
+			}
+		}
+		return null;
+	}
+
 
 }
