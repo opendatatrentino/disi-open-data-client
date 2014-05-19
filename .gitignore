@@ -7,7 +7,9 @@
 
 target/
 logs/
-conf/
+conf/sweb-webapi-model.properties
+src/main/resources/META-INF/sweb-webapi-model.properties
+
 
 ##### NETBEANS
 
@@ -21,8 +23,6 @@ nb-configuration.xml
 
 ##### ECLIPSE 
 
-conf/sweb-webapi-model.properties
-logs/sweb-webapi-client.log
 *.pydevproject
 .project
 .metadata
@@ -37,8 +37,6 @@ local.properties
 .classpath
 .settings/
 .loadpath
-conf/
-logs/
 /src/main/resources/rebel.xml
 # External tool builders
 .externalToolBuilders/

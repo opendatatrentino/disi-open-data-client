@@ -2,7 +2,7 @@ package eu.trentorise.opendatarise.semantics.services;
 
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
-
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,12 +11,15 @@ import java.util.Properties;
 
 /** The class reads property file and create singletone with relatted to url information
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
- * @date 11 Apr 2014
+ * @author David Leoni <david.leoni@unitn.it>
+ * @date 1 May 2014
  * 
  */
-
 public class WebServiceURLs {
-
+    
+    public static final String PROPERTIES_FILE_NAME = "sweb-webapi-model.properties";    
+    
+    
 	private static String url;
 	private static int port;
 	private static Locale locale;
@@ -50,16 +53,27 @@ public class WebServiceURLs {
 	private static void readProperties(){
 		Properties prop = new Properties();
 		InputStream input = null;
-
+                           
 		try {
-			input = new FileInputStream("conf/sweb-webapi-model.properties");
-			prop.load(input);
-			url = prop.getProperty("sweb.webapi.url");
-			port= Integer.parseInt(prop.getProperty("sweb.webapi.port"));
-			root = prop.getProperty("sweb.webapi.root");
+                                              
+                    if (new File("conf/" + PROPERTIES_FILE_NAME).exists()){
+                        input = new FileInputStream("conf/" + PROPERTIES_FILE_NAME);
+                    } else {                        
+                        System.out.println("Couldn't find file conf/" + PROPERTIES_FILE_NAME + ", trying in WEB-INF/");
+                        input = Thread.currentThread().getContextClassLoader().
+                            getResourceAsStream("META-INF/" + PROPERTIES_FILE_NAME);
+                        if (input == null){
+                            throw new IOException("Couldn't find file META-INF/" + PROPERTIES_FILE_NAME);
+                        }
+                    }
+                                        		                    
+                    prop.load(input);
+                    url = prop.getProperty("sweb.webapi.url");
+                    port= Integer.parseInt(prop.getProperty("sweb.webapi.port"));
+                    root = prop.getProperty("sweb.webapi.root");
 
 		} catch (IOException ex) {
-			ex.printStackTrace();
+			throw new RuntimeException("Couldn't read properties file: " + PROPERTIES_FILE_NAME, ex);
 		} finally {
 			if (input != null) {
 				try {
@@ -67,7 +81,7 @@ public class WebServiceURLs {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-			}
+                        }
 		}
 
 	}
