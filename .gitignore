@@ -51,3 +51,8 @@ logs/
  
 # PDT-specific
 .buildpath
+
+##### IDEA
+*.iml 
+.idea/
+comf/
