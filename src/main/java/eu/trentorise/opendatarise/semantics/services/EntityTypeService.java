@@ -70,6 +70,32 @@ public class EntityTypeService implements IEntityTypeService {
 		return etypes;
 	}
 
+	public EntityType getEntityTypeByConcept(Long conceptId){
+		ComplexTypeClient ctc = new ComplexTypeClient(getClientProtocol());
+		ComplexTypeFilter ctFilter= new ComplexTypeFilter();
+		ctFilter.setIncludeRestrictions(true);
+		ctFilter.setIncludeAttributes(true);
+		ctFilter.setIncludeAttributesAsProperties(true);
+		List<ComplexType> complexTypes=	ctc.readComplexTypes(1L, conceptId, null, ctFilter);
+		ComplexType complexType =complexTypes.get(0);
+
+
+		EntityType eType = new EntityType(complexType);
+		AttributeDefinitionClient attrDefs = new AttributeDefinitionClient(getClientProtocol());
+		AttributeDefinitionFilter adf = new AttributeDefinitionFilter();
+		adf.setIncludeRestrictions(true);
+		List<AttributeDefinition>  attrDefList = attrDefs.readAttributeDefinitions(eType.getGUID(), null, null, adf);
+		List<IAttributeDef> attributeDefList = new ArrayList<IAttributeDef>();
+
+		for (AttributeDefinition attrDef: attrDefList){
+
+			IAttributeDef attributeDef = new AttributeDef(attrDef);
+			attributeDefList.add(attributeDef);
+		}
+		eType.setAttrs(attributeDefList);
+		return eType;
+	}
+
 	public EntityType getEntityType(long id){
 		ComplexTypeClient ctc = new ComplexTypeClient(getClientProtocol());
 		ComplexTypeFilter ctFilter= new ComplexTypeFilter();
@@ -77,16 +103,16 @@ public class EntityTypeService implements IEntityTypeService {
 		ctFilter.setIncludeAttributes(true);
 		ctFilter.setIncludeAttributesAsProperties(true);
 		ComplexType complexType = ctc.readComplexType(id, ctFilter);
-		
+
 		EntityType eType = new EntityType(complexType);
 		AttributeDefinitionClient attrDefs = new AttributeDefinitionClient(getClientProtocol());
 		AttributeDefinitionFilter adf = new AttributeDefinitionFilter();
 		adf.setIncludeRestrictions(true);
 		List<AttributeDefinition>  attrDefList = attrDefs.readAttributeDefinitions(id, null, null, adf);
 		List<IAttributeDef> attributeDefList = new ArrayList<IAttributeDef>();
-		
+
 		for (AttributeDefinition attrDef: attrDefList){
-			
+
 			IAttributeDef attributeDef = new AttributeDef(attrDef);
 			attributeDefList.add(attributeDef);
 		}
@@ -138,11 +164,11 @@ public class EntityTypeService implements IEntityTypeService {
 
 		for (ComplexType cType: complexTypeList){
 
-            System.out.println(cType.getName().get("it"));
+			System.out.println(cType.getName().get("it"));
 			double score = scoreName(partialName,cType.getName().get("en"));
 			ctypeMap.put(cType, score);
-            score = scoreName(partialName,cType.getName().get("it"));
-            ctypeMap.put(cType, score);
+			score = scoreName(partialName,cType.getName().get("it"));
+			ctypeMap.put(cType, score);
 		}
 
 		List<ComplexType> ctypeSorted = getKeysSortedByValue(ctypeMap);
@@ -196,18 +222,18 @@ public class EntityTypeService implements IEntityTypeService {
 	public IEntityType getRootStructure() {
 		List<IEntityType> etypes= getAllEntityTypes();
 		for (IEntityType etype: etypes){
-			
+
 			if (etype.getName().getString(Locale.ENGLISH).equals("Structure"))
 			{return etype;}
 		}
 		return null;
 	}
-	
+
 
 	public IEntityType getRootEtype() {
 		List<IEntityType> etypes= getAllEntityTypes();
 		for (IEntityType etype: etypes){
-			
+
 			if (etype.getName().getString(Locale.ENGLISH).equals("Entity"))
 			{return etype;}
 		}

@@ -10,6 +10,8 @@ import it.unitn.disi.sweb.webapi.model.eb.Structure;
 import it.unitn.disi.sweb.webapi.model.eb.Value;
 import it.unitn.disi.sweb.webapi.model.filters.InstanceFilter;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,6 +19,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import org.apache.http.client.ClientProtocolException;
 
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
@@ -225,20 +229,7 @@ public class EntityService implements IEntityService {
 
 	}
 
-	public void exportToRdf(List<Long> entityIds, Writer writer) {
-		// TODO Auto-generated method stub
 
-	}
-
-	public void exportToJsonLd(List<Long> entityIds, Writer writer) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void exportToCsv(List<Long> entityIds, Writer writer) {
-		// TODO Auto-generated method stub
-
-	}
 
 	public void updateEntity(IEntity entity) {
 		// TODO Auto-generated method stub
@@ -250,9 +241,11 @@ public class EntityService implements IEntityService {
 
 	}
 
-	public IEntity readEntity(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+	public IEntity readEntity(String URL) {
+
+		String s = URL.substring(URL.indexOf("es/") + 3);
+		Long typeID = Long.parseLong(s);
+		return readEntity(typeID);
 	}
 
 	public String createEntityURL(IEntity entity) {
@@ -261,6 +254,56 @@ public class EntityService implements IEntityService {
 		String fullUrl = WebServiceURLs.getURL();
 		String url  = fullUrl+"/instances/"+id;
 		return url;
+	}
+
+	public void exportToRdf(List<String> entityURLs, Writer writer) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void exportToJsonLd(List<String> entityURLs, Writer writer) {
+		String filename= "test"+System.currentTimeMillis();
+		EntityExportService ees = new EntityExportService();
+		List<Long> entitiesID = new ArrayList<Long>();
+		
+		for (String entityURL : entityURLs){
+			String s = entityURL.substring(entityURL.indexOf("es/") + 3);
+			Long eID = Long.parseLong(s);
+			entitiesID.add(eID);
+		}
+
+		Long fileId = null;
+		try {
+			fileId = ees.methodPost(entitiesID,filename);
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		InputStream is = null;
+		try {
+			is = ees.methodGet(fileId, "sem"+filename);
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			ees.convertToJsonLd(is,writer);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	public void exportToCsv(List<String> entityURLs, Writer writer) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

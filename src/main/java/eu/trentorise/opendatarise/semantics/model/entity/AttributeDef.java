@@ -39,6 +39,7 @@ public class AttributeDef implements IAttributeDef {
 	private boolean presence;
 	private boolean isSet;
 	private Integer entityTypeID;
+	private IConcept concept;
 
 	public AttributeDef(AttributeDefinition attrDef){
 		this.isSet = attrDef.isSet();
@@ -145,8 +146,8 @@ public class AttributeDef implements IAttributeDef {
 	public IConcept getConcept() {
 		long id = this.conceptId;
 		ConceptODR concept = new ConceptODR();
-		concept = concept.readConcept(id);
-		return concept;
+		this.concept = concept.readConcept(id);
+		return this.concept;
 	}
 
 	public boolean isSet() {

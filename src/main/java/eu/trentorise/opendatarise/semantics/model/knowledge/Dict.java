@@ -200,8 +200,40 @@ public class Dict implements IDict {
 		return sb.toString();
 	}
 
-	public boolean contains(String text) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	  public boolean contains(String text) {
+	        
+	        for (Locale loc : getLocales()) {
+	            String lowText = text.toLowerCase(loc);
+	            for (String t : translations.get(loc)){
+	                if (t.toLowerCase(loc).contains(lowText)){
+	                    return true;
+	                }
+	            }
+	        }
+	        return false;
+	    }
+	  
+	  public IDict merge(IDict dict){
+	        Dict ret = new Dict(this);
+	        for (Locale locale : dict.getLocales()){
+	             if (ret.translations.containsKey(locale)){
+	                 for (String t : dict.getStrings(locale)){
+	                     if (!ret.translations.get(locale).contains(t)){
+	                         ret.translations.get(locale).add(t);
+	                     }
+	                 }
+	             } else {                 
+	                 ret.translations.put(locale, dict.getStrings(locale));
+	             }
+	        }
+	        return ret;
+	    }
+
+	  public int translationsCount(){
+	        int count = 0;
+	        for (Locale loc : translations.keySet()){
+	            count += translations.get(loc).size();
+	        }
+	        return count;
+	    }
 }

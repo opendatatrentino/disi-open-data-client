@@ -36,7 +36,7 @@ public class WebServiceURLs {
 			locale=new Locale("all");
 			readProperties();
 			api = ProtocolFactory.getHttpClient(locale, url, port);
-			System.out.println(api.getLocale());
+			//System.out.println(api.getLocale());
 			return api;
 		} else return api;
 
@@ -44,6 +44,9 @@ public class WebServiceURLs {
 
 	public static String getURL(){
 		if (fullURL==null){
+			if(url==null){
+				readProperties();
+			}
 			fullURL = "http://"+url+":"+port+root;
 			return fullURL;
 		}
