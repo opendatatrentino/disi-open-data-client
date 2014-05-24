@@ -69,6 +69,17 @@ public class AttributeODR  implements IAttribute {
 
 	}
 
+	public AttributeODR(IAttributeDef attrDef, List<ValueODR> val){
+		this.attrDef=attrDef;
+		this.attrDefId=attrDef.getGUID();
+		this.conceptId=attrDef.getConcept().getGUID();
+
+		List<IValue> vals = new ArrayList<IValue>();
+		vals.addAll(val);
+		this.values=vals;
+
+	}
+	
 	public Long getGUID() {
 		return id;
 	}

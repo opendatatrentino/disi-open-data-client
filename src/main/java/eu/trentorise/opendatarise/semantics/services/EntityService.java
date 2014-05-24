@@ -117,11 +117,17 @@ public class EntityService implements IEntityService {
 
 	public AttributeODR createAttribute(IAttributeDef attrDef, List<Object> values){
 
-		ValueODR value = new ValueODR();
-		value.setValue(value);
-		AttributeODR attribute = new AttributeODR(attrDef, value);
+		List<ValueODR> vals= new ArrayList<ValueODR>(); 
+		for (Object obj: values	){
+			ValueODR value = new ValueODR();
+			value.setValue(obj);
+			vals.add(value);
+		}
+		AttributeODR attribute = new AttributeODR(attrDef, vals);
 		return attribute;
 	}
+	
+	
 
 	public AttributeODR createAttribute(IAttributeDef attrDef, Object value){
 		AttributeDef ad = (AttributeDef) attrDef;
