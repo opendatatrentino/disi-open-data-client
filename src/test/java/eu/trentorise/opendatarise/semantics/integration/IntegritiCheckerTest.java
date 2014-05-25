@@ -12,12 +12,16 @@ import eu.trentorise.opendata.columnrecognizers.ColumnConceptCandidate;
 import eu.trentorise.opendata.columnrecognizers.ColumnRecognizer;
 import eu.trentorise.opendata.semantics.IntegrityChecker;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
+import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.model.DataTypes;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
+import eu.trentorise.opendatarise.semantics.model.entity.Structure;
 import eu.trentorise.opendatarise.semantics.services.Ekb;
+import eu.trentorise.opendatarise.semantics.services.EntityService;
 import eu.trentorise.opendatarise.semantics.services.EntityTypeService;
+import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
 import eu.trentorise.opendatarise.semantics.services.model.SchemaCorrespondence;
 import eu.trentorise.opendatarise.semantics.services.shematching.MatchingService;
 
@@ -87,7 +91,7 @@ public class IntegritiCheckerTest {
 	/**Check the integration 
 	 * 
 	 */
-	@Test 
+	//@Test 
 	public void testCheckSchemaCorrespondence(){
 		MatchingService mService = new MatchingService();
 		EntityTypeService etypeService = new EntityTypeService();
@@ -113,7 +117,7 @@ public class IntegritiCheckerTest {
 			assertNotNull(scCorr.getEtype());}
 	}
 
-	@Test
+	//@Test
 	public void testCheckEtypesWithAttrDef(){
 		EntityTypeService ets = new EntityTypeService();
 		List<IEntityType> etypes= ets.getAllEntityTypes();
@@ -135,11 +139,26 @@ public class IntegritiCheckerTest {
 		}
 		assertNotNull(etypes.get(0));
 	}
-	
-//	@Test
-//	public void testCheckEKB(){
-//		IEkb ekb = new Ekb(); 
-//	iChecker.checkEkbQuick(ekb);
-//	}
+
+	@Test 
+	public void testCheckEntity(){
+		EntityService es= new EntityService(WebServiceURLs.getClientProtocol());
+		IEntity entity = es.readEntity(15001L);
+		IEntityType etype =entity.getEtype();
+		System.out.println(etype);
+		iChecker.checkEntity(entity);
+		
+//		Structure structure = new Structure();
+//		iChecker.checkStructure(structure);
+
+
+	}
+
+
+	//	@Test
+	//	public void testCheckEKB(){
+	//		IEkb ekb = new Ekb(); 
+	//	iChecker.checkEkbQuick(ekb);
+	//	}
 
 }

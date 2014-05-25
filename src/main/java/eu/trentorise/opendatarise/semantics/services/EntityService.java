@@ -137,9 +137,7 @@ public class EntityService implements IEntityService {
 			return createNameAttributeODR(attrDef, (String)value);
 		} else 
 			if (attrDef.getDataType().equals("oe:structure")){
-
 				return createStructureAttribute(attrDef, (HashMap<IAttributeDef, Object>) value);
-
 			} else 
 
 			{

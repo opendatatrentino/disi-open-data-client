@@ -7,6 +7,7 @@ import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
 import eu.trentorise.opendata.semantics.model.knowledge.IDict;
 import eu.trentorise.opendatarise.semantics.model.knowledge.ConceptODR;
 import eu.trentorise.opendatarise.semantics.model.knowledge.Dict;
+import eu.trentorise.opendatarise.semantics.services.EntityTypeService;
 import eu.trentorise.opendatarise.semantics.services.NLPService;
 import static eu.trentorise.opendatarise.semantics.services.NLPService.localeToLanguageTag;
 import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
@@ -16,6 +17,7 @@ import it.unitn.disi.sweb.webapi.client.kb.AttributeDefinitionClient;
 import it.unitn.disi.sweb.webapi.client.kb.ComplexTypeClient;
 import it.unitn.disi.sweb.webapi.model.kb.types.AttributeDefinition;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -92,7 +94,14 @@ public class EntityType implements IEntityType{
 
 
 	public List<IAttributeDef> getAttributeDefs() {
-		return this.attrs;
+		if (this.attrs!=null){
+		return this.attrs;}
+		else {
+			EntityTypeService ets = new EntityTypeService();
+			EntityType etype= ets.getEntityType(this.id);
+			this.attrs= etype.getAttributeDefs();
+			return this.attrs;
+		}
 	}
 
 	public void addAttributeD(AttributeDef attrDef) {

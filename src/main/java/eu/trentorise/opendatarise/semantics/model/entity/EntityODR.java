@@ -23,6 +23,7 @@ import it.unitn.disi.sweb.webapi.model.eb.Name;
 import it.unitn.disi.sweb.webapi.model.eb.Value;
 import it.unitn.disi.sweb.webapi.model.eb.sstring.SemanticString;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -151,7 +152,9 @@ public class EntityODR extends Structure implements IEntity {
 			while(it.hasNext()){
 				Map.Entry pairs = (Map.Entry)it.next();
 				Locale l = NLPService.languageTagToLocale((String)pairs.getKey());
-				dict = dict.putTranslation(l, (String)pairs.getValue());
+				ArrayList<String> vals = (ArrayList<String>) pairs.getValue();
+				//System.out.println(vals.get(0));
+				dict = dict.putTranslation(l, vals.get(0));
 
 			}
 
@@ -391,8 +394,19 @@ public class EntityODR extends Structure implements IEntity {
 
 	}
 	public IDict getDescription() {
-		// TODO Auto-generated method stub
-		return null;
+		Dict dict = new Dict();
+			Map<String,List<SemanticString>> descriptionMap =  this.descriptions;
+
+			Iterator it = descriptionMap.entrySet().iterator();
+			while(it.hasNext()){
+				Map.Entry pairs = (Map.Entry)it.next();
+				Locale l = NLPService.languageTagToLocale((String)pairs.getKey());
+				ArrayList<SemanticString> vals = (ArrayList<SemanticString>) pairs.getValue();
+				dict = dict.putTranslation(l, vals.get(0).getText());
+
+			}
+
+		return dict;
 	}
 	public void setName(Locale locale, String name) {
 		// TODO Auto-generated method stub
