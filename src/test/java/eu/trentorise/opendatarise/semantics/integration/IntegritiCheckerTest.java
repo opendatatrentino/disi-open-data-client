@@ -16,11 +16,14 @@ import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.model.DataTypes;
+import eu.trentorise.opendata.semantics.services.model.IIDResult;
+import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
 import eu.trentorise.opendatarise.semantics.model.entity.Structure;
 import eu.trentorise.opendatarise.semantics.services.Ekb;
 import eu.trentorise.opendatarise.semantics.services.EntityService;
 import eu.trentorise.opendatarise.semantics.services.EntityTypeService;
+import eu.trentorise.opendatarise.semantics.services.IdentityService;
 import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
 import eu.trentorise.opendatarise.semantics.services.model.SchemaCorrespondence;
 import eu.trentorise.opendatarise.semantics.services.shematching.MatchingService;
@@ -140,21 +143,29 @@ public class IntegritiCheckerTest {
 		assertNotNull(etypes.get(0));
 	}
 
-	@Test 
+	//@Test 
 	public void testCheckEntity(){
 		EntityService es= new EntityService(WebServiceURLs.getClientProtocol());
 		IEntity entity = es.readEntity(15001L);
-		IEntityType etype =entity.getEtype();
-		System.out.println(etype);
 		iChecker.checkEntity(entity);
-		
-//		Structure structure = new Structure();
-//		iChecker.checkStructure(structure);
-
-
 	}
 
+	@Test 
+	public void testCheckIDResults(){
+		EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
+		IdentityService idServ = new IdentityService();
 
+		EntityODR entity1 = (EntityODR)enServ.readEntity(64000L);
+		EntityODR entity2 = (EntityODR)enServ.readEntity(64005L);
+		List<IEntity> entities = new ArrayList<IEntity>();
+		entities.add(entity1);
+		entities.add(entity2);
+		List<IIDResult> results=  idServ.assignGUID(entities);
+		for (IIDResult res: results){
+			iChecker.checkIDResult(res);
+		}
+	}
+	
 	//	@Test
 	//	public void testCheckEKB(){
 	//		IEkb ekb = new Ekb(); 

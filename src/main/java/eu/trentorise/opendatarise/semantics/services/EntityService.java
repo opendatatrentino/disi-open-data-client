@@ -25,6 +25,7 @@ import org.apache.http.client.ClientProtocolException;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
+import eu.trentorise.opendata.semantics.model.entity.IStructure;
 import eu.trentorise.opendata.semantics.model.entity.IValue;
 import eu.trentorise.opendata.semantics.services.IEntityService;
 import eu.trentorise.opendatarise.semantics.model.entity.AttributeDef;
@@ -98,6 +99,7 @@ public class EntityService implements IEntityService {
 		EntityODR en = new EntityODR(this.api,entity);
 		return en;
 	}
+	
 
 	public void addAttribute(IEntity entity, IAttribute attribute) {
 		EntityODR ent =(EntityODR) entity;
