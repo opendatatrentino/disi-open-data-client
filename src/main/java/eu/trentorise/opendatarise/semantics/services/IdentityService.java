@@ -40,13 +40,9 @@ public class IdentityService implements IIdentityService {
 		}
 	}
 
-	public List<IIDResult> assignGUID(List<IEntity> entities, int numCandidates) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public List<IIDResult> assignURL(List<IEntity> entities, int numCandidates) {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 }

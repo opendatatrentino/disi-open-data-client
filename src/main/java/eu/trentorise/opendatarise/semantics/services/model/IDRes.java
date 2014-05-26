@@ -40,7 +40,11 @@ public class IDRes  extends IDResult implements IIDResult {
 		if (this.api==null){
 			WebServiceURLs.getClientProtocol();
 		}
+	
 		Set<IEntity> entities = new HashSet<IEntity>();
+		if (super.getEntitiesWithSameSwebID()==null)
+			{entities.add(getResultEntity());
+			return entities; }
 		Set<Entity> ients =super.getEntitiesWithSameSwebID();
 		for (Entity en:ients){
 			EntityODR e = new EntityODR( this.api, en);
@@ -54,6 +58,8 @@ public class IDRes  extends IDResult implements IIDResult {
 		case ID_NEW:
 			return AssignmentResult.NEW;
 		case ID_REUSE:
+			return AssignmentResult.REUSE;
+		case ID_KEEP:
 			return AssignmentResult.REUSE;
 		default:
 			return AssignmentResult.MISSING;

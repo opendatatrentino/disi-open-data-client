@@ -16,7 +16,9 @@ import org.junit.Test;
 
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.services.model.IIDResult;
+import eu.trentorise.opendatarise.semantics.model.entity.AttributeODR;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
+import eu.trentorise.opendatarise.semantics.model.facade.ImpiantoDiRisalitaFacade;
 import eu.trentorise.opendatarise.semantics.services.EntityService;
 import eu.trentorise.opendatarise.semantics.services.IdentityService;
 import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
@@ -35,8 +37,37 @@ public class TestIDManagement {
 		IdentityService idServ = new IdentityService();
 		EntityService enServ = new EntityService(getClientProtocol());
 		EntityODR entity1 = (EntityODR)enServ.readEntity(64000L);
-		EntityODR entity2 = (EntityODR)enServ.readEntity(64005L);
-		//	EntityODR entity3 = (EntityODR)enServ.readEntity(15009L);
+	//	EntityODR entity2 = (EntityODR)enServ.readEntity(117516L);
+
+		List<Attribute> attrs = entity1.getAttributes();
+		for (Attribute atr : attrs){
+			System.out.println(atr.getName().get("en"));
+			
+			if (atr.getName().get("en").equalsIgnoreCase("Foursquare ID")){
+				System.out.println(atr.getName());
+				attrs.remove(atr);
+				}
+			
+		}
+		entity1.setAttributes(attrs);
+		
+		List<Attribute> attrs1 = entity1.getAttributes();
+		for (Attribute atr : attrs1){
+			System.out.println(atr.getName().get("en"));
+			
+			if (atr.getName().get("en").equalsIgnoreCase("Foursquare ID")){
+				System.out.println(atr.getName());
+				//attrs.remove(atr);
+				}
+			
+		}
+		entity1.setAttributes(attrs);		
+		//EntityODR entity2 = (EntityODR)enServ.readEntity(64005L);
+
+		//ImpiantoDiRisalitaFacade idrf = new ImpiantoDiRisalitaFacade(WebServiceURLs.getClientProtocol());
+		//EntityODR entity3 =idrf.createEmptyEntity("Ivan", "Cabinovia", 12.356f, 20.9087f, "8:00", "17:00");
+		//Long entity4 =idrf.createEntity("Ivan", "Cabinovia", 12.356f, 20.9087f, "8:00", "17:00");
+		//System.out.println(entity4);
 
 		//	entity1.getEntityAttributes();
 		//	entity2.getEntityAttributes();
@@ -61,12 +92,15 @@ public class TestIDManagement {
 		//entity1.getNames();
 
 		List<IEntity> entities = new ArrayList<IEntity>();
+		//	entities.add(entity1);
+		//	entities.add(entity2);
 		entities.add(entity1);
-		entities.add(entity2);
-		System.out.println("Will try to asign IDs to:");
-		for(IEntity entityInList: entities){
-			System.out.println(entityInList);
-		}
+
+
+		//System.out.println("Will try to asign IDs to:");
+		//for(IEntity entityInList: entities){
+		//	System.out.println(entityInList);
+		//	}
 		//	entities.add(entity2);
 		//	entities.add(entity3);
 
@@ -76,6 +110,8 @@ public class TestIDManagement {
 		for (IIDResult res: results){
 			EntityODR entityODR =  (EntityODR) res.getResultEntity();
 			System.out.println("result "+res.getAssignmentResult());
+			System.out.println("result "+res.getGUID());
+			System.out.println("result "+entityODR.getLocalID());
 			//System.out.println("new sweb id "+res.getSwebID());
 			//System.out.println("for entity(webAPI): "+entityToString(res.getEntity()));
 			System.out.println("for entity(ODR): "+entityODR);

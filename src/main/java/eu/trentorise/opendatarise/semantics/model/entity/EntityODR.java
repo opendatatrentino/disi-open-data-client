@@ -130,7 +130,7 @@ public class EntityODR extends Structure implements IEntity {
 
 	public String getURL() {
 		String fullUrl = WebServiceURLs.getURL();
-		String url  = fullUrl+"/instances/"+this.globalId;
+		String url  = fullUrl+"/instances/"+this.localId;
 		return url;	}
 
 	public void setURL(String sUrl) {
@@ -143,22 +143,30 @@ public class EntityODR extends Structure implements IEntity {
 
 	public IDict getName() {
 		Dict dict = new Dict();
-		for (Name name: this.names)
-		{
-			Map<String,List<String>> nameMap = name.getNames();
+		if(this.names==null){
+			EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
+			EntityODR e =(EntityODR)es.readEntity(super.getId());
+			this.names = e.getNames();
+			this.descriptions=e.getDescriptions();
+			this.classConceptId = e.getClassConceptId();
+		}
+		else
+			for (Name name: this.names)
+			{
+				Map<String,List<String>> nameMap = name.getNames();
 
 
-			Iterator it = nameMap.entrySet().iterator();
-			while(it.hasNext()){
-				Map.Entry pairs = (Map.Entry)it.next();
-				Locale l = NLPService.languageTagToLocale((String)pairs.getKey());
-				ArrayList<String> vals = (ArrayList<String>) pairs.getValue();
-				//System.out.println(vals.get(0));
-				dict = dict.putTranslation(l, vals.get(0));
+				Iterator it = nameMap.entrySet().iterator();
+				while(it.hasNext()){
+					Map.Entry pairs = (Map.Entry)it.next();
+					Locale l = NLPService.languageTagToLocale((String)pairs.getKey());
+					ArrayList<String> vals = (ArrayList<String>) pairs.getValue();
+					//System.out.println(vals.get(0));
+					dict = dict.putTranslation(l, vals.get(0));
+
+				}
 
 			}
-
-		}
 		return dict;
 	}
 
@@ -395,16 +403,18 @@ public class EntityODR extends Structure implements IEntity {
 	}
 	public IDict getDescription() {
 		Dict dict = new Dict();
-			Map<String,List<SemanticString>> descriptionMap =  this.descriptions;
+		Map<String,List<SemanticString>> descriptionMap =  this.descriptions;
+        if(descriptionMap.isEmpty()){
+        	return dict;
+        }
+		Iterator it = descriptionMap.entrySet().iterator();
+		while(it.hasNext()){
+			Map.Entry pairs = (Map.Entry)it.next();
+			Locale l = NLPService.languageTagToLocale((String)pairs.getKey());
+			ArrayList<SemanticString> vals = (ArrayList<SemanticString>) pairs.getValue();
+			dict = dict.putTranslation(l, vals.get(0).getText());
 
-			Iterator it = descriptionMap.entrySet().iterator();
-			while(it.hasNext()){
-				Map.Entry pairs = (Map.Entry)it.next();
-				Locale l = NLPService.languageTagToLocale((String)pairs.getKey());
-				ArrayList<SemanticString> vals = (ArrayList<SemanticString>) pairs.getValue();
-				dict = dict.putTranslation(l, vals.get(0).getText());
-
-			}
+		}
 
 		return dict;
 	}

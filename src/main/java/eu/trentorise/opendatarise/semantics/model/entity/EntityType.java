@@ -221,7 +221,8 @@ public class EntityType implements IEntityType{
 		List<IAttributeDef> attrDefs =getAttributeDefs();
 		for (IAttributeDef attr: attrDefs){
 			AttributeDef ad = (AttributeDef) attr;
-			if (ad.getName(Locale.ENGLISH).equals("Name")){
+			String adName = ad.getName(Locale.ENGLISH);
+			if (ad.getName(Locale.ENGLISH).equalsIgnoreCase("name")){
 				return attr;
 			}
 		}

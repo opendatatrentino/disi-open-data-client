@@ -90,7 +90,7 @@ public class AttributeDef implements IAttributeDef {
 	}
 
 	public String getName(Locale locale) {
-		return this.name.get(localeToLanguageTag(locale));
+		return this.name.get(locale.toString());
 	}
 
 	public String getDataType() {

@@ -20,6 +20,7 @@ import eu.trentorise.opendata.semantics.services.model.IIDResult;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
 import eu.trentorise.opendatarise.semantics.model.entity.Structure;
+import eu.trentorise.opendatarise.semantics.model.facade.ImpiantoDiRisalitaFacade;
 import eu.trentorise.opendatarise.semantics.services.Ekb;
 import eu.trentorise.opendatarise.semantics.services.EntityService;
 import eu.trentorise.opendatarise.semantics.services.EntityTypeService;
@@ -94,7 +95,7 @@ public class IntegritiCheckerTest {
 	/**Check the integration 
 	 * 
 	 */
-	//@Test 
+	@Test 
 	public void testCheckSchemaCorrespondence(){
 		MatchingService mService = new MatchingService();
 		EntityTypeService etypeService = new EntityTypeService();
@@ -120,7 +121,7 @@ public class IntegritiCheckerTest {
 			assertNotNull(scCorr.getEtype());}
 	}
 
-	//@Test
+	@Test
 	public void testCheckEtypesWithAttrDef(){
 		EntityTypeService ets = new EntityTypeService();
 		List<IEntityType> etypes= ets.getAllEntityTypes();
@@ -143,7 +144,7 @@ public class IntegritiCheckerTest {
 		assertNotNull(etypes.get(0));
 	}
 
-	//@Test 
+	@Test 
 	public void testCheckEntity(){
 		EntityService es= new EntityService(WebServiceURLs.getClientProtocol());
 		IEntity entity = es.readEntity(15001L);
@@ -157,13 +158,26 @@ public class IntegritiCheckerTest {
 
 		EntityODR entity1 = (EntityODR)enServ.readEntity(64000L);
 		EntityODR entity2 = (EntityODR)enServ.readEntity(64005L);
+		ImpiantoDiRisalitaFacade idrf = new ImpiantoDiRisalitaFacade(WebServiceURLs.getClientProtocol());
+		EntityODR entity3 =idrf.createEmptyEntity("Ivan", "Cabinovia", 12.356f, 20.9087f, "8:00", "17:00");
+		//System.out.println("ID of entity: "+ id);
+
 		List<IEntity> entities = new ArrayList<IEntity>();
 		entities.add(entity1);
 		entities.add(entity2);
+		entities.add(entity3);
+
 		List<IIDResult> results=  idServ.assignGUID(entities);
 		for (IIDResult res: results){
+			System.out.println(res.getAssignmentResult().toString());
 			iChecker.checkIDResult(res);
 		}
+	}
+	
+	@Test
+	public void testCheckConcepts(){
+		
+		
 	}
 	
 	//	@Test

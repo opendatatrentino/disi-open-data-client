@@ -106,7 +106,7 @@ public class TestEntity {
 		System.out.println("ID of entity: "+ id);
 	}
 
-	//@Test 
+	@Test 
 	public void testCreationEntity(){
 		IProtocolClient api = ProtocolFactory.getHttpClient(new Locale("all"), "opendata.disi.unitn.it", 8080);
 		EntityODR entity = new EntityODR();
