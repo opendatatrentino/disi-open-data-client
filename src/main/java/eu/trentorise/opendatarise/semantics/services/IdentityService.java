@@ -20,7 +20,8 @@ public class IdentityService implements IIdentityService {
 
 	public List<IIDResult> assignGUID(List<IEntity> ientities) {
 		if(ientities==null){
-			return null;
+			List<IIDResult> idResults = null;
+			return idResults;
 		} else {
 			IDManagementClient idManCl = new IDManagementClient(WebServiceURLs.getClientProtocol());
 			List<Entity> entities = new ArrayList<Entity>();
@@ -41,8 +42,26 @@ public class IdentityService implements IIdentityService {
 	}
 
 	public List<IIDResult> assignURL(List<IEntity> entities, int numCandidates) {
-		// TODO Auto-generated method stub
-		return null;
+		if(entities==null){
+			List<IIDResult> idResults = null;
+			return idResults;
+		} else {
+			IDManagementClient idManCl = new IDManagementClient(WebServiceURLs.getClientProtocol());
+			List<Entity> resEntities = new ArrayList<Entity>();
+			for(IEntity en: entities){
+				EntityODR ent= (EntityODR) en;
+				Entity entity = ent.convertToEntity();
+				resEntities.add(entity);	
+
+			}
+			List<IDResult> results = idManCl.assignIdentifier(resEntities, 0);
+			List<IIDResult> idResults = new ArrayList<IIDResult>();
+			for(IDResult res: results){
+				IDRes idRes =new IDRes(res);
+				idResults.add(idRes);
+			}
+			return idResults;
+		}
 	}
 
 }
