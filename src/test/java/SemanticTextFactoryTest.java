@@ -52,6 +52,30 @@ public class SemanticTextFactoryTest {
         assertEquals(st.getText(),nlText.getText());
         assertEquals(st.getLocale(), null);  
     }
+    
+    @Test
+    public void testConceptURLConverter(){
+    	String conceptURL= SemanticTextFactory.entitypediaConceptIDToURL(1L);
+    	System.out.println(conceptURL);
+    }
+    
+    @Test
+    public void testConceptIDConverter(){
+    	Long conceptID= SemanticTextFactory.entitypediaURLToConceptID("http://opendata.disi.unitn.it:8080/odr/concepts/1");
+    	System.out.println(conceptID);
+    }
+    
+    @Test
+    public void testEntityURLConverter(){
+    	String entityURL= SemanticTextFactory.entitypediaEntityIDToURL(1L);
+    	System.out.println(entityURL);
+    }
+    
+    @Test
+    public void testEntityIDConverter(){
+    	Long conceptID= SemanticTextFactory.entitypediaURLToEntityID("http://opendata.disi.unitn.it:8080/odr/instances/1");
+    	System.out.println(conceptID);
+    }
 
     @Test
     public void testNLTextToSemanticText_2(){
