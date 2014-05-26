@@ -44,23 +44,33 @@ import eu.trentorise.opendata.semantics.model.knowledge.impl.Word;
  */
 public class SemanticTextFactory {
 
-    public static final String CONCEPT_PREFIX = "ukc:concept/";
-    public static final String ENTITY_PREFIX = "ep:entity/";
-
+    public static final String CONCEPT_PREFIX = "/concepts/";
+    
+    public static final String ENTITY_PREFIX = "/instances/";
+    
+    public static final String ENTITY_URL_PREF = "es/";
+    public static final String CONCEPT_URL_PREF = "ts/";
+    
     public static String entitypediaConceptIDToURL(long ID) {
-        return CONCEPT_PREFIX + Long.toString(ID);
+    	String fullUrl = WebServiceURLs.getURL();
+		String url  = fullUrl+CONCEPT_PREFIX+ID;
+		return url;
     }
 
     public static long entitypediaURLToConceptID(String URL) {
-        return Long.parseLong(URL.substring(CONCEPT_PREFIX.length()));
+    	String s = URL.substring(URL.indexOf(CONCEPT_URL_PREF) + 3);
+    		return Long.parseLong(s);
     }
 
     public static String entitypediaEntityIDToURL(long ID) {
-        return ENTITY_PREFIX + Long.toString(ID);
+    	String fullUrl = WebServiceURLs.getURL();
+		String url  = fullUrl+ENTITY_PREFIX+ID;
+		return url;
     }
 
     public static long entitypediaURLToEntityID(String URL) {
-        return Long.parseLong(URL.substring(ENTITY_PREFIX.length()));
+    	String s = URL.substring(URL.indexOf(ENTITY_URL_PREF) + 3);
+		return Long.parseLong(s);
     }
 
     /**
