@@ -34,25 +34,25 @@ public class TestEntityTypeService {
 		//	assertEquals(etype.getName1().get("it") ,"Infrastruttura");
 	}
 
-	//@Test
+	@Test
 	public void testGetAllEntityTypes(){
 		EntityTypeService ets = new EntityTypeService();
 		List<IEntityType> etypes= ets.getAllEntityTypes();
 		for(IEntityType etype:etypes){
 			List<IAttributeDef>atdefs=etype.getAttributeDefs();
 			System.out.println("AttributeDef ETYPE Name:"+etype.getName().getString(Locale.ENGLISH));
-			//			System.out.println("AttributeDefs:"+etype.getAttributeDefs());
-			//			System.out.println("AttributeDef Name:"+etype.getNameAttrDef());
-			//			System.out.println("AttributeDef Description:"+etype.getDescriptionAttrDef());
-			//			for (IAttributeDef ad:atdefs){
-			//				//System.out.println("AttributeDef URL:"+ad.getURL());
-			//				System.out.println("AttributeDef Etype URL:"+ad.getEtypeURL());
-			//			} 
+					//	System.out.println("AttributeDefs:"+etype.getAttributeDefs());
+					//	System.out.println("AttributeDef Name:"+etype.getNameAttrDef());
+					//	System.out.println("AttributeDef Description:"+etype.getDescriptionAttrDef());
+						for (IAttributeDef ad:atdefs){
+							//System.out.println("AttributeDef URL:"+ad.getURL());
+							System.out.println("AttributeDef  DataType:"+ad.getDataType());
+						} 
 		}
 		assertNotNull(etypes.get(0));
 	}
 
-	@Test
+	//@Test
 	public void testGetRootsTypes(){
 		EntityTypeService ets = new EntityTypeService();
 		assertEquals("Entity",ets.getRootEtype().getName().getString(Locale.ENGLISH));

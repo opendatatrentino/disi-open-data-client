@@ -46,6 +46,7 @@ public class EntityService implements IEntityService {
 	public Long createEntity(IEntity entity) {
 		EntityODR ent = (EntityODR) entity;
 		Entity e = ent.convertToEntity();
+	//	e.setGlobalId(123456789L);
 		InstanceClient instanceCl= new  InstanceClient(this.api);
 		System.out.println(e.toString());
 		for (Attribute a : e.getAttributes()){
@@ -133,7 +134,7 @@ public class EntityService implements IEntityService {
 
 	public AttributeODR createAttribute(IAttributeDef attrDef, Object value){
 		AttributeDef ad = (AttributeDef) attrDef;
-		System.out.println(attrDef.getDataType());
+	//	System.out.println(attrDef.getDataType());
 		if (ad.getName(Locale.ENGLISH).equals("Name"))
 		{
 			return createNameAttributeODR(attrDef, (String)value);
@@ -180,21 +181,25 @@ public class EntityService implements IEntityService {
 		return a;
 	}
 
-	private AttributeODR createNameAttributeODR(IAttributeDef attrDef, String name){
+	private AttributeODR createNameAttributeODR1(IAttributeDef attrDef, String name){
 
 		EntityTypeService ets = new EntityTypeService();
 		//get Name Etype
+		
 		EntityType etpe =	ets.getEntityType(attrDef.getRangeEType().getURL());
 		Name nameStructure = new Name();
 		List<Attribute> entityNameattributes = new ArrayList<Attribute>();
 		nameStructure.setEntityBaseId(1L);
+		
 		Attribute nameAttribute = new Attribute();
 
 		List<IAttributeDef>atsd = etpe.getAttributeDefs();
 		// here we take the only one attribute definition from Name etype 
 		nameAttribute.setDefinitionId(atsd.get(0).getGUID());
+		nameAttribute.setConceptId(atsd.get(0).getConcept().getGUID());
 		List<Value>nameValues=new ArrayList<Value>();
 		//BE CAREFULL WITH VOCABULARY
+		
 		nameValues.add(new Value(name, 1L));
 		nameAttribute.setValues(nameValues);
 		//AttributeODR nameAttributeODR = new AttributeODR(api,nameAttribute);
@@ -210,6 +215,56 @@ public class EntityService implements IEntityService {
 		AttributeODR a = new AttributeODR(api, nAtr);
 		return a;
 	}
+	
+	
+	/** Creates Attribute from Name.class 
+	 * @param name
+	 */
+	public AttributeODR createNameAttribute(IAttributeDef attrDef, Name name){
+		
+		AttributeODR atODR = new  AttributeODR();
+		Attribute nAtr =new Attribute();
+		nAtr.setDefinitionId(attrDef.getGUID());
+		List<Value>values=new ArrayList<Value>();
+		values.add(new Value(name)); 
+		nAtr.setValues(values);
+		AttributeODR a = new AttributeODR(api, nAtr);
+		return a;
+		
+	}
+	
+	private AttributeODR createNameAttributeODR(IAttributeDef attrDef, String name){
+		
+		Attribute entityNameAttribute = new Attribute();
+		entityNameAttribute.setDefinitionId(attrDef.getGUID());
+
+		Name nameStructure = new Name();
+		nameStructure.setEntityBaseId(1L);
+		nameStructure.setTypeId(10L); //NOTE HARCODED TODO change
+		
+		List<Attribute> nameAttributes = new ArrayList<Attribute>();
+		
+		Attribute nameAttribute = new Attribute();
+		nameAttribute.setDefinitionId(55L); //NOTE HARCODED TODO change
+		nameAttribute.setConceptId(2L);
+
+		List<Value>nameValues=new ArrayList<Value>();
+	
+		nameValues.add(new Value(name, 1L));
+		nameAttribute.setValues(nameValues);
+		nameAttributes.add(nameAttribute);
+		nameStructure.setAttributes(nameAttributes);
+		
+	    List<Value>entityNameValues=new ArrayList<Value>();
+	    
+	    entityNameValues.add(new Value(nameStructure)); // here is your link to the name structure, if you want you can put the id of the name instance (if you created it before) but make sure the data type is COMPLEX_TYPE
+	    entityNameAttribute.setValues(entityNameValues);
+	    AttributeODR a = new AttributeODR(api, entityNameAttribute);
+		return a;
+
+		
+	}
+
 	//
 	//	private Attribute createNameAttribute(IAttributeDef attrDef, String name){
 	//

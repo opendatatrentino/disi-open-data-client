@@ -1,6 +1,8 @@
 package eu.trentorise.opendatarise.semantics.integration;
 
 import static org.junit.Assert.assertNotNull;
+import it.unitn.disi.sweb.webapi.model.eb.Attribute;
+import it.unitn.disi.sweb.webapi.model.eb.Entity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +19,12 @@ import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.model.DataTypes;
 import eu.trentorise.opendata.semantics.services.model.IIDResult;
+import eu.trentorise.opendatarise.semantics.model.entity.AttributeODR;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
 import eu.trentorise.opendatarise.semantics.model.entity.Structure;
 import eu.trentorise.opendatarise.semantics.model.facade.ImpiantoDiRisalitaFacade;
+import eu.trentorise.opendatarise.semantics.model.knowledge.ConceptODR;
 import eu.trentorise.opendatarise.semantics.services.Ekb;
 import eu.trentorise.opendatarise.semantics.services.EntityService;
 import eu.trentorise.opendatarise.semantics.services.EntityTypeService;
@@ -157,15 +161,13 @@ public class IntegritiCheckerTest {
 		IdentityService idServ = new IdentityService();
 
 		EntityODR entity1 = (EntityODR)enServ.readEntity(64000L);
-		EntityODR entity2 = (EntityODR)enServ.readEntity(64005L);
-		ImpiantoDiRisalitaFacade idrf = new ImpiantoDiRisalitaFacade(WebServiceURLs.getClientProtocol());
-		EntityODR entity3 =idrf.createEmptyEntity("Ivan", "Cabinovia", 12.356f, 20.9087f, "8:00", "17:00");
-		//System.out.println("ID of entity: "+ id);
+		IEntity entity2 = entityForNewResults();
+		IEntity entity3=entityForMissingResults();
 
 		List<IEntity> entities = new ArrayList<IEntity>();
-		entities.add(entity1);
+	//	entities.add(entity1);
 		entities.add(entity2);
-		entities.add(entity3);
+	//	entities.add(entity3);
 
 		List<IIDResult> results=  idServ.assignGUID(entities);
 		for (IIDResult res: results){
@@ -173,13 +175,89 @@ public class IntegritiCheckerTest {
 			iChecker.checkIDResult(res);
 		}
 	}
-	
+
+	private IEntity entityForNewResults(){
+		EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
+
+		EntityODR entity = (EntityODR)enServ.readEntity(64000L);
+		List<Attribute> attrs = entity.getAttributes();
+		List<Attribute> attrs1 = new ArrayList<Attribute>();
+		for (Attribute atr : attrs){
+
+				if (atr.getName().get("en").equalsIgnoreCase("Foursquare ID")){
+					Attribute a = createAttributeEntity("50f6e6f516f88f6cc81a42fc");
+					attrs1.add(a);
+				}
+		}
+		Entity en = new Entity();
+		en.setEntityBaseId(1L);
+		en.setTypeId(12L);
+		en.setAttributes(attrs1);
+
+		IEntity ent = new EntityODR(WebServiceURLs.getClientProtocol(),en);
+		return ent;
+	}
+
+	private  IEntity entityForMissingResults(){
+
+		IdentityService idServ = new IdentityService();
+		EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
+		EntityODR entity = (EntityODR)enServ.readEntity(64000L);
+		List<Attribute> attrs = entity.getAttributes();
+		List<Attribute> attrs1 = new ArrayList<Attribute>();
+
+		for (Attribute atr : attrs){
+
+
+			if (atr.getName().get("en").equalsIgnoreCase("Latitude")){
+				attrs1.add(atr);
+			}
+			else if (atr.getName().get("en").equalsIgnoreCase("Longitude")){
+				attrs1.add(atr);
+			} else 
+				if (atr.getName().get("en").equalsIgnoreCase("Class")){
+					attrs1.add(atr);
+				}
+		}
+
+		Entity en = new Entity();
+		en.setEntityBaseId(1L);
+		en.setTypeId(12L);
+		en.setAttributes(attrs1);
+
+		IEntity ent = new EntityODR(WebServiceURLs.getClientProtocol(),en);
+		return ent;
+	}
+
+	private  Attribute createAttributeEntity(Object value){
+		EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
+		EntityTypeService ets = new EntityTypeService();
+		EntityType etype = ets.getEntityType(12L);
+
+		List<IAttributeDef>attrDefList=etype.getAttributeDefs();
+		List<Attribute> attrs = new ArrayList<Attribute>();
+
+		Attribute a = null;
+		for (IAttributeDef atd: attrDefList){
+			if (atd.getName().getString(Locale.ENGLISH).equals("Foursquare ID")){
+				AttributeODR attr = es.createAttribute(atd, (String)value);
+				a = attr.convertToAttribute();
+				attrs.add(a);
+			}
+		}
+		return a;
+	}
+
+
 	@Test
 	public void testCheckConcepts(){
-		
-		
+
+		ConceptODR concept = new ConceptODR();
+		concept=concept.readConcept(1L);
+		iChecker.checkConcept(concept);
+
 	}
-	
+
 	//	@Test
 	//	public void testCheckEKB(){
 	//		IEkb ekb = new Ekb(); 

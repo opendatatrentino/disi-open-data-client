@@ -1,3 +1,4 @@
+import static org.junit.Assert.*;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
 import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
@@ -6,21 +7,30 @@ import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
+import it.unitn.disi.sweb.webapi.model.eb.Name;
 import it.unitn.disi.sweb.webapi.model.odt.IDResult;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
 import org.junit.Test;
 
+import eu.trentorise.opendata.semantics.model.entity.IAttribute;
+import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
+import eu.trentorise.opendata.semantics.services.model.AssignmentResult;
 import eu.trentorise.opendata.semantics.services.model.IIDResult;
+import eu.trentorise.opendatarise.semantics.model.entity.AttributeDef;
 import eu.trentorise.opendatarise.semantics.model.entity.AttributeODR;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
+import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
 import eu.trentorise.opendatarise.semantics.model.facade.ImpiantoDiRisalitaFacade;
 import eu.trentorise.opendatarise.semantics.services.EntityService;
+import eu.trentorise.opendatarise.semantics.services.EntityTypeService;
 import eu.trentorise.opendatarise.semantics.services.IdentityService;
+import eu.trentorise.opendatarise.semantics.services.Search;
 import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
 import it.unitn.disi.sweb.webapi.model.eb.Value;
 
@@ -31,92 +41,6 @@ import it.unitn.disi.sweb.webapi.model.eb.Value;
  * 
  */
 public class TestIDManagement {
-
-	@Test
-	public void testIdService(){
-		IdentityService idServ = new IdentityService();
-		EntityService enServ = new EntityService(getClientProtocol());
-		EntityODR entity1 = (EntityODR)enServ.readEntity(64000L);
-	//	EntityODR entity2 = (EntityODR)enServ.readEntity(117516L);
-
-		List<Attribute> attrs = entity1.getAttributes();
-		for (Attribute atr : attrs){
-			System.out.println(atr.getName().get("en"));
-			
-			if (atr.getName().get("en").equalsIgnoreCase("Foursquare ID")){
-				System.out.println(atr.getName());
-				attrs.remove(atr);
-				}
-			
-		}
-		entity1.setAttributes(attrs);
-		
-		List<Attribute> attrs1 = entity1.getAttributes();
-		for (Attribute atr : attrs1){
-			System.out.println(atr.getName().get("en"));
-			
-			if (atr.getName().get("en").equalsIgnoreCase("Foursquare ID")){
-				System.out.println(atr.getName());
-				//attrs.remove(atr);
-				}
-			
-		}
-		entity1.setAttributes(attrs);		
-		//EntityODR entity2 = (EntityODR)enServ.readEntity(64005L);
-
-		//ImpiantoDiRisalitaFacade idrf = new ImpiantoDiRisalitaFacade(WebServiceURLs.getClientProtocol());
-		//EntityODR entity3 =idrf.createEmptyEntity("Ivan", "Cabinovia", 12.356f, 20.9087f, "8:00", "17:00");
-		//Long entity4 =idrf.createEntity("Ivan", "Cabinovia", 12.356f, 20.9087f, "8:00", "17:00");
-		//System.out.println(entity4);
-
-		//	entity1.getEntityAttributes();
-		//	entity2.getEntityAttributes();
-		//	entity3.getEntityAttributes();
-
-		//	entity1.getEtype();
-		//	entity2.getEtype();
-		//	entity3.getEtype();
-
-		//		EntityODR entity1 = (EntityODR)enServ.readEntity(64010L);
-		//		EntityODR entity2 = (EntityODR)enServ.readEntity(64015L);
-		//	EntityODR entity3 = (EntityODR)enServ.readEntity(15009L);
-
-		//	entity1.getEntityAttributes();
-		//	entity2.getEntityAttributes();
-		//	entity3.getEntityAttributes();
-
-		//	entity1.getEtype();
-		//	entity2.getEtype();
-		//	entity3.getEtype();
-
-		//entity1.getNames();
-
-		List<IEntity> entities = new ArrayList<IEntity>();
-		//	entities.add(entity1);
-		//	entities.add(entity2);
-		entities.add(entity1);
-
-
-		//System.out.println("Will try to asign IDs to:");
-		//for(IEntity entityInList: entities){
-		//	System.out.println(entityInList);
-		//	}
-		//	entities.add(entity2);
-		//	entities.add(entity3);
-
-		System.out.println("The result is:");
-		//IProtocolClient clientApi = getClientProtocol();
-		List<IIDResult> results=  idServ.assignGUID(entities);
-		for (IIDResult res: results){
-			EntityODR entityODR =  (EntityODR) res.getResultEntity();
-			System.out.println("result "+res.getAssignmentResult());
-			System.out.println("result "+res.getGUID());
-			System.out.println("result "+entityODR.getLocalID());
-			//System.out.println("new sweb id "+res.getSwebID());
-			//System.out.println("for entity(webAPI): "+entityToString(res.getEntity()));
-			System.out.println("for entity(ODR): "+entityODR);
-		}
-	}
 
 	private String entityToString(Entity e){
 		String str = "id:"+e.getId()+
@@ -143,30 +67,243 @@ public class TestIDManagement {
 		return str+"]";
 	}
 
-	//@Test
-	public void testIdManServiceDISIClient(){
-		AttributeClient attrClient = new AttributeClient(getClientProtocol());
-		InstanceClient instanceCl= new  InstanceClient(getClientProtocol());
-		Entity entity1 = (Entity) instanceCl.readInstance(62841L, null);
-		List<Attribute> attributes = new ArrayList<Attribute>();
+	@Test 
+	public void idServiceEntityNew(){
 
-		attributes = attrClient.readAttributes(62841L, null,null);
+		IdentityService idServ = new IdentityService();
+		EntityService enServ = new EntityService(getClientProtocol());
+		EntityODR entity = (EntityODR)enServ.readEntity(64000L);
+		List<Attribute> attrs = entity.getAttributes();
+		List<Attribute> attrs1 = new ArrayList<Attribute>();
+		for (Attribute atr : attrs){
+				if (atr.getName().get("en").equalsIgnoreCase("Foursquare ID")){
+					System.out.println(atr.getName());
+					Attribute a = createAttributeEntity("50f6e6f516f88f6cc81a42fc");
+					attrs1.add(a);
+				}
+				
+		}
+		Entity en = new Entity();
+		en.setEntityBaseId(1L);
+		en.setTypeId(12L);
+		en.setAttributes(attrs1);
 
-		entity1.setAttributes(attributes);
+		IEntity ent = new EntityODR(WebServiceURLs.getClientProtocol(),en);
 
-		IDManagementClient idManCl = new IDManagementClient(getClientProtocol());
-		List<Entity> entities = new ArrayList<Entity>();
-		entities.add(entity1);
-		List<IDResult> results =idManCl.assignIdentifier(entities, 0);
-		for (IDResult res: results){
-			System.out.println(res.getResult());
-			//System.out.println(res.);
+		List<IEntity> entities = new ArrayList<IEntity>();
+		entities.add(ent);
+
+		List<IIDResult> results=  idServ.assignGUID(entities);
+		for (IIDResult res: results){
+			EntityODR entityODR =  (EntityODR) res.getResultEntity();
+			System.out.println("result "+res.getAssignmentResult());
+			System.out.println("Global id: "+res.getGUID());
+			System.out.println("Local id: "+entityODR.getLocalID());
+			assertEquals(AssignmentResult.NEW, res.getAssignmentResult());
+		}
+		
+
+	}
+	
+	@Test
+	public void testIdManagementReuse(){
+		EntityService enServ =new EntityService(WebServiceURLs.getClientProtocol());
+		IdentityService idServ= new IdentityService();
+		String name = "PALAZZETTO DELLO SPORT";
+		
+		Search searchService = new Search(WebServiceURLs.getClientProtocol());
+		List<Name> names=searchService.nameSearch(name);
+		
+		
+		EntityODR entity = (EntityODR)enServ.readEntity(64000L);
+		List<Attribute> attrs=entity.getAttributes();
+		List<Attribute> attrs1=new ArrayList<Attribute>();
+
+		for (Attribute atr : attrs){
+			if (atr.getName().get("en").equalsIgnoreCase("Name")){
+				Attribute a =createAttributeNameEntity(names.get(0));
+				attrs1.add(atr);
+			} else 
+				if (atr.getName().get("en").equalsIgnoreCase("Latitude")){
+					attrs1.add(atr);
+				} else if (atr.getName().get("en").equalsIgnoreCase("Longitude")){
+					EntityService es = new EntityService(getClientProtocol());
+					attrs1.add(atr);
+				} else if (atr.getName().get("en").equalsIgnoreCase("Class")){
+					attrs1.add(atr);
+				}
+		}
+
+		Entity en = new Entity();
+		en.setEntityBaseId(1L);
+		en.setTypeId(12L);
+		en.setAttributes(attrs1);
+
+		IEntity ent = new EntityODR(WebServiceURLs.getClientProtocol(),en);
+		
+		List<IEntity> entities = new ArrayList<IEntity>();
+		entities.add(ent);
+		
+		List<IIDResult> results=  idServ.assignGUID(entities);
+		for (IIDResult res: results){
+			EntityODR entityODR =  (EntityODR) res.getResultEntity();
+			System.out.println("result "+res.getAssignmentResult());
+			System.out.println("Global ID: "+res.getGUID());
+			System.out.println("Local ID: "+entityODR.getLocalID());
+			assertEquals(AssignmentResult.REUSE, res.getAssignmentResult());
+
+		}
+		
+	}
+
+	@Test 
+	public void idServiceEntityMissing(){
+
+		IdentityService idServ = new IdentityService();
+		EntityService enServ = new EntityService(getClientProtocol());
+		EntityODR entity = (EntityODR)enServ.readEntity(64000L);
+		List<Attribute> attrs = entity.getAttributes();
+		List<Attribute> attrs1 = new ArrayList<Attribute>();
+
+		for (Attribute atr : attrs){
+
+				
+			if (atr.getName().get("en").equalsIgnoreCase("Latitude")){
+				attrs1.add(atr);
+			}
+			else if (atr.getName().get("en").equalsIgnoreCase("Longitude")){
+				EntityService es = new EntityService(getClientProtocol());
+				attrs1.add(atr);
+			} else 
+				if (atr.getName().get("en").equalsIgnoreCase("Class")){
+				attrs1.add(atr);
+			}
+		}
+
+		Entity en = new Entity();
+		en.setEntityBaseId(1L);
+		en.setTypeId(12L);
+		en.setAttributes(attrs1);
+
+		IEntity ent = new EntityODR(WebServiceURLs.getClientProtocol(),en);
+
+		List<IEntity> entities = new ArrayList<IEntity>();
+		entities.add(ent);
+
+		List<IIDResult> results=  idServ.assignGUID(entities);
+		for (IIDResult res: results){
+			EntityODR entityODR =  (EntityODR) res.getResultEntity();
+			System.out.println("result "+res.getAssignmentResult());
+			System.out.println("Global id: "+res.getGUID());
+			System.out.println("Local id: "+entityODR.getLocalID());
+			assertEquals(AssignmentResult.MISSING, res.getAssignmentResult());
 		}
 	}
+
+	
 	private IProtocolClient getClientProtocol(){
 		return  WebServiceURLs.getClientProtocol();
 	}
 
+	public Attribute createAttributeNameEntity(Object value){
+		EntityService es = new EntityService(getClientProtocol());
+		EntityTypeService ets = new EntityTypeService();
+		EntityType etype = ets.getEntityType(12L);
+		
+		List<IAttributeDef>attrDefList=etype.getAttributeDefs();
+		List<Attribute> attrs = new ArrayList<Attribute>();
+		
+		Attribute a = null;
+		for (IAttributeDef atd: attrDefList){
+			if (atd.getName().getString(Locale.ENGLISH).equals("Name")){
+				System.out.println(atd.getName());
+				AttributeODR attr = es.createNameAttribute(atd,(Name)value);
+				a=attr.convertToAttribute();
+				return a;
+			}
+		}
+		return a;
+	}
 
+	public Attribute createAttributeEntity(Object value){
+		EntityService es = new EntityService(getClientProtocol());
+		EntityTypeService ets = new EntityTypeService();
+		EntityType etype = ets.getEntityType(12L);
+		
+		List<IAttributeDef>attrDefList=etype.getAttributeDefs();
+		List<Attribute> attrs = new ArrayList<Attribute>();
+		
+		Attribute a = null;
+		for (IAttributeDef atd: attrDefList){
+			//			if (atd.getName().getString(Locale.ENGLISH).equals("Name")){
+			//				System.out.println(atd.getName());
+			//				System.out.println(atd.getGUID());
+			//				System.out.println(atd.getDataType());
+			//				if (atd.getDataType().equals("oe:structure")){
+			//					System.out.println(atd.getRangeEType().getURL());
+			//					EntityType etpe =	ets.getEntityType(atd.getRangeEType().getURL());
+			//					List<IAttributeDef>atsd = etpe.getAttributeDefs();
+			//					for (IAttributeDef a:atsd){
+			//						System.out.println(a.getGUID());
+			//					}
+			//
+			//				}
+
+//			if (atd.getName().getString(Locale.ENGLISH).equals("Name")){
+//				System.out.println(atd.getName());
+//				AttributeODR attr = es.createNameAttribute(atd,(Name)value);
+//				a=attr.convertToAttribute();
+//				return a;
+//			}
+			//
+			//			if (atd.getName().getString(Locale.ENGLISH).equals("Class")){
+			//				System.out.println(atd.getName());
+			//				AttributeODR attr = es.createAttribute(atd,clazz);
+			//				Attribute a=attr.convertToAttribute();
+			//				attrs.add(a);
+			//			}
+
+						if (atd.getName().getString(Locale.ENGLISH).equals("Foursquare ID")){
+							AttributeODR attr = es.createAttribute(atd, (String)value);
+							 a = attr.convertToAttribute();
+							attrs.add(a);
+						}
+
+			//			if (atd.getName().getString(Locale.ENGLISH).equals("Latitude")){
+			//				System.out.println(atd.getName());
+			//				AttributeODR attr = es.createAttribute(atd,latitude);
+			//				Attribute a=attr.convertToAttribute();
+			//				attrs.add(a);
+			//			}
+			//			if (atd.getName().getString(Locale.ENGLISH).equals("Longitude")){
+			//				System.out.println(atd.getName());
+			//				AttributeODR attr = es.createAttribute(atd,longitude);
+			//				 a=attr.convertToAttribute();
+			//			}
+
+			//						if (atd.getName().getString(Locale.ENGLISH).equals("Opening hours")){
+			//							System.out.println(atd.getName());
+			//							AttributeDef openHourAtDef = new AttributeDef(31L);
+			//							AttributeDef closeHourAtDef = new AttributeDef(30L);
+			//							
+			//							HashMap<AttributeDef, Object> attrMap = new HashMap<AttributeDef,Object>();
+			//							attrMap.put(openHourAtDef, openTime);
+			//							attrMap.put(closeHourAtDef, closeTime);
+			//							
+			//							AttributeODR attr = es.createAttribute(atd,attrMap);
+			//							Attribute a=attr.convertToAttribute();
+			//							attrs.add(a);
+			//						}
+		}
+		//		EntityODR e = new EntityODR();
+		//		e.setEntityBaseId(1L);
+		//		e.setTypeId(12L);
+		//		e.setAttributes(attrs);
+
+		return a;
+
+		//		long id = es.createEntity(e);
+		//		System.out.println("Entity id:"+id);
+	}
 
 }

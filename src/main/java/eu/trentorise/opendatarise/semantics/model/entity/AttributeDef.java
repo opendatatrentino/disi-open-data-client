@@ -14,9 +14,11 @@ import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
 import it.unitn.disi.sweb.webapi.client.kb.AttributeDefinitionClient;
 import it.unitn.disi.sweb.webapi.client.kb.ComplexTypeClient;
+import it.unitn.disi.sweb.webapi.model.filters.AttributeDefinitionFilter;
 import it.unitn.disi.sweb.webapi.model.kb.types.AttributeDefinition;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
 import it.unitn.disi.sweb.webapi.model.kb.types.Presence;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -42,6 +44,7 @@ public class AttributeDef implements IAttributeDef {
 	private IConcept concept;
 
 	public AttributeDef(AttributeDefinition attrDef){
+		
 		this.isSet = attrDef.isSet();
 		this.categoryId = attrDef.getCategoryId();
 		this.conceptId = attrDef.getConceptId();
@@ -60,7 +63,9 @@ public class AttributeDef implements IAttributeDef {
 
 	public AttributeDef (long id){
 		AttributeDefinitionClient attrDefClient = new AttributeDefinitionClient(getClientProtocol());
-		AttributeDefinition attrDef = attrDefClient.readAttributeDefinition(id, null);
+		AttributeDefinitionFilter attrDefFilter = new AttributeDefinitionFilter();
+		attrDefFilter.setIncludeRestrictions(true);
+		AttributeDefinition attrDef = attrDefClient.readAttributeDefinition(id, attrDefFilter);
 		this.isSet = attrDef.isSet();
 		this.categoryId = attrDef.getCategoryId();
 		this.conceptId = attrDef.getConceptId();
@@ -94,7 +99,13 @@ public class AttributeDef implements IAttributeDef {
 	}
 
 	public String getDataType() {
-		if (this.dataType.equals("COMPLEX_TYPE")) return DataTypes.STRUCTURE;
+		if (this.dataType.equals("COMPLEX_TYPE")){
+			ComplexTypeClient ctc = new ComplexTypeClient(getClientProtocol());
+			ComplexType cType = ctc.readComplexType(this.entityTypeID, null);
+			if(cType.getClass().getName().equalsIgnoreCase("it.unitn.disi.sweb.webapi.model.kb.types.EntityType"))
+			{return DataTypes.ENTITY;} 
+			else return DataTypes.STRUCTURE; 
+		}
 		if (this.dataType.equals("STRUCTURE")) return DataTypes.STRUCTURE;
 		if (this.dataType.equals("STRING")) return DataTypes.STRING;
 		if (this.dataType.equals("BOOLEAN")) return DataTypes.BOOLEAN;
@@ -111,6 +122,7 @@ public class AttributeDef implements IAttributeDef {
 
 	public EntityType getRangeEType() {
 		if (this.dataType.equals("COMPLEX_TYPE")){
+
 			ComplexTypeClient ctc = new ComplexTypeClient(getClientProtocol());
 			if (this.entityTypeID!=null){
 				ComplexType cType = ctc.readComplexType(this.entityTypeID, null);
@@ -214,7 +226,7 @@ public class AttributeDef implements IAttributeDef {
 	public long getRangeEntityTypeID(){
 		return this.entityTypeID.longValue();
 	}
-	
+
 	public String getEtypeURL() {
 		String fullUrl = WebServiceURLs.getURL();
 		String url  = fullUrl+"/types/"+this.typeId;

@@ -7,6 +7,7 @@ import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
 import it.unitn.disi.sweb.webapi.model.eb.Name;
 import it.unitn.disi.sweb.webapi.model.eb.search.InstanceSearchResult;
+import it.unitn.disi.sweb.webapi.model.filters.SearchResultFilter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +52,31 @@ public class Search implements ISearchService {
 		return null;
 	}
 
+	public List<Name> nameSearch(String conceptSearchQuery) {
+		InstanceClient client = new InstanceClient(api);
+		SearchResultFilter srf = new SearchResultFilter();
+		srf.setLocale(Locale.ITALIAN);
+		InstanceSearchResult result = client.searchInstances(conceptSearchQuery, 1, null, null, srf, null);
+		List<Instance> resInstances = result.getResults();
+		List<Name> names = getNames(resInstances);
+		return names;
+	}
+
+	
+	private List<Name> getNames(List<Instance> instances) {
+		List<Name> names = new ArrayList<Name>();
+		
+		for(Instance instance: instances ){
+			if(instance.getTypeId()==10){  //TODO WARNING HARDCODING entity type NAME!!!!!!!!!!!!
+			Name name =  (Name) instance;
+			names.add(name);
+			}
+		}
+		
+		return names;
+	}
+	
+
 	public List<IEntity> conceptSearch(String conceptSearchQuery) {
 		InstanceClient client = new InstanceClient(api);
 		InstanceSearchResult result = client.searchInstances(conceptSearchQuery, 1, null, null, null, null);
@@ -72,7 +98,10 @@ public class Search implements ISearchService {
 				EntityODR entityODR = new EntityODR(api, entity);
 				entities.add(entityODR);}
 			else 
-			{Name name =  (Name) instance;}
+			{Name name =  (Name) instance;
+			System.out.println(name.getId());
+			name.getId();
+			}
 		}
 		return entities;
 	}

@@ -151,7 +151,7 @@ public class TestEntityService {
 		System.out.println(attrsPost.size());
 	}
 
-	//@Test broken...
+	@Test 
 	public void testCreateAttributeEntity(){
 		EntityService es = new EntityService(api);
 		EntityTypeService ets = new EntityTypeService();

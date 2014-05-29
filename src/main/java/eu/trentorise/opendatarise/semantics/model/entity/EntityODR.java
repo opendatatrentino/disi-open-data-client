@@ -143,6 +143,9 @@ public class EntityODR extends Structure implements IEntity {
 
 	public IDict getName() {
 		Dict dict = new Dict();
+		if((this.names==null)&&(super.getId()==null)){
+			return dict;
+		} else
 		if(this.names==null){
 			EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
 			EntityODR e =(EntityODR)es.readEntity(super.getId());
@@ -403,6 +406,9 @@ public class EntityODR extends Structure implements IEntity {
 	}
 	public IDict getDescription() {
 		Dict dict = new Dict();
+		if (this.descriptions==null){
+			return dict;
+		}
 		Map<String,List<SemanticString>> descriptionMap =  this.descriptions;
         if(descriptionMap.isEmpty()){
         	return dict;
