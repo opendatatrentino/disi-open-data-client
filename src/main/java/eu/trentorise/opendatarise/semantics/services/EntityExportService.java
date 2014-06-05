@@ -160,12 +160,6 @@ public class EntityExportService {
 
 	public void  convertToJsonLd(InputStream inputStream, Writer writer) throws IOException{
 
-		File file = new File("semanticfile.txt");
-
-		// if file doesnt exists, then create it
-		if (!file.exists()) {
-			file.createNewFile();
-		}
 
 		//FileWriter fw = new FileWriter(file.getAbsoluteFile());
 		BufferedWriter bw = new BufferedWriter(writer);
