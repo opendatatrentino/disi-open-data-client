@@ -26,7 +26,7 @@ public class ConceptODR implements IConcept{
 
 	public ConceptODR(){}
 
-	ConceptODR(Concept con){
+	public ConceptODR(Concept con){
 		this.label = con.getLabel();
 		this.id = con.getId();
 		this.globalID = con.getGlobalId();

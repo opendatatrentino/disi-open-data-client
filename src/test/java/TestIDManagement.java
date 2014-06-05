@@ -105,7 +105,7 @@ public class TestIDManagement {
 
 	}
 	
-	@Test
+	//@Test
 	public void testIdManagementReuse(){
 		EntityService enServ =new EntityService(WebServiceURLs.getClientProtocol());
 		IdentityService idServ= new IdentityService();
@@ -121,8 +121,8 @@ public class TestIDManagement {
 
 		for (Attribute atr : attrs){
 			if (atr.getName().get("en").equalsIgnoreCase("Name")){
-				Attribute a =createAttributeNameEntity(names.get(0));
-				attrs1.add(atr);
+				Attribute a =createAttributeNameEntity(name);
+				attrs1.add(a);
 			} else 
 				if (atr.getName().get("en").equalsIgnoreCase("Latitude")){
 					attrs1.add(atr);
@@ -174,10 +174,7 @@ public class TestIDManagement {
 			else if (atr.getName().get("en").equalsIgnoreCase("Longitude")){
 				EntityService es = new EntityService(getClientProtocol());
 				attrs1.add(atr);
-			} else 
-				if (atr.getName().get("en").equalsIgnoreCase("Class")){
-				attrs1.add(atr);
-			}
+			} 
 		}
 
 		Entity en = new Entity();
@@ -205,7 +202,7 @@ public class TestIDManagement {
 		return  WebServiceURLs.getClientProtocol();
 	}
 
-	public Attribute createAttributeNameEntity(Object value){
+	public Attribute createAttributeNameEntity(String value){
 		EntityService es = new EntityService(getClientProtocol());
 		EntityTypeService ets = new EntityTypeService();
 		EntityType etype = ets.getEntityType(12L);
@@ -217,7 +214,7 @@ public class TestIDManagement {
 		for (IAttributeDef atd: attrDefList){
 			if (atd.getName().getString(Locale.ENGLISH).equals("Name")){
 				System.out.println(atd.getName());
-				AttributeODR attr = es.createNameAttribute(atd,(Name)value);
+				AttributeODR attr = es.createNameAttributeODR(atd,value);
 				a=attr.convertToAttribute();
 				return a;
 			}

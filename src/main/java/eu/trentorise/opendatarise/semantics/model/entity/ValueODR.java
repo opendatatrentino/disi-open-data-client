@@ -5,8 +5,14 @@ import java.util.List;
 
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
+import it.unitn.disi.sweb.webapi.model.eb.Instance;
+import it.unitn.disi.sweb.webapi.model.eb.Name;
 import it.unitn.disi.sweb.webapi.model.eb.Value;
+import eu.trentorise.opendata.semantics.model.entity.IEntity;
+import eu.trentorise.opendata.semantics.model.entity.IStructure;
 import eu.trentorise.opendata.semantics.model.entity.IValue;
+import eu.trentorise.opendatarise.semantics.services.EntityService;
+import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
@@ -32,8 +38,18 @@ public class ValueODR extends Value implements IValue {
 	public ValueODR(IProtocolClient api, Value value ){
 		this.id=value.getId();
 		this.attrId=value.getAttributeId();
-		this.value=value.getValue();
-
+		
+		if (value.getClass().equals(Name.class))
+	
+		{
+			Instance instance= (Instance)this.value;
+			//System.out.println(value.toString());
+			EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
+			Structure structure = es.readName(instance.getId());
+			//Structure structure = 
+			this.value=structure;
+		} else this.value=value.getValue();
+		
 	}
 
 	public ValueODR(Value value){
@@ -48,6 +64,15 @@ public class ValueODR extends Value implements IValue {
 
 	public Object getValue() {
 		if (this.value!=null){
+			System.out.println(value.getClass());
+			if (value.getClass().equals(Name.class))
+			{
+				Instance instance= (Instance)this.value;
+				//System.out.println(value.toString());
+				EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
+				Structure name = es.readName(instance.getId());
+				this.value=name;
+			}
 			return this.value;}
 		else {
 			AttributeClient attrClient = new AttributeClient(this.api);

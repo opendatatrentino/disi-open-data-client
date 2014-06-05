@@ -6,7 +6,6 @@ import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
 import it.unitn.disi.sweb.webapi.model.eb.Name;
-import it.unitn.disi.sweb.webapi.model.eb.Structure;
 import it.unitn.disi.sweb.webapi.model.eb.Value;
 import it.unitn.disi.sweb.webapi.model.filters.InstanceFilter;
 
@@ -32,6 +31,7 @@ import eu.trentorise.opendatarise.semantics.model.entity.AttributeDef;
 import eu.trentorise.opendatarise.semantics.model.entity.AttributeODR;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
+import eu.trentorise.opendatarise.semantics.model.entity.Structure;
 import eu.trentorise.opendatarise.semantics.model.entity.ValueODR;
 
 public class EntityService implements IEntityService {
@@ -50,9 +50,10 @@ public class EntityService implements IEntityService {
 		InstanceClient instanceCl= new  InstanceClient(this.api);
 		System.out.println(e.toString());
 		for (Attribute a : e.getAttributes()){
-			System.out.println(a.getConceptId());
-			System.out.println(a.getDataType());
-			System.out.println(a.getDefinitionId());
+			
+			System.out.println("Concept:"+a.getConceptId());
+			System.out.println("DataType:"+a.getDataType());
+			System.out.println("Defenition:"+a.getDefinitionId());
 			//	System.out.println(a.getValues().get(0).ge);
 		}
 
@@ -95,10 +96,27 @@ public class EntityService implements IEntityService {
 		InstanceFilter instFilter = new InstanceFilter();
 		instFilter.setIncludeAttributes(true);
 		instFilter.setIncludeAttributesAsProperties(true);
+		instFilter.setIncludeSemantics(true);
 		Instance instance = instanceCl.readInstance(entityID, instFilter);
 		Entity entity =  (Entity)instance; 
 		EntityODR en = new EntityODR(this.api,entity);
 		return en;
+	}
+	
+	public Structure readName(long entityID) {
+		InstanceClient instanceCl= new  InstanceClient(this.api);
+
+		InstanceFilter instFilter = new InstanceFilter();
+		instFilter.setIncludeAttributes(true);
+		instFilter.setIncludeAttributesAsProperties(true);
+		Instance instance = instanceCl.readInstance(entityID, instFilter);
+		
+		Name name =  (Name)instance; 
+		Structure structureName = new Structure();
+		structureName.setAttributes(name.getAttributes());
+		//EntityODR en = new EntityODR(this.api,entity);
+		
+		return structureName;
 	}
 	
 
@@ -154,7 +172,7 @@ public class EntityService implements IEntityService {
 	private AttributeODR createStructureAttribute(IAttributeDef attrDef,
 			HashMap<IAttributeDef, Object> atributes) {
 		List<Attribute> attrs = new ArrayList<Attribute>();
-		Structure attributeStructure = new Structure();
+		it.unitn.disi.sweb.webapi.model.eb.Structure  attributeStructure = new it.unitn.disi.sweb.webapi.model.eb.Structure();
 		attributeStructure.setEntityBaseId(1L);
 
 		AttributeDef adef =(AttributeDef)attrDef;
@@ -233,7 +251,7 @@ public class EntityService implements IEntityService {
 		
 	}
 	
-	private AttributeODR createNameAttributeODR(IAttributeDef attrDef, String name){
+	public AttributeODR createNameAttributeODR(IAttributeDef attrDef, String name){
 		
 		Attribute entityNameAttribute = new Attribute();
 		entityNameAttribute.setDefinitionId(attrDef.getGUID());

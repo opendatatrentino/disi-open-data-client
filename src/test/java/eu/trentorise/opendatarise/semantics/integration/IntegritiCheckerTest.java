@@ -13,6 +13,7 @@ import org.junit.Test;
 import eu.trentorise.opendata.columnrecognizers.ColumnConceptCandidate;
 import eu.trentorise.opendata.columnrecognizers.ColumnRecognizer;
 import eu.trentorise.opendata.semantics.IntegrityChecker;
+import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
@@ -153,6 +154,12 @@ public class IntegritiCheckerTest {
 		EntityService es= new EntityService(WebServiceURLs.getClientProtocol());
 		IEntity entity = es.readEntity(15001L);
 		iChecker.checkEntity(entity);
+		List<IAttribute> attributes = entity.getStructureAttributes();
+
+		for (IAttribute attr:attributes){
+			iChecker.checkValue(attr.getFirstValue(), attr.getAttributeDefinition()); 
+		}
+
 	}
 
 	@Test 
@@ -160,20 +167,42 @@ public class IntegritiCheckerTest {
 		EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
 		IdentityService idServ = new IdentityService();
 
-		EntityODR entity1 = (EntityODR)enServ.readEntity(64000L);
+		//	IEntity entity1 = entityForReuseResults();
 		IEntity entity2 = entityForNewResults();
-		IEntity entity3=entityForMissingResults();
+		//IEntity entity3=entityForMissingResults();
 
 		List<IEntity> entities = new ArrayList<IEntity>();
-	//	entities.add(entity1);
-		entities.add(entity2);
-	//	entities.add(entity3);
+		//entities.add(entity1);
+			entities.add(entity2);
+		//	entities.add(entity3);
 
 		List<IIDResult> results=  idServ.assignGUID(entities);
 		for (IIDResult res: results){
 			System.out.println(res.getAssignmentResult().toString());
 			iChecker.checkIDResult(res);
 		}
+	}
+
+	private IEntity entityForReuseResults(){
+		EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
+
+		EntityODR entity = (EntityODR)enServ.readEntity(64000L);
+		List<Attribute> attrs = entity.getAttributes();
+		List<Attribute> attrs1 = new ArrayList<Attribute>();
+		for (Attribute atr : attrs){
+
+			if (atr.getName().get("en").equalsIgnoreCase("Foursquare ID")){
+				Attribute a = createAttributeEntity("50f6e6f516488f6cc81a42fc");
+				attrs1.add(a);
+			}
+		}
+		Entity en = new Entity();
+		en.setEntityBaseId(1L);
+		en.setTypeId(12L);
+		en.setAttributes(attrs1);
+
+		IEntity ent = new EntityODR(WebServiceURLs.getClientProtocol(),en);
+		return ent;
 	}
 
 	private IEntity entityForNewResults(){
@@ -184,10 +213,10 @@ public class IntegritiCheckerTest {
 		List<Attribute> attrs1 = new ArrayList<Attribute>();
 		for (Attribute atr : attrs){
 
-				if (atr.getName().get("en").equalsIgnoreCase("Foursquare ID")){
-					Attribute a = createAttributeEntity("50f6e6f516f88f6cc81a42fc");
-					attrs1.add(a);
-				}
+			if (atr.getName().get("en").equalsIgnoreCase("Foursquare ID")){
+				Attribute a = createAttributeEntity("50f6e6f516488ffcc81a42fc");
+				attrs1.add(a);
+			}
 		}
 		Entity en = new Entity();
 		en.setEntityBaseId(1L);
@@ -200,7 +229,6 @@ public class IntegritiCheckerTest {
 
 	private  IEntity entityForMissingResults(){
 
-		IdentityService idServ = new IdentityService();
 		EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
 		EntityODR entity = (EntityODR)enServ.readEntity(64000L);
 		List<Attribute> attrs = entity.getAttributes();

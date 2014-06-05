@@ -5,9 +5,12 @@ import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.model.knowledge.IDict;
+import eu.trentorise.opendata.semantics.model.knowledge.impl.SemanticText;
+import eu.trentorise.opendatarise.semantics.model.knowledge.ConceptODR;
 import eu.trentorise.opendatarise.semantics.model.knowledge.Dict;
 import eu.trentorise.opendatarise.semantics.services.EntityService;
 import eu.trentorise.opendatarise.semantics.services.NLPService;
+import eu.trentorise.opendatarise.semantics.services.SemanticTextFactory;
 import static eu.trentorise.opendatarise.semantics.services.NLPService.localeToLanguageTag;
 import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
@@ -22,7 +25,9 @@ import it.unitn.disi.sweb.webapi.model.eb.Moment;
 import it.unitn.disi.sweb.webapi.model.eb.Name;
 import it.unitn.disi.sweb.webapi.model.eb.Value;
 import it.unitn.disi.sweb.webapi.model.eb.sstring.SemanticString;
+import it.unitn.disi.sweb.webapi.model.kb.concepts.Concept;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
+import it.unitn.disi.sweb.webapi.model.kb.types.DataType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,7 +44,7 @@ public class EntityODR extends Structure implements IEntity {
 
 	private List<Name> names;
 
-	private Map<String, List<SemanticString>> descriptions;
+	private Map<String, List<SemanticText>> descriptions;
 
 	private Moment start;
 
@@ -68,9 +73,60 @@ public class EntityODR extends Structure implements IEntity {
 		super.setId((Long)entity.getId());
 		this.setTypeId(entity.getTypeId());
 		super.setEntityBaseId(entity.getEntityBaseId()) ;
-		super.setAttributes(entity.getAttributes());
+		List<Attribute> attrs = entity.getAttributes();
+		//TODO should not be in constructor
+		for (Attribute at :attrs){
+			if (at.getConceptId()==3L){
+				List<Value> vals = at.getValues();
+				List<Value> fixedVals = new ArrayList<Value>();
+
+				for (Value val : vals ){
+					SemanticText stext= convertSemanticStringToText ((SemanticString) val.getSemanticValue()) ;
+					Value fixedVal = new Value();
+					fixedVal.setValue(stext);
+					fixedVals.add(fixedVal);
+				}				
+				at.setValues(fixedVals);
+			}
+
+			if (at.getDataType()==DataType.CONCEPT){
+				List<Value> vals = at.getValues();
+				List<Value> fixedVals = new ArrayList<Value>();
+
+				for (Value val : vals ){
+
+					if (val.getValue().getClass().equals(ConceptODR.class)){
+						fixedVals.add(val);
+					continue;
+					}
+						Concept c = (Concept)val.getValue();
+					ConceptODR codr = new ConceptODR(c);
+					
+					Value fixedVal = new Value();
+					fixedVal.setValue(codr);
+					fixedVals.add(fixedVal);
+				}				
+				at.setValues(fixedVals);
+			}
+
+			if (at.getConceptId()==5L){
+				List<Value> vals = at.getValues();
+				List<Value> fixedVals = new ArrayList<Value>();
+				EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
+				Instance inst = (Instance)vals.get(0).getValue();	
+				IEntity e = es.readEntity(inst.getId());
+				//	EntityODR enodr = new EntityODR(WebServiceURLs.getClientProtocol(), e);
+				Value fixedVal = new Value();
+				fixedVal.setValue(e);
+				fixedVals.add(fixedVal);
+
+				at.setValues(fixedVals);
+			}
+		}
+
+		super.setAttributes(attrs);
 		this.setNames(entity.getNames());
-		this.setDescriptions(entity.getDescriptions());
+		this.setDescriptions(convertDescriptionToODR(entity.getDescriptions()));
 		this.setPartOfId(entity.getPartOfId());
 		this.setURL(entity.getsUrl());
 		this.setDuration(entity.getDuration());
@@ -80,6 +136,7 @@ public class EntityODR extends Structure implements IEntity {
 		this.setGlobalId(entity.getGlobalId());
 
 	}
+
 
 
 	//	public EntityODR(IProtocolClient api, Instance instance){
@@ -146,30 +203,30 @@ public class EntityODR extends Structure implements IEntity {
 		if((this.names==null)&&(super.getId()==null)){
 			return dict;
 		} else
-		if(this.names==null){
-			EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
-			EntityODR e =(EntityODR)es.readEntity(super.getId());
-			this.names = e.getNames();
-			this.descriptions=e.getDescriptions();
-			this.classConceptId = e.getClassConceptId();
-		}
-		else
-			for (Name name: this.names)
-			{
-				Map<String,List<String>> nameMap = name.getNames();
+			if(this.names==null){
+				EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
+				EntityODR e =(EntityODR)es.readEntity(super.getId());
+				this.names = e.getNames();
+				this.descriptions=e.getDescriptions();
+				this.classConceptId = e.getClassConceptId();
+			}
+			else
+				for (Name name: this.names)
+				{
+					Map<String,List<String>> nameMap = name.getNames();
 
 
-				Iterator it = nameMap.entrySet().iterator();
-				while(it.hasNext()){
-					Map.Entry pairs = (Map.Entry)it.next();
-					Locale l = NLPService.languageTagToLocale((String)pairs.getKey());
-					ArrayList<String> vals = (ArrayList<String>) pairs.getValue();
-					//System.out.println(vals.get(0));
-					dict = dict.putTranslation(l, vals.get(0));
+					Iterator it = nameMap.entrySet().iterator();
+					while(it.hasNext()){
+						Map.Entry pairs = (Map.Entry)it.next();
+						Locale l = NLPService.languageTagToLocale((String)pairs.getKey());
+						ArrayList<String> vals = (ArrayList<String>) pairs.getValue();
+						//System.out.println(vals.get(0));
+						dict = dict.putTranslation(l, vals.get(0));
+
+					}
 
 				}
-
-			}
 		return dict;
 	}
 
@@ -177,11 +234,11 @@ public class EntityODR extends Structure implements IEntity {
 		this.names = names;
 	}
 
-	public Map<String, List<SemanticString>> getDescriptions() {
+	public Map<String, List<SemanticText>> getDescriptions() {
 		return descriptions;
 	}
 
-	public void setDescriptions(Map<String, List<SemanticString>> descriptions) {
+	public void setDescriptions(Map<String, List<SemanticText>> descriptions) {
 		this.descriptions = descriptions;
 	}
 
@@ -356,7 +413,7 @@ public class EntityODR extends Structure implements IEntity {
 		entity.setTypeId(this.getTypeId());
 		entity.setDuration(this.duration);
 		entity.setAttributes(super.getAttributes());
-		entity.setDescriptions(this.descriptions);
+		entity.setDescriptions(convertDescriptionToSWEB(this.descriptions));
 		entity.setEnd(this.end);
 		entity.setGlobalId(this.globalId);
 		entity.setId(super.getId());
@@ -409,21 +466,85 @@ public class EntityODR extends Structure implements IEntity {
 		if (this.descriptions==null){
 			return dict;
 		}
-		Map<String,List<SemanticString>> descriptionMap =  this.descriptions;
-        if(descriptionMap.isEmpty()){
-        	return dict;
-        }
+		Map<String,List<SemanticText>> descriptionMap =  this.descriptions;
+		if(descriptionMap.isEmpty()){
+			return dict;
+		}
 		Iterator it = descriptionMap.entrySet().iterator();
 		while(it.hasNext()){
 			Map.Entry pairs = (Map.Entry)it.next();
 			Locale l = NLPService.languageTagToLocale((String)pairs.getKey());
-			ArrayList<SemanticString> vals = (ArrayList<SemanticString>) pairs.getValue();
+			ArrayList<SemanticText> vals = (ArrayList<SemanticText>) pairs.getValue();
 			dict = dict.putTranslation(l, vals.get(0).getText());
 
 		}
 
 		return dict;
 	}
+
+	/** Method converts description attribute from  EntityPedia datatype to ODR datatype.
+	 * @param descriptionSString
+	 * @return 
+	 */
+	private Map<String,List<SemanticText>> convertDescriptionToODR(Map<String,List<SemanticString>> descriptionSString){
+
+		Map<String,List<SemanticText>> odrDescriptionMap = new  HashMap<String,List<SemanticText>>();
+		if(descriptionSString==null){
+			return odrDescriptionMap;
+		} 
+		SemanticTextFactory stf = new SemanticTextFactory();
+
+		Iterator it = descriptionSString.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry pairs = (Map.Entry)it.next();
+			List<SemanticText> sTextList = new ArrayList<SemanticText>();	
+
+			List<SemanticString> SStringList =  (List<SemanticString>) pairs.getValue();
+			for (SemanticString sstring:SStringList){
+				SemanticText stext = (SemanticText) stf.semanticText(sstring);
+				sTextList.add(stext);
+			}
+			odrDescriptionMap.put((String)pairs.getKey(), sTextList);
+			it.remove(); // avoids a ConcurrentModificationException
+		}
+
+		return odrDescriptionMap;
+
+	} 
+
+	private SemanticText convertSemanticStringToText(SemanticString sstring){
+
+		SemanticTextFactory stf = new SemanticTextFactory();
+		SemanticText stext = (SemanticText) stf.semanticText(sstring);
+
+		return stext;
+	}
+
+	public Map<String,List<SemanticString>> convertDescriptionToSWEB(Map<String,List<SemanticText>> descriptionSText){
+
+		Map<String,List<SemanticString>> epDescriptionMap = new  HashMap<String,List<SemanticString>>();
+		SemanticTextFactory stf = new SemanticTextFactory();
+		if(descriptionSText==null){
+			return epDescriptionMap;
+		}
+		Iterator it = descriptionSText.entrySet().iterator();
+
+		while (it.hasNext()) {
+			Map.Entry pairs = (Map.Entry)it.next();
+			List<SemanticString> sStringList = new ArrayList<SemanticString>();	
+
+			List<SemanticText> SStringList =  (List<SemanticText>) pairs.getValue();
+			for (SemanticText stext:SStringList){
+				SemanticString sstring = (SemanticString) stf.semanticString(stext);
+				sStringList.add(sstring);
+			}
+			epDescriptionMap.put((String)pairs.getKey(), sStringList);
+			it.remove(); // avoids a ConcurrentModificationException
+		}
+
+		return epDescriptionMap;
+	} 
+
 	public void setName(Locale locale, String name) {
 		// TODO Auto-generated method stub
 

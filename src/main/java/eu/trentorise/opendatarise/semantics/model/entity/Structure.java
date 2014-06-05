@@ -6,6 +6,7 @@ import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
 import it.unitn.disi.sweb.webapi.model.Pagination;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
+import it.unitn.disi.sweb.webapi.model.eb.Name;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,11 @@ public class Structure  extends Instance implements IStructure
 	}
 
 	public Structure(){
+		this.api = getClientProtocol();
+		
+	}
+	
+	public Structure(Name name){
 		this.api = getClientProtocol();
 	}
 

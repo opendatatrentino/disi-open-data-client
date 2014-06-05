@@ -10,6 +10,7 @@ import it.unitn.disi.sweb.webapi.model.eb.EntityBase;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
 import it.unitn.disi.sweb.webapi.model.eb.Name;
 import it.unitn.disi.sweb.webapi.model.eb.Value;
+import it.unitn.disi.sweb.webapi.model.kb.types.AttributeDefinition;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
 
 import java.util.ArrayList;
@@ -202,12 +203,17 @@ public class TestEntityService {
 			}
 			if (atd.getName().getString(Locale.ENGLISH).equals("Opening hours")){
 				System.out.println(atd.getName());
-				AttributeDef openHourAtDef = new AttributeDef(ATTR_TYPE_OPENING_HOUR);
-				AttributeDef closeHourAtDef = new AttributeDef(ATTR_TYPE_CLOSING_HOUR);
+				AttributeDef openHourAD = new AttributeDef(ATTR_TYPE_OPENING_HOUR);
+				AttributeDef closeHourAD = new AttributeDef(ATTR_TYPE_CLOSING_HOUR);
+
+				AttributeDefinition openHourAtDef= openHourAD.convertAttributeDefinition();
+				AttributeDefinition closeHourAtDef= closeHourAD.convertAttributeDefinition();
+
+				
 				
 				HashMap<AttributeDef, Object> attrMap = new HashMap<AttributeDef,Object>();
-				attrMap.put(openHourAtDef, "8:00");
-				attrMap.put(closeHourAtDef, "18:00");
+				attrMap.put(openHourAD, "8:00");
+				attrMap.put(closeHourAD, "18:00");
 				
 				AttributeODR attr = es.createAttribute(atd,attrMap);
 				Attribute a=attr.convertToAttribute();
