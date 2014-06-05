@@ -99,11 +99,11 @@ public class EntityODR extends Structure implements IEntity {
 
 					if (val.getValue().getClass().equals(ConceptODR.class)){
 						fixedVals.add(val);
-					continue;
+						continue;
 					}
-						Concept c = (Concept)val.getValue();
+					Concept c = (Concept)val.getValue();
 					ConceptODR codr = new ConceptODR(c);
-					
+
 					Value fixedVal = new Value();
 					fixedVal.setId(val.getId());
 					fixedVal.setValue(codr);
@@ -126,7 +126,7 @@ public class EntityODR extends Structure implements IEntity {
 
 				at.setValues(fixedVals);
 			}
-			
+
 			if (at.getConceptId()==111001L){
 				List<Value> vals = at.getValues();
 				List<Value> fixedVals = new ArrayList<Value>();
@@ -206,8 +206,15 @@ public class EntityODR extends Structure implements IEntity {
 
 	public String getURL() {
 		String fullUrl = WebServiceURLs.getURL();
-		String url  = fullUrl+"/instances/"+this.localId;
-		return url;	}
+		String url="";
+		if(this.localId!=null){
+			url  = fullUrl+"/instances/"+this.localId;}
+		else
+		{
+			url  = fullUrl+"/instances/"+this.getId();
+		}
+		return url;	
+	}
 
 	public void setURL(String sUrl) {
 		this.sUrl = sUrl;

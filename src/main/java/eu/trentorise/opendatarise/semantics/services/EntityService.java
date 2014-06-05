@@ -400,4 +400,17 @@ public class EntityService implements IEntityService {
 
 	}
 
+	public EntityODR readEntityByGUID(Long guid) {
+		InstanceClient instanceCl= new  InstanceClient(this.api);
+
+		InstanceFilter instFilter = new InstanceFilter();
+		instFilter.setIncludeAttributes(true);
+		instFilter.setIncludeAttributesAsProperties(true);
+		instFilter.setIncludeSemantics(true);
+		List<Instance> instances= instanceCl.readInstances(1L, 12L, 64000L, instFilter, null);
+		Entity entity =  (Entity)instances.get(0); 
+		EntityODR en = new EntityODR(this.api,entity);
+		return en;
+	}
+
 }
