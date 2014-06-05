@@ -167,14 +167,14 @@ public class IntegritiCheckerTest {
 		EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
 		IdentityService idServ = new IdentityService();
 
-		//	IEntity entity1 = entityForReuseResults();
+		IEntity entity1 = entityForReuseResults();
 		IEntity entity2 = entityForNewResults();
-		//IEntity entity3=entityForMissingResults();
+		IEntity entity3=entityForMissingResults();
 
 		List<IEntity> entities = new ArrayList<IEntity>();
-		//entities.add(entity1);
-			entities.add(entity2);
-		//	entities.add(entity3);
+		entities.add(entity1);
+		entities.add(entity2);
+		entities.add(entity3);
 
 		List<IIDResult> results=  idServ.assignGUID(entities);
 		for (IIDResult res: results){
@@ -191,10 +191,16 @@ public class IntegritiCheckerTest {
 		List<Attribute> attrs1 = new ArrayList<Attribute>();
 		for (Attribute atr : attrs){
 
-			if (atr.getName().get("en").equalsIgnoreCase("Foursquare ID")){
-				Attribute a = createAttributeEntity("50f6e6f516488f6cc81a42fc");
-				attrs1.add(a);
+
+			if (atr.getName().get("en").equalsIgnoreCase("Latitude")){
+				attrs1.add(atr);
 			}
+			else if (atr.getName().get("en").equalsIgnoreCase("Longitude")){
+				attrs1.add(atr);
+			} else 
+				if (atr.getName().get("en").equalsIgnoreCase("Class")){
+					attrs1.add(atr);
+				}
 		}
 		Entity en = new Entity();
 		en.setEntityBaseId(1L);
@@ -242,10 +248,11 @@ public class IntegritiCheckerTest {
 			}
 			else if (atr.getName().get("en").equalsIgnoreCase("Longitude")){
 				attrs1.add(atr);
-			} else 
-				if (atr.getName().get("en").equalsIgnoreCase("Class")){
-					attrs1.add(atr);
-				}
+			} 
+//			else 
+//				if (atr.getName().get("en").equalsIgnoreCase("Class")){
+//					attrs1.add(atr);
+//				}
 		}
 
 		Entity en = new Entity();

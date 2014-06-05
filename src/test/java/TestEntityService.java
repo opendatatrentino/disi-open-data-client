@@ -53,8 +53,20 @@ public class TestEntityService {
 	static final Long ATTR_TYPE_OPENING_HOUR = 31L;
 	public static final Long ATTR_TYPE_CLOSING_HOUR = 30L;
     Logger logger = LoggerFactory.getLogger(this.getClass());
-    long PALAZZETTO_ID = 64000L;
+    long PALAZZETTO_ID = 64005L;
     String palazzettoURL;
+
+    static final Long ATTR_DEF_LATTITUDE =69L ;
+    static final Long ATTR_DEF_LONGITUDE = 68L ;
+    static final Long ATTR_DEF_CLASS = 58L ;
+    
+    static final Long CLASS_CONCEPT_ID =21987L ;
+    
+    static final String ATTR_DEF_LATTITUDE_URL =WebServiceURLs.getURL() + "/attributedefinitions/" + ATTR_DEF_LATTITUDE ;
+    static final String ATTR_DEF_LONGITUDE_URL =WebServiceURLs.getURL() + "/attributedefinitions/" + ATTR_DEF_LONGITUDE ;
+    static final String ATTR_DEF_CLASS_URL =WebServiceURLs.getURL() + "/attributedefinitions/" + ATTR_DEF_CLASS ;
+    static final String CLASS_CONCEPT_ID_URL =WebServiceURLs.getURL() + "/concepts/" + CLASS_CONCEPT_ID ;
+
 
 
 
@@ -90,7 +102,7 @@ public class TestEntityService {
 		//	assertEquals(entity.getEtype().getName(Locale.ENGLISH),"Location");
 	}
 
-	//@Test 
+	@Test 
 	public void testCreateDeleteEntity(){
 
 		//initialising variables
@@ -184,7 +196,7 @@ public class TestEntityService {
 		System.out.println(attrsPost.size());
 	}
 
-	@Test 
+	//@Test 
 	public void testCreateAttributeEntity(){
 		EntityService es = new EntityService(api);
 		EntityTypeService ets = new EntityTypeService();

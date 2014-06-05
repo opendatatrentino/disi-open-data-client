@@ -4,6 +4,7 @@ import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
+import eu.trentorise.opendata.semantics.model.entity.IStructure;
 import eu.trentorise.opendata.semantics.model.knowledge.IDict;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.SemanticText;
 import eu.trentorise.opendatarise.semantics.model.knowledge.ConceptODR;
@@ -84,6 +85,7 @@ public class EntityODR extends Structure implements IEntity {
 					SemanticText stext= convertSemanticStringToText ((SemanticString) val.getSemanticValue()) ;
 					Value fixedVal = new Value();
 					fixedVal.setValue(stext);
+					fixedVal.setId(val.getId());
 					fixedVals.add(fixedVal);
 				}				
 				at.setValues(fixedVals);
@@ -103,6 +105,7 @@ public class EntityODR extends Structure implements IEntity {
 					ConceptODR codr = new ConceptODR(c);
 					
 					Value fixedVal = new Value();
+					fixedVal.setId(val.getId());
 					fixedVal.setValue(codr);
 					fixedVals.add(fixedVal);
 				}				
@@ -117,6 +120,22 @@ public class EntityODR extends Structure implements IEntity {
 				IEntity e = es.readEntity(inst.getId());
 				//	EntityODR enodr = new EntityODR(WebServiceURLs.getClientProtocol(), e);
 				Value fixedVal = new Value();
+				fixedVal.setId(vals.get(0).getId());
+				fixedVal.setValue(e);
+				fixedVals.add(fixedVal);
+
+				at.setValues(fixedVals);
+			}
+			
+			if (at.getConceptId()==111001L){
+				List<Value> vals = at.getValues();
+				List<Value> fixedVals = new ArrayList<Value>();
+				EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
+				Instance inst = (Instance)vals.get(0).getValue();	
+				IStructure e = es.readStructure(inst.getId());
+				//	EntityODR enodr = new EntityODR(WebServiceURLs.getClientProtocol(), e);
+				Value fixedVal = new Value();
+				fixedVal.setId(vals.get(0).getId());
 				fixedVal.setValue(e);
 				fixedVals.add(fixedVal);
 
