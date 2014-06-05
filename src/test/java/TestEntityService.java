@@ -1,4 +1,9 @@
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import eu.trentorise.opendata.semantics.IntegrityChecker;
+import eu.trentorise.opendata.semantics.services.IEkb;
+import eu.trentorise.opendatarise.semantics.services.Ekb;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
 import it.unitn.disi.sweb.webapi.client.eb.EbClient;
@@ -31,11 +36,14 @@ import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
 import eu.trentorise.opendatarise.semantics.services.EntityService;
 import eu.trentorise.opendatarise.semantics.services.EntityTypeService;
 import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
- * @date 14 Mar 2014
+ * @author David Leoni <david.leoni@unitn.it>
+ * @date 05 June 2014
  * 
  */
 public class TestEntityService {
@@ -44,11 +52,35 @@ public class TestEntityService {
 	private Long entityID;
 	static final Long ATTR_TYPE_OPENING_HOUR = 31L;
 	public static final Long ATTR_TYPE_CLOSING_HOUR = 30L;
+    Logger logger = LoggerFactory.getLogger(this.getClass());
+    long PALAZZETTO_ID = 64000L;
+    String palazzettoURL;
+
+
 
 	@Before
 	public void getClientProtocol(){
 		this.api = WebServiceURLs.getClientProtocol();
+        palazzettoURL = WebServiceURLs.getURL() + "/instances/" + PALAZZETTO_ID;
 	}
+
+
+
+    @Test
+    public void testPalazzettoRead() {
+        IEkb disiEkb = new Ekb();
+
+
+        EntityODR entity = (EntityODR) disiEkb.getEntityService().readEntity(palazzettoURL);
+
+        logger.info("\n\n *************   entity Palazzetto ("+ palazzettoURL +") ***************** \n\n" + entity);
+
+        IntegrityChecker.checkEntity(entity);
+
+        assertTrue(entity.getName().getString(Locale.ITALIAN).length() > 0);
+        assertTrue(entity.getDescription().getString(Locale.ITALIAN).length() > 0);
+
+    }
 
 	//@Test
 	public void testEntityRead(){
