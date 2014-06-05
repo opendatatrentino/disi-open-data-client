@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: it.unitn.disi.sweb:sweb-webapi-kb-client:3.0.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/it/unitn/disi/sweb/sweb-webapi-kb-client/3.0.0-SNAPSHOT/sweb-webapi-kb-client-3.0.0-20140522.114549-49.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/it/unitn/disi/sweb/sweb-webapi-kb-client/3.0.0-SNAPSHOT/sweb-webapi-kb-client-3.0.0-20140522.114549-49-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/it/unitn/disi/sweb/sweb-webapi-kb-client/3.0.0-SNAPSHOT/sweb-webapi-kb-client-3.0.0-20140522.114549-49-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

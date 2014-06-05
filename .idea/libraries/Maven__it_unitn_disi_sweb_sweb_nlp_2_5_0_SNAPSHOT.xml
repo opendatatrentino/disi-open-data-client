@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: it.unitn.disi.sweb:sweb-nlp:2.5.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/it/unitn/disi/sweb/sweb-nlp/2.5.0-SNAPSHOT/sweb-nlp-2.5.0-20140515.091005-164.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/it/unitn/disi/sweb/sweb-nlp/2.5.0-SNAPSHOT/sweb-nlp-2.5.0-20140515.091005-164-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/it/unitn/disi/sweb/sweb-nlp/2.5.0-SNAPSHOT/sweb-nlp-2.5.0-20140515.091005-164-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

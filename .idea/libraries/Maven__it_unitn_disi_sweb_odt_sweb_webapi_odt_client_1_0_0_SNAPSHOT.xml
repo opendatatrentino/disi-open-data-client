@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: it.unitn.disi.sweb.odt:sweb-webapi-odt-client:1.0.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/it/unitn/disi/sweb/odt/sweb-webapi-odt-client/1.0.0-SNAPSHOT/sweb-webapi-odt-client-1.0.0-20140521.100039-15.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/it/unitn/disi/sweb/odt/sweb-webapi-odt-client/1.0.0-SNAPSHOT/sweb-webapi-odt-client-1.0.0-20140521.100039-15-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/it/unitn/disi/sweb/odt/sweb-webapi-odt-client/1.0.0-SNAPSHOT/sweb-webapi-odt-client-1.0.0-20140521.100039-15-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
