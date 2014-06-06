@@ -46,17 +46,21 @@ public class IDRes  extends IDResult implements IIDResult {
 
 		if(getAssignmentResult()==AssignmentResult.REUSE)
 		{
-			//EntityService es = new EntityService(this.api);
-
-			IEntity en = getResultEntity();
-			return en;
+			if(this.entity==null){
+			EntityService es = new EntityService(this.api);
+			IEntity en = es.readEntityByGUID(getGUID());
+			
+			this.entity=en;
+			
+			return en;}
+			else return this.entity;
 		}
 
 		if(getAssignmentResult()==AssignmentResult.NEW)
 		{
-		//	EntityService es = new EntityService(this.api);
+			//	EntityService es = new EntityService(this.api);
 
-			
+
 			IEntity ent = 	entityForNewResults();
 			this.entity = ent;
 			return ent;
@@ -73,14 +77,18 @@ public class IDRes  extends IDResult implements IIDResult {
 		}
 
 		Set<IEntity> entities = new HashSet<IEntity>();
-		if (super.getEntitiesWithSameSwebID()==null)
-		{entities.add(getResultEntity());
-		return entities; }
-		Set<Entity> ients =super.getEntitiesWithSameSwebID();
-		for (Entity en:ients){
-			EntityODR e = new EntityODR( this.api, en);
-			entities.add(e);
+		if(getAssignmentResult()==AssignmentResult.REUSE){
+			entities.add(getResultEntity());
+
 		}
+		//		if (super.getEntitiesWithSameSwebID()==null)
+		//		{entities.add(getResultEntity());
+		//		return entities; }
+		//		Set<Entity> ients =super.getEntitiesWithSameSwebID();
+		//		for (Entity en:ients){
+		//			EntityODR e = new EntityODR( this.api, en);
+		//			entities.add(e);
+		//		}
 		return entities;
 	}
 
@@ -89,9 +97,9 @@ public class IDRes  extends IDResult implements IIDResult {
 		case ID_NEW:
 			return AssignmentResult.NEW;
 		case ID_REUSE:
-			return AssignmentResult.MISSING;
+			return AssignmentResult.REUSE;
 		case ID_KEEP:
-			return AssignmentResult.MISSING;
+			return AssignmentResult.REUSE;
 		default:
 			return AssignmentResult.MISSING;
 		}
@@ -108,7 +116,7 @@ public class IDRes  extends IDResult implements IIDResult {
 
 	public String getURL() {
 		String fullUrl = WebServiceURLs.getURL();
-		String url  = fullUrl+"/instances/"+super.getSwebID()+
+		String url  = fullUrl+"/instances/new/"+super.getSwebID()+
 				"?locale="+(WebServiceURLs.getClientProtocol()).getLocale();
 		return url;	}
 
@@ -122,6 +130,11 @@ public class IDRes  extends IDResult implements IIDResult {
 		for (Attribute atr : attrs){
 
 			if (atr.getName().get("en").equalsIgnoreCase("Name")){
+				attrs1.add(atr);
+
+			}
+
+			if (atr.getName().get("en").equalsIgnoreCase("Description")){
 				attrs1.add(atr);
 
 			}
@@ -145,10 +158,11 @@ public class IDRes  extends IDResult implements IIDResult {
 		en.setEntityBaseId(1L);
 		en.setTypeId(12L);
 		en.setAttributes(attrs1);
+		en.setId(1L);
 		IEntity ent = new EntityODR(WebServiceURLs.getClientProtocol(),en);
 		long id = enServ.createEntity(ent);
 		IEntity finalEn = enServ.readEntity(id);
-		return finalEn;
+		return ent;
 	}
 	private float createRandomFloat()
 	{

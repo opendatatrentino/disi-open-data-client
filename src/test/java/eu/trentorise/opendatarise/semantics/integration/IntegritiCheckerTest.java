@@ -184,11 +184,10 @@ public class IntegritiCheckerTest {
 			System.out.println(res.getAssignmentResult().toString());
 		
 		
-		//	Set<IEntity> entity = res.getEntities();
-//			iChecker.checkIDResult(res);
-			IEntity ent = res.getResultEntity();
+			iChecker.checkIDResult(res);
+			//IEntity ent = res.getResultEntity();
 			
-			System.out.println(ent.getURL());
+			//System.out.println(ent.getURL());
 			
 		}
 	}

@@ -101,8 +101,17 @@ public class TestEntityService {
 		//System.out.println(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0));
 		//	assertEquals(entity.getEtype().getName(Locale.ENGLISH),"Location");
 	}
+	
+	@Test
+	public void testEntityReadByGlobalID(){
+		EntityService es= new EntityService(api);
+		EntityODR entity = (EntityODR) es.readEntityByGUID(10000466L);
+		System.out.println(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0));
+		//	assertEquals(entity.getEtype().getName(Locale.ENGLISH),"Location");
+	}
 
-	@Test 
+
+	//@Test 
 	public void testCreateDeleteEntity(){
 
 		//initialising variables

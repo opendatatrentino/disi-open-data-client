@@ -198,7 +198,11 @@ public class EntityODR extends Structure implements IEntity {
 	}
 
 	public Long getLocalID() {
-		return super.getId();
+		
+		if (super.getId()!=null){
+		return super.getId();}
+		else return this.localId;
+		
 	}
 	public void setGlobalId(Long globalId) {
 		this.globalId = globalId;
