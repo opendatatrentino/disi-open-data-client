@@ -407,8 +407,8 @@ public class EntityService implements IEntityService {
 		instFilter.setIncludeAttributes(true);
 		instFilter.setIncludeAttributesAsProperties(true);
 		instFilter.setIncludeSemantics(true);
-		Instance instance= instanceCl.readInstaceByGloabalId(1L, guid, instFilter) ;
-		Entity entity =  (Entity)instance; 
+		Entity entity= instanceCl.readEntityByGloabalId(1L, guid, instFilter) ;
+		//Entity entity =  (Entity)instance; 
 		EntityODR en = new EntityODR(this.api,entity);
 		return en;
 	}
