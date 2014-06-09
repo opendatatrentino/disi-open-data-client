@@ -15,6 +15,7 @@ import java.util.Locale;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.model.entity.IStructure;
+import eu.trentorise.opendatarise.semantics.DisiClientException;
 import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
 
 public class Structure  extends Instance implements IStructure
@@ -29,9 +30,9 @@ public class Structure  extends Instance implements IStructure
 
 	public Structure(){
 		this.api = getClientProtocol();
-		
+
 	}
-	
+
 	public Structure(Name name){
 		this.api = getClientProtocol();
 	}
@@ -56,11 +57,11 @@ public class Structure  extends Instance implements IStructure
 	}
 
 	public IEntityType getEtype() {
-        throw new UnsupportedOperationException("todo to implement");
+		throw new UnsupportedOperationException("todo to implement");
 	}
 
 	public void setEtype(IEntityType type) {
-        throw new UnsupportedOperationException("todo to implement");
+		throw new UnsupportedOperationException("todo to implement");
 	}
 
 	private List<IAttribute> convertToAttributeODR(List<Attribute> attributes){
@@ -87,17 +88,24 @@ public class Structure  extends Instance implements IStructure
 	}
 
 	public String getURL() {
-        throw new UnsupportedOperationException("todo to implement");
+		throw new UnsupportedOperationException("todo to implement");
 	}
 
 	public void setURL(String url) {
-        throw new UnsupportedOperationException("todo to implement");
-		
+		throw new UnsupportedOperationException("todo to implement");
+
 	}
 
 	public IAttribute getAttribute(String attrDefURL) {
-        throw new UnsupportedOperationException("todo to implement");
-
+		List<IAttribute> attributes = getStructureAttributes();
+		for (IAttribute attribute: attributes){
+			if(attribute.getAttributeDefinition().getURL().equals(attrDefURL)){
+				return attribute;
+			}
+		}
+		throw new DisiClientException("There is no attribute in the structure with a given attributeDef");
 	}
 
 }
+
+

@@ -42,6 +42,12 @@ public class EntityService implements IEntityService {
 
 		this.api=api;
 	}
+	
+	public EntityService(){
+		if(this.api==null){
+			api=WebServiceURLs.getClientProtocol();
+		}
+	}
 
 	public Long createEntity(IEntity entity) {
 		EntityODR ent = (EntityODR) entity;
@@ -86,6 +92,13 @@ public class EntityService implements IEntityService {
 
 	public void deleteEntity(long entityID) {
 		InstanceClient instanceCl= new  InstanceClient(this.api);
+		Instance instance = instanceCl.readInstance(entityID, null);
+		instanceCl.delete(instance);
+	}
+	
+	public void deleteEntity(String entityURL) {
+		InstanceClient instanceCl= new  InstanceClient(this.api);
+		Long entityID = getEntityIdFromURL(entityURL);
 		Instance instance = instanceCl.readInstance(entityID, null);
 		instanceCl.delete(instance);
 	}
@@ -330,16 +343,19 @@ public class EntityService implements IEntityService {
 
 	}
 
-	public void deleteEntity(String arg0) {
-        throw new UnsupportedOperationException("todo to implement");
-
-	}
 
 	public IEntity readEntity(String URL) {
 
 		String s = URL.substring(URL.indexOf("es/") + 3);
 		Long typeID = Long.parseLong(s);
 		return readEntity(typeID);
+	}
+	
+	public Long getEntityIdFromURL(String URL) {
+
+		String s = URL.substring(URL.indexOf("es/") + 3);
+		Long typeID = Long.parseLong(s);
+		return typeID;
 	}
 
 	public String createEntityURL(IEntity entity) {

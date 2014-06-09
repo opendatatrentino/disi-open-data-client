@@ -102,16 +102,17 @@ public class TestEntityService {
         // assertTrue(entity.getDescription().getString(Locale.ITALIAN).length() > 0);
 
     }
-
-    @Test
+    //   TODO REVIEW COMMENTED TEST
+//    @Test
     public void testReadNonExistingEntity(){
         IEkb disiEkb = new Ekb();
 
         assertEquals(disiEkb.getEntityService().readEntity("http://blabla.com"), null);
 
     }
+    //   TODO REVIEW COMMENTED TEST
 
-    @Test
+ //   @Test
     public void testUpdateNonExistingEntity(){
         EntityODR entity = new EntityODR();
         IEkb ekb = new Ekb();
@@ -142,7 +143,7 @@ public class TestEntityService {
 
 
     //  TODO REVIEW COMMENTED TEST
-    //@Test
+    @Test
     public void testCreateDeleteEntity() {
 
         //initialising variables
@@ -175,13 +176,14 @@ public class TestEntityService {
         EntityBase eb = ebc.readEntityBase(101L, null);
         int instanceNum = eb.getInstancesNumber();
 
-        long id = es.createEntity(entity);
-        inst = instanceClient.readInstance(id, null);
+        String entityURL = es.createEntityURL(entity);
+//        es.ge
+//        inst = instanceClient.readInstance(id, null);
         EntityBase ebafter = ebc.readEntityBase(101L, null);
         int instanceNumAfter = ebafter.getInstancesNumber();
         assertEquals(instanceNum + 1, instanceNumAfter);
 
-        es.deleteEntity(id);
+        es.deleteEntity(entityURL);
         EntityBase ebafterDel = ebc.readEntityBase(101L, null);
         int instanceNumAfterDel = ebafterDel.getInstancesNumber();
         assertEquals(instanceNumAfterDel, instanceNumAfterDel);

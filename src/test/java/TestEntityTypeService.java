@@ -80,7 +80,7 @@ public class TestEntityTypeService {
 		}
 	}
 
-    @Test
+  //  @Test
     public void testReadNonExistingEntityType(){
         IEkb disiEkb = new Ekb();
 
