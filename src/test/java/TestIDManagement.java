@@ -67,7 +67,7 @@ public class TestIDManagement {
 		return str+"]";
 	}
 
-	@Test 
+	//@Test 
 	public void idServiceEntityNew(){
 
 		IdentityService idServ = new IdentityService();
@@ -105,7 +105,7 @@ public class TestIDManagement {
 
 	}
 	
-	//@Test
+	@Test
 	public void testIdManagementReuse(){
 		EntityService enServ =new EntityService(WebServiceURLs.getClientProtocol());
 		IdentityService idServ= new IdentityService();
@@ -120,10 +120,10 @@ public class TestIDManagement {
 		List<Attribute> attrs1=new ArrayList<Attribute>();
 
 		for (Attribute atr : attrs){
-			if (atr.getName().get("en").equalsIgnoreCase("Name")){
-				Attribute a =createAttributeNameEntity(name);
-				attrs1.add(a);
-			} else 
+//			if (atr.getName().get("en").equalsIgnoreCase("Name")){
+//				Attribute a =createAttributeNameEntity(name);
+//				attrs1.add(a);
+//			} else 
 				if (atr.getName().get("en").equalsIgnoreCase("Latitude")){
 					attrs1.add(atr);
 				} else if (atr.getName().get("en").equalsIgnoreCase("Longitude")){
@@ -156,7 +156,7 @@ public class TestIDManagement {
 		
 	}
 
-	@Test 
+	//@Test 
 	public void idServiceEntityMissing(){
 
 		IdentityService idServ = new IdentityService();
