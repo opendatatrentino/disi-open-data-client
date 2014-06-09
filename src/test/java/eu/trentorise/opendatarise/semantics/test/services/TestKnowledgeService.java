@@ -1,12 +1,12 @@
+package eu.trentorise.opendatarise.semantics.test.services;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
-import org.junit.Assert;
+import eu.trentorise.opendatarise.semantics.services.KnowledgeService;
 import org.junit.Test;
 
 import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
-import eu.trentorise.opendatarise.semantics.services.KnowledgeService;
 
 
 public class TestKnowledgeService {

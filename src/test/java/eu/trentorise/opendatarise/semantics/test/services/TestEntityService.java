@@ -1,11 +1,13 @@
+package eu.trentorise.opendatarise.semantics.test.services;
+
 import eu.trentorise.opendata.semantics.IntegrityChecker;
 import eu.trentorise.opendata.semantics.NotFoundException;
-import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.IEntityService;
-import eu.trentorise.opendata.semantics.services.model.AssignmentResult;
-import eu.trentorise.opendata.semantics.services.model.DataTypes;
 import eu.trentorise.opendatarise.semantics.services.Ekb;
+import eu.trentorise.opendatarise.semantics.services.EntityService;
+import eu.trentorise.opendatarise.semantics.services.EntityTypeService;
+import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
 import it.unitn.disi.sweb.webapi.client.eb.EbClient;
@@ -34,9 +36,6 @@ import eu.trentorise.opendatarise.semantics.model.entity.AttributeDef;
 import eu.trentorise.opendatarise.semantics.model.entity.AttributeODR;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
-import eu.trentorise.opendatarise.semantics.services.EntityService;
-import eu.trentorise.opendatarise.semantics.services.EntityTypeService;
-import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +45,8 @@ import static org.junit.Assert.*;
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
  * @author David Leoni <david.leoni@unitn.it>
+ *
+ * * TODO REVIEW THIS CLASS IS A DUPLICATE OF TestEntityService2, although it seems more recent
  * @date 05 June 2014
  */
 public class TestEntityService {
@@ -110,8 +111,8 @@ public class TestEntityService {
         assertEquals(disiEkb.getEntityService().readEntity("http://blabla.com"), null);
 
     }
-    //   TODO REVIEW COMMENTED TEST
 
+    //   TODO REVIEW COMMENTED TEST
  //   @Test
     public void testUpdateNonExistingEntity(){
         EntityODR entity = new EntityODR();

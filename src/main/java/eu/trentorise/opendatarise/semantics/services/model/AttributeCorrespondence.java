@@ -7,7 +7,6 @@ import java.util.Map;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.services.model.IAttributeCorrespondence;
 import eu.trentorise.opendatarise.semantics.model.entity.AttributeDef;
-import eu.trentorise.opendatarise.semantics.model.knowledge.ConceptODR;
 import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
 
 /**

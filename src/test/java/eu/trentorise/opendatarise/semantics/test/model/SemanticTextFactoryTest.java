@@ -1,3 +1,4 @@
+package eu.trentorise.opendatarise.semantics.test.model;
 
 import static org.junit.Assert.*;
 import eu.trentorise.opendata.semantics.model.knowledge.IMeaning;

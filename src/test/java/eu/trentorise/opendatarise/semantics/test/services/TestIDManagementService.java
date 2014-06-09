@@ -1,37 +1,24 @@
+package eu.trentorise.opendatarise.semantics.test.services;
+
 import static org.junit.Assert.*;
+
+import eu.trentorise.opendatarise.semantics.services.*;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
-import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
-import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
-import it.unitn.disi.sweb.webapi.client.eb.IDManagementClient;
-import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
-import it.unitn.disi.sweb.webapi.model.eb.Instance;
 import it.unitn.disi.sweb.webapi.model.eb.Name;
-import it.unitn.disi.sweb.webapi.model.odt.IDResult;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import org.junit.Test;
-
-import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.services.model.AssignmentResult;
 import eu.trentorise.opendata.semantics.services.model.IIDResult;
-import eu.trentorise.opendatarise.semantics.model.entity.AttributeDef;
 import eu.trentorise.opendatarise.semantics.model.entity.AttributeODR;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
-import eu.trentorise.opendatarise.semantics.model.facade.ImpiantoDiRisalitaFacade;
-import eu.trentorise.opendatarise.semantics.services.EntityService;
-import eu.trentorise.opendatarise.semantics.services.EntityTypeService;
-import eu.trentorise.opendatarise.semantics.services.IdentityService;
-import eu.trentorise.opendatarise.semantics.services.Search;
-import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
 import it.unitn.disi.sweb.webapi.model.eb.Value;
 
 
@@ -40,7 +27,7 @@ import it.unitn.disi.sweb.webapi.model.eb.Value;
  * @date 26 Mar 2014
  * 
  */
-public class TestIDManagement {
+public class TestIDManagementService {
 
 	private String entityToString(Entity e){
 		String str = "id:"+e.getId()+

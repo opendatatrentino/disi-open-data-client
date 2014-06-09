@@ -32,7 +32,7 @@ public class EtypeSearchResult implements  IEtypeSearchResult {
 		Iterator it = this.name.entrySet().iterator();
 		while(it.hasNext()){
 			Map.Entry pairs = (Map.Entry)it.next();
-			Locale l = NLPService.languageTagToLocale((String)pairs.getKey());
+			Locale l = NLPService.languageTagToLocale((String) pairs.getKey());
 			dict = dict.putTranslation(l, (String)pairs.getValue());
 		}
 		return dict;

@@ -1,13 +1,13 @@
+package eu.trentorise.opendatarise.semantics.test.services;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-
 import eu.trentorise.opendatarise.semantics.services.EntityExportService;
 import eu.trentorise.opendatarise.semantics.services.EntityTypeService;
+import org.junit.Test;
 
 
 public class EntityExportServiceTest {

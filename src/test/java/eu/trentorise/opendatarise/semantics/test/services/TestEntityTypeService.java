@@ -1,3 +1,5 @@
+package eu.trentorise.opendatarise.semantics.test.services;
+
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.services.IEkb;

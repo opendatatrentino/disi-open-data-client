@@ -1,12 +1,12 @@
+package eu.trentorise.opendatarise.semantics.test.services;
+
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
-import it.unitn.disi.sweb.core.nlp.model.NLSentence;
-import it.unitn.disi.sweb.core.nlp.model.NLText;
-import it.unitn.disi.sweb.core.nlp.model.NLToken;
+import eu.trentorise.opendatarise.semantics.services.NLPService;
+import eu.trentorise.opendatarise.semantics.services.SemanticTextFactory;
 import it.unitn.disi.sweb.webapi.model.PipelineDescription;
 import it.unitn.disi.sweb.webapi.model.eb.sstring.ComplexConcept;
 import it.unitn.disi.sweb.webapi.model.eb.sstring.SemanticString;
@@ -21,8 +21,6 @@ import org.junit.Test;
 
 
 import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
-import eu.trentorise.opendatarise.semantics.services.NLPService;
-import eu.trentorise.opendatarise.semantics.services.SemanticTextFactory;
 
 
 /** Testing the client implementaion of NLP services. 
