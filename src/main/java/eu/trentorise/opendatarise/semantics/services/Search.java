@@ -30,8 +30,7 @@ public class Search implements ISearchService {
 	}
 
 	public String[][] searchEQL(String eqlQuery) {
-		// TODO Auto-generated method stub
-		return null;
+        throw new UnsupportedOperationException("todo to implement");
 	}
 
 	public List<List<IEntity>> search(IEntityType entityType,

@@ -488,7 +488,7 @@ public class EntityODR extends Structure implements IEntity {
 	//	}
 
 	public void setName(Locale locale, List<String> names) {
-		// TODO Auto-generated method stub
+        throw new UnsupportedOperationException("todo to implement");
 
 	}
 	public IDict getDescription() {
@@ -576,11 +576,11 @@ public class EntityODR extends Structure implements IEntity {
 	} 
 
 	public void setName(Locale locale, String name) {
-		// TODO Auto-generated method stub
+        throw new UnsupportedOperationException("todo to implement");
 
 	}
 	public void setDescription(Locale language, String description) {
-		// TODO Auto-generated method stub
+        throw new UnsupportedOperationException("todo to implement");
 
 	}
 }

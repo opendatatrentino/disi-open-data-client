@@ -56,12 +56,11 @@ public class Structure  extends Instance implements IStructure
 	}
 
 	public IEntityType getEtype() {
-		// TODO Auto-generated method stub
-		return null;
+        throw new UnsupportedOperationException("todo to implement");
 	}
 
 	public void setEtype(IEntityType type) {
-		// TODO Auto-generated method stub
+        throw new UnsupportedOperationException("todo to implement");
 	}
 
 	private List<IAttribute> convertToAttributeODR(List<Attribute> attributes){
@@ -88,13 +87,17 @@ public class Structure  extends Instance implements IStructure
 	}
 
 	public String getURL() {
-		// TODO Auto-generated method stub
-		return null;
+        throw new UnsupportedOperationException("todo to implement");
 	}
 
 	public void setURL(String url) {
-		// TODO Auto-generated method stub
+        throw new UnsupportedOperationException("todo to implement");
 		
+	}
+
+	public IAttribute getAttribute(String attrDefURL) {
+        throw new UnsupportedOperationException("todo to implement");
+
 	}
 
 }

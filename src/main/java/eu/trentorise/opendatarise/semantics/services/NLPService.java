@@ -51,12 +51,12 @@ public class NLPService implements INLPService {
 
     public List<ISemanticText> disambiguateColumns(ITableResource table,
             IResourceContext context) {
-        throw new UnsupportedOperationException("Service is not suported yet.");
+        throw new UnsupportedOperationException("Service is not supported yet.");
         // TODO implementation is required
     }
 
     public String guessType(List<String> cellList) {
-        throw new UnsupportedOperationException("Service is not suported yet.");
+        throw new UnsupportedOperationException("Service is not supported yet.");
         // TODO implementation is required
     }
 

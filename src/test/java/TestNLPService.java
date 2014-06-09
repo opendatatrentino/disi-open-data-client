@@ -76,6 +76,7 @@ public class TestNLPService {
 		}
 	};
 
+    // TODO REVIEW COMMENTED TEST
 	//@Test
 	public void testGetAllPipelinesDescription(){
 		NLPService nlpService = new NLPService();
@@ -87,6 +88,7 @@ public class TestNLPService {
 		assertNotNull(pipelines.get(0));
 	}
 
+    // TODO REVIEW COMMENTED TEST
 	//@Test
 	public void testRunBatchNLP(){
 		
@@ -105,7 +107,7 @@ public class TestNLPService {
 		
 	}
 
-
+    // TODO REVIEW COMMENTED TEST
 	//@Test
 	public void testRunNLP(){
 		String inputStr = "Hello World";

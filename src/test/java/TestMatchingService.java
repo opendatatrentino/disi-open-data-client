@@ -103,6 +103,7 @@ public class TestMatchingService {
 		
 	}
 
+    // TODO REVIEW COMMENTED TEST
 	//@Test 
 	public void testGetConceptDistance(){
 		MatchingService mService = new MatchingService();

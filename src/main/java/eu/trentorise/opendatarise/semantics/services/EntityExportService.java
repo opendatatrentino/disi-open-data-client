@@ -50,8 +50,7 @@ public class EntityExportService {
 	//			out = new PrintWriter(fileName);
 	//			out.print(inputText);
 	//		} catch (FileNotFoundException e) {
-	//			// TODO Auto-generated catch block
-	//			e.printStackTrace();
+	//			throw new DisiClientException("Error while creating print writer", e);
 	//		}
 	//
 	//	}

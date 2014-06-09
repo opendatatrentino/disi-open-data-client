@@ -1,7 +1,9 @@
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
+import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.model.IEtypeSearchResult;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
+import eu.trentorise.opendatarise.semantics.services.Ekb;
 import eu.trentorise.opendatarise.semantics.services.EntityTypeService;
 import org.junit.Test;
 
@@ -14,11 +16,13 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
- * @date 3 Mar 2014
+ * @author David Leoni <david.leoni@unitn.it>
+ * @date 8 June 2014
  * 
  */
 public class TestEntityTypeService {
 
+    // TODO REVIEW COMMENTED TEST
 	//@Test
 	public void testGetEntityTypeByID(){
 		EntityTypeService ets = new EntityTypeService();
@@ -52,6 +56,7 @@ public class TestEntityTypeService {
 		assertNotNull(etypes.get(0));
 	}
 
+    // TODO REVIEW COMMENTED TEST
 	//@Test
 	public void testGetRootsTypes(){
 		EntityTypeService ets = new EntityTypeService();
@@ -60,6 +65,7 @@ public class TestEntityTypeService {
 
 	}
 
+    // TODO REVIEW COMMENTED TEST
 	//@Test
 	public void testGetEntityTypeByURL(){
 		EntityTypeService ets = new EntityTypeService();
@@ -74,7 +80,16 @@ public class TestEntityTypeService {
 		}
 	}
 
+    @Test
+    public void testReadNonExistingEntityType(){
+        IEkb disiEkb = new Ekb();
 
+        assertEquals(disiEkb.getEntityTypeService().getEntityType("http://blabla.com"), null);
+
+    }
+
+
+    // TODO REVIEW COMMENTED TEST
 	//@Test
 	public void testFuzzySearchEtype(){
 		EntityTypeService ets = new EntityTypeService();

@@ -1,13 +1,13 @@
 <component name="libraryTable">
   <library name="Maven: eu.trentorise.opendata:column-recognizers:0.0.2-SNAPSHOT">
     <CLASSES>
-      <root url="jar://$MAVEN_REPOSITORY$/eu/trentorise/opendata/column-recognizers/0.0.2-SNAPSHOT/column-recognizers-0.0.2-20140605.113431-1344.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/eu/trentorise/opendata/column-recognizers/0.0.2-SNAPSHOT/column-recognizers-0.0.2-20140606.123429-1368.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$MAVEN_REPOSITORY$/eu/trentorise/opendata/column-recognizers/0.0.2-SNAPSHOT/column-recognizers-0.0.2-20140605.113431-1344-javadoc.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/eu/trentorise/opendata/column-recognizers/0.0.2-SNAPSHOT/column-recognizers-0.0.2-20140606.123429-1368-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://$MAVEN_REPOSITORY$/eu/trentorise/opendata/column-recognizers/0.0.2-SNAPSHOT/column-recognizers-0.0.2-20140605.113431-1344-sources.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/eu/trentorise/opendata/column-recognizers/0.0.2-SNAPSHOT/column-recognizers-0.0.2-20140606.123429-1368-sources.jar!/" />
     </SOURCES>
   </library>
 </component>
