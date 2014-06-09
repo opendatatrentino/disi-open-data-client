@@ -106,7 +106,7 @@ public class TestIDManagement {
 	}
 
     // TODO REVIEW COMMENTED TEST!
-	//@Test
+	@Test
 
 	public void testIdManagementReuse(){
 		EntityService enServ =new EntityService(WebServiceURLs.getClientProtocol());
@@ -114,7 +114,7 @@ public class TestIDManagement {
 		String name = "PALAZZETTO DELLO SPORT";
 		
 		Search searchService = new Search(WebServiceURLs.getClientProtocol());
-		List<Name> names=searchService.nameSearch(name);
+		//List<Name> names=searchService.nameSearch(name);
 		
 		
 		EntityODR entity = (EntityODR)enServ.readEntity(64000L);
@@ -122,16 +122,17 @@ public class TestIDManagement {
 		List<Attribute> attrs1=new ArrayList<Attribute>();
 
 		for (Attribute atr : attrs){
-//			if (atr.getName().get("en").equalsIgnoreCase("Name")){
-//				Attribute a =createAttributeNameEntity(name);
-//				attrs1.add(a);
-//			} else 
+			if (atr.getName().get("en").equalsIgnoreCase("Name")){
+				Attribute a =createAttributeNameEntity(name);
+				attrs1.add(a);
+			} else 
 				if (atr.getName().get("en").equalsIgnoreCase("Latitude")){
 					attrs1.add(atr);
 				} else if (atr.getName().get("en").equalsIgnoreCase("Longitude")){
 					EntityService es = new EntityService(getClientProtocol());
 					attrs1.add(atr);
-				} else if (atr.getName().get("en").equalsIgnoreCase("Class")){
+				}
+				else if (atr.getName().get("en").equalsIgnoreCase("Class")){
 					attrs1.add(atr);
 				}
 		}

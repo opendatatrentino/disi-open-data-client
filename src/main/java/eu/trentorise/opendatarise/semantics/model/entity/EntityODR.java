@@ -77,6 +77,9 @@ public class EntityODR extends Structure implements IEntity {
 		List<Attribute> attrs = entity.getAttributes();
 		//TODO should not be in constructor
 		for (Attribute at :attrs){
+			if (at.getConceptId()==null){
+				continue;
+			}
 			if (at.getConceptId()==3L){
 				List<Value> vals = at.getValues();
 				List<Value> fixedVals = new ArrayList<Value>();
