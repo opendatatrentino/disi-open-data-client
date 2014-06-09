@@ -1,4 +1,8 @@
+package eu.trentorise.opendatarise.semantics.test.services;
+
 import static org.junit.Assert.*;
+
+import eu.trentorise.opendatarise.semantics.services.Search;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
 import it.unitn.disi.sweb.webapi.model.eb.Name;
@@ -10,10 +14,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
-import eu.trentorise.opendatarise.semantics.services.Search;
 
 
-public class TestSearch {
+public class TestSearchService {
 
 	private IProtocolClient api;
 

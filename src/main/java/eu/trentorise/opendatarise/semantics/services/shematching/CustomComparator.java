@@ -3,7 +3,6 @@ package eu.trentorise.opendatarise.semantics.services.shematching;
 import java.util.Comparator;
 
 import eu.trentorise.opendata.semantics.services.model.ISchemaCorrespondence;
-import eu.trentorise.opendatarise.semantics.services.model.SchemaCorrespondence;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>

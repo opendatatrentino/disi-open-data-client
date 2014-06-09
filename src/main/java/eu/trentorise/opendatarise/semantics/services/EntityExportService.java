@@ -2,20 +2,17 @@ package eu.trentorise.opendatarise.semantics.services;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.List;
 import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import eu.trentorise.opendatarise.semantics.model.entity.AttributeDef;
+import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
+import eu.trentorise.opendatarise.semantics.model.knowledge.ConceptODR;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.fluent.Form;
 import org.apache.http.client.fluent.Request;
@@ -29,9 +26,6 @@ import com.google.gson.JsonStreamParser;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
-import eu.trentorise.opendatarise.semantics.model.entity.AttributeDef;
-import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
-import eu.trentorise.opendatarise.semantics.model.knowledge.ConceptODR;
 
 
 public class EntityExportService {
@@ -194,7 +188,7 @@ public class EntityExportService {
 
 
 		//convert from global concept to local one
-		ConceptODR codr = new ConceptODR(); 
+		ConceptODR codr = new ConceptODR();
 		Long conceptTypeID = codr.readConceptGUID(typeId);
 
 

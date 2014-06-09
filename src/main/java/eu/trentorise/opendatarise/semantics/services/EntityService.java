@@ -1,6 +1,10 @@
 package eu.trentorise.opendatarise.semantics.services;
 
 import eu.trentorise.opendatarise.semantics.DisiClientException;
+import eu.trentorise.opendatarise.semantics.model.entity.AttributeDef;
+import eu.trentorise.opendatarise.semantics.model.entity.AttributeODR;
+import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
+import eu.trentorise.opendatarise.semantics.model.entity.Structure;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
@@ -27,11 +31,7 @@ import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IValue;
 import eu.trentorise.opendata.semantics.services.IEntityService;
-import eu.trentorise.opendatarise.semantics.model.entity.AttributeDef;
-import eu.trentorise.opendatarise.semantics.model.entity.AttributeODR;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
-import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
-import eu.trentorise.opendatarise.semantics.model.entity.Structure;
 import eu.trentorise.opendatarise.semantics.model.entity.ValueODR;
 
 public class EntityService implements IEntityService {

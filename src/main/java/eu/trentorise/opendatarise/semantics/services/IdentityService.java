@@ -2,10 +2,8 @@ package eu.trentorise.opendatarise.semantics.services;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
-import it.unitn.disi.sweb.webapi.client.IProtocolClient;
-import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
+import eu.trentorise.opendatarise.semantics.services.model.IDRes;
 import it.unitn.disi.sweb.webapi.client.eb.IDManagementClient;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.odt.IDResult;
@@ -13,7 +11,6 @@ import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.services.IIdentityService;
 import eu.trentorise.opendata.semantics.services.model.IIDResult;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
-import eu.trentorise.opendatarise.semantics.services.model.IDRes;
 
 public class IdentityService implements IIdentityService {
 

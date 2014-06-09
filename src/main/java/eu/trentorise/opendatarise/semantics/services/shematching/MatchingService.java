@@ -1,7 +1,11 @@
 package eu.trentorise.opendatarise.semantics.services.shematching;
 
+import eu.trentorise.opendatarise.semantics.model.entity.AttributeDef;
+import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
+import eu.trentorise.opendatarise.semantics.model.knowledge.ConceptODR;
+import eu.trentorise.opendatarise.semantics.services.model.AttributeCorrespondence;
+import eu.trentorise.opendatarise.semantics.services.model.SchemaCorrespondence;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
-import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
 import it.unitn.disi.sweb.webapi.client.kb.ConceptClient;
 
 import java.util.AbstractMap;
@@ -9,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -22,13 +25,8 @@ import eu.trentorise.opendata.semantics.model.knowledge.ITableResource;
 import eu.trentorise.opendata.semantics.services.ISemanticMatchingService;
 import eu.trentorise.opendata.semantics.services.model.IAttributeCorrespondence;
 import eu.trentorise.opendata.semantics.services.model.ISchemaCorrespondence;
-import eu.trentorise.opendatarise.semantics.model.entity.AttributeDef;
-import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
-import eu.trentorise.opendatarise.semantics.model.knowledge.ConceptODR;
 import eu.trentorise.opendatarise.semantics.services.EntityTypeService;
 import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
-import eu.trentorise.opendatarise.semantics.services.model.AttributeCorrespondence;
-import eu.trentorise.opendatarise.semantics.services.model.SchemaCorrespondence;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
@@ -54,7 +52,7 @@ public class MatchingService implements ISemanticMatchingService {
 		List<IEntityType> etypes = etypeService.getAllEntityTypes();
 		List<ISchemaCorrespondence> schemaCorespondences = new ArrayList<ISchemaCorrespondence>();
 		for (IEntityType etype: etypes){
-			EntityType  et = (EntityType) etype; 
+			EntityType et = (EntityType) etype;
 			//System.out.println("etype:"+et.getName(Locale.ENGLISH));
 			ISchemaCorrespondence sCorrespondence  =  schemaMatch(et, odrHeaders, odrName);
 			if(sCorrespondence.getScore()!=0){

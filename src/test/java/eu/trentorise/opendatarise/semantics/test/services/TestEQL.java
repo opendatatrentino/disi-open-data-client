@@ -1,4 +1,4 @@
-//package eu.trentorise.opendatarise.semantics.services;
+//package eu.trentorise.opendatarise.semantics.test.services;
 //
 //import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 //import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
@@ -58,7 +58,7 @@
 //    
 //    }
 //}
-////package eu.trentorise.opendatarise.semantics.services;
+////package eu.trentorise.opendatarise.semantics.test.services;
 ////
 ////import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 ////import it.unitn.disi.sweb.webapi.client.ProtocolFactory;

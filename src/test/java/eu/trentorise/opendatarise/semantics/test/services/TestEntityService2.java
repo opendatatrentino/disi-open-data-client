@@ -1,4 +1,10 @@
+package eu.trentorise.opendatarise.semantics.test.services;
+
 import static org.junit.Assert.assertEquals;
+
+import eu.trentorise.opendatarise.semantics.services.EntityService;
+import eu.trentorise.opendatarise.semantics.services.EntityTypeService;
+import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
 import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
@@ -11,27 +17,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.junit.Test;
-
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
-import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendatarise.semantics.model.facade.ImpiantoDiRisalitaFacade;
 import eu.trentorise.opendatarise.semantics.model.entity.AttributeDef;
 import eu.trentorise.opendatarise.semantics.model.entity.AttributeODR;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
 import eu.trentorise.opendatarise.semantics.model.entity.ValueODR;
-import eu.trentorise.opendatarise.semantics.services.EntityService;
-import eu.trentorise.opendatarise.semantics.services.EntityTypeService;
-import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
 
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
+ *
+ * TODO REVIEW THIS CLASS IS A DUPLICATE OF TestEntityService!
  * @date 28 Mar 2014
  * 
  */
-public class TestEntity {
+public class TestEntityService2 {
 
 	public static final Long ATTR_TYPE_LATITUDE = 69L;
 	public static final Long ATTR_TYPE_LONGITUDE = 68L;
@@ -52,6 +54,7 @@ public class TestEntity {
 	//
 	//	}
 
+    //   TODO REVIEW COMMENTED TEST
 	//@Test
 	public void testGetEntityName(){
 
@@ -60,6 +63,7 @@ public class TestEntity {
 		assertEquals("Comano",entity.getName(Locale.ITALIAN));
 	}
 
+    //   TODO REVIEW COMMENTED TEST
 	//@Test
 	public void test(){
 		InstanceClient  ic = new InstanceClient(getClientProtocol());
@@ -98,7 +102,7 @@ public class TestEntity {
 
 
 
-
+    //   TODO REVIEW COMMENTED TEST
 	// @Test broken...
 	public void testCreationImpianti(){
 		ImpiantoDiRisalitaFacade idrf = new ImpiantoDiRisalitaFacade(getClientProtocol());
@@ -146,6 +150,7 @@ public class TestEntity {
 		lonValues.add(longitudeVal);
 	}
 
+    //   TODO REVIEW COMMENTED TEST
 	//@Test
 	public void testCreateAttributeEntity(){
 		EntityODR entity = new EntityODR();
@@ -178,6 +183,7 @@ public class TestEntity {
 
 	}
 
+    //   TODO REVIEW COMMENTED TEST
 	//@Test
 	public Attribute addAttribute(Name name, long id){
 		Attribute atr = new Attribute();
@@ -192,6 +198,7 @@ public class TestEntity {
 		return atr;
 	}
 
+    //   TODO REVIEW COMMENTED TEST
 	//@Test
 	public void testSetEntityName(){
 
@@ -205,7 +212,7 @@ public class TestEntity {
 		//assertEquals("Comano",entity.getName(Locale.ITALIAN));
 	}
 
-
+    //   TODO REVIEW COMMENTED TEST
 	//	@Test
 	public void testEntityAttributeCreate(){
 
