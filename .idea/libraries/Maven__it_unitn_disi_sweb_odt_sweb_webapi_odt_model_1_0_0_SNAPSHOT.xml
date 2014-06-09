@@ -1,13 +1,13 @@
 <component name="libraryTable">
   <library name="Maven: it.unitn.disi.sweb.odt:sweb-webapi-odt-model:1.0.0-SNAPSHOT">
     <CLASSES>
-      <root url="jar://$MAVEN_REPOSITORY$/it/unitn/disi/sweb/odt/sweb-webapi-odt-model/1.0.0-SNAPSHOT/sweb-webapi-odt-model-1.0.0-20140521.100039-38.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/it/unitn/disi/sweb/odt/sweb-webapi-odt-model/1.0.0-SNAPSHOT/sweb-webapi-odt-model-1.0.0-20140529.082213-40.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$MAVEN_REPOSITORY$/it/unitn/disi/sweb/odt/sweb-webapi-odt-model/1.0.0-SNAPSHOT/sweb-webapi-odt-model-1.0.0-20140521.100039-38-javadoc.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/it/unitn/disi/sweb/odt/sweb-webapi-odt-model/1.0.0-SNAPSHOT/sweb-webapi-odt-model-1.0.0-20140529.082213-40-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://$MAVEN_REPOSITORY$/it/unitn/disi/sweb/odt/sweb-webapi-odt-model/1.0.0-SNAPSHOT/sweb-webapi-odt-model-1.0.0-20140521.100039-38-sources.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/it/unitn/disi/sweb/odt/sweb-webapi-odt-model/1.0.0-SNAPSHOT/sweb-webapi-odt-model-1.0.0-20140529.082213-40-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

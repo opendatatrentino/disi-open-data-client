@@ -1,13 +1,13 @@
 <component name="libraryTable">
   <library name="Maven: it.unitn.disi.sweb:sweb-kb:2.5.0-SNAPSHOT">
     <CLASSES>
-      <root url="jar://$MAVEN_REPOSITORY$/it/unitn/disi/sweb/sweb-kb/2.5.0-SNAPSHOT/sweb-kb-2.5.0-20140515.090624-233.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/it/unitn/disi/sweb/sweb-kb/2.5.0-SNAPSHOT/sweb-kb-2.5.0-20140605.090509-235.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$MAVEN_REPOSITORY$/it/unitn/disi/sweb/sweb-kb/2.5.0-SNAPSHOT/sweb-kb-2.5.0-20140515.090624-233-javadoc.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/it/unitn/disi/sweb/sweb-kb/2.5.0-SNAPSHOT/sweb-kb-2.5.0-20140605.090509-235-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://$MAVEN_REPOSITORY$/it/unitn/disi/sweb/sweb-kb/2.5.0-SNAPSHOT/sweb-kb-2.5.0-20140515.090624-233-sources.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/it/unitn/disi/sweb/sweb-kb/2.5.0-SNAPSHOT/sweb-kb-2.5.0-20140605.090509-235-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

@@ -104,7 +104,9 @@ public class TestIDManagement {
 		
 
 	}
-	
+
+
+    // TODO REVIEW COMMENTED TEST!
 	//@Test
 	public void testIdManagementReuse(){
 		EntityService enServ =new EntityService(WebServiceURLs.getClientProtocol());

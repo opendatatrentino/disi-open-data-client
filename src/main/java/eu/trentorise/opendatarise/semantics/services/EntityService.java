@@ -1,5 +1,6 @@
 package eu.trentorise.opendatarise.semantics.services;
 
+import eu.trentorise.opendatarise.semantics.DisiClientException;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
@@ -24,7 +25,6 @@ import org.apache.http.client.ClientProtocolException;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
-import eu.trentorise.opendata.semantics.model.entity.IStructure;
 import eu.trentorise.opendata.semantics.model.entity.IValue;
 import eu.trentorise.opendata.semantics.services.IEntityService;
 import eu.trentorise.opendatarise.semantics.model.entity.AttributeDef;
@@ -53,7 +53,7 @@ public class EntityService implements IEntityService {
 			
 			System.out.println("Concept:"+a.getConceptId());
 			System.out.println("DataType:"+a.getDataType());
-			System.out.println("Defenition:"+a.getDefinitionId());
+			System.out.println("Definition:"+a.getDefinitionId());
 			//	System.out.println(a.getValues().get(0).ge);
 		}
 
@@ -319,19 +319,19 @@ public class EntityService implements IEntityService {
 
 	public void updateAttributeValue(IEntity entity, IAttribute attribute,
 			IValue newValue) {
-		// TODO Auto-generated method stub
+        throw new UnsupportedOperationException("todo to implement");
 
 	}
 
 
 
 	public void updateEntity(IEntity entity) {
-		// TODO Auto-generated method stub
+        throw new UnsupportedOperationException("todo to implement");
 
 	}
 
 	public void deleteEntity(String arg0) {
-		// TODO Auto-generated method stub
+        throw new UnsupportedOperationException("todo to implement");
 
 	}
 
@@ -351,7 +351,7 @@ public class EntityService implements IEntityService {
 	}
 
 	public void exportToRdf(List<String> entityURLs, Writer writer) {
-		// TODO Auto-generated method stub
+        throw new UnsupportedOperationException("todo to implement");
 
 	}
 
@@ -370,33 +370,28 @@ public class EntityService implements IEntityService {
 		try {
 			fileId = ees.methodPost(entitiesID,filename);
 		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            throw new DisiClientException("Error while getting fileId", e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+            throw new DisiClientException("Error while getting fileId", e);
+     	}
 		InputStream is = null;
 		try {
 			is = ees.methodGet(fileId, "sem"+filename);
 		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            throw new DisiClientException("Error while getting input stream", e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            throw new DisiClientException("Error while getting input stream", e);
 		}
 		try {
 			ees.convertToJsonLd(is,writer);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            throw new DisiClientException("Error while creating jsonLd", e);
 		}
 
 	}
 
 	public void exportToCsv(List<String> entityURLs, Writer writer) {
-		// TODO Auto-generated method stub
+        throw new UnsupportedOperationException("todo to implement");
 
 	}
 

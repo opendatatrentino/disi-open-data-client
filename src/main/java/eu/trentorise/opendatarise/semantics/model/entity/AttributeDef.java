@@ -171,11 +171,15 @@ public class AttributeDef implements IAttributeDef {
 	}
 	public String getRegularExpression() {
 		// TODO Postponed due to the absence of the functionality on the API Client
-		return null;
+
+        throw new UnsupportedOperationException("todo to implement");
+
+
 	}
 
 	public void setRegularExpression(String regularExpression) {
 		// TODO Postponed due to the absence of the functionality on the API Client
+            throw new UnsupportedOperationException("todo to implement");
 
 	}
 

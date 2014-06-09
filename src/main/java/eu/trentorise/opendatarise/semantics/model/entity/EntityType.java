@@ -207,13 +207,13 @@ public class EntityType implements IEntityType{
 
 
 	public void removeAttributeDef(String attrDefURL) {
-		// TODO Auto-generated method stub
+        throw new UnsupportedOperationException("todo to implement");
 
 	}
 
 
 	public void removeUniqueIndex(String uniqueIndexURL) {
-		// TODO Auto-generated method stub
+        throw new UnsupportedOperationException("todo to implement");
 
 	}
 

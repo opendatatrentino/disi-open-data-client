@@ -130,7 +130,7 @@ public class EntityTypeService implements IEntityTypeService {
 
 	public void addUniqueIndexToEtype(IEntityType entityType,
 			IUniqueIndex uniqueIndex) {
-		// TODO Auto-generated method stub
+        throw new UnsupportedOperationException("todo to implement");
 	}
 
 	/** The method returns client protocol 
