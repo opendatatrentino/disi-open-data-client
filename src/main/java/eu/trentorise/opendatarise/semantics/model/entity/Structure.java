@@ -1,7 +1,6 @@
 package eu.trentorise.opendatarise.semantics.model.entity;
 
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
-import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
 import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
 import it.unitn.disi.sweb.webapi.model.Pagination;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
@@ -10,7 +9,6 @@ import it.unitn.disi.sweb.webapi.model.eb.Name;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;

@@ -60,6 +60,7 @@ public class TestEntityService {
     public static final String PALAZZETTO_URL = WebServiceURLs.getURL() + "/instances/" + PALAZZETTO_ID;
 
 
+
     public static final long ATTR_DEF_LATTITUDE = 69L;
     public static final long ATTR_DEF_LONGITUDE = 68L;
     public static final long ATTR_DEF_CLASS = 58L;
@@ -72,6 +73,10 @@ public class TestEntityService {
     public static final String ATTR_DEF_CLASS_URL = WebServiceURLs.getURL() + "/attributedefinitions/" + ATTR_DEF_CLASS;
     public static final String CLASS_CONCEPT_ID_URL = WebServiceURLs.getURL() + "/concepts/" + CLASS_CONCEPT_ID;
     public static final String FACILITY_URL = WebServiceURLs.getURL() + "/types/" + FACILITY_ID;
+
+
+    public static final long  LOCATION_ID = 18L;
+    public static final String  LOCATION_URL = WebServiceURLs.getURL() + "/types/" + LOCATION_ID;;
 
 
     private IProtocolClient api;

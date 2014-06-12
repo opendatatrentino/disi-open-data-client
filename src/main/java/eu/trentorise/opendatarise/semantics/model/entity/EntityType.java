@@ -11,8 +11,6 @@ import eu.trentorise.opendatarise.semantics.services.EntityTypeService;
 import eu.trentorise.opendatarise.semantics.services.NLPService;
 import static eu.trentorise.opendatarise.semantics.services.NLPService.localeToLanguageTag;
 import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
-import it.unitn.disi.sweb.webapi.client.IProtocolClient;
-import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
 import it.unitn.disi.sweb.webapi.client.kb.AttributeDefinitionClient;
 import it.unitn.disi.sweb.webapi.client.kb.ComplexTypeClient;
 import it.unitn.disi.sweb.webapi.model.kb.types.AttributeDefinition;

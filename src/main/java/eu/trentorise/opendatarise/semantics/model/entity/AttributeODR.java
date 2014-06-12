@@ -4,7 +4,6 @@ import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Value;
-import it.unitn.disi.sweb.webapi.model.kb.types.AttributeDefinition;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +57,7 @@ public class AttributeODR  implements IAttribute {
 		this.api=api;
 	}
 
-	public AttributeODR(IAttributeDef attrDef, ValueODR val){
+	public AttributeODR(IAttributeDef attrDef, eu.trentorise.opendatarise.semantics.model.entity.ValueODR val){
 		this.attrDef=attrDef;
 		this.attrDefId=attrDef.getGUID();
 		this.conceptId=attrDef.getConcept().getGUID();

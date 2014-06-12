@@ -1,7 +1,6 @@
 package eu.trentorise.opendatarise.semantics.model.entity;
 
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
-import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.model.entity.IStructure;
@@ -12,7 +11,6 @@ import eu.trentorise.opendatarise.semantics.model.knowledge.Dict;
 import eu.trentorise.opendatarise.semantics.services.EntityService;
 import eu.trentorise.opendatarise.semantics.services.NLPService;
 import eu.trentorise.opendatarise.semantics.services.SemanticTextFactory;
-import static eu.trentorise.opendatarise.semantics.services.NLPService.localeToLanguageTag;
 import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
@@ -249,7 +247,7 @@ public class EntityODR extends Structure implements IEntity {
 					Iterator it = nameMap.entrySet().iterator();
 					while(it.hasNext()){
 						Map.Entry pairs = (Map.Entry)it.next();
-						Locale l = NLPService.languageTagToLocale((String)pairs.getKey());
+						Locale l = NLPService.languageTagToLocale((String) pairs.getKey());
 						ArrayList<String> vals = (ArrayList<String>) pairs.getValue();
 						//System.out.println(vals.get(0));
 						dict = dict.putTranslation(l, vals.get(0));
@@ -460,7 +458,7 @@ public class EntityODR extends Structure implements IEntity {
 	public String getName(Locale locale) {
 
 		Map<String,List<String>>  name = this.names.get(0).getNames();
-		List<String> stName = name.get(localeToLanguageTag(locale));
+		List<String> stName = name.get(NLPService.localeToLanguageTag(locale));
 		return stName.get(0);
 	}
 
