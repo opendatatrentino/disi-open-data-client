@@ -1,13 +1,13 @@
 <component name="libraryTable">
   <library name="Maven: eu.trentorise.opendata:openentity-api:0.17.0-SNAPSHOT">
     <CLASSES>
-      <root url="jar://$MAVEN_REPOSITORY$/eu/trentorise/opendata/openentity-api/0.17.0-SNAPSHOT/openentity-api-0.17.0-20140609.071726-4.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/eu/trentorise/opendata/openentity-api/0.17.0-SNAPSHOT/openentity-api-0.17.0-20140611.150104-7.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$MAVEN_REPOSITORY$/eu/trentorise/opendata/openentity-api/0.17.0-SNAPSHOT/openentity-api-0.17.0-20140609.071726-4-javadoc.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/eu/trentorise/opendata/openentity-api/0.17.0-SNAPSHOT/openentity-api-0.17.0-20140611.150104-7-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://$MAVEN_REPOSITORY$/eu/trentorise/opendata/openentity-api/0.17.0-SNAPSHOT/openentity-api-0.17.0-20140609.071726-4-sources.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/eu/trentorise/opendata/openentity-api/0.17.0-SNAPSHOT/openentity-api-0.17.0-20140611.150104-7-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

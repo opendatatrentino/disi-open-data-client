@@ -51,8 +51,11 @@ import static org.junit.Assert.*;
  */
 public class TestEntityService {
 
+    public static final long OPENING_HOURS = 7L;
     public static final long ATTR_TYPE_OPENING_HOUR = 31L;
     public static final long ATTR_TYPE_CLOSING_HOUR = 30L;
+
+    public static final String OPENING_HOURS_URL = WebServiceURLs.getURL() + "/attributedefinitions/" + OPENING_HOURS;
 
     public static final long PALAZZETTO_ID = 64005L;
     public static final long GYMNASIUM_CONCEPT_ID = 18565L;
@@ -60,7 +63,7 @@ public class TestEntityService {
     public static final String PALAZZETTO_URL = WebServiceURLs.getURL() + "/instances/" + PALAZZETTO_ID;
 
 
-
+    public static final long ATTR_DEF_OPENING_HOURS = 66L;
     public static final long ATTR_DEF_LATTITUDE = 69L;
     public static final long ATTR_DEF_LONGITUDE = 68L;
     public static final long ATTR_DEF_CLASS = 58L;
@@ -68,6 +71,8 @@ public class TestEntityService {
     public static final long CLASS_CONCEPT_ID = 21987L;
     public static final long FACILITY_ID = 12L;
 
+
+    public static final String ATTR_DEF_OPENING_HOURS_URL = WebServiceURLs.getURL() + "/attributedefinitions/" + ATTR_DEF_OPENING_HOURS;
     public static final String ATTR_DEF_LATTITUDE_URL = WebServiceURLs.getURL() + "/attributedefinitions/" + ATTR_DEF_LATTITUDE;
     public static final String ATTR_DEF_LONGITUDE_URL = WebServiceURLs.getURL() + "/attributedefinitions/" + ATTR_DEF_LONGITUDE;
     public static final String ATTR_DEF_CLASS_URL = WebServiceURLs.getURL() + "/attributedefinitions/" + ATTR_DEF_CLASS;

@@ -1,13 +1,13 @@
 <component name="libraryTable">
   <library name="Maven: it.unitn.disi.sweb:sweb-webapi-commons-model:3.0.0-SNAPSHOT">
     <CLASSES>
-      <root url="jar://$MAVEN_REPOSITORY$/it/unitn/disi/sweb/sweb-webapi-commons-model/3.0.0-SNAPSHOT/sweb-webapi-commons-model-3.0.0-20140606.150237-100.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/it/unitn/disi/sweb/sweb-webapi-commons-model/3.0.0-SNAPSHOT/sweb-webapi-commons-model-3.0.0-20140610.100107-101.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$MAVEN_REPOSITORY$/it/unitn/disi/sweb/sweb-webapi-commons-model/3.0.0-SNAPSHOT/sweb-webapi-commons-model-3.0.0-20140606.150237-100-javadoc.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/it/unitn/disi/sweb/sweb-webapi-commons-model/3.0.0-SNAPSHOT/sweb-webapi-commons-model-3.0.0-20140610.100107-101-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://$MAVEN_REPOSITORY$/it/unitn/disi/sweb/sweb-webapi-commons-model/3.0.0-SNAPSHOT/sweb-webapi-commons-model-3.0.0-20140606.150237-100-sources.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/it/unitn/disi/sweb/sweb-webapi-commons-model/3.0.0-SNAPSHOT/sweb-webapi-commons-model-3.0.0-20140610.100107-101-sources.jar!/" />
     </SOURCES>
   </library>
 </component>
