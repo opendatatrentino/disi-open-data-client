@@ -54,6 +54,8 @@ public class TestEntityService {
     public static final long OPENING_HOURS = 7L;
     public static final long ATTR_TYPE_OPENING_HOUR = 31L;
     public static final long ATTR_TYPE_CLOSING_HOUR = 30L;
+    public static final String ATTR_TYPE_OPENING_HOUR_URL = WebServiceURLs.getURL() + "/attributedefinitions/" + ATTR_TYPE_OPENING_HOUR;
+    public static final String ATTR_TYPE_CLOSING_HOUR_URL = WebServiceURLs.getURL() + "/attributedefinitions/" + ATTR_TYPE_CLOSING_HOUR;
 
     public static final String OPENING_HOURS_URL = WebServiceURLs.getURL() + "/attributedefinitions/" + OPENING_HOURS;
 
