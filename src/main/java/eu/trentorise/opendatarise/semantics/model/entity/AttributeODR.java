@@ -79,7 +79,7 @@ public class AttributeODR  implements IAttribute {
 		this.values=vals;
 
 	}
-	
+
 	public Long getGUID() {
 		return id;
 	}
@@ -193,19 +193,27 @@ public class AttributeODR  implements IAttribute {
 		//update from server side
 		AttributeClient attrCl = new AttributeClient(api);
 		Attribute attr = attrCl.readAttribute(this.id, null);
-		ValueODR val = (ValueODR) newValue;
-		val.convertToValue();
-		attrCl.update(val.convertToValue());
 
-		//client side
-		ArrayList<IValue> values = (ArrayList<IValue>) this.values;
 		for(IValue value: values){
 			if(value.getLocalID()==newValue.getLocalID()){
 				values.remove(value);
 				return;
 			}
 		}
-		values.add(newValue);
+		ValueODR val = (ValueODR) newValue;
+		Long id = attr.getValues().get(0).getId();
+		val.setId(id);
+		
+		if (values.size()==1){
+			values.remove(0);
+		}
+		//val.convertToValue();
+		val.setAttributeId(attr.getId());
+		Value value =val.convertToValue();
+		attrCl.update(value);
+		//client side
+		values.add(val);
+
 	}
 
 	public Long getLocalID() {

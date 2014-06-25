@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.apache.http.client.ClientProtocolException;
 
+import eu.trentorise.opendata.semantics.NotFoundException;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
@@ -42,7 +43,7 @@ public class EntityService implements IEntityService {
 
 		this.api=api;
 	}
-	
+
 	public EntityService(){
 		if(this.api==null){
 			api=WebServiceURLs.getClientProtocol();
@@ -52,19 +53,23 @@ public class EntityService implements IEntityService {
 	public Long createEntity(IEntity entity) {
 		EntityODR ent = (EntityODR) entity;
 		Entity e = ent.convertToEntity();
-	//	e.setGlobalId(123456789L);
 		InstanceClient instanceCl= new  InstanceClient(this.api);
-		System.out.println(e.toString());
-		for (Attribute a : e.getAttributes()){
-			
-			System.out.println("Concept:"+a.getConceptId());
-			System.out.println("DataType:"+a.getDataType());
-			System.out.println("Definition:"+a.getDefinitionId());
-			//	System.out.println(a.getValues().get(0).ge);
-		}
+		//System.out.println(e.toString());
+		//for (Attribute a : e.getAttributes()){
 
-		Long id = instanceCl.create(e);
+		//			System.out.println("Concept:"+a.getConceptId());
+		//			System.out.println("DataType:"+a.getDataType());
+		//			System.out.println("Definition:"+a.getDefinitionId());
+		//	System.out.println(a.getValues().get(0).ge);
+		//	}
+		Long id = null;
+		try{
+			id = instanceCl.create(e);
+
+		} catch (NotFoundException ex){
+		}
 		return id;
+
 	}
 
 	public Long createEntity(Name name) {
@@ -95,7 +100,7 @@ public class EntityService implements IEntityService {
 		Instance instance = instanceCl.readInstance(entityID, null);
 		instanceCl.delete(instance);
 	}
-	
+
 	public void deleteEntity(String entityURL) {
 		InstanceClient instanceCl= new  InstanceClient(this.api);
 		Long entityID = getEntityIdFromURL(entityURL);
@@ -115,7 +120,7 @@ public class EntityService implements IEntityService {
 		EntityODR en = new EntityODR(this.api,entity);
 		return en;
 	}
-	
+
 	public Structure readName(long entityID) {
 		InstanceClient instanceCl= new  InstanceClient(this.api);
 
@@ -123,15 +128,15 @@ public class EntityService implements IEntityService {
 		instFilter.setIncludeAttributes(true);
 		instFilter.setIncludeAttributesAsProperties(true);
 		Instance instance = instanceCl.readInstance(entityID, instFilter);
-		
+
 		Name name =  (Name)instance; 
 		Structure structureName = new Structure();
 		structureName.setAttributes(name.getAttributes());
 		//EntityODR en = new EntityODR(this.api,entity);
-		
+
 		return structureName;
 	}
-	
+
 	public Structure readStructure(long entityID) {
 		InstanceClient instanceCl= new  InstanceClient(this.api);
 
@@ -139,12 +144,12 @@ public class EntityService implements IEntityService {
 		instFilter.setIncludeAttributes(true);
 		instFilter.setIncludeAttributesAsProperties(true);
 		Instance instance = instanceCl.readInstance(entityID, instFilter);
-		
+
 		it.unitn.disi.sweb.webapi.model.eb.Structure name =  (it.unitn.disi.sweb.webapi.model.eb.Structure)instance; 
 		Structure structureName = new Structure();
 		structureName.setAttributes(name.getAttributes());
 		//EntityODR en = new EntityODR(this.api,entity);
-		
+
 		return structureName;
 	}
 
@@ -175,12 +180,12 @@ public class EntityService implements IEntityService {
 		AttributeODR attribute = new AttributeODR(attrDef, vals);
 		return attribute;
 	}
-	
-	
+
+
 
 	public AttributeODR createAttribute(IAttributeDef attrDef, Object value){
 		AttributeDef ad = (AttributeDef) attrDef;
-	//	System.out.println(attrDef.getDataType());
+		//	System.out.println(attrDef.getDataType());
 		if (ad.getName(Locale.ENGLISH).equals("Name"))
 		{
 			return createNameAttributeODR(attrDef, (String)value);
@@ -197,7 +202,7 @@ public class EntityService implements IEntityService {
 			}
 	}
 
-	private AttributeODR createStructureAttribute(IAttributeDef attrDef,
+	public AttributeODR createStructureAttribute(IAttributeDef attrDef,
 			HashMap<IAttributeDef, Object> atributes) {
 		List<Attribute> attrs = new ArrayList<Attribute>();
 		it.unitn.disi.sweb.webapi.model.eb.Structure  attributeStructure = new it.unitn.disi.sweb.webapi.model.eb.Structure();
@@ -231,12 +236,12 @@ public class EntityService implements IEntityService {
 
 		EntityTypeService ets = new EntityTypeService();
 		//get Name Etype
-		
+
 		EntityType etpe =	ets.getEntityType(attrDef.getRangeEType().getURL());
 		Name nameStructure = new Name();
 		List<Attribute> entityNameattributes = new ArrayList<Attribute>();
 		nameStructure.setEntityBaseId(1L);
-		
+
 		Attribute nameAttribute = new Attribute();
 
 		List<IAttributeDef>atsd = etpe.getAttributeDefs();
@@ -245,7 +250,7 @@ public class EntityService implements IEntityService {
 		nameAttribute.setConceptId(atsd.get(0).getConcept().getGUID());
 		List<Value>nameValues=new ArrayList<Value>();
 		//BE CAREFULL WITH VOCABULARY
-		
+
 		nameValues.add(new Value(name, 1L));
 		nameAttribute.setValues(nameValues);
 		//AttributeODR nameAttributeODR = new AttributeODR(api,nameAttribute);
@@ -261,13 +266,13 @@ public class EntityService implements IEntityService {
 		AttributeODR a = new AttributeODR(api, nAtr);
 		return a;
 	}
-	
-	
+
+
 	/** Creates Attribute from Name.class 
 	 * @param name
 	 */
 	public AttributeODR createNameAttribute(IAttributeDef attrDef, Name name){
-		
+
 		AttributeODR atODR = new  AttributeODR();
 		Attribute nAtr =new Attribute();
 		nAtr.setDefinitionId(attrDef.getGUID());
@@ -276,39 +281,39 @@ public class EntityService implements IEntityService {
 		nAtr.setValues(values);
 		AttributeODR a = new AttributeODR(api, nAtr);
 		return a;
-		
+
 	}
-	
+
 	public AttributeODR createNameAttributeODR(IAttributeDef attrDef, String name){
-		
+
 		Attribute entityNameAttribute = new Attribute();
 		entityNameAttribute.setDefinitionId(attrDef.getGUID());
 
 		Name nameStructure = new Name();
 		nameStructure.setEntityBaseId(1L);
 		nameStructure.setTypeId(10L); //NOTE HARCODED TODO change
-		
+
 		List<Attribute> nameAttributes = new ArrayList<Attribute>();
-		
+
 		Attribute nameAttribute = new Attribute();
 		nameAttribute.setDefinitionId(55L); //NOTE HARCODED TODO change
 		nameAttribute.setConceptId(2L);
 
 		List<Value>nameValues=new ArrayList<Value>();
-	
+
 		nameValues.add(new Value(name, 1L));
 		nameAttribute.setValues(nameValues);
 		nameAttributes.add(nameAttribute);
 		nameStructure.setAttributes(nameAttributes);
-		
-	    List<Value>entityNameValues=new ArrayList<Value>();
-	    
-	    entityNameValues.add(new Value(nameStructure)); // here is your link to the name structure, if you want you can put the id of the name instance (if you created it before) but make sure the data type is COMPLEX_TYPE
-	    entityNameAttribute.setValues(entityNameValues);
-	    AttributeODR a = new AttributeODR(api, entityNameAttribute);
+
+		List<Value>entityNameValues=new ArrayList<Value>();
+
+		entityNameValues.add(new Value(nameStructure)); // here is your link to the name structure, if you want you can put the id of the name instance (if you created it before) but make sure the data type is COMPLEX_TYPE
+		entityNameAttribute.setValues(entityNameValues);
+		AttributeODR a = new AttributeODR(api, entityNameAttribute);
 		return a;
 
-		
+
 	}
 
 	//
@@ -332,25 +337,44 @@ public class EntityService implements IEntityService {
 
 	public void updateAttributeValue(IEntity entity, IAttribute attribute,
 			IValue newValue) {
-        throw new UnsupportedOperationException("todo to implement");
+		AttributeODR attr = (AttributeODR) attribute;
+		attr.updateValue(newValue);
 
 	}
 
 
 
 	public void updateEntity(IEntity entity) {
-        throw new UnsupportedOperationException("todo to implement");
 
+		EntityODR ent = (EntityODR) entity;
+		Entity e = ent.convertToEntity();
+		InstanceClient instanceCl= new  InstanceClient(this.api);
+		try {
+			instanceCl.update(e);
+		} catch (IllegalArgumentException ex){
+			throw new NotFoundException("Such an entity does not exists.");
+		}	
 	}
 
 
 	public IEntity readEntity(String URL) {
 
-		String s = URL.substring(URL.indexOf("es/") + 3);
-		Long typeID = Long.parseLong(s);
+		String s;
+		try {
+			s = URL.substring(URL.indexOf("es/") + 3);
+		} catch (Exception e) {
+			return null;
+		}
+
+		Long typeID;
+		try {
+			typeID = Long.parseLong(s);
+		} catch (Exception e) {
+			return null;				}
+
 		return readEntity(typeID);
 	}
-	
+
 	public Long getEntityIdFromURL(String URL) {
 
 		String s = URL.substring(URL.indexOf("es/") + 3);
@@ -367,7 +391,7 @@ public class EntityService implements IEntityService {
 	}
 
 	public void exportToRdf(List<String> entityURLs, Writer writer) {
-        throw new UnsupportedOperationException("todo to implement");
+		throw new UnsupportedOperationException("todo to implement");
 
 	}
 
@@ -375,7 +399,7 @@ public class EntityService implements IEntityService {
 		String filename= "test"+System.currentTimeMillis();
 		EntityExportService ees = new EntityExportService();
 		List<Long> entitiesID = new ArrayList<Long>();
-		
+
 		for (String entityURL : entityURLs){
 			String s = entityURL.substring(entityURL.indexOf("es/") + 3);
 			Long eID = Long.parseLong(s);
@@ -386,28 +410,28 @@ public class EntityService implements IEntityService {
 		try {
 			fileId = ees.methodPost(entitiesID,filename);
 		} catch (ClientProtocolException e) {
-            throw new DisiClientException("Error while getting fileId", e);
+			throw new DisiClientException("Error while getting fileId", e);
 		} catch (IOException e) {
-            throw new DisiClientException("Error while getting fileId", e);
-     	}
+			throw new DisiClientException("Error while getting fileId", e);
+		}
 		InputStream is = null;
 		try {
 			is = ees.methodGet(fileId, "sem"+filename);
 		} catch (ClientProtocolException e) {
-            throw new DisiClientException("Error while getting input stream", e);
+			throw new DisiClientException("Error while getting input stream", e);
 		} catch (IOException e) {
-            throw new DisiClientException("Error while getting input stream", e);
+			throw new DisiClientException("Error while getting input stream", e);
 		}
 		try {
 			ees.convertToJsonLd(is,writer);
 		} catch (IOException e) {
-            throw new DisiClientException("Error while creating jsonLd", e);
+			throw new DisiClientException("Error while creating jsonLd", e);
 		}
 
 	}
 
 	public void exportToCsv(List<String> entityURLs, Writer writer) {
-        throw new UnsupportedOperationException("todo to implement");
+		throw new UnsupportedOperationException("todo to implement");
 
 	}
 

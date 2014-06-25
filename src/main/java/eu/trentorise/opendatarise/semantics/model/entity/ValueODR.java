@@ -38,9 +38,9 @@ public class ValueODR extends Value implements IValue {
 	public ValueODR(IProtocolClient api, Value value ){
 		this.id=value.getId();
 		this.attrId=value.getAttributeId();
-		
+
 		if (value.getClass().equals(Name.class))
-	
+
 		{
 			Instance instance= (Instance)this.value;
 			//System.out.println(value.toString());
@@ -49,7 +49,7 @@ public class ValueODR extends Value implements IValue {
 			//Structure structure = 
 			this.value=structure;
 		} else this.value=value.getValue();
-		
+
 	}
 
 	public ValueODR(Value value){
@@ -87,9 +87,16 @@ public class ValueODR extends Value implements IValue {
 
 	public Value convertToValue(){
 		Value value = new Value();
-		value.setId(this.id);
-		value.setValue(this.value);
-		value.setAttributeId(this.attrId);
+		if(super.getId()!=null){
+			value.setId(super.getId());}
+		else
+			value.setId(this.id);
+		if(super.getValue()!=null){
+			value.setValue(super.getValue());
+		} else
+			value.setValue(this.value);
+
+		value.setAttributeId(super.getAttributeId());
 		return value;
 	}
 

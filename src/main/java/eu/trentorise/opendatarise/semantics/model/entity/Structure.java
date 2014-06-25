@@ -16,6 +16,7 @@ import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.model.entity.IStructure;
 import eu.trentorise.opendatarise.semantics.DisiClientException;
+import eu.trentorise.opendatarise.semantics.services.EntityTypeService;
 import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
 
 public class Structure  extends Instance implements IStructure
@@ -57,6 +58,9 @@ public class Structure  extends Instance implements IStructure
 	}
 
 	public IEntityType getEtype() {
+		//TODO discuss with David: structure is not an entity! it can not have ID
+//		EntityTypeService ets = new EntityTypeService();
+//		return ets.getEntityType(super.getTypeId());
 		throw new UnsupportedOperationException("todo to implement");
 	}
 
@@ -88,7 +92,9 @@ public class Structure  extends Instance implements IStructure
 	}
 
 	public String getURL() {
-		throw new UnsupportedOperationException("todo to implement");
+		String fullUrl = WebServiceURLs.getURL();
+		String url  = fullUrl+"/instances/"+super.getId();
+		return url;
 	}
 
 	public void setURL(String url) {
@@ -104,6 +110,12 @@ public class Structure  extends Instance implements IStructure
 			}
 		}
 		throw new DisiClientException("There is no attribute in the structure with a given attributeDef");
+	}
+
+	public String getEtypeURL() {
+		String fullUrl = WebServiceURLs.getURL();
+		String url  = fullUrl+"/types/"+super.getTypeId();
+		return url;
 	}
 
 }

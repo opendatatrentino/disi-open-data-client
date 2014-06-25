@@ -130,7 +130,7 @@ public class EntityTypeService implements IEntityTypeService {
 
 	public void addUniqueIndexToEtype(IEntityType entityType,
 			IUniqueIndex uniqueIndex) {
-        throw new UnsupportedOperationException("todo to implement");
+		throw new UnsupportedOperationException("todo to implement");
 	}
 
 	/** The method returns client protocol 
@@ -151,8 +151,21 @@ public class EntityTypeService implements IEntityTypeService {
 	}
 
 	public EntityType getEntityType(String URL) {
-		String s = URL.substring(URL.indexOf("es/") + 3);
-		Long typeID = Long.parseLong(s);
+		String s;
+		try {
+			s = URL.substring(URL.indexOf("es/") + 3);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+
+		Long typeID;
+		try {
+			typeID = Long.parseLong(s);
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+			return null;
+		}
 		return getEntityType(typeID);
 	}
 

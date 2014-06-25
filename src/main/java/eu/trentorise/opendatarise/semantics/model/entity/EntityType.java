@@ -95,7 +95,7 @@ public class EntityType implements IEntityType{
 
 	public List<IAttributeDef> getAttributeDefs() {
 		if (this.attrs!=null){
-		return this.attrs;}
+			return this.attrs;}
 		else {
 			EntityTypeService ets = new EntityTypeService();
 			EntityType etype= ets.getEntityType(this.id);
@@ -207,13 +207,13 @@ public class EntityType implements IEntityType{
 
 
 	public void removeAttributeDef(String attrDefURL) {
-        throw new UnsupportedOperationException("todo to implement");
+		throw new UnsupportedOperationException("todo to implement");
 
 	}
 
 
 	public void removeUniqueIndex(String uniqueIndexURL) {
-        throw new UnsupportedOperationException("todo to implement");
+		throw new UnsupportedOperationException("todo to implement");
 
 	}
 
@@ -240,5 +240,27 @@ public class EntityType implements IEntityType{
 		return null;
 	}
 
+	public String getConceptURL() {
+		String fullUrl = WebServiceURLs.getURL();
+		String url  = fullUrl+"/concepts/"+this.conceptId;
+		return url;
+	}
+
+	public IAttributeDef getAttrDef(String URL) {
+		List<IAttributeDef>attrDefs=getAttributeDefs();
+		for (IAttributeDef attrDef:attrDefs){
+			if(attrDef.getURL().equals(URL)) {
+				return attrDef;
+			} else return null;
+		}
+	
+		return null;
+	}
+
+	public Long getAttrDefID(String url){
+		String s = url.substring(url.indexOf("ns/") + 3);
+		Long attrDefId = Long.parseLong(s);
+		return attrDefId;
+	}
 
 }

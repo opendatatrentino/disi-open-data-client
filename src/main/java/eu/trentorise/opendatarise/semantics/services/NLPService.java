@@ -89,7 +89,7 @@ public class NLPService implements INLPService {
         List<String> text = new ArrayList<String>();
         text.add(nlText);
         input.setText(text);
-        NLText[] processedText = pipClient.run("KeywordTextPipeline", input, 1l, "it");
+        NLText[] processedText = pipClient.run("NamedEntityPipeline", input, 1l, "it");
         //		for (NLText nlext : processedText) {
         //		   System.out.println(nlext.toString());
         //		}
@@ -125,6 +125,10 @@ public class NLPService implements INLPService {
 	public List<ISemanticText> runNLP(List<String> texts, IConcept parentConcept) {
 		//TODO consider the parentConcept parameter as soon as API will be ready
 		return  runNLP(texts);
+	}
+
+	public List<ISemanticText> runNER(List<String> texts) {
+		throw new UnsupportedOperationException("To be implemented on the server side");
 	}
 
 

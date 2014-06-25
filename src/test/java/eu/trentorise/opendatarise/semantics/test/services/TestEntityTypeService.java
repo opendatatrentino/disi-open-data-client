@@ -24,20 +24,19 @@ import static org.junit.Assert.assertNotNull;
  */
 public class TestEntityTypeService {
 
-    // TODO REVIEW COMMENTED TEST
-	//@Test
+	@Test
 	public void testGetEntityTypeByID(){
 		EntityTypeService ets = new EntityTypeService();
 		EntityType etype =(EntityType)ets.getEntityType(12L);
 		List<IAttributeDef>atdefs=etype.getAttributeDefs();
-		for (IAttributeDef ad:atdefs){
-			System.out.println(ad.getName());
-			System.out.println(ad.getDataType());
-			System.out.println("AttributeDef Etype URL:"+ad.getEtypeURL());
-		} 
+		//for (IAttributeDef ad:atdefs){
+//			System.out.println(ad.getName());
+//			System.out.println(ad.getDataType());
+//			System.out.println("AttributeDef Etype URL:"+ad.getEtypeURL());
+	//	} 
 		//		System.out.println("URL:"+etype.getURL());
 		//		System.out.println(etype.getName1());
-		//	assertEquals(etype.getName1().get("it") ,"Infrastruttura");
+		assertEquals(etype.getName1().get("it") ,"Infrastruttura");
 	}
 
 	@Test
@@ -46,20 +45,19 @@ public class TestEntityTypeService {
 		List<IEntityType> etypes= ets.getAllEntityTypes();
 		for(IEntityType etype:etypes){
 			List<IAttributeDef>atdefs=etype.getAttributeDefs();
-			System.out.println("AttributeDef ETYPE Name:"+etype.getName().getString(Locale.ENGLISH));
-					//	System.out.println("AttributeDefs:"+etype.getAttributeDefs());
-					//	System.out.println("AttributeDef Name:"+etype.getNameAttrDef());
-					//	System.out.println("AttributeDef Description:"+etype.getDescriptionAttrDef());
-						for (IAttributeDef ad:atdefs){
-							//System.out.println("AttributeDef URL:"+ad.getURL());
-							System.out.println("AttributeDef  DataType:"+ad.getDataType());
-						} 
+			//System.out.println("AttributeDef ETYPE Name:"+etype.getName().getString(Locale.ENGLISH));
+			//	System.out.println("AttributeDefs:"+etype.getAttributeDefs());
+			//	System.out.println("AttributeDef Name:"+etype.getNameAttrDef());
+			//	System.out.println("AttributeDef Description:"+etype.getDescriptionAttrDef());
+			for (IAttributeDef ad:atdefs){
+				//System.out.println("AttributeDef URL:"+ad.getURL());
+				//System.out.println("AttributeDef  DataType:"+ad.getDataType());
+			} 
 		}
 		assertNotNull(etypes.get(0));
 	}
 
-    // TODO REVIEW COMMENTED TEST
-	//@Test
+	@Test
 	public void testGetRootsTypes(){
 		EntityTypeService ets = new EntityTypeService();
 		assertEquals("Entity",ets.getRootEtype().getName().getString(Locale.ENGLISH));
@@ -67,8 +65,7 @@ public class TestEntityTypeService {
 
 	}
 
-    // TODO REVIEW COMMENTED TEST
-	//@Test
+	@Test
 	public void testGetEntityTypeByURL(){
 		EntityTypeService ets = new EntityTypeService();
 		List<IEntityType> etypes= ets.getAllEntityTypes();
@@ -81,42 +78,32 @@ public class TestEntityTypeService {
 			assertNotNull(et);
 		}
 	}
+	
+	@Test
+	public void testGetAttributeDefbyUrl(){
+		EntityTypeService ets = new EntityTypeService();
+		List<IEntityType> etypes= ets.getAllEntityTypes();
+		List<IAttributeDef>attrDefs =etypes.get(0).getAttributeDefs();
+		String attrDefUrl= attrDefs.get(0).getURL();
+		IAttributeDef attrDef= etypes.get(0).getAttrDef(attrDefUrl);
+		assertNotNull(attrDef);
+	}
 
-  //  @Test
-    public void testReadNonExistingEntityType(){
-        IEkb disiEkb = new Ekb();
+	
+	  @Test
+	public void testReadNonExistingEntityType(){
+		IEkb disiEkb = new Ekb();
 
-        assertEquals(disiEkb.getEntityTypeService().getEntityType("http://blabla.com"), null);
+		assertEquals(disiEkb.getEntityTypeService().getEntityType("http://blabla.com"), null);
 
-    }
+	}
 
 
-    // TODO REVIEW COMMENTED TEST
-	//@Test
+	@Test
 	public void testFuzzySearchEtype(){
 		EntityTypeService ets = new EntityTypeService();
 		List<IEtypeSearchResult> searchEtypes = ets.searchEntityTypes("Lcalit");
 		assertEquals("Location",searchEtypes.get(0).getName().getString(Locale.ENGLISH));
 
 	}
-
-	//@Test
-	//	public void testAddAttributeDefToEtype(){
-	//		EntityTypeService ets = new EntityTypeService();
-	//		EntityType etypeEntity =(EntityType)ets.getEntityType(7L);
-	//		EntityType etypeLoc =(EntityType)ets.getEntityType(4L);
-	//		List<IAttributeDef> attrs = etypeLoc.getAttributeDefs();
-	//
-	//		String attrName= attrs.get(0).getName(new Locale("all"));
-	//		System.out.println(attrName);
-	//		ets.addAttributeDefToEtype(etypeEntity, attrs.get(0));
-	//		EntityType etypeEntityUpdated =(EntityType)ets.getEntityType(7L);
-	//		String addedAttrName =etypeEntityUpdated.getAttributeDefs().get(0).getName(Locale.ENGLISH);
-	//		System.out.println(addedAttrName);
-	//		assertEquals(attrName,addedAttrName);
-	//
-	//	}
-
-
-
 }

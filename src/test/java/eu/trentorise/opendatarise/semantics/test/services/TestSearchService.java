@@ -25,7 +25,7 @@ public class TestSearchService {
 		this.api = ProtocolFactory.getHttpClient(Locale.ENGLISH, "opendata.disi.unitn.it", 8080);
 	}
 
-	//@Test
+	@Test
 	public void conceptSearchTest(){
 		Search searchService = new Search(api);
 		List<IEntity>  entities = searchService.conceptSearch("PALAZZETTO DELLO SPORT");

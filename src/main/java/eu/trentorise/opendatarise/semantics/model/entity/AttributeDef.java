@@ -270,4 +270,14 @@ public class AttributeDef implements IAttributeDef {
 		return dict;
 	}
 
+	public String getConceptURL() {
+		String fullUrl = WebServiceURLs.getURL();
+		String url  = fullUrl+"/concepts/"+this.conceptId;
+		return url;
+	}
+
+	public boolean isList() {
+		return this.isSet;
+	}
+
 }
