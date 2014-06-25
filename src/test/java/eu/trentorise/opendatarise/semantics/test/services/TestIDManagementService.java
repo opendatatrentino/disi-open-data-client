@@ -5,7 +5,7 @@ import eu.trentorise.opendatarise.semantics.services.*;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
-import it.unitn.disi.sweb.webapi.model.eb.Name;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,6 +25,7 @@ import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
 import eu.trentorise.opendatarise.semantics.model.knowledge.ConceptODR;
 import it.unitn.disi.sweb.webapi.model.eb.Value;
+import org.junit.Test;
 
 
 /**
@@ -99,12 +100,23 @@ public class TestIDManagementService {
 
 	}
 
+
+    /**
+     * Don't want errors on empty array
+     */
+    @Test
+    public void testIdManagementEmptyArray(){
+        IdentityService idServ= new IdentityService();
+        List res = idServ.assignURL(new ArrayList(),3);
+        assertTrue(res.isEmpty());
+    }
+
+
 	@Test
 	public void testIdManagementReuse(){
 		EntityService enServ =new EntityService(WebServiceURLs.getClientProtocol());
 		IdentityService idServ= new IdentityService();
 		String name = "PALAZZETTO DELLO SPORT";
-
 
 		EntityODR entity = (EntityODR)enServ.readEntity(64000L);
 		List<Attribute> attrs=entity.getAttributes();

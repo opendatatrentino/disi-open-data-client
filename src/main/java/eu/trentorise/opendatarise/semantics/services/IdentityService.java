@@ -16,6 +16,10 @@ public class IdentityService implements IIdentityService {
 
 
 	public List<IIDResult> assignGUID(List<IEntity> ientities) {
+		if (ientities.size()==0){
+			List<IIDResult> idResults = new ArrayList<IIDResult>();
+			return idResults;
+		}
 		if(ientities==null){
 			List<IIDResult> idResults = new ArrayList<IIDResult>();
 			return idResults;
@@ -39,6 +43,10 @@ public class IdentityService implements IIdentityService {
 	}
 
 	public List<IIDResult> assignURL(List<IEntity> entities, int numCandidates) {
+		if (entities.size()==0){
+			List<IIDResult> idResults = new ArrayList<IIDResult>();
+			return idResults;
+		}
 		if(entities==null){
 			List<IIDResult> idResults = new ArrayList<IIDResult>();
 			return idResults;

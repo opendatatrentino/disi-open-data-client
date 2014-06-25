@@ -97,32 +97,26 @@ public class TestEntityService {
 	public void testPalazzettoRead() {
 		IEkb disiEkb = new Ekb();
 
-
 		EntityODR entity = (EntityODR) disiEkb.getEntityService().readEntity(PALAZZETTO_URL);
-
 		logger.info("\n\n *************   entity Palazzetto (" + PALAZZETTO_URL + ") ***************** \n\n" + entity);
-
 		IntegrityChecker.checkEntity(entity);
-
 		assertTrue(entity.getName().getString(Locale.ITALIAN).length() > 0);
 		// assertTrue(entity.getDescription().getString(Locale.ITALIAN).length() > 0);
 
 	}
+	  
 	  @Test
 	public void testReadNonExistingEntity(){
 		IEkb disiEkb = new Ekb();
-
 		assertEquals(disiEkb.getEntityService().readEntity("http://blabla.com"), null);
-
 	}
+
 
 	 @Test
 	public void testUpdateNonExistingEntity(){
 		EntityODR entity = new EntityODR();
 		IEkb ekb = new Ekb();
-
 		IEntityService es = ekb.getEntityService();
-
 		entity.setEntityAttributes(new ArrayList());
 		entity.setEtype(ekb.getEntityTypeService().getEntityType(FACILITY_URL));
 		entity.setEntityBaseId(1L);

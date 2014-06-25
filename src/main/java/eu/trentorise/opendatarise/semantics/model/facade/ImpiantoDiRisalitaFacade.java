@@ -20,7 +20,7 @@ import java.util.Locale;
 
 import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
 import eu.trentorise.opendatarise.semantics.model.knowledge.ConceptODR;
-//import eu.trentorise.opendatarise.semantics.model.entity.Structure;
+//import Structure;
 
 /**
  *
