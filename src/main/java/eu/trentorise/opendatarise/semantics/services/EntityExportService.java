@@ -252,7 +252,7 @@ public class EntityExportService {
 		System.out.println(WebServiceURLs.getURL());
 		Response response = Request.Post(WebServiceURLs.getURL()+"/data/export")
 				.bodyForm(Form.form().add("entityBase", "1").add("fileName", fileName).add("id", formatedEntities).build())
-				.execute();
+				.execute();                
 		String content = response.returnContent().asString();
 		System.out.print("File: "+content);
 		return Long.parseLong(content);

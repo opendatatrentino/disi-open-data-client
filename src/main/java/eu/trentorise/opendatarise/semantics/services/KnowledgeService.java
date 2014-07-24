@@ -9,7 +9,8 @@ import eu.trentorise.opendatarise.semantics.model.knowledge.ConceptODR;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
- * @date 25 Mar 2014
+ * @author David Leoni <david.leoni@unitn.it>
+ * @date 23 July 2014
  * 
  */
 public class KnowledgeService implements IKnowledgeService {
@@ -58,5 +59,17 @@ public class KnowledgeService implements IKnowledgeService {
 		concept = concept.readConcept(rootConceptID);
 		return concept;
 	}
+
+    public List<IConcept> readConcepts(List<String> URLs) {
+        return getConcepts(URLs);
+    }
+
+    public IConcept readConcept(String URL) {
+        return getConcept(URL);
+    }
+
+    public IConcept readRootConcept() {
+        return getRootConcept();
+    }
 
 }

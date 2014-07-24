@@ -96,7 +96,7 @@ public class NLPService implements INLPService {
         return processedText[0];
     }
 
-    public List<PipelineDescription> readPipelinesDesription() {
+    public List<PipelineDescription> readPipelinesDescription() {
         PipelineClient pipClient = new PipelineClient(getClientProtocol());
         return pipClient.readPipelines();
     }
