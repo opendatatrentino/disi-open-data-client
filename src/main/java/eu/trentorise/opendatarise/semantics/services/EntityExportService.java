@@ -251,13 +251,15 @@ public class EntityExportService {
 		String formatedEntities = entitiesId.toString().replace("[", "").replace("]", "").replace(" ", "");
 		System.out.println(WebServiceURLs.getURL());
 		Response response = Request.Post(WebServiceURLs.getURL()+"/data/export")
-				.bodyForm(Form.form().add("entityBase", "1").add("fileName", fileName).add("id", formatedEntities).build())
-				.execute();                
+				.bodyForm(Form.form().add("entityBase", "1").add("fileName", fileName).add("id", formatedEntities).add("maxDepth", "3").build())
+				.execute();
 		String content = response.returnContent().asString();
 		System.out.print("File: "+content);
 		return Long.parseLong(content);
 	}
 
+	
+	
 	public InputStream methodGet(Long id, String fileName) throws ClientProtocolException, IOException{
 		InputStream is =Request.Get(WebServiceURLs.getURL()+"/files/"+id)
 				.execute().returnContent().asStream();
