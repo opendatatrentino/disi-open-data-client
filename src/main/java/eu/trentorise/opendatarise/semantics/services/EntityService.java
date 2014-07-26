@@ -120,7 +120,31 @@ public class EntityService implements IEntityService {
 		EntityODR en = new EntityODR(this.api,entity);
 		return en;
 	}
+        
+	public List<IEntity> readEntities(List<String> entityURLs) {
+                List<Long> entityIDs = new ArrayList();
+            
+                for (String entityURL : entityURLs){
+                    entityIDs.add(SemanticTextFactory.entitypediaURLToEntityID(entityURL));
+                }
+                
+		InstanceClient instanceCl= new  InstanceClient(this.api);
 
+		InstanceFilter instFilter = new InstanceFilter();
+		instFilter.setIncludeAttributes(true);
+		instFilter.setIncludeAttributesAsProperties(true);
+		instFilter.setIncludeSemantics(true);
+                
+		List instances = instanceCl.readInstancesById(entityIDs, instFilter);
+		List<Entity> entities =  (List<Entity>)instances; 
+                List<IEntity> ret = new ArrayList();
+                for (Entity epEnt : entities){
+                    ret.add(new EntityODR(this.api,epEnt));
+                }
+		return ret;
+	}        
+        
+        
 	public Structure readName(long entityID) {
 		InstanceClient instanceCl= new  InstanceClient(this.api);
 
@@ -370,7 +394,8 @@ public class EntityService implements IEntityService {
 		try {
 			typeID = Long.parseLong(s);
 		} catch (Exception e) {
-			return null;				}
+			return null;				
+                }
 
 		return readEntity(typeID);
 	}

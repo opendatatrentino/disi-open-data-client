@@ -88,7 +88,7 @@ public class NLPService implements INLPService {
         NLPInput input = new NLPInput();
         List<String> text = new ArrayList<String>();
         text.add(nlText);
-        input.setText(text);
+        input.setText(text);        
         NLText[] processedText = pipClient.run("NamedEntityPipeline", input, 1l, "it");
         //		for (NLText nlext : processedText) {
         //		   System.out.println(nlext.toString());

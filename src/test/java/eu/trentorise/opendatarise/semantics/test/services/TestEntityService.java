@@ -17,9 +17,6 @@ import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.EntityBase;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
-import it.unitn.disi.sweb.webapi.model.eb.Name;
-import it.unitn.disi.sweb.webapi.model.eb.Value;
-import it.unitn.disi.sweb.webapi.model.kb.types.AttributeDefinition;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
 
 import java.util.ArrayList;
@@ -33,13 +30,13 @@ import org.junit.Test;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
-import eu.trentorise.opendata.semantics.model.entity.IValue;
 import eu.trentorise.opendatarise.semantics.model.entity.AttributeDef;
 import eu.trentorise.opendatarise.semantics.model.entity.AttributeODR;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
 import eu.trentorise.opendatarise.semantics.model.entity.ValueODR;
 import eu.trentorise.opendatarise.semantics.model.knowledge.ConceptODR;
+import eu.trentorise.opendatarise.semantics.services.SemanticTextFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,10 +56,12 @@ public class TestEntityService {
 	public static final long ATTR_TYPE_OPENING_HOUR = 31L;
 	public static final long ATTR_TYPE_CLOSING_HOUR = 30L;
 
-	public static final long PALAZZETTO_ID = 64005L;
+	public static final long PALAZZETTO_ID = 64000L;
+        public static final long RAVAZZONE_ID = 15001L;
 	public static final long GYMNASIUM_CONCEPT_ID = 18565L;
 	public static final String GYMNASIUM_CONCEPT_URL = WebServiceURLs.getURL() + "/concepts/" + GYMNASIUM_CONCEPT_ID;
 	public static final String PALAZZETTO_URL = WebServiceURLs.getURL() + "/instances/" + PALAZZETTO_ID;
+        public static final String RAVAZZONE_URL = WebServiceURLs.getURL() + "/instances/" + RAVAZZONE_ID;
 
 
 	public static final long ATTR_DEF_LATTITUDE = 69L;
@@ -79,8 +78,7 @@ public class TestEntityService {
 	public static final String FACILITY_URL = WebServiceURLs.getURL() + "/types/" + FACILITY_ID;
 
 
-	private IProtocolClient api;
-	private long entityID;
+	private IProtocolClient api;	
 
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -134,7 +132,7 @@ public class TestEntityService {
 	public void testEntityReadByGlobalID() {
 		EntityService es = new EntityService(api);
 		EntityODR entity = (EntityODR) es.readEntityByGUID(10000466L);
-		System.out.println(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0));
+		logger.info(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0));
 		assertEquals(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0),"Infrastruttura");
 	}
 
@@ -160,12 +158,12 @@ public class TestEntityService {
 		//instantiation of variables
 
 		attributes = attrClient.readAttributes(15007L, null, null);
-		//System.out.println("Etype id: "+inst.getTypeId());
+		//logger.info("Etype id: "+inst.getTypeId());
 		//assigning variables
 		entity.setAttributes(attributes);
 		entity.setEtype(etype);
 		entity.setEntityBaseId(101L);
-		//  System.out.println("entity: " + entity.toString());
+		//  logger.info("entity: " + entity.toString());
 		//es.createEntity(entity);
 
 		EbClient ebc = new EbClient(api);
@@ -186,13 +184,25 @@ public class TestEntityService {
 
 	}
 
-	 @Test
-	public void testEntityRead() {
-		EntityService es = new EntityService(api);
-		EntityODR entity = (EntityODR) es.readEntity(15001L);
-		System.out.println(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0));
-		assertEquals(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0),"Località");
+	@Test
+	public void testReadEntity() {
+            EntityService es = new EntityService(api);
+            EntityODR entity = (EntityODR) es.readEntity(SemanticTextFactory.entitypediaEntityIDToURL(15001L));
+            logger.info(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0));
+            assertEquals(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0),"Località");
 	}
+        
+        @Test
+	public void testReadEntities() {
+            EntityService es = new EntityService(api);
+            List<String> entitieURLs = new ArrayList();
+            entitieURLs.add(PALAZZETTO_URL);
+            entitieURLs.add(SemanticTextFactory.entitypediaEntityIDToURL(RAVAZZONE_ID));
+            List<IEntity> entities =  es.readEntities(entitieURLs);
+            assertEquals(entities.get(0).getName().getStrings(Locale.ITALIAN).get(0),"PALAZZETTO DELLO SPORT");
+            logger.info(entities.get(1).getEtype().getName().getStrings(Locale.ITALIAN).get(0));
+            assertEquals(entities.get(1).getName().getStrings(Locale.ITALIAN).get(0),"Ravazzone");
+        }
 
 
 	@Test
@@ -307,48 +317,48 @@ public class TestEntityService {
 
 		for (IAttributeDef atd : attrDefList) {
 			//			if (atd.getName().getString(Locale.ENGLISH).equals("Name")){
-			//				System.out.println(atd.getName());
-			//				System.out.println(atd.getGUID());
-			//				System.out.println(atd.getDataType());
+			//				logger.info(atd.getName());
+			//				logger.info(atd.getGUID());
+			//				logger.info(atd.getDataType());
 			//				if (atd.getDataType().equals("oe:structure")){
-			//					System.out.println(atd.getRangeEType().getURL());
+			//					logger.info(atd.getRangeEType().getURL());
 			//					EntityType etpe =	ets.getEntityType(atd.getRangeEType().getURL());
 			//					List<IAttributeDef>atsd = etpe.getAttributeDefs();
 			//					for (IAttributeDef a:atsd){
-			//						System.out.println(a.getGUID());
+			//						logger.info(a.getGUID());
 			//					}
 			//
 			//				}
 
 			if (atd.getName().getString(Locale.ENGLISH).equals("Name")) {
-				//  System.out.println(atd.getName());
+				//  logger.info(atd.getName());
 				AttributeODR attr = es.createAttribute(atd, "My test name");
 				Attribute a = attr.convertToAttribute();
 				attrs.add(a);
 			}
 
 			if (atd.getName().getString(Locale.ENGLISH).equals("Class")) {
-				//  System.out.println(atd.getName());
+				//  logger.info(atd.getName());
 				AttributeODR attr = es.createAttribute(atd, 123L);
 				Attribute a = attr.convertToAttribute();
 				attrs.add(a);
 			}
 
 			if (atd.getName().getString(Locale.ENGLISH).equals("Latitude")) {
-				//       System.out.println(atd.getName());
+				//       logger.info(atd.getName());
 				AttributeODR attr = es.createAttribute(atd, 12.123F);
 				Attribute a = attr.convertToAttribute();
 				attrs.add(a);
 			}
 			if (atd.getName().getString(Locale.ENGLISH).equals("Longitude")) {
-				//     System.out.println(atd.getName());
+				//     logger.info(atd.getName());
 				AttributeODR attr = es.createAttribute(atd, 56.567F);
 				Attribute a = attr.convertToAttribute();
 				attrs.add(a);
 			}
 			if (atd.getName().getString(Locale.ENGLISH).equals("Opening hours")) {
-				//     System.out.println(atd.getName());
-				//      System.out.println(atd.getURL());
+				//     logger.info(atd.getName());
+				//      logger.info(atd.getURL());
 
 				AttributeDef openHourAD = new AttributeDef(ATTR_TYPE_OPENING_HOUR);
 				AttributeDef closeHourAD = new AttributeDef(ATTR_TYPE_CLOSING_HOUR);
@@ -369,7 +379,7 @@ public class TestEntityService {
 		e.setTypeId(18L);
 		e.setAttributes(attrs);
 		long id = es.createEntity(e);
-		System.out.println("Entity id:" + id);
+		logger.info("Entity id:" + id);
 		assertTrue(id>0);
 		es.deleteEntity(id);
 	}

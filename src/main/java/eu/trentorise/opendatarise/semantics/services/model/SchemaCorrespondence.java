@@ -8,11 +8,12 @@ import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
- * @date 24 Feb 2014
+ * @author David Leoni <david.leoni@unitn.it>
+ * @date 24 July 2014
  * 
  */
 public class SchemaCorrespondence implements ISchemaCorrespondence {
-
+    
 	EntityType etype;
 	float score;
 	List<IAttributeCorrespondence> attributeCorrespondences;

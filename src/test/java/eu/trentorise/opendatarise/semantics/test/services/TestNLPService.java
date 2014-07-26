@@ -19,6 +19,8 @@ import java.util.Locale;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Testing the client implementaion of NLP services.
@@ -28,6 +30,8 @@ import org.junit.Test;
  *
  */
 public class TestNLPService {
+    
+    Logger logger = LoggerFactory.getLogger(this.getClass());
 
     List<String> prodotti_certificati = new ArrayList<String>() {
         {
@@ -174,10 +178,14 @@ public class TestNLPService {
         
         NLPService nlpService = new NLPService();
         
+        
         NLText nlText = nlpService.runNlpIt("Cabinovia");
         
         NLToken tok = nlText.getSentences().get(0).getTokens().get(0);
+        
         // 'Lemma' is the name of the concept
+        logger.info("Concept lemma = " + tok.getSelectedMeaning().getLemma());
+        
         assertTrue(tok.getSelectedMeaning().getLemma().length() > 0);
         assertTrue(tok.getSelectedMeaning().getDescription().length() > 0);                
     }
