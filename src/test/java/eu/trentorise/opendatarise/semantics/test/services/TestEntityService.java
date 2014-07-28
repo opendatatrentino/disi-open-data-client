@@ -2,11 +2,21 @@ package eu.trentorise.opendatarise.semantics.test.services;
 
 import eu.trentorise.opendata.semantics.IntegrityChecker;
 import eu.trentorise.opendata.semantics.NotFoundException;
+import eu.trentorise.opendata.semantics.model.entity.IAttribute;
+import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
+import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.IEntityService;
+import eu.trentorise.opendatarise.semantics.model.entity.AttributeDef;
+import eu.trentorise.opendatarise.semantics.model.entity.AttributeODR;
+import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
+import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
+import eu.trentorise.opendatarise.semantics.model.entity.ValueODR;
+import eu.trentorise.opendatarise.semantics.model.knowledge.ConceptODR;
 import eu.trentorise.opendatarise.semantics.services.Ekb;
 import eu.trentorise.opendatarise.semantics.services.EntityService;
 import eu.trentorise.opendatarise.semantics.services.EntityTypeService;
+import eu.trentorise.opendatarise.semantics.services.SemanticTextFactory;
 import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
@@ -18,30 +28,17 @@ import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.EntityBase;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
-
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
-
-import eu.trentorise.opendata.semantics.model.entity.IAttribute;
-import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
-import eu.trentorise.opendata.semantics.model.entity.IEntity;
-import eu.trentorise.opendatarise.semantics.model.entity.AttributeDef;
-import eu.trentorise.opendatarise.semantics.model.entity.AttributeODR;
-import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
-import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
-import eu.trentorise.opendatarise.semantics.model.entity.ValueODR;
-import eu.trentorise.opendatarise.semantics.model.knowledge.ConceptODR;
-import eu.trentorise.opendatarise.semantics.services.SemanticTextFactory;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.junit.Assert.*;
 
 
 /**
@@ -204,6 +201,25 @@ public class TestEntityService {
             assertEquals(entities.get(1).getName().getStrings(Locale.ITALIAN).get(0),"Ravazzone");
         }
 
+        @Test
+	public void testReadZeroEntities() {
+            EntityService es = new EntityService(api);
+            assertEquals(es.readEntities(new ArrayList()).size(), 0);
+        }        
+
+        @Test
+	public void testReadNonExistingEntities() {
+            EntityService es = new EntityService(api);
+            List<String> entitieURLs = new ArrayList();
+            entitieURLs.add("non-existing-url");
+            entitieURLs.add(SemanticTextFactory.entitypediaEntityIDToURL(RAVAZZONE_ID));
+            List<IEntity> entities =  es.readEntities(entitieURLs);
+            assertEquals(entities.get(0),null);
+            logger.info(entities.get(1).getEtype().getName().getStrings(Locale.ITALIAN).get(0));
+            assertEquals(entities.get(1).getName().getStrings(Locale.ITALIAN).get(0),"Ravazzone");
+        }
+        
+        
 
 	@Test
 	public void testUpdateEntity() {
@@ -383,5 +399,11 @@ public class TestEntityService {
 		assertTrue(id>0);
 		es.deleteEntity(id);
 	}
+        
+        @Test
+        public void testEmptyExportToJsonLd(){
+            EntityService es = new EntityService(api);
+            es.exportToJsonLd(new ArrayList(), new PrintWriter(System.out));
+        }
 }
 
