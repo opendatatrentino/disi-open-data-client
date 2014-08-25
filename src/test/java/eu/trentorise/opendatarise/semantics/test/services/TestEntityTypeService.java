@@ -41,6 +41,15 @@ public class TestEntityTypeService {
 		assertEquals(etype.getName1().get("it") ,"Infrastruttura");
 	}
 
+    @Test
+    public void testGetEntityTypesofStructure(){
+    	 EntityTypeService ets = new EntityTypeService();
+        // EntityType etype = (EntityType) ets.getEntityType(12L);
+         EntityType etype = (EntityType) ets.getEntityType(10L);
+         System.out.println("Etype:"+etype);
+         etype.getAttributeDefs();
+    }
+    
 	@Test
 	public void testGetAllEntityTypes(){
 		long timeStart = System.currentTimeMillis();
@@ -53,10 +62,10 @@ public class TestEntityTypeService {
 			//	System.out.println("AttributeDefs:"+etype.getAttributeDefs());
 			//	System.out.println("AttributeDef Name:"+etype.getNameAttrDef());
 			//	System.out.println("AttributeDef Description:"+etype.getDescriptionAttrDef());
-//			for (IAttributeDef ad:atdefs){
-//				//System.out.println("AttributeDef URL:"+ad.getURL());
-//				//System.out.println("AttributeDef  DataType:"+ad.getDataType());
-//			} 
+			for (IAttributeDef ad:atdefs){
+				System.out.println("AttributeDef URL:"+ad.getURL());
+				System.out.println("AttributeDef  DataType:"+ad.getEType());
+			} 
 		}
 		long timeEnd = System.currentTimeMillis();
 		long finalTime =timeEnd -timeStart;
