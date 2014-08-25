@@ -318,20 +318,17 @@ public class TestNLPService {
 
 	}
 
-	@Test(expected = AssertionError.class)
+	@Test
 	public void testSingleEntity() {
-		String text= "Trento";
+	
 		NLPService nlpService = new NLPService();
-
-		NLText nltxt = nlpService.runNlpIt(text);
-
-		nlpService.runNLP("Trento");
-		SemanticText singleOdrText = new SemanticText(nlpService.runNLP("Trento"));
+		
+		SemanticText singleText = new SemanticText(nlpService.runNLP("Trento"));
 
 
-		assertEquals( 1, singleOdrText.getSentences().get(0).getWords().size());
+		assertEquals( 1, singleText.getSentences().get(0).getWords().size());
 
-		IWord odrToken = singleOdrText.getSentences().get(0).getWords().get(0);
+		IWord odrToken = singleText.getSentences().get(0).getWords().get(0);
 
 		assertEquals(MeaningStatus.SELECTED, odrToken.getMeaningStatus());
 		IMeaning m = odrToken.getSelectedMeaning();

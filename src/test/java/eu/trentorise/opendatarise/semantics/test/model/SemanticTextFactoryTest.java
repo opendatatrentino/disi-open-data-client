@@ -119,8 +119,9 @@ public class SemanticTextFactoryTest {
         assertEquals(st.getSentences().size(), 1);
         assertEquals(st.getSentences().get(0).getWords().size(), 1 );
         IWord word = st.getSentences().get(0).getWords().get(0);
-        assertEquals(word.getSelectedMeaning().getURL(), SemanticTextFactory.entitypediaConceptIDToURL(2L));
         assertEquals(word.getMeanings().size(), 2);
+        assertEquals(word.getSelectedMeaning().getURL(), SemanticTextFactory.entitypediaConceptIDToURL(6L));
+        
     }    
     
     

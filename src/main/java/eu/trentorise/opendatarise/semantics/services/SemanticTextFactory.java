@@ -1,28 +1,5 @@
 package eu.trentorise.opendatarise.semantics.services;
 
-import it.unitn.disi.sweb.core.nlp.model.NLEntityMeaning;
-import it.unitn.disi.sweb.core.nlp.model.NLMeaning;
-import it.unitn.disi.sweb.core.nlp.model.NLMultiWord;
-import it.unitn.disi.sweb.core.nlp.model.NLSenseMeaning;
-import it.unitn.disi.sweb.core.nlp.model.NLSentence;
-import it.unitn.disi.sweb.core.nlp.model.NLText;
-import it.unitn.disi.sweb.core.nlp.model.NLTextUnit;
-import it.unitn.disi.sweb.core.nlp.model.NLToken;
-import it.unitn.disi.sweb.webapi.model.eb.sstring.ComplexConcept;
-import it.unitn.disi.sweb.webapi.model.eb.sstring.ConceptTerm;
-import it.unitn.disi.sweb.webapi.model.eb.sstring.InstanceTerm;
-import it.unitn.disi.sweb.webapi.model.eb.sstring.SemanticString;
-import it.unitn.disi.sweb.webapi.model.eb.sstring.SemanticTerm;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.TreeSet;
-
-import javax.annotation.Nullable;
-
 import eu.trentorise.opendata.semantics.model.knowledge.IDict;
 import eu.trentorise.opendata.semantics.model.knowledge.IMeaning;
 import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
@@ -35,6 +12,31 @@ import eu.trentorise.opendata.semantics.model.knowledge.impl.Meaning;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.SemanticText;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.Sentence;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.Word;
+import it.unitn.disi.sweb.core.nlp.model.NLComplexToken;
+import it.unitn.disi.sweb.core.nlp.model.NLEntityMeaning;
+import it.unitn.disi.sweb.core.nlp.model.NLMeaning;
+import it.unitn.disi.sweb.core.nlp.model.NLMultiWord;
+import it.unitn.disi.sweb.core.nlp.model.NLNamedEntity;
+import it.unitn.disi.sweb.core.nlp.model.NLSenseMeaning;
+import it.unitn.disi.sweb.core.nlp.model.NLSentence;
+import it.unitn.disi.sweb.core.nlp.model.NLText;
+import it.unitn.disi.sweb.core.nlp.model.NLTextUnit;
+import it.unitn.disi.sweb.core.nlp.model.NLToken;
+import it.unitn.disi.sweb.webapi.model.eb.sstring.ComplexConcept;
+import it.unitn.disi.sweb.webapi.model.eb.sstring.ConceptTerm;
+import it.unitn.disi.sweb.webapi.model.eb.sstring.InstanceTerm;
+import it.unitn.disi.sweb.webapi.model.eb.sstring.SemanticString;
+import it.unitn.disi.sweb.webapi.model.eb.sstring.SemanticTerm;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.TreeSet;
+import javax.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class to convert SemanticText to/from NLText and SemanticString.
@@ -45,37 +47,38 @@ import eu.trentorise.opendata.semantics.model.knowledge.impl.Word;
 public class SemanticTextFactory {
 
     public static final String CONCEPT_PREFIX = "/concepts/";
-    
+
     public static final String ENTITY_PREFIX = "/instances/";
-    
+
     public static final String ENTITY_URL_PREF = "es/";
     public static final String CONCEPT_URL_PREF = "ts/";
-    
+
+    private final static Logger logger = LoggerFactory.getLogger(SemanticTextFactory.class);
+
     public static String entitypediaConceptIDToURL(long ID) {
-    	String fullUrl = WebServiceURLs.getURL();
-		String url  = fullUrl+CONCEPT_PREFIX+ID;
-		return url;
+        String fullUrl = WebServiceURLs.getURL();
+        String url = fullUrl + CONCEPT_PREFIX + ID;
+        return url;
     }
 
     public static long entitypediaURLToConceptID(String URL) {
-    	String s = URL.substring(URL.indexOf(CONCEPT_URL_PREF) + 3);
-    		return Long.parseLong(s);
+        String s = URL.substring(URL.indexOf(CONCEPT_URL_PREF) + 3);
+        return Long.parseLong(s);
     }
 
     public static String entitypediaEntityIDToURL(long ID) {
-    	String fullUrl = WebServiceURLs.getURL();
-		String url  = fullUrl+ENTITY_PREFIX+ID;
-		return url;
+        String fullUrl = WebServiceURLs.getURL();
+        String url = fullUrl + ENTITY_PREFIX + ID;
+        return url;
     }
 
-	public static Long entitypediaURLToEntityID(String URL) {
-    	String s;
-    	try {
-    		s = URL.substring(URL.indexOf(ENTITY_URL_PREF) + 3);
+    public static Long entitypediaURLToEntityID(String URL) {
+        String s;
+        try {
+            s = URL.substring(URL.indexOf(ENTITY_URL_PREF) + 3);
         } catch (Exception e) {
-            return  (Long) null;
+            return (Long) null;
         }
-
 
         Long typeID;
         try {
@@ -85,32 +88,43 @@ public class SemanticTextFactory {
         }
 
         return typeID;
-		
+
     }
 
     /**
      * TODO - it always return the lemma in english!!!
-     *
-     * @param senseMeaning
-     * @return
      */
-    public static IDict senseMeaningToDict(NLSenseMeaning senseMeaning) {
-        return new Dict(senseMeaning.getLemma());
+    public static IDict meaningToDict(NLMeaning meaning) {
+        return new Dict(meaning.getLemma());
+    }
+
+
+    /**
+     * We support NLMultiWord and NLNamedEntity
+     */
+    private static boolean isUsedInMultiThing(NLToken token) {
+        return token.isUsedInMultiWord() || token.isUsedInNamedEntity();
+    }
+
+
+    /**
+     * We support NLMultiWord and NLNamedEntity
+     */
+    private static List<NLComplexToken> getMultiThings(NLToken token) {
+        List<NLComplexToken> ret = new ArrayList();
+        if (token.isUsedInMultiWord()) {
+            ret.addAll(token.getMultiWords());
+        }
+        if (token.isUsedInNamedEntity()) {
+            ret.addAll(token.getNamedEntities());
+        }
+
+        return ret;
     }
 
     /**
-     * TODO - it always return the lemma in english!!!
-     *
-     * @param entityMeaning
-     * @return
-     */
-    public static IDict entityMeaningToDict(NLEntityMeaning entityMeaning) {
-        return new Dict(entityMeaning.getLemma());
-    }
-
-    /**
-     * Transforms multiwords into tokens and only includes tokens for which
-     * startOffset and endOffset are defined.
+     * Transforms multiwords and named entities into tokens and only includes
+     * tokens for which startOffset and endOffset are defined.
      *
      * @param sentence
      */
@@ -132,36 +146,43 @@ public class SemanticTextFactory {
         while (i < sentence.getTokens().size()) {
             NLToken t = sentence.getTokens().get(i);
 
-            if (t.isUsedInMultiWord()) {
-                NLMultiWord mw = t.getMultiWords().get(0);
+            if (isUsedInMultiThing(t)) {
+                if (getMultiThings(t).size() > 1) {
+                    logger.warn("Found a token belonging to multiple words and/or named entities. Taking only the first one.");
+                }
+
+                NLComplexToken multiThing = getMultiThings(t).get(0); // t.getMultiWords().get(0);
 
                 int tokensSize = 1;
                 for (int j = i + 1; j < sentence.getTokens().size(); j++) {
                     NLToken q = sentence.getTokens().get(j);
-                    if (!(q.isUsedInMultiWord() && q.getMultiWords().get(0).getId() == mw.getId())) {
+                    if (!(isUsedInMultiThing(q) && getMultiThings(q).get(0).getId() == multiThing.getId())) {
                         break;
                     } else {
                         tokensSize += 1;
                     }
                 }
-                // odr d 0.3i patchy solution for multiwords
-                // we should also check for named entities
 
-                Integer mwso = (Integer) t.getProp(NLTextUnit.PFX, "sentenceStartOffset");
-                Integer mweo = (Integer) sentence.getTokens().get(i + tokensSize - 1).getProp(NLTextUnit.PFX, "sentenceEndOffset");
+                Integer mtso = (Integer) t.getProp(NLTextUnit.PFX, "sentenceStartOffset");
+                Integer mteo = (Integer) sentence.getTokens().get(i + tokensSize - 1).getProp(NLTextUnit.PFX, "sentenceEndOffset");
 
-                if (mwso == null || mweo == null) {
+                if (mtso == null || mteo == null) {
                     i += tokensSize;
                     continue;
                 } else {
-                    TreeSet<IMeaning> sortedMeanings = makeSortedMeaningsFromSenses(mw.getMeanings());
+                    Set<NLMeaning> ms = new HashSet(multiThing.getMeanings());
+                    if (multiThing.getMeanings().isEmpty() && multiThing.getSelectedMeaning() != null){
+                        ms.add(multiThing.getSelectedMeaning());
+                    }
+                    TreeSet<IMeaning> sortedMeanings = makeSortedMeanings(ms);
+                    
                     if (sortedMeanings.size() > 0) {
 
-                        // odr d 0.3i
+                        // odr todo 0.3
                         MeaningStatus meaningStatus = MeaningStatus.SELECTED;
                         IMeaning selectedMeaning = sortedMeanings.first();   // MeaningStatus meaningStatus = selectedMeaning == null ? MeaningStatus.TO_DISAMBIGUATE : MeaningStatus.SELECTED;
-                        words.add(new Word(startOffset + mwso,
-                                startOffset + mweo,
+                        words.add(new Word(startOffset + mtso,
+                                startOffset + mteo,
                                 meaningStatus, selectedMeaning, sortedMeanings));
                     }
                     i += tokensSize;
@@ -208,8 +229,9 @@ public class SemanticTextFactory {
     }
 
     /**
-     * Converts input semantic text into a semantic string. For each Word of input semantic text a
-     * ComplexConcept holding one semantic term is created.
+     * Converts input semantic text into a semantic string. For each Word of
+     * input semantic text a ComplexConcept holding one semantic term is
+     * created.
      *
      * @param st the semantic string to convert
      * @return a semantic string representation of input semantic text
@@ -348,44 +370,24 @@ public class SemanticTextFactory {
     /**
      * Returns a sorted set according to the probability of provided
      * meanings.First element has the highest probability.
-     *
-     * @param meanings
-     * @return
+
      */
-    private static List<IMeaning> makeSortedMeanings(Set<NLMeaning> meanings) {
-        ArrayList<IMeaning> ret = new ArrayList<IMeaning>();
-        for (NLMeaning m : meanings) {
-            if (m instanceof NLSenseMeaning) {
-                NLSenseMeaning nlm = ((NLSenseMeaning) m);
-                // todo always using english here for the lemma 
-                ret.add(new Meaning(entitypediaConceptIDToURL(nlm.getConceptId()), nlm.getProbability(), MeaningKind.CONCEPT, senseMeaningToDict(nlm)));
-            } else if (m instanceof NLEntityMeaning) {
-                NLEntityMeaning nlm = ((NLEntityMeaning) m);
-                // todo using lemma here for the name !!! Totally wrong!!!
-                ret.add(new Meaning(entitypediaEntityIDToURL(nlm.getObjectID()), nlm.getProbability(), MeaningKind.ENTITY, entityMeaningToDict(nlm)));
+    private static TreeSet<IMeaning> makeSortedMeanings(Set<? extends NLMeaning> meanings) {
+        TreeSet<IMeaning> ts = new TreeSet<IMeaning>(Collections.reverseOrder());
+        for (NLMeaning m : meanings) {    
+            MeaningKind kind = null;
+            if (m instanceof NLSenseMeaning){
+                kind = MeaningKind.CONCEPT;
+            } else if (m instanceof NLEntityMeaning){
+                kind = MeaningKind.ENTITY;
             } else {
-                throw new RuntimeException("Meaning class not supported: " + m.getClass());
+                throw new IllegalArgumentException("Found an unsupported meaning type: " + m.getClass().getName());
             }
-        }
-        Collections.sort(ret, Collections.reverseOrder());
-        return ret;
-    }
-
-    private static TreeSet<IMeaning> makeSortedMeaningsFromSenses(Set<NLSenseMeaning> meanings) {
-        TreeSet<IMeaning> ts = new TreeSet<IMeaning>(Collections.reverseOrder());
-        for (NLSenseMeaning m : meanings) {
-            ts.add(new Meaning(entitypediaConceptIDToURL(m.getConceptId()), m.getProbability(), MeaningKind.CONCEPT, senseMeaningToDict(m)));
+            ts.add(new Meaning(entitypediaConceptIDToURL(m.getObjectID()), m.getProbability(), kind, meaningToDict(m)));
         }
         return ts;
     }
 
-    private static TreeSet<IMeaning> makeSortedMeaningsFromEntities(Set<NLEntityMeaning> meanings) {
-        TreeSet<IMeaning> ts = new TreeSet<IMeaning>(Collections.reverseOrder());
-        for (NLEntityMeaning m : meanings) {
-            ts.add(new Meaning(entitypediaEntityIDToURL(m.getObjectID()), m.getProbability(), MeaningKind.ENTITY, entityMeaningToDict(m)));
-        }
-        return ts;
-    }
 
     /**
      * @param nlToken must have startOffset and endOffset and at least one
@@ -404,8 +406,8 @@ public class SemanticTextFactory {
         }
         int startOffset = sentenceStartOffset + so;
         int endOffset = sentenceStartOffset + eo;
-        List<IMeaning> meanings = makeSortedMeanings(nlToken.getMeanings());
-        IMeaning selectedMeaning = Meaning.disambiguate(meanings);
+        TreeSet<IMeaning> meanings = makeSortedMeanings(nlToken.getMeanings());
+        IMeaning selectedMeaning = Meaning.disambiguate(new ArrayList(meanings));
         MeaningStatus meaningStatus;
 
         if (selectedMeaning == null) {
