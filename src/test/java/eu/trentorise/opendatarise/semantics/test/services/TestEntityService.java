@@ -12,6 +12,7 @@ import eu.trentorise.opendatarise.semantics.model.entity.AttributeDef;
 import eu.trentorise.opendatarise.semantics.model.entity.AttributeODR;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
+import eu.trentorise.opendatarise.semantics.model.entity.Structure;
 import eu.trentorise.opendatarise.semantics.model.entity.ValueODR;
 import eu.trentorise.opendatarise.semantics.model.knowledge.ConceptODR;
 import eu.trentorise.opendatarise.semantics.services.Ekb;
@@ -28,6 +29,7 @@ import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.EntityBase;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
+import it.unitn.disi.sweb.webapi.model.eb.Name;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
 
 import java.io.PrintWriter;
@@ -230,6 +232,14 @@ public class TestEntityService {
 		assertEquals(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0),"Località");
 	}
 
+	@Test
+	public void testReadStructure() {
+		EntityService es = new EntityService(api);
+		Structure entity = (Structure) es.readStructure(64002L);
+		logger.info(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0));
+		assertEquals(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0),"Indirizzo");
+	}
+	
 	@Test
 	public void testReadEntities() {
 		EntityService es = new EntityService(api);

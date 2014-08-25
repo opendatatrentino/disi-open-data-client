@@ -194,6 +194,8 @@ public class EntityService implements IEntityService {
 		InstanceFilter instFilter = new InstanceFilter();
 		instFilter.setIncludeAttributes(true);
 		instFilter.setIncludeAttributesAsProperties(true);
+		instFilter.setIncludeSemantics(true);
+
 		Instance instance = instanceCl.readInstance(entityID, instFilter);
 
 		Name name = (Name) instance;
@@ -210,11 +212,14 @@ public class EntityService implements IEntityService {
 		InstanceFilter instFilter = new InstanceFilter();
 		instFilter.setIncludeAttributes(true);
 		instFilter.setIncludeAttributesAsProperties(true);
+		instFilter.setIncludeSemantics(true);
+
 		Instance instance = instanceCl.readInstance(entityID, instFilter);
 
-		it.unitn.disi.sweb.webapi.model.eb.Structure name = (it.unitn.disi.sweb.webapi.model.eb.Structure) instance;
+		it.unitn.disi.sweb.webapi.model.eb.Structure structure = (it.unitn.disi.sweb.webapi.model.eb.Structure) instance;
 		Structure structureName = new Structure();
-		structureName.setAttributes(name.getAttributes());
+		structureName.setAttributes(structure.getAttributes());
+		structureName.setTypeId(structure.getTypeId());
 		//EntityODR en = new EntityODR(this.api,entity);
 
 		return structureName;
