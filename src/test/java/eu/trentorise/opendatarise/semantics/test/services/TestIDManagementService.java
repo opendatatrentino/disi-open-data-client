@@ -272,7 +272,7 @@ public class TestIDManagementService {
 			//	System.out.println("result "+res.getAssignmentResult());
 			//	System.out.println("Global id: "+res.getGUID());
 			//	System.out.println("Local id: "+entityODR.getLocalID());
-			assertEquals(AssignmentResult.MISSING, res.getAssignmentResult());
+			assertEquals(AssignmentResult.INVALID, res.getAssignmentResult());
 		}
 	}
 

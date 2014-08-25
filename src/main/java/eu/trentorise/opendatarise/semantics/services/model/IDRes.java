@@ -98,7 +98,7 @@ public class IDRes  extends IDResult implements IIDResult {
 		case ID_KEEP:
 			return AssignmentResult.REUSE;
 		default:
-			return AssignmentResult.MISSING;
+			return AssignmentResult.INVALID;
 		}
 	}
 
