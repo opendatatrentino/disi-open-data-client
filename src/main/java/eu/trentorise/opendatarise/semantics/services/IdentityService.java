@@ -22,36 +22,35 @@ import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
 
 public class IdentityService implements IIdentityService {
 
+    public List<IIDResult> assignGUID(List<IEntity> ientities) {
+        if (ientities == null) {
+            List<IIDResult> idResults = new ArrayList<IIDResult>();
+            return idResults;
+        }
+        if (ientities.size() == 0) {
+            List<IIDResult> idResults = new ArrayList<IIDResult>();
+            return idResults;
+        } else {
+            IDManagementClient idManCl = new IDManagementClient(WebServiceURLs.getClientProtocol());
+            List<Entity> entities = new ArrayList<Entity>();
+            for (IEntity en : ientities) {
+                EntityODR ent = (EntityODR) en;
+                EntityODR entODR = convertNameAttr(ent);
+                Entity entity = entODR.convertToEntity();
+                entities.add(entity);
 
-	public List<IIDResult> assignGUID(List<IEntity> ientities) {
 
-		if (ientities.size()==0){
-			List<IIDResult> idResults = new ArrayList<IIDResult>();
-			return idResults;
-		}
-		if(ientities==null){
-			List<IIDResult> idResults = new ArrayList<IIDResult>();
-			return idResults;
-		} else {
+            }
+            List<IDResult> results = idManCl.assignIdentifier(entities, 0);
+            List<IIDResult> idResults = new ArrayList<IIDResult>();
+            for (IDResult res : results) {
+                IDRes idRes = new IDRes(res);
+                idResults.add(idRes);
+            }
+            return idResults;
+        }
+    }
 
-			IDManagementClient idManCl = new IDManagementClient(WebServiceURLs.getClientProtocol());
-			List<Entity> entities = new ArrayList<Entity>();
-			for(IEntity en: ientities){
-				EntityODR ent = (EntityODR) en;
-				EntityODR entODR = convertNameAttr(ent);
-				Entity entity = entODR.convertToEntity();
-				entities.add(entity);	
-
-			}
-			List<IDResult> results = idManCl.assignIdentifier(entities, 0);
-			List<IIDResult> idResults = new ArrayList<IIDResult>();
-			for(IDResult res: results){
-				IDRes idRes =new IDRes(res);
-				idResults.add(idRes);
-			}
-			return idResults;
-		}
-	}
 
 	private EntityODR convertNameAttr(EntityODR ent) {
 		List<Attribute> attrs = ent.getAttributes();
@@ -76,48 +75,37 @@ public class IdentityService implements IIdentityService {
 			}
 		}
 		
-//		
-//		
-//		for (Attribute atr : attrs){
-//			if (atr.getName().get("en").equalsIgnoreCase("Name")){
-//				
-//				attrs.remove(atr);
-//				IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
-//				AttributeODR attr =enServ.createNameAttribute(atDef, foundNames.get(0));
-//				Attribute a=attr.convertToAttribute();
-//				attrs.add(a);
-//				break;
-//			}
-//		}
 		
 		return ent;
 	}
 
 	public List<IIDResult> assignURL(List<IEntity> entities, int numCandidates) {
-		if (entities.size()==0){
-			List<IIDResult> idResults = new ArrayList<IIDResult>();
-			return idResults;
-		}
-		if(entities==null){
-			List<IIDResult> idResults = new ArrayList<IIDResult>();
-			return idResults;
-		} else {
-			IDManagementClient idManCl = new IDManagementClient(WebServiceURLs.getClientProtocol());
-			List<Entity> resEntities = new ArrayList<Entity>();
-			for(IEntity en: entities){
-				EntityODR ent= (EntityODR) en;
-				Entity entity = ent.convertToEntity();
-				resEntities.add(entity);	
 
-			}
-			List<IDResult> results = idManCl.assignIdentifier(resEntities, 0);
-			List<IIDResult> idResults = new ArrayList<IIDResult>();
-			for(IDResult res: results){
-				IDRes idRes =new IDRes(res);
-				idResults.add(idRes);
-			}
-			return idResults;
-		}
-	}
+        if (entities == null) {
+            List<IIDResult> idResults = new ArrayList<IIDResult>();
+            return idResults;
+        }
+        if (entities.size() == 0) {
+            List<IIDResult> idResults = new ArrayList<IIDResult>();
+            return idResults;
+        } else {
+            IDManagementClient idManCl = new IDManagementClient(WebServiceURLs.getClientProtocol());
+            List<Entity> resEntities = new ArrayList<Entity>();
+            for (IEntity en : entities) {
+                EntityODR ent = (EntityODR) en;
+                EntityODR entODR = convertNameAttr(ent);
+                Entity entity = entODR.convertToEntity();
+                resEntities.add(entity);
+
+            }
+            List<IDResult> results = idManCl.assignIdentifier(resEntities, 0);
+            List<IIDResult> idResults = new ArrayList<IIDResult>();
+            for (IDResult res : results) {
+                IDRes idRes = new IDRes(res);
+                idResults.add(idRes);
+            }
+            return idResults;
+        }
+    }
 
 }

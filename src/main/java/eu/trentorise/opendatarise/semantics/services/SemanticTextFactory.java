@@ -68,9 +68,24 @@ public class SemanticTextFactory {
 		return url;
     }
 
-    public static long entitypediaURLToEntityID(String URL) {
-    	String s = URL.substring(URL.indexOf(ENTITY_URL_PREF) + 3);
-		return Long.parseLong(s);
+	public static Long entitypediaURLToEntityID(String URL) {
+    	String s;
+    	try {
+    		s = URL.substring(URL.indexOf(ENTITY_URL_PREF) + 3);
+        } catch (Exception e) {
+            return  (Long) null;
+        }
+
+
+        Long typeID;
+        try {
+            typeID = Long.parseLong(s);
+        } catch (Exception e) {
+            return (Long) null;
+        }
+
+        return typeID;
+		
     }
 
     /**
