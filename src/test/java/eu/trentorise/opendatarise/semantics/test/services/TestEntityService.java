@@ -169,13 +169,36 @@ public class TestEntityService {
 		EntityType etype = new EntityType(cType);
 		//List<Name> names = new ArrayList<Name>();
 
-		attributes = attrClient.readAttributes(15007L, null, null);
+
 		//instantiation of variables
 
 		attributes = attrClient.readAttributes(15007L, null, null);
+		//EntityTypeService es = new EntityTypeService();
+		//	EntityType etype= es.getEntityType(e.getTypeId());
+
+		List<IAttributeDef> attrDefs=etype.getAttributeDefs();
+		Long attrDefClassAtrID = null;
+		for(IAttributeDef adef: attrDefs){
+
+			if (adef.getName().getString(Locale.ENGLISH).equalsIgnoreCase("class")){
+				attrDefClassAtrID=adef.getGUID();
+				break;
+			}
+		}
+
+		//	boolean isExistAttrClass=false;
+		ArrayList<Attribute> atrs = new ArrayList<Attribute>();
+
+		for (Attribute a : attributes){
+
+			if (a.getDefinitionId()!=attrDefClassAtrID){
+				System.out.println(a.getName().get("en"));
+				atrs.add(a);
+			}
+		} 
 		//logger.info("Etype id: "+inst.getTypeId());
 		//assigning variables
-		entity.setAttributes(attributes);
+		entity.setAttributes(atrs);
 		entity.setEtype(etype);
 		entity.setEntityBaseId(101L);
 		//  logger.info("entity: " + entity.toString());
@@ -225,7 +248,7 @@ public class TestEntityService {
 		assertEquals(es.readEntities(new ArrayList()).size(), 0);
 	}        
 
-	
+
 
 
 
