@@ -251,7 +251,19 @@ public class EntityExportService {
 		String formatedEntities = entitiesId.toString().replace("[", "").replace("]", "").replace(" ", "");
 		System.out.println(WebServiceURLs.getURL());
 		Response response = Request.Post(WebServiceURLs.getURL()+"/data/export")
-				.bodyForm(Form.form().add("entityBase", "1").add("fileName", fileName).add("id", formatedEntities).add("maxDepth", "3").build())
+				.bodyForm(Form.form().add("entityBase", "1").add("fileName", fileName).add("id", formatedEntities).add("maxDepth", "1").build())
+				.execute();
+		String content = response.returnContent().asString();
+		System.out.print("File: "+content);
+		return Long.parseLong(content);
+	}
+	
+	public Long methodPostRDF(List<Long> entitiesId, String fileName) throws ClientProtocolException, IOException{
+
+		String formatedEntities = entitiesId.toString().replace("[", "").replace("]", "").replace(" ", "");
+		System.out.println(WebServiceURLs.getURL());
+		Response response = Request.Post(WebServiceURLs.getURL()+"/data/exportRDF")
+				.bodyForm(Form.form().add("entityBase", "1").add("fileName", fileName).add("id", formatedEntities).add("maxDepth", "1").add("namespace", "http://www.w3.org/1999/02/22-rdf-syntax-ns").build())
 				.execute();
 		String content = response.returnContent().asString();
 		System.out.print("File: "+content);

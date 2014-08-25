@@ -7,6 +7,8 @@ import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
 
 
+import it.unitn.disi.sweb.webapi.model.eb.Name;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,9 +16,11 @@ import java.util.Locale;
 
 import org.junit.Test;
 
+import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
+import eu.trentorise.opendata.semantics.model.knowledge.IDict;
 import eu.trentorise.opendata.semantics.services.model.AssignmentResult;
 import eu.trentorise.opendata.semantics.services.model.IIDResult;
 import eu.trentorise.opendatarise.semantics.model.entity.AttributeDef;
@@ -25,6 +29,7 @@ import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
 import eu.trentorise.opendatarise.semantics.model.knowledge.ConceptODR;
 import it.unitn.disi.sweb.webapi.model.eb.Value;
+
 import org.junit.Test;
 
 
@@ -61,7 +66,7 @@ public class TestIDManagementService {
 		return str+"]";
 	}
 
-	//@Test 
+	@Test 
 	public void idServiceEntityNew(){
 
 		IdentityService idServ = new IdentityService();
@@ -72,7 +77,9 @@ public class TestIDManagementService {
 		for (Attribute atr : attrs){
 			if (atr.getName().get("en").equalsIgnoreCase("Foursquare ID")){
 				//	System.out.println(atr.getName());
-				Attribute a = createAttributeEntity("50f6e6f516f88f6cc81a42fc");
+				IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
+				AttributeODR attr = enServ.createAttribute(atDef, "50f6e6f516488f6cc81a42fc");
+				Attribute a=attr.convertToAttribute();
 				attrs1.add(a);
 			}
 
@@ -91,9 +98,9 @@ public class TestIDManagementService {
 		for (IIDResult res: results){
 			EntityODR entityODR =  (EntityODR) res.getResultEntity();
 
-			//System.out.println("result "+res.getAssignmentResult());
-			//	System.out.println("Global id: "+res.getGUID());
-			//System.out.println("Local id: "+entityODR.getLocalID());
+			System.out.println("result "+res.getAssignmentResult());
+			System.out.println("Global id: "+res.getGUID());
+			System.out.println("Local id: "+entityODR.getLocalID());
 			assertEquals(AssignmentResult.NEW, res.getAssignmentResult());
 		}
 
@@ -101,15 +108,15 @@ public class TestIDManagementService {
 	}
 
 
-    /**
-     * Don't want errors on empty array
-     */
-    @Test
-    public void testIdManagementEmptyArray(){
-        IdentityService idServ= new IdentityService();
-        List res = idServ.assignURL(new ArrayList(),3);
-        assertTrue(res.isEmpty());
-    }
+	/**
+	 * Don't want errors on empty array
+	 */
+	// @Test
+	public void testIdManagementEmptyArray(){
+		IdentityService idServ= new IdentityService();
+		List res = idServ.assignURL(new ArrayList(),3);
+		assertTrue(res.isEmpty());
+	}
 
 
 	@Test
@@ -117,13 +124,32 @@ public class TestIDManagementService {
 		EntityService enServ =new EntityService(WebServiceURLs.getClientProtocol());
 		IdentityService idServ= new IdentityService();
 		String name = "PALAZZETTO DELLO SPORT";
+		//		Search search = new Search(WebServiceURLs.getClientProtocol());
+		//		List<Name> names = search.nameSearch(name);
+
+		//		for (Name n: names ){
+		//			System.out.println("Names:"+n);
+		//		}
+
 
 		EntityODR entity = (EntityODR)enServ.readEntity(64000L);
 		List<Attribute> attrs=entity.getAttributes();
 		List<Attribute> attrs1=new ArrayList<Attribute>();
+		List<IAttribute> iattr=entity.getStructureAttributes();
+//
+//		for (IAttribute atr : iattr){
+//
+//			if (atr.getAttributeDefinition().getName().getString(Locale.ENGLISH).equalsIgnoreCase("Name")){
+//				System.out.println(atr.getValues().get(0).getValue());
+//				Attribute a =createAttributeNameEntity(name);
+//				attrs1.add(a);
+//			} 
+//		}
 
 		for (Attribute atr : attrs){
 			if (atr.getName().get("en").equalsIgnoreCase("Name")){
+
+				
 
 				Attribute a =createAttributeNameEntity(name);
 				attrs1.add(a);
@@ -134,12 +160,13 @@ public class TestIDManagementService {
 					AttributeODR attr = enServ.createAttribute(atDef, 11.466894f);
 					Attribute a=attr.convertToAttribute();
 					attrs1.add(a);
-				} else if (atr.getName().get("en").equalsIgnoreCase("Latitude")){
+				} 
+				else if (atr.getName().get("en").equalsIgnoreCase("Latitude")){
 					IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
 					AttributeODR attr = enServ.createAttribute(atDef, 46.289413f);
 					Attribute a=attr.convertToAttribute();
 					attrs1.add(a);
-					
+					//					
 				}
 				else if (atr.getName().get("en").equalsIgnoreCase("Class")){
 					ConceptODR concept = new ConceptODR();
@@ -147,25 +174,24 @@ public class TestIDManagementService {
 					IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
 					AttributeODR attr = enServ.createAttribute(atDef, concept);
 					Attribute a=attr.convertToAttribute();
-
 					attrs1.add(a);
 				} 
-//				else
-//		    if (atr.getName().get("en").equalsIgnoreCase("Opening hours")) {
-//                System.out.println(atr.getName());
-//                AttributeDef openHourAD = new AttributeDef(31L);
-//                AttributeDef closeHourAD = new AttributeDef(30L);
-//
-//                HashMap<AttributeDef, Object> attrMap = new HashMap<AttributeDef, Object>();
-//                attrMap.put(openHourAD, "8.00");
-//                attrMap.put(closeHourAD, "18.00");
-//                AttributeDef atDef = new AttributeDef(66L);
-//                
-//
-//                AttributeODR attr = enServ.createAttribute(atDef, attrMap);
-//                Attribute a = attr.convertToAttribute();
-//                attrs1.add(a);
-        //   }
+			//				else
+			//		    if (atr.getName().get("en").equalsIgnoreCase("Opening hours")) {
+			//                System.out.println(atr.getName());
+			//                AttributeDef openHourAD = new AttributeDef(31L);
+			//                AttributeDef closeHourAD = new AttributeDef(30L);
+			//
+			//                HashMap<AttributeDef, Object> attrMap = new HashMap<AttributeDef, Object>();
+			//                attrMap.put(openHourAD, "8.00");
+			//                attrMap.put(closeHourAD, "18.00");
+			//                AttributeDef atDef = new AttributeDef(66L);
+			//                
+			//
+			//                AttributeODR attr = enServ.createAttribute(atDef, attrMap);
+			//                Attribute a = attr.convertToAttribute();
+			//                attrs1.add(a);
+			//   }
 
 		}
 
@@ -175,7 +201,7 @@ public class TestIDManagementService {
 		en.setAttributes(attrs1);
 		//en.setGlobalId(10002538L);
 		EntityODR ent = new EntityODR(WebServiceURLs.getClientProtocol(),en);
-		
+		System.out.println("Name:" +ent.getName());
 		List<IEntity> entities = new ArrayList<IEntity>();
 		entities.add(ent);
 
@@ -193,12 +219,12 @@ public class TestIDManagementService {
 
 
 		System.out.println(id);
-		
+
 		//assertEquals(AssignmentResult.REUSE, results.get(0).getAssignmentResult());
 
 	}
 
-	//@Test 
+	@Test 
 	public void idServiceEntityMissing(){
 
 		IdentityService idServ = new IdentityService();
@@ -227,7 +253,7 @@ public class TestIDManagementService {
 				Attribute a=attr.convertToAttribute();
 				attrs1.add(atr);
 			}
-			
+
 		}
 
 		Entity en = new Entity();
@@ -331,19 +357,19 @@ public class TestIDManagementService {
 			//				 a=attr.convertToAttribute();
 			//			}
 
-//									if (atd.getName().getString(Locale.ENGLISH).equals("Opening hours")){
-//										System.out.println(atd.getName());
-//										AttributeDef openHourAtDef = new AttributeDef(31L);
-//										AttributeDef closeHourAtDef = new AttributeDef(30L);
-//										
-//										HashMap<AttributeDef, Object> attrMap = new HashMap<AttributeDef,Object>();
-//										attrMap.put(openHourAtDef, openTime);
-//										attrMap.put(closeHourAtDef, closeTime);
-//										
-//										AttributeODR attr = es.createAttribute(atd,attrMap);
-//										Attribute a=attr.convertToAttribute();
-//										attrs.add(a);
-//								}
+			//									if (atd.getName().getString(Locale.ENGLISH).equals("Opening hours")){
+			//										System.out.println(atd.getName());
+			//										AttributeDef openHourAtDef = new AttributeDef(31L);
+			//										AttributeDef closeHourAtDef = new AttributeDef(30L);
+			//										
+			//										HashMap<AttributeDef, Object> attrMap = new HashMap<AttributeDef,Object>();
+			//										attrMap.put(openHourAtDef, openTime);
+			//										attrMap.put(closeHourAtDef, closeTime);
+			//										
+			//										AttributeODR attr = es.createAttribute(atd,attrMap);
+			//										Attribute a=attr.convertToAttribute();
+			//										attrs.add(a);
+			//								}
 		}
 		//		EntityODR e = new EntityODR();
 		//		e.setEntityBaseId(1L);

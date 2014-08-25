@@ -41,19 +41,24 @@ public class TestEntityTypeService {
 
 	@Test
 	public void testGetAllEntityTypes(){
+		long timeStart = System.currentTimeMillis();
 		EntityTypeService ets = new EntityTypeService();
 		List<IEntityType> etypes= ets.getAllEntityTypes();
 		for(IEntityType etype:etypes){
+			
 			List<IAttributeDef>atdefs=etype.getAttributeDefs();
 			//System.out.println("AttributeDef ETYPE Name:"+etype.getName().getString(Locale.ENGLISH));
 			//	System.out.println("AttributeDefs:"+etype.getAttributeDefs());
 			//	System.out.println("AttributeDef Name:"+etype.getNameAttrDef());
 			//	System.out.println("AttributeDef Description:"+etype.getDescriptionAttrDef());
-			for (IAttributeDef ad:atdefs){
-				//System.out.println("AttributeDef URL:"+ad.getURL());
-				//System.out.println("AttributeDef  DataType:"+ad.getDataType());
-			} 
+//			for (IAttributeDef ad:atdefs){
+//				//System.out.println("AttributeDef URL:"+ad.getURL());
+//				//System.out.println("AttributeDef  DataType:"+ad.getDataType());
+//			} 
 		}
+		long timeEnd = System.currentTimeMillis();
+		long finalTime =timeEnd -timeStart;
+		System.out.println(finalTime);
 		assertNotNull(etypes.get(0));
 	}
 

@@ -35,7 +35,7 @@ public class EntityTypeService implements IEntityTypeService {
 
 	public List<IEntityType> getAllEntityTypes() {
 		KbClient kbClient = new KbClient(getClientProtocol());
-		//TODO decide what to do with knowledge base id which knowldege base id to take the first one? 
+		//TODO decide what to do with knowledge base id which knowldege base id to take, the first one? 
 		List<KnowledgeBase> kbList = kbClient.readKnowledgeBases(null);
 		long kbId =  kbList.get(0).getId();
 		ComplexTypeClient ctc = new ComplexTypeClient(getClientProtocol());

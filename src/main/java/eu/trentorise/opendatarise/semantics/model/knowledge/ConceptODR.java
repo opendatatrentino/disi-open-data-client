@@ -38,6 +38,7 @@ public class ConceptODR implements IConcept{
 
 		ConceptClient client = new ConceptClient(WebServiceURLs.getClientProtocol());
 		Concept conc = client.readConcept(conceptId, false);
+		
 		ConceptODR conceptODR = new ConceptODR(conc);
 		return conceptODR;
 	}

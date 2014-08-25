@@ -23,7 +23,7 @@ public class EntityExportServiceTest {
 		entities.add(4L);
 		entities.add(7L);
 		String filename="myFirstTest.txt";
-		Long fileId = ess.methodPost(entities,filename );
+		Long fileId = ess.methodPostRDF(entities,filename );
 		InputStream is = ess.methodGet(fileId, "sem"+filename);
 //		Writer wr = new Writer;
 //		ess.convertToJsonLd(is,wr);

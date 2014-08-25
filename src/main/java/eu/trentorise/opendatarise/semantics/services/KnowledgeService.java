@@ -34,6 +34,7 @@ public class KnowledgeService implements IKnowledgeService {
 		Long conceptId = Long.parseLong(s);
 		ConceptODR concept = new ConceptODR();
 		concept = concept.readConcept(conceptId);
+
 		//System.out.println(concept.getURL());
 
 		return concept;
