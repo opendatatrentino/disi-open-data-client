@@ -376,14 +376,17 @@ public class SemanticTextFactory {
         TreeSet<IMeaning> ts = new TreeSet<IMeaning>(Collections.reverseOrder());
         for (NLMeaning m : meanings) {    
             MeaningKind kind = null;
+            String url = null;
             if (m instanceof NLSenseMeaning){
                 kind = MeaningKind.CONCEPT;
+                url = entitypediaConceptIDToURL(((NLSenseMeaning) m).getConceptId());
             } else if (m instanceof NLEntityMeaning){
                 kind = MeaningKind.ENTITY;
+                url = entitypediaEntityIDToURL(((NLEntityMeaning) m).getObjectID());
             } else {
                 throw new IllegalArgumentException("Found an unsupported meaning type: " + m.getClass().getName());
             }
-            ts.add(new Meaning(entitypediaConceptIDToURL(m.getObjectID()), m.getProbability(), kind, meaningToDict(m)));
+            ts.add(new Meaning(url, m.getProbability(), kind, meaningToDict(m)));
         }
         return ts;
     }

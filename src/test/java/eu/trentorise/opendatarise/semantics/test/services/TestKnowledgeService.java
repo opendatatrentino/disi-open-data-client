@@ -3,13 +3,15 @@ package eu.trentorise.opendatarise.semantics.test.services;
 import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
 import eu.trentorise.opendatarise.semantics.DisiClientException;
 import eu.trentorise.opendatarise.semantics.services.KnowledgeService;
-
 import java.util.ArrayList;
 import java.util.List;
+import static org.junit.Assert.assertEquals;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotEquals;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -29,13 +31,25 @@ public class TestKnowledgeService {
 	public ExpectedException thrown= ExpectedException.none(); 
 	
 	
-    @Test
+    @Test    
     public void testReadConcept() {
         KnowledgeService kserv = new KnowledgeService();
         String url = "http://opendata.disi.unitn.it:8080/odr/concepts/120";
         IConcept con = kserv.readConcept(url);
         assertEquals(con.getURL(), url);
     }
+    
+    
+    @Test
+    @Ignore("todo fixme!")
+    public void testReadNonExistingConcept() {
+        KnowledgeService kserv = new KnowledgeService();
+        String url = "blabla";
+        IConcept con = kserv.readConcept(url);
+        assertEquals(con, null);
+    }
+    
+    
 
     @Test
     public void testGetRootConcept() {

@@ -158,12 +158,16 @@
 //
 package eu.trentorise.opendatarise.semantics.test.services;
 
+import eu.trentorise.opendata.semantics.model.entity.IEntity;
+import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
 import eu.trentorise.opendata.semantics.model.knowledge.IMeaning;
 import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
 import eu.trentorise.opendata.semantics.model.knowledge.IWord;
 import eu.trentorise.opendata.semantics.model.knowledge.MeaningKind;
 import eu.trentorise.opendata.semantics.model.knowledge.MeaningStatus;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.SemanticText;
+import eu.trentorise.opendatarise.semantics.services.EntityService;
+import eu.trentorise.opendatarise.semantics.services.KnowledgeService;
 import eu.trentorise.opendatarise.semantics.services.NLPService;
 import eu.trentorise.opendatarise.semantics.services.SemanticTextFactory;
 import it.unitn.disi.sweb.core.nlp.model.NLText;
@@ -171,7 +175,6 @@ import it.unitn.disi.sweb.core.nlp.model.NLToken;
 import it.unitn.disi.sweb.webapi.model.PipelineDescription;
 import it.unitn.disi.sweb.webapi.model.eb.sstring.ComplexConcept;
 import it.unitn.disi.sweb.webapi.model.eb.sstring.SemanticString;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -349,7 +352,7 @@ public class TestNLPService {
 
 		// 'Lemma' is the name of the concept
 		logger.info("Concept lemma = " + tok.getSelectedMeaning().getLemma());
-
+                                
 		assertTrue(tok.getSelectedMeaning().getLemma().length() > 0);
 		assertTrue(tok.getSelectedMeaning().getDescription().length() > 0);                
 	}
@@ -378,10 +381,16 @@ public class TestNLPService {
 		SemanticText singleOdrText = new SemanticText(nlpService.runNLP("Cabinovia"));
 		assertEquals(singleOdrText.getSentences().get(0).getWords().size(), 1);
 
-		IWord odrToken = singleOdrText.getSentences().get(0).getWords().get(0);
+		IWord word = singleOdrText.getSentences().get(0).getWords().get(0);
 
-		assertEquals(odrToken.getMeaningStatus(), MeaningStatus.SELECTED);
-		IMeaning m = odrToken.getSelectedMeaning();        
+		assertEquals(word.getMeaningStatus(), MeaningStatus.SELECTED);
+		IMeaning m = word.getSelectedMeaning();
+                KnowledgeService ks = new KnowledgeService();                
+                
+                IConcept concept = ks.getConcept(word.getSelectedMeaning().getURL());
+                assertTrue(concept != null);
+                assertEquals(word.getSelectedMeaning().getURL(), concept.getURL());
+                
 		assertEquals(m.getKind(), MeaningKind.CONCEPT);
 		assertTrue(m.getName().getString(Locale.ENGLISH).length() > 0);
 
@@ -399,4 +408,22 @@ public class TestNLPService {
 
 		assertEquals(odrToken.getMeaningStatus(), MeaningStatus.SELECTED);
 	}
+        
+	@Test
+	public void testNamedEntity() {
+		NLPService nlpService = new NLPService();
+
+		ISemanticText mwOdrText = new SemanticText(nlpService.runNLP("Trento"));
+
+		assertEquals(mwOdrText.getSentences().get(0).getWords().size(), 1);
+
+		IWord word = mwOdrText.getSentences().get(0).getWords().get(0);
+
+		assertEquals(word.getMeaningStatus(), MeaningStatus.SELECTED);
+                
+                EntityService es = new EntityService();
+                IEntity ent = es.readEntity(word.getSelectedMeaning().getURL());
+                assertTrue(ent != null);
+                assertEquals(word.getSelectedMeaning().getURL(), ent.getURL());
+	}        
 }
