@@ -107,6 +107,7 @@ public class TestEntityService {
                 
                  assertTrue(nameValue.getEtypeURL() != null);  
 
+
 		assertTrue(entity.getName().getString(Locale.ITALIAN).length() > 0);
 		// assertTrue(entity.getDescription().getString(Locale.ITALIAN).length() > 0);
 
