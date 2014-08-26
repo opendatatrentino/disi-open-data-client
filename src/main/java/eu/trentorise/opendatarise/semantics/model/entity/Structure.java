@@ -55,11 +55,14 @@ public class Structure  extends Instance implements IStructure
 		super.setAttributes(convertToAttributes(attributes));		
 	}
 
-	public IEntityType getEtype() {
-		//TODO discuss with David: structure is not an entity! it can not have ID
+	public IEntityType getEtype() {		
 		EntityTypeService ets = new EntityTypeService();
-		return ets.getEntityType(super.getTypeId());
-	//	throw new UnsupportedOperationException("todo to implement");
+                Long id = super.getTypeId();
+                if (id == null){
+                    throw new RuntimeException("Got a null id for super.getTypeId() in Structure.java!");
+                } else {
+                    return ets.getEntityType((long) id);
+                }	
 	}
 
 	public void setEtype(IEntityType type) {
