@@ -149,6 +149,7 @@ public class TestEntityService {
 	public void testEntityReadByGlobalID() {
 		EntityService es = new EntityService(api);
 		EntityODR entity = (EntityODR) es.readEntityByGUID(10000466L);
+                IntegrityChecker.checkEntity(entity);
 		logger.info(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0));
 		assertEquals(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0),"Infrastruttura");
 	}
@@ -228,6 +229,7 @@ public class TestEntityService {
 	public void testReadEntity() {
 		EntityService es = new EntityService(api);
 		EntityODR entity = (EntityODR) es.readEntity(SemanticTextFactory.entitypediaEntityIDToURL(15001L));
+                IntegrityChecker.checkEntity(entity);
 		logger.info(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0));
 		assertEquals(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0),"Località");
 	}
@@ -235,9 +237,10 @@ public class TestEntityService {
 	@Test
 	public void testReadStructure() {
 		EntityService es = new EntityService(api);
-		Structure entity = (Structure) es.readStructure(64002L);
-		logger.info(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0));
-		assertEquals(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0),"Indirizzo");
+		Structure structure = (Structure) es.readStructure(64002L);
+                IntegrityChecker.checkStructure(structure);
+		logger.info(structure.getEtype().getName().getStrings(Locale.ITALIAN).get(0));
+		assertEquals(structure.getEtype().getName().getStrings(Locale.ITALIAN).get(0),"Indirizzo");
 	}
 	
 	@Test
@@ -247,6 +250,10 @@ public class TestEntityService {
 		entitieURLs.add(PALAZZETTO_URL);
 		entitieURLs.add(SemanticTextFactory.entitypediaEntityIDToURL(RAVAZZONE_ID));
 		List<IEntity> entities =  es.readEntities(entitieURLs);
+                for (IEntity entity : entities){
+                    IntegrityChecker.checkEntity(entity);
+                }
+                
 		assertEquals(entities.get(0).getName().getStrings(Locale.ITALIAN).get(0),"PALAZZETTO DELLO SPORT");
 		logger.info(entities.get(1).getEtype().getName().getStrings(Locale.ITALIAN).get(0));
 		assertEquals(entities.get(1).getName().getStrings(Locale.ITALIAN).get(0),"Ravazzone");
