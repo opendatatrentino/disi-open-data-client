@@ -220,6 +220,7 @@ public class EntityService implements IEntityService {
 		Structure structureName = new Structure();
 		structureName.setAttributes(structure.getAttributes());
 		structureName.setTypeId(structure.getTypeId());
+		structureName.setEntityBaseId(1L);
 		//EntityODR en = new EntityODR(this.api,entity);
 
 		return structureName;

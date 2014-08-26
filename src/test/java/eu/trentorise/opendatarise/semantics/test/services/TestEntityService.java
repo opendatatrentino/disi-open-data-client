@@ -237,10 +237,10 @@ public class TestEntityService {
 	@Test
 	public void testReadStructure() {
 		EntityService es = new EntityService(api);
-		Structure structure = (Structure) es.readStructure(64002L);
+		Structure structure = (Structure) es.readStructure(64001L);
                 IntegrityChecker.checkStructure(structure);
 		logger.info(structure.getEtype().getName().getStrings(Locale.ITALIAN).get(0));
-		assertEquals(structure.getEtype().getName().getStrings(Locale.ITALIAN).get(0),"Indirizzo");
+		assertEquals(structure.getEtype().getName().getStrings(Locale.ITALIAN).get(0),"Nome");
 	}
 	
 	@Test
