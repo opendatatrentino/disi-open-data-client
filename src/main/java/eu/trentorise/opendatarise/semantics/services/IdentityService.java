@@ -59,19 +59,25 @@ public class IdentityService implements IIdentityService {
 		for (Attribute atr : attrs){
 			if (atr.getDefinitionId()==64){
 				
-				attrs.remove(atr);
+				
 				Name nm =(Name) atr.getValues().get(0).getValue();
 				String nameSt = (String) nm.getAttributes().get(0).getValues().get(0).getValue();
 				//String nameSt = nm.getNames().get("it").get(0);
-				
 				Search search = new Search(WebServiceURLs.getClientProtocol());
 				List<Name> foundNames = search.nameSearch(nameSt);
-				System.out.println("Found Names:"+foundNames.size());
+			//	System.out.println("Found Names:"+foundNames.size());
+				if(foundNames.size()>0)
+				{
 				IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
 				AttributeODR attr =enServ.createNameAttribute(atDef, foundNames.get(0));
 				Attribute a=attr.convertToAttribute();
+				
+				
+				attrs.remove(atr);
+				
 				attrs.add(a);
-				break;
+				break;}
+				else break;
 			}
 		}
 		

@@ -124,6 +124,7 @@ public class TestIDManagementService {
 		EntityService enServ =new EntityService(WebServiceURLs.getClientProtocol());
 		IdentityService idServ= new IdentityService();
 		String name = "PALAZZETTO DELLO SPORT";
+		//String name = "my entity name";
 		//		Search search = new Search(WebServiceURLs.getClientProtocol());
 		//		List<Name> names = search.nameSearch(name);
 

@@ -101,10 +101,11 @@ public class TestEntityService {
 
 		EntityODR entity = (EntityODR) disiEkb.getEntityService().readEntity(PALAZZETTO_URL);
 		logger.info("\n\n *************   entity Palazzetto (" + PALAZZETTO_URL + ") ***************** \n\n" + entity);
-               
+                EntityTypeService es = new EntityTypeService();
                 IAttributeDef nameAttrDef = entity.getEtype().getNameAttrDef();
                 IStructure nameValue = (IStructure) entity.getAttribute(nameAttrDef.getURL()).getValues().get(0).getValue();
-                 assertTrue(nameValue.getEtype() != null);  
+                
+                 assertTrue(nameValue.getEtypeURL() != null);  
 
 		assertTrue(entity.getName().getString(Locale.ITALIAN).length() > 0);
 		// assertTrue(entity.getDescription().getString(Locale.ITALIAN).length() > 0);
@@ -257,6 +258,22 @@ public class TestEntityService {
 		assertEquals(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0),"Località");
 	}
 
+//		@Test
+//		public void testPalazzettoReadNameEtype1() {
+//			IEkb disiEkb = new Ekb();
+//
+//			EntityODR entity = (EntityODR) disiEkb.getEntityService().readEntity(PALAZZETTO_URL);
+//			logger.info("\n\n *************   entity Palazzetto (" + PALAZZETTO_URL + ") ***************** \n\n" + entity);
+//	               
+//	                IAttributeDef nameAttrDef = entity.getEtype().getNameAttrDef();
+//	                IStructure nameValue = (IStructure) entity.getAttribute(nameAttrDef.getURL()).getValues().get(0).getValue();
+//	                assertTrue(nameValue.getEtype() != null);  
+//	
+//		assertTrue(entity.getName().getString(Locale.ITALIAN).length() > 0);
+//			// assertTrue(entity.getDescription().getString(Locale.ITALIAN).length() > 0);
+//	
+//		}
+	
 	@Test
 	public void testReadStructure() {
 		EntityService es = new EntityService(api);
