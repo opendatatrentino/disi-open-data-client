@@ -5,6 +5,7 @@ import eu.trentorise.opendata.semantics.NotFoundException;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
+import eu.trentorise.opendata.semantics.model.entity.IStructure;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.IEntityService;
 import eu.trentorise.opendatarise.semantics.DisiClientException;
@@ -31,16 +32,14 @@ import it.unitn.disi.sweb.webapi.model.eb.EntityBase;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
 import it.unitn.disi.sweb.webapi.model.eb.Name;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
-
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import static org.junit.Assert.*;
-
 import org.apache.http.client.ClientProtocolException;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -95,6 +94,23 @@ public class TestEntityService {
 
 	}
 
+        
+	@Test
+	public void testPalazzettoReadNameEtype() {
+		IEkb disiEkb = new Ekb();
+
+		EntityODR entity = (EntityODR) disiEkb.getEntityService().readEntity(PALAZZETTO_URL);
+		logger.info("\n\n *************   entity Palazzetto (" + PALAZZETTO_URL + ") ***************** \n\n" + entity);
+               
+                IAttributeDef nameAttrDef = entity.getEtype().getNameAttrDef();
+                IStructure nameValue = (IStructure) entity.getAttribute(nameAttrDef.getURL()).getValues().get(0).getValue();
+                 assertTrue(nameValue.getEtype() != null);  
+
+		assertTrue(entity.getName().getString(Locale.ITALIAN).length() > 0);
+		// assertTrue(entity.getDescription().getString(Locale.ITALIAN).length() > 0);
+
+	}
+        
 
 	@Test
 	public void testPalazzettoRead() {
@@ -102,7 +118,14 @@ public class TestEntityService {
 
 		EntityODR entity = (EntityODR) disiEkb.getEntityService().readEntity(PALAZZETTO_URL);
 		logger.info("\n\n *************   entity Palazzetto (" + PALAZZETTO_URL + ") ***************** \n\n" + entity);
+/*               This stuff should be caught by the integrity checker 
+                IAttributeDef nameAttrDef = entity.getEtype().getNameAttrDef();
+                IStructure nameValue = (IStructure) entity.getAttribute(nameAttrDef.getURL()).getValues().get(0).getValue();
+                 assertTrue(nameValue.getEtype() != null);
+*/                
 		IntegrityChecker.checkEntity(entity);
+  
+
 		assertTrue(entity.getName().getString(Locale.ITALIAN).length() > 0);
 		// assertTrue(entity.getDescription().getString(Locale.ITALIAN).length() > 0);
 
