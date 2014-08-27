@@ -425,7 +425,7 @@ public class TestEntityService {
 			//				logger.info(atd.getName());
 			//				logger.info(atd.getGUID());
 			//				logger.info(atd.getDataType());
-			//				if (atd.getDataType().equals("oe:structure")){
+			//				if (atd.getDataType().equals(DataTypes.STRUCTURE)){
 			//					logger.info(atd.getRangeEType().getURL());
 			//					EntityType etpe =	ets.getEntityType(atd.getRangeEType().getURL());
 			//					List<IAttributeDef>atsd = etpe.getAttributeDefs();

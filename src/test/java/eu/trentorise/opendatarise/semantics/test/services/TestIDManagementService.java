@@ -7,20 +7,15 @@ import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
 
 
-import it.unitn.disi.sweb.webapi.model.eb.Name;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import org.junit.Test;
 
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
-import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
-import eu.trentorise.opendata.semantics.model.knowledge.IDict;
 import eu.trentorise.opendata.semantics.services.model.AssignmentResult;
 import eu.trentorise.opendata.semantics.services.model.IIDResult;
 import eu.trentorise.opendatarise.semantics.model.entity.AttributeDef;
@@ -316,7 +311,7 @@ public class TestIDManagementService {
 			//				System.out.println(atd.getName());
 			//				System.out.println(atd.getGUID());
 			//				System.out.println(atd.getDataType());
-			//				if (atd.getDataType().equals("oe:structure")){
+			//				if (atd.getDataType().equals(DataTypes.STRUCTURE)){
 			//					System.out.println(atd.getRangeEType().getURL());
 			//					EntityType etpe =	ets.getEntityType(atd.getRangeEType().getURL());
 			//					List<IAttributeDef>atsd = etpe.getAttributeDefs();

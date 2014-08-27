@@ -26,6 +26,7 @@ import com.google.gson.JsonStreamParser;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
+import eu.trentorise.opendata.semantics.services.model.DataTypes;
 
 
 public class EntityExportService {
@@ -133,7 +134,7 @@ public class EntityExportService {
 
 			JsonObject jsonObjectAttr = new JsonObject();
 			jsonObjectAttr.addProperty("@id", attrDef.getURL());
-			if(attrDef.getDataType().equals("oe:structure")){
+			if(attrDef.getDataType().equals(DataTypes.STRUCTURE)){
 				jsonObjectAttr.addProperty("@type", attrDef.getRangeEtypeURL());
 			} else 
 			{

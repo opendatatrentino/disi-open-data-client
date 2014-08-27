@@ -33,6 +33,7 @@ import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IValue;
 import eu.trentorise.opendata.semantics.services.IEntityService;
+import eu.trentorise.opendata.semantics.services.model.DataTypes;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
 import eu.trentorise.opendatarise.semantics.model.entity.ValueODR;
 import eu.trentorise.opendatarise.semantics.model.knowledge.ConceptODR;
@@ -258,7 +259,7 @@ public class EntityService implements IEntityService {
 		//	System.out.println(attrDef.getDataType());
 		if (ad.getName(Locale.ENGLISH).equals("Name")) {
 			return createNameAttributeODR(attrDef, (String) value);
-		} else if (attrDef.getDataType().equals("oe:structure")) {
+		} else if (attrDef.getDataType().equals(DataTypes.STRUCTURE)) {
 			return createStructureAttribute(attrDef, (HashMap<IAttributeDef, Object>) value);
 		} else {
 			ValueODR val = new ValueODR();
