@@ -12,6 +12,7 @@ import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
 import it.unitn.disi.sweb.webapi.model.eb.Name;
 import it.unitn.disi.sweb.webapi.model.eb.Value;
+import it.unitn.disi.sweb.webapi.model.eb.sstring.SemanticString;
 import it.unitn.disi.sweb.webapi.model.filters.InstanceFilter;
 
 import java.io.IOException;
@@ -221,6 +222,7 @@ public class EntityService implements IEntityService {
 		structureName.setAttributes(structure.getAttributes());
 		structureName.setTypeId(structure.getTypeId());
 		structureName.setEntityBaseId(1L);
+		structureName.setId(structure.getId());
 		//EntityODR en = new EntityODR(this.api,entity);
 
 		return structureName;
@@ -258,7 +260,11 @@ public class EntityService implements IEntityService {
 		//	System.out.println(attrDef.getDataType());
 		if (ad.getName(Locale.ENGLISH).equals("Name")) {
 			return createNameAttributeODR(attrDef, (String) value);
-		} else if (attrDef.getDataType().equals("oe:structure")) {
+		} 
+		if (ad.getName(Locale.ENGLISH).equals("Description")) {
+			return createDescriptionAttributeODR(attrDef, (String) value);
+			
+		}else if (attrDef.getDataType().equals("oe:structure")) {
 			return createStructureAttribute(attrDef, (HashMap<IAttributeDef, Object>) value);
 		} else {
 			ValueODR val = new ValueODR();
@@ -266,6 +272,16 @@ public class EntityService implements IEntityService {
 			AttributeODR attribute = new AttributeODR(attrDef, val);
 			return attribute;
 		}
+	}
+
+	private AttributeODR createDescriptionAttributeODR(IAttributeDef attrDef,
+			String value) {
+		SemanticString descr = new SemanticString();
+		descr.setText(value);
+		ValueODR val = new ValueODR();
+		val.setValue(descr);
+		AttributeODR attribute = new AttributeODR(attrDef, val);
+		return attribute;
 	}
 
 	public AttributeODR createStructureAttribute(IAttributeDef attrDef,

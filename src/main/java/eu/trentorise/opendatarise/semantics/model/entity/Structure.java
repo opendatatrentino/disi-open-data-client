@@ -94,6 +94,7 @@ public class Structure  extends Instance implements IStructure
 
 	public String getURL() {
 		String fullUrl = WebServiceURLs.getURL();
+		//if(super.getId()!=null){
 		String url  = fullUrl+"/instances/"+super.getId();
 		return url;
 	}

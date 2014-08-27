@@ -83,11 +83,14 @@ public class EntityODR extends Structure implements IEntity {
 				List<Value> fixedVals = new ArrayList<Value>();
 
 				for (Value val : vals ){
+					if(val.getValue() instanceof SemanticText){
+						fixedVals.add(val);
+					} else {
 					SemanticText stext= convertSemanticStringToText ((SemanticString) val.getSemanticValue()) ;
 					Value fixedVal = new Value();
 					fixedVal.setValue(stext);
 					fixedVal.setId(val.getId());
-					fixedVals.add(fixedVal);
+					fixedVals.add(fixedVal);}
 				}				
 				at.setValues(fixedVals);
 			}
@@ -443,7 +446,37 @@ public class EntityODR extends Structure implements IEntity {
 		Entity entity = new Entity();
 		entity.setTypeId(this.getTypeId());
 		entity.setDuration(this.duration);
-		entity.setAttributes(super.getAttributes());
+		List<Attribute> attrs =super.getAttributes();
+		List<Attribute> attrsFixed =new ArrayList<Attribute>();
+		for (Attribute at: attrs){
+			if (at.getConceptId()==null){
+				attrsFixed.add(at);
+				continue;
+			}else
+			if (at.getConceptId()==3L){
+				List<Value> vals = at.getValues();
+				List<Value> fixedVals = new ArrayList<Value>();
+
+				for (Value val : vals ){
+					if(val.getValue() instanceof String){
+						fixedVals.add(val);
+					}else{
+					SemanticString sstring = convertSemanticTextToString ((SemanticText)val.getValue()) ;
+					Value fixedVal = new Value();
+					fixedVal.setSemanticValue(sstring); 
+					fixedVal.setValue(sstring.getText());
+					fixedVal.setId(val.getId());
+					fixedVals.add(fixedVal);}
+				}				
+				at.setValues(fixedVals);
+			}
+			
+			attrsFixed.add(at);
+		}
+	
+		
+		entity.setAttributes(attrsFixed);
+		
 		entity.setDescriptions(convertDescriptionToSWEB(this.descriptions));
 		entity.setEnd(this.end);
 		entity.setGlobalId(this.globalId);
@@ -550,6 +583,15 @@ public class EntityODR extends Structure implements IEntity {
 
 		return stext;
 	}
+	
+	private SemanticString convertSemanticTextToString(SemanticText stext){
+
+		SemanticTextFactory stf = new SemanticTextFactory();
+		SemanticString sstring = stf.semanticString(stext);
+
+		return sstring;
+	}
+	
 
 	public Map<String,List<SemanticString>> convertDescriptionToSWEB(Map<String,List<SemanticText>> descriptionSText){
 

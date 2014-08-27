@@ -149,13 +149,17 @@ public class TestIDManagementService {
 
 		for (Attribute atr : attrs){
 			if (atr.getName().get("en").equalsIgnoreCase("Name")){
-
-				
-
 				Attribute a =createAttributeNameEntity(name);
 				attrs1.add(a);
 			} 
 			else 
+//				if (atr.getName().get("en").equalsIgnoreCase("Description")){
+//					IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
+//					//Value v = atr.getValues().get(0);
+//				//	AttributeODR attr = enServ.createAttribute(atDef, "my description");
+//					//Attribute a=attr.convertToAttribute();
+//					attrs1.add(atr);
+//				} 
 				if (atr.getName().get("en").equalsIgnoreCase("Longitude")){
 					IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
 					AttributeODR attr = enServ.createAttribute(atDef, 11.466894f);
@@ -203,6 +207,8 @@ public class TestIDManagementService {
 		//en.setGlobalId(10002538L);
 		EntityODR ent = new EntityODR(WebServiceURLs.getClientProtocol(),en);
 		System.out.println("Name:" +ent.getName());
+		System.out.println("Name:" +ent.getDescription());
+
 		List<IEntity> entities = new ArrayList<IEntity>();
 		entities.add(ent);
 
