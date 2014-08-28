@@ -157,6 +157,8 @@ public class EntityODR extends Structure implements IEntity {
 		this.setEnd(entity.getEnd());
 		this.setClassConceptId(entity.getClassConceptId());
 		this.setGlobalId(entity.getGlobalId());
+		//this.setId(entity.);
+
 
 	}
 
