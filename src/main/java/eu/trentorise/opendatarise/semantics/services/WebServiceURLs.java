@@ -79,7 +79,7 @@ public class WebServiceURLs {
     /**
      * @throws IllegalArgumentException on unparseable URL
      */
-    public static long etypeURLToID(String URL) {        
+    public static long urlToEtypeID(String URL) {        
         return parseID(ETYPE_PREFIX, URL);
     }
 
@@ -106,6 +106,14 @@ public class WebServiceURLs {
 
     public static String attrDefIDToURL(long id) {
         return WebServiceURLs.getURL() + ATTR_DEF_PREFIX + id;
+    }
+    
+    /**
+     * 
+     * @throws IllegalArgumentException on unparseable URL
+     */
+    public static long urlToAttrDefToID(String URL){
+        return parseID(ATTR_DEF_PREFIX, URL);
     }
 
     public static final String PROPERTIES_FILE_NAME = "sweb-webapi-model.properties";
