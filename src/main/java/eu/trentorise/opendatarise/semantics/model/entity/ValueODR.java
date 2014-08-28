@@ -59,7 +59,7 @@ public class ValueODR extends Value implements IValue {
 
 	public Object getValue() {
 		if (this.value!=null){
-			System.out.println(value.getClass());
+			//System.out.println(value.getClass());
 			if (value.getClass().equals(Name.class))
 			{
 				Instance instance= (Instance)this.value;
