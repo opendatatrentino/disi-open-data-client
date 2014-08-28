@@ -167,9 +167,9 @@ public class EntityService implements IEntityService {
 		List<Long> entityIDs = new ArrayList();
 
 		for (String entityURL : entityURLs) {
-			Long id= SemanticTextFactory.entitypediaURLToEntityID(entityURL);
+			Long id= WebServiceURLs.urlToEntityID(entityURL);
 			if(id!=null){
-				entityIDs.add(SemanticTextFactory.entitypediaURLToEntityID(entityURL));}
+				entityIDs.add(WebServiceURLs.urlToEntityID(entityURL));}
 			else throw new DisiClientException("Id of the entity is NULL");
 		}
 

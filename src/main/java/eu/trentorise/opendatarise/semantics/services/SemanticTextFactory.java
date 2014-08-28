@@ -12,6 +12,10 @@ import eu.trentorise.opendata.semantics.model.knowledge.impl.Meaning;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.SemanticText;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.Sentence;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.Word;
+import static eu.trentorise.opendatarise.semantics.services.WebServiceURLs.conceptIDToURL;
+import static eu.trentorise.opendatarise.semantics.services.WebServiceURLs.entityIDToURL;
+import static eu.trentorise.opendatarise.semantics.services.WebServiceURLs.urlToConceptID;
+import static eu.trentorise.opendatarise.semantics.services.WebServiceURLs.urlToEntityID;
 import it.unitn.disi.sweb.core.nlp.model.NLComplexToken;
 import it.unitn.disi.sweb.core.nlp.model.NLEntityMeaning;
 import it.unitn.disi.sweb.core.nlp.model.NLMeaning;
@@ -45,51 +49,9 @@ import org.slf4j.LoggerFactory;
  * @date 11 Apr 2014
  */
 public class SemanticTextFactory {
-
-    public static final String CONCEPT_PREFIX = "/concepts/";
-
-    public static final String ENTITY_PREFIX = "/instances/";
-
-    public static final String ENTITY_URL_PREF = "es/";
-    public static final String CONCEPT_URL_PREF = "ts/";
-
+        
     private final static Logger logger = LoggerFactory.getLogger(SemanticTextFactory.class);
 
-    public static String entitypediaConceptIDToURL(long ID) {
-        String fullUrl = WebServiceURLs.getURL();
-        String url = fullUrl + CONCEPT_PREFIX + ID;
-        return url;
-    }
-
-    public static long entitypediaURLToConceptID(String URL) {
-        String s = URL.substring(URL.indexOf(CONCEPT_URL_PREF) + 3);
-        return Long.parseLong(s);
-    }
-
-    public static String entitypediaEntityIDToURL(long ID) {
-        String fullUrl = WebServiceURLs.getURL();
-        String url = fullUrl + ENTITY_PREFIX + ID;
-        return url;
-    }
-
-    public static Long entitypediaURLToEntityID(String URL) {
-        String s;
-        try {
-            s = URL.substring(URL.indexOf(ENTITY_URL_PREF) + 3);
-        } catch (Exception e) {
-            return (Long) null;
-        }
-
-        Long typeID;
-        try {
-            typeID = Long.parseLong(s);
-        } catch (Exception e) {
-            return (Long) null;
-        }
-
-        return typeID;
-
-    }
 
     /**
      * TODO - it always return the lemma in english!!!
@@ -256,7 +218,7 @@ public class SemanticTextFactory {
                     }
                     if (MeaningKind.CONCEPT.equals(m.getKind())) {
                         ConceptTerm concTerm = new ConceptTerm();
-                        concTerm.setValue(entitypediaURLToConceptID(m.getURL()));
+                        concTerm.setValue(urlToConceptID(m.getURL()));
 
                         concTerm.setWeight(probability);
                         concTerms.add(concTerm);
@@ -264,7 +226,7 @@ public class SemanticTextFactory {
                     }
                     if (MeaningKind.ENTITY.equals(m.getKind())) {
                         InstanceTerm entityTerm = new InstanceTerm();
-                        entityTerm.setValue(entitypediaURLToEntityID(m.getURL()));
+                        entityTerm.setValue(urlToEntityID(m.getURL()));
                         entityTerm.setWeight(probability);
                         entityTerms.add(entityTerm);
                         continue;
@@ -321,7 +283,7 @@ public class SemanticTextFactory {
                                         } else {
                                             weight = ct.getWeight();
                                         }
-                                        meanings.add(new Meaning(entitypediaConceptIDToURL(ct.getValue()),
+                                        meanings.add(new Meaning(conceptIDToURL(ct.getValue()),
                                                 weight, MeaningKind.CONCEPT));
                                     }
                                 }
@@ -335,7 +297,7 @@ public class SemanticTextFactory {
                                         } else {
                                             weight = it.getWeight();
                                         }
-                                        meanings.add(new Meaning(entitypediaConceptIDToURL(it.getValue()), weight, MeaningKind.ENTITY));
+                                        meanings.add(new Meaning(conceptIDToURL(it.getValue()), weight, MeaningKind.ENTITY));
                                     }
 
                                 }
@@ -379,10 +341,10 @@ public class SemanticTextFactory {
             String url = null;
             if (m instanceof NLSenseMeaning){
                 kind = MeaningKind.CONCEPT;
-                url = entitypediaConceptIDToURL(((NLSenseMeaning) m).getConceptId());
+                url = conceptIDToURL(((NLSenseMeaning) m).getConceptId());
             } else if (m instanceof NLEntityMeaning){
                 kind = MeaningKind.ENTITY;
-                url = entitypediaEntityIDToURL(((NLEntityMeaning) m).getObjectID());
+                url = entityIDToURL(((NLEntityMeaning) m).getObjectID());
             } else {
                 throw new IllegalArgumentException("Found an unsupported meaning type: " + m.getClass().getName());
             }

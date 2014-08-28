@@ -1,6 +1,5 @@
 package eu.trentorise.opendatarise.semantics.test.model;
 
-import static org.junit.Assert.*;
 import eu.trentorise.opendata.semantics.model.knowledge.IMeaning;
 import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
 import eu.trentorise.opendata.semantics.model.knowledge.ISentence;
@@ -12,6 +11,7 @@ import eu.trentorise.opendata.semantics.model.knowledge.impl.SemanticText;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.Sentence;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.Word;
 import eu.trentorise.opendatarise.semantics.services.SemanticTextFactory;
+import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
 import it.unitn.disi.sweb.core.nlp.model.NLMeaning;
 import it.unitn.disi.sweb.core.nlp.model.NLSenseMeaning;
 import it.unitn.disi.sweb.core.nlp.model.NLSentence;
@@ -24,17 +24,12 @@ import it.unitn.disi.sweb.webapi.model.eb.sstring.InstanceTerm;
 import it.unitn.disi.sweb.webapi.model.eb.sstring.SemanticString;
 import it.unitn.disi.sweb.webapi.model.eb.sstring.SemanticTerm;
 import it.unitn.disi.sweb.webapi.model.eb.sstring.StringTerm;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-//import static org.testng.Assert.assertEquals;
-//import static org.testng.Assert.assertNotEquals;
-//import org.testng.annotations.Test;
-
-
+import static org.junit.Assert.*;
 import org.junit.Test;
 
 /**
@@ -56,30 +51,33 @@ public class SemanticTextFactoryTest {
     
     @Test
     public void testConceptURLConverter(){
-    	String conceptURL= SemanticTextFactory.entitypediaConceptIDToURL(1L);
+    	String conceptURL= WebServiceURLs.conceptIDToURL(1L);
     	System.out.println(conceptURL);
     }
     
     @Test
     public void testConceptIDConverter(){
-    	Long conceptID= SemanticTextFactory.entitypediaURLToConceptID("http://opendata.disi.unitn.it:8080/odr/concepts/1");
+    	Long conceptID= WebServiceURLs.urlToConceptID("http://opendata.disi.unitn.it:8080/odr/concepts/1");
     	System.out.println(conceptID);
     }
     
     @Test
     public void testEntityURLConverter(){
-    	String entityURL= SemanticTextFactory.entitypediaEntityIDToURL(1L);
+    	String entityURL= WebServiceURLs.entityIDToURL(1L);
     	System.out.println(entityURL);
     }
     
     @Test
     public void testEntityIDConverter(){
-    	Long conceptID= SemanticTextFactory.entitypediaURLToEntityID("http://opendata.disi.unitn.it:8080/odr/instances/1");
+    	Long conceptID= WebServiceURLs.urlToEntityID("http://opendata.disi.unitn.it:8080/odr/instances/1");
     	System.out.println(conceptID);
     }
 
     @Test
     public void testNLTextToSemanticText_2(){
+        final long TEST_CONCEPT_1_ID = 1L;
+        final long TEST_CONCEPT_2_ID = 2L;
+        
         String text = "hello dear Refine";
         
         NLText nltext = new NLText(text);
@@ -92,14 +90,14 @@ public class SemanticTextFactoryTest {
         Set<NLMeaning> meanings = new HashSet<NLMeaning>();
         
         
-        NLSenseMeaning sm1 = new NLSenseMeaning("testLemma1", 5L, "NOUN", 1L, 4, 1, "test description"); 
+        NLSenseMeaning sm1 = new NLSenseMeaning("testLemma1", 5L, "NOUN", TEST_CONCEPT_1_ID, 4, 1, "test description"); 
         // score must be set manually here, although on server will be computed from senseRank and senseFrequency
         sm1.setScore(1);
         sm1.setProbability((float) (1.0 / 6.0));
         meanings.add(sm1);
         
         
-        NLSenseMeaning sm2 = new NLSenseMeaning("testLemma2", 6L, "NOUN", 2L, 4, 1, "test description");
+        NLSenseMeaning sm2 = new NLSenseMeaning("testLemma2", 6L, "NOUN", TEST_CONCEPT_2_ID, 4, 1, "test description");
         sm2.setScore(5);
         sm2.setProbability((float) (5.0 / 6.0));
         meanings.add(sm2);        
@@ -120,7 +118,7 @@ public class SemanticTextFactoryTest {
         assertEquals(st.getSentences().get(0).getWords().size(), 1 );
         IWord word = st.getSentences().get(0).getWords().get(0);
         assertEquals(word.getMeanings().size(), 2);
-        assertEquals(SemanticTextFactory.entitypediaConceptIDToURL(2L), word.getSelectedMeaning().getURL());
+        assertEquals(WebServiceURLs.conceptIDToURL(TEST_CONCEPT_2_ID) ,word.getSelectedMeaning().getURL());
         
     }    
     
@@ -312,7 +310,7 @@ public class SemanticTextFactoryTest {
         List<ISentence> sentences = new ArrayList<ISentence>();
         List<IWord> words = new ArrayList<IWord>();
         List<IMeaning> meanings = new ArrayList<IMeaning>();
-        meanings.add(new Meaning(SemanticTextFactory.CONCEPT_PREFIX + concID,0.3, MeaningKind.CONCEPT));
+        meanings.add(new Meaning(WebServiceURLs.conceptIDToURL(concID),0.3, MeaningKind.CONCEPT));
         
         words.add(new Word(6,10,MeaningStatus.SELECTED,null, meanings));
         sentences.add(new Sentence(0,text.length(), words));

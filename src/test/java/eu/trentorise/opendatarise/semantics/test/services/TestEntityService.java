@@ -21,6 +21,10 @@ import eu.trentorise.opendatarise.semantics.services.EntityService;
 import eu.trentorise.opendatarise.semantics.services.EntityTypeService;
 import eu.trentorise.opendatarise.semantics.services.SemanticTextFactory;
 import eu.trentorise.opendatarise.semantics.services.WebServiceURLs;
+import static eu.trentorise.opendatarise.semantics.services.WebServiceURLs.attrDefIDToURL;
+import static eu.trentorise.opendatarise.semantics.services.WebServiceURLs.conceptIDToURL;
+import static eu.trentorise.opendatarise.semantics.services.WebServiceURLs.entityIDToURL;
+import static eu.trentorise.opendatarise.semantics.services.WebServiceURLs.etypeIDToURL;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
 import it.unitn.disi.sweb.webapi.client.eb.EbClient;
@@ -30,7 +34,6 @@ import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.EntityBase;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
-import it.unitn.disi.sweb.webapi.model.eb.Name;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -38,7 +41,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.http.client.ClientProtocolException;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Rule;
@@ -57,27 +59,57 @@ import org.slf4j.LoggerFactory;
  */
 public class TestEntityService {
 
-	public static final long ATTR_TYPE_OPENING_HOUR = 31L;
-	public static final long ATTR_TYPE_CLOSING_HOUR = 30L;
+        public static final long OPENING_HOURS = 7L;
+        public static final String OPENING_HOURS_URL = etypeIDToURL(OPENING_HOURS);
+    
+        public static final long ATTR_DEF_FACILITY_OPENING_HOURS = 66L;
+	public static final long ATTR_DEF_HOURS_OPENING_HOUR = 31L;
+        public static final String ATTR_DEF_HOURS_OPENING_HOUR_URL = attrDefIDToURL(ATTR_DEF_HOURS_OPENING_HOUR);
+	public static final long ATTR_DEF_HOURS_CLOSING_HOUR = 30L;
+        public static final String ATTR_DEF_HOURS_CLOSING_HOUR_URL = attrDefIDToURL(ATTR_DEF_HOURS_CLOSING_HOUR);
 
-	public static final long PALAZZETTO_ID = 64000L;
-	public static final long RAVAZZONE_ID = 15001L;
-	public static final long GYMNASIUM_CONCEPT_ID = 18565L;
-	public static final String GYMNASIUM_CONCEPT_URL = WebServiceURLs.getURL() + "/concepts/" + GYMNASIUM_CONCEPT_ID;
-	public static final String PALAZZETTO_URL = WebServiceURLs.getURL() + "/instances/" + PALAZZETTO_ID;
-	public static final String RAVAZZONE_URL = WebServiceURLs.getURL() + "/instances/" + RAVAZZONE_ID;
+        /**
+         * Palazzetto doesn't have description. Its concept is gymnasium.
+        */
+	public static final long PALAZZETTO_ID = 64000L;        
+	public static final String PALAZZETTO_URL = entityIDToURL(PALAZZETTO_ID);
+        public static final String PALAZZETTO_NAME_IT = "PALAZZETTO DELLO SPORT";
+     	public static final long GYMNASIUM_CONCEPT_ID = 18565L;        
+	public static final String GYMNASIUM_CONCEPT_URL = conceptIDToURL(GYMNASIUM_CONCEPT_ID);
 
 
-	public static final long ATTR_DEF_LATTITUDE = 69L;
-	public static final long ATTR_DEF_LONGITUDE = 68L;
+        /** 
+         * Ravazzone is a cool district of Mori.
+         */
+	public static final long RAVAZZONE_ID = 15001L;        
+	public static final String RAVAZZONE_URL = entityIDToURL(RAVAZZONE_ID);
+        public static final String RAVAZZONE_NAME_IT = "Ravazzone";
+        public static final String RAVAZZONE_NAME_EN = "Ravazzone";
+        public static final long ADMINISTRATIVE_DISTRICT_CONCEPT_ID = 10001L;
+        public static final String ADMIN_DISTRICT_CONCEPT_URL = conceptIDToURL(ADMINISTRATIVE_DISTRICT_CONCEPT_ID);
+        
+        
+        /**
+         * "Campanil partenza" is a Facility. Entity concept is Detachable chairlift. Has attributes orari and descriptions both in Italian and English. 
+         *  Name is only in Italian. 
+         */
+        public static final long CAMPANIL_PARTENZA_ID = 64235L;
+        public static final String CAMPANIL_PARTENZA_URL = WebServiceURLs.getURL() + "/instances/" + CAMPANIL_PARTENZA_ID;
+        public static final long DETACHABLE_CHAIRLIFT_CONCEPT_ID = 111009L;
+        public static final String DETACHABLE_CHAIRLIFT_CONCEPT_URL = WebServiceURLs.getURL() + "/concepts/" + DETACHABLE_CHAIRLIFT_CONCEPT_ID;
+        public static final String CAMPANIL_PARTENZA_NAME_IT = "Campanil partenza";        
+
+
+	public static final long ATTR_DEF_LATITUDE_ID = 69L;
+	public static final long ATTR_DEF_LONGITUDE_ID = 68L;
 	public static final long ATTR_DEF_CLASS = 58L;
 
 	public static final long CLASS_CONCEPT_ID = 21987L;
 	public static final long FACILITY_ID = 12L;
 
-	public static final String ATTR_DEF_LATTITUDE_URL = WebServiceURLs.getURL() + "/attributedefinitions/" + ATTR_DEF_LATTITUDE;
-	public static final String ATTR_DEF_LONGITUDE_URL = WebServiceURLs.getURL() + "/attributedefinitions/" + ATTR_DEF_LONGITUDE;
-	public static final String ATTR_DEF_CLASS_URL = WebServiceURLs.getURL() + "/attributedefinitions/" + ATTR_DEF_CLASS;
+	public static final String ATTR_DEF_LATITUDE_URL = attrDefIDToURL(ATTR_DEF_LATITUDE_ID);
+	public static final String ATTR_DEF_LONGITUDE_URL = attrDefIDToURL(ATTR_DEF_LONGITUDE_ID);
+	public static final String ATTR_DEF_CLASS_URL = attrDefIDToURL(ATTR_DEF_CLASS);
 	public static final String CLASS_CONCEPT_ID_URL = WebServiceURLs.getURL() + "/concepts/" + CLASS_CONCEPT_ID;
 	public static final String FACILITY_URL = WebServiceURLs.getURL() + "/types/" + FACILITY_ID;
 
@@ -144,7 +176,7 @@ public class TestEntityService {
 		EntityService es = new EntityService(api);
 		List<String> entitieURLs = new ArrayList();
 		entitieURLs.add("non-existing-url");
-		entitieURLs.add(SemanticTextFactory.entitypediaEntityIDToURL(RAVAZZONE_ID));
+		entitieURLs.add(WebServiceURLs.entityIDToURL(RAVAZZONE_ID));
 		thrown.expect(DisiClientException.class);
 		List<IEntity> entities =  es.readEntities(entitieURLs);
 		assertEquals(entities.get(0),null);
@@ -253,12 +285,13 @@ public class TestEntityService {
 	@Test
 	public void testReadEntity() {
 		EntityService es = new EntityService(api);
-		EntityODR entity = (EntityODR) es.readEntity(SemanticTextFactory.entitypediaEntityIDToURL(15001L));
+		EntityODR entity = (EntityODR) es.readEntity(WebServiceURLs.entityIDToURL(15001L));
                 IntegrityChecker.checkEntity(entity);
 		logger.info(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0));
 		assertEquals(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0),"Località");
 	}
 
+// todo Review commented test!       
 //		@Test
 //		public void testPalazzettoReadNameEtype1() {
 //			IEkb disiEkb = new Ekb();
@@ -289,7 +322,8 @@ public class TestEntityService {
 		EntityService es = new EntityService(api);
 		List<String> entitieURLs = new ArrayList();
 		entitieURLs.add(PALAZZETTO_URL);
-		entitieURLs.add(SemanticTextFactory.entitypediaEntityIDToURL(RAVAZZONE_ID));
+                
+		entitieURLs.add(RAVAZZONE_URL);
 		List<IEntity> entities =  es.readEntities(entitieURLs);
                 for (IEntity entity : entities){
                     IntegrityChecker.checkEntity(entity);
@@ -362,8 +396,8 @@ public class TestEntityService {
 
 
 
-		AttributeDef openHourAD = new AttributeDef(ATTR_TYPE_OPENING_HOUR);
-		AttributeDef closeHourAD = new AttributeDef(ATTR_TYPE_CLOSING_HOUR);
+		AttributeDef openHourAD = new AttributeDef(ATTR_DEF_HOURS_OPENING_HOUR);
+		AttributeDef closeHourAD = new AttributeDef(ATTR_DEF_HOURS_CLOSING_HOUR);
 
 		HashMap<AttributeDef, Object> attrMap = new HashMap<AttributeDef, Object>();
 		attrMap.put(openHourAD, "8:00");
@@ -465,8 +499,8 @@ public class TestEntityService {
 				//     logger.info(atd.getName());
 				//      logger.info(atd.getURL());
 
-				AttributeDef openHourAD = new AttributeDef(ATTR_TYPE_OPENING_HOUR);
-				AttributeDef closeHourAD = new AttributeDef(ATTR_TYPE_CLOSING_HOUR);
+				AttributeDef openHourAD = new AttributeDef(ATTR_DEF_HOURS_OPENING_HOUR);
+				AttributeDef closeHourAD = new AttributeDef(ATTR_DEF_HOURS_CLOSING_HOUR);
 
 				HashMap<AttributeDef, Object> attrMap = new HashMap<AttributeDef, Object>();
 				attrMap.put(openHourAD, "8:00");

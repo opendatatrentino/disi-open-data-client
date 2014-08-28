@@ -1,18 +1,5 @@
 package eu.trentorise.opendatarise.semantics.test.services;
 
-import static org.junit.Assert.*;
-import eu.trentorise.opendatarise.semantics.services.*;
-import it.unitn.disi.sweb.webapi.client.IProtocolClient;
-import it.unitn.disi.sweb.webapi.model.eb.Attribute;
-import it.unitn.disi.sweb.webapi.model.eb.Entity;
-
-
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
-
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
@@ -23,8 +10,18 @@ import eu.trentorise.opendatarise.semantics.model.entity.AttributeODR;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityODR;
 import eu.trentorise.opendatarise.semantics.model.entity.EntityType;
 import eu.trentorise.opendatarise.semantics.model.knowledge.ConceptODR;
+import eu.trentorise.opendatarise.semantics.services.*;
+import static eu.trentorise.opendatarise.semantics.test.services.TestEntityService.FACILITY_ID;
+import static eu.trentorise.opendatarise.semantics.test.services.TestEntityService.PALAZZETTO_ID;
+import static eu.trentorise.opendatarise.semantics.test.services.TestEntityService.PALAZZETTO_NAME_IT;
+import it.unitn.disi.sweb.webapi.client.IProtocolClient;
+import it.unitn.disi.sweb.webapi.model.eb.Attribute;
+import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.Value;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import static org.junit.Assert.*;
 import org.junit.Test;
 
 
@@ -118,7 +115,7 @@ public class TestIDManagementService {
 	public void testIdManagementReuse(){
 		EntityService enServ =new EntityService(WebServiceURLs.getClientProtocol());
 		IdentityService idServ= new IdentityService();
-		String name = "PALAZZETTO DELLO SPORT";
+		String name = PALAZZETTO_NAME_IT;
 		//String name = "my entity name";
 		//		Search search = new Search(WebServiceURLs.getClientProtocol());
 		//		List<Name> names = search.nameSearch(name);
@@ -128,7 +125,7 @@ public class TestIDManagementService {
 		//		}
 
 
-		EntityODR entity = (EntityODR)enServ.readEntity(64000L);
+		EntityODR entity = (EntityODR)enServ.readEntity(PALAZZETTO_ID);
 		List<Attribute> attrs=entity.getAttributes();
 		List<Attribute> attrs1=new ArrayList<Attribute>();
 		List<IAttribute> iattr=entity.getStructureAttributes();
@@ -197,7 +194,7 @@ public class TestIDManagementService {
 
 		Entity en = new Entity();
 		en.setEntityBaseId(1L);
-		en.setTypeId(12L);
+		en.setTypeId(FACILITY_ID);
 		en.setAttributes(attrs1);
 		//en.setGlobalId(10002538L);
 		EntityODR ent = new EntityODR(WebServiceURLs.getClientProtocol(),en);
