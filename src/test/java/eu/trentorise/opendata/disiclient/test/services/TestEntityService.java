@@ -91,9 +91,9 @@ public class TestEntityService {
      * English. Name is only in Italian.
      */
     public static final long CAMPANIL_PARTENZA_ID = 64235L;
-    public static final String CAMPANIL_PARTENZA_URL = WebServiceURLs.getURL() + "/instances/" + CAMPANIL_PARTENZA_ID;
+    public static final String CAMPANIL_PARTENZA_URL = entityIDToURL(CAMPANIL_PARTENZA_ID);
     public static final long DETACHABLE_CHAIRLIFT_CONCEPT_ID = 111009L;
-    public static final String DETACHABLE_CHAIRLIFT_CONCEPT_URL = WebServiceURLs.getURL() + "/concepts/" + DETACHABLE_CHAIRLIFT_CONCEPT_ID;
+    public static final String DETACHABLE_CHAIRLIFT_CONCEPT_URL = conceptIDToURL(DETACHABLE_CHAIRLIFT_CONCEPT_ID);
     public static final String CAMPANIL_PARTENZA_NAME_IT = "Campanil partenza";
 
     public static final long ATTR_DEF_LATITUDE_ID = 69L;
@@ -106,8 +106,8 @@ public class TestEntityService {
     public static final String ATTR_DEF_LATITUDE_URL = attrDefIDToURL(ATTR_DEF_LATITUDE_ID);
     public static final String ATTR_DEF_LONGITUDE_URL = attrDefIDToURL(ATTR_DEF_LONGITUDE_ID);
     public static final String ATTR_DEF_CLASS_URL = attrDefIDToURL(ATTR_DEF_CLASS);
-    public static final String CLASS_CONCEPT_ID_URL = WebServiceURLs.getURL() + "/concepts/" + CLASS_CONCEPT_ID;
-    public static final String FACILITY_URL = WebServiceURLs.getURL() + "/types/" + FACILITY_ID;
+    public static final String CLASS_CONCEPT_ID_URL = conceptIDToURL(CLASS_CONCEPT_ID);
+    public static final String FACILITY_URL = etypeIDToURL(FACILITY_ID);
 
     private IProtocolClient api;
 
