@@ -174,20 +174,24 @@ public class EntityTypeService implements IEntityTypeService {
         ComplexTypeClient ctc = new ComplexTypeClient(getClientProtocol());
         List<IEtypeSearchResult> etypesSortedSearch = new ArrayList<IEtypeSearchResult>();
         List<ComplexType> complexTypeList = ctc.readComplexTypes(1L, null, null, null);
-        HashMap<ComplexType, Double> ctypeMap = new HashMap<ComplexType, Double>();
+        HashMap<ComplexType, Double> ctypeMap= new HashMap<ComplexType, Double>();
 
         for (ComplexType cType : complexTypeList) {
 
-            System.out.println(cType.getName().get("it"));
+           // System.out.println(cType.getName().get("it"));
             double score = scoreName(partialName, cType.getName().get("en"));
+            double scoreIT = scoreName(partialName, cType.getName().get("it"));
+            if (score>=scoreIT){
             ctypeMap.put(cType, score);
-            score = scoreName(partialName, cType.getName().get("it"));
-            ctypeMap.put(cType, score);
+            } else ctypeMap.put(cType, scoreIT);
+
         }
 
-        List<ComplexType> ctypeSorted = getKeysSortedByValue(ctypeMap);
+        List<ComplexType> ctypeSortedEN = getKeysSortedByValue(ctypeMap);
 
-        for (ComplexType cType : ctypeSorted) {
+        for (ComplexType cType : ctypeSortedEN) {
+            System.out.println(cType.getName().get("it"));
+
             IEtypeSearchResult etype = new EtypeSearchResult(cType);
             etypesSortedSearch.add(etype);
         }
