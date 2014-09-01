@@ -282,7 +282,7 @@ public class TestNLPService {
 		ISemanticText output = nlpService.runNLP(inputStr);
 		System.out.println(output.getLocale());
 		System.out.println(output.getText());
-		assertEquals("it", output.getLocale().toLanguageTag().toString());
+		assertEquals("en", output.getLocale().toLanguageTag().toString());
 		assertEquals(inputStr, output.getText());
 		assertEquals(0, output.getSentences().get(0).getStartOffset());
 		assertEquals(11, output.getSentences().get(0).getEndOffset());
