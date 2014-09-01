@@ -116,8 +116,9 @@ public class TestEntityTypeService {
 	@Test
 	public void testFuzzySearchEtype(){
 		EntityTypeService ets = new EntityTypeService();
-		List<ISearchResult> searchEtypes = ets.searchEntityTypes("Lcalit");
-		assertEquals("Location",searchEtypes.get(0).getName().getString(Locale.ENGLISH));
+		List<ISearchResult> searchEtypes = ets.searchEntityTypes("Product");
+		assertEquals("Product",searchEtypes.get(0).getName().getString(Locale.ENGLISH));
+
 
 	}
 //=======
