@@ -16,9 +16,9 @@ import java.util.Locale;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
-import eu.trentorise.opendata.semantics.services.ISearchService;
 
-public class Search implements ISearchService {
+
+public class Search {
 
 	IProtocolClient api;
 	InstanceClient client;

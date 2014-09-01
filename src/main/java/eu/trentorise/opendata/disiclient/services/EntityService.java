@@ -37,6 +37,7 @@ import eu.trentorise.opendata.semantics.services.model.DataTypes;
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
 import eu.trentorise.opendata.disiclient.model.entity.ValueODR;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
+import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 
 public class EntityService implements IEntityService {
 
@@ -697,6 +698,10 @@ public class EntityService implements IEntityService {
 		EntityODR en = new EntityODR(this.api, entity);
 		return en;
 	}
+
+    public List<ISearchResult> searchEntities(String partialName) {
+        throw new UnsupportedOperationException("todo implement me"); 
+    }
 
 
 }

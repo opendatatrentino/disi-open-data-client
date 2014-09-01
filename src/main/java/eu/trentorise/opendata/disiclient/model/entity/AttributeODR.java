@@ -226,4 +226,9 @@ public class AttributeODR  implements IAttribute {
 		return url;	
 	}
 
+    
+    public IAttributeDef getAttrDef() {
+        return getAttributeDefinition();
+    }
+
 }

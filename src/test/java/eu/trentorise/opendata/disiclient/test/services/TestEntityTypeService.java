@@ -3,12 +3,10 @@ package eu.trentorise.opendata.disiclient.test.services;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.services.IEkb;
-import eu.trentorise.opendata.semantics.services.model.IEtypeSearchResult;
+import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 import eu.trentorise.opendata.disiclient.model.entity.EntityType;
 import eu.trentorise.opendata.disiclient.services.Ekb;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
-import eu.trentorise.opendata.disiclient.services.KnowledgeService;
-import java.util.ArrayList;
 import org.junit.Test;
 
 import java.util.List;
@@ -118,7 +116,7 @@ public class TestEntityTypeService {
 	@Test
 	public void testFuzzySearchEtype(){
 		EntityTypeService ets = new EntityTypeService();
-		List<IEtypeSearchResult> searchEtypes = ets.searchEntityTypes("Lcalit");
+		List<ISearchResult> searchEtypes = ets.searchEntityTypes("Lcalit");
 		assertEquals("Location",searchEtypes.get(0).getName().getString(Locale.ENGLISH));
 
 	}

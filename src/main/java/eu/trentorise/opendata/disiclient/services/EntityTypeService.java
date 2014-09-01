@@ -1,13 +1,13 @@
 package eu.trentorise.opendata.disiclient.services;
 
+import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
+import eu.trentorise.opendata.disiclient.model.entity.EntityType;
+import eu.trentorise.opendata.disiclient.services.model.SearchResult;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.model.entity.IUniqueIndex;
 import eu.trentorise.opendata.semantics.services.IEntityTypeService;
-import eu.trentorise.opendata.semantics.services.model.IEtypeSearchResult;
-import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
-import eu.trentorise.opendata.disiclient.model.entity.EntityType;
-import eu.trentorise.opendata.disiclient.services.model.EtypeSearchResult;
+import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.kb.AttributeDefinitionClient;
 import it.unitn.disi.sweb.webapi.client.kb.ComplexTypeClient;
@@ -18,9 +18,8 @@ import it.unitn.disi.sweb.webapi.model.kb.KnowledgeBase;
 import it.unitn.disi.sweb.webapi.model.kb.types.AttributeDefinition;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.*;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
@@ -170,9 +169,9 @@ public class EntityTypeService implements IEntityTypeService {
         return getEntityType(typeID);
     }
 
-    public List<IEtypeSearchResult> searchEntityTypes(String partialName) {
+    public List<ISearchResult> searchEntityTypes(String partialName) {
         ComplexTypeClient ctc = new ComplexTypeClient(getClientProtocol());
-        List<IEtypeSearchResult> etypesSortedSearch = new ArrayList<IEtypeSearchResult>();
+        List<ISearchResult> etypesSortedSearch = new ArrayList();
         List<ComplexType> complexTypeList = ctc.readComplexTypes(1L, null, null, null);
         HashMap<ComplexType, Double> ctypeMap = new HashMap<ComplexType, Double>();
 
@@ -188,7 +187,7 @@ public class EntityTypeService implements IEntityTypeService {
         List<ComplexType> ctypeSorted = getKeysSortedByValue(ctypeMap);
 
         for (ComplexType cType : ctypeSorted) {
-            IEtypeSearchResult etype = new EtypeSearchResult(cType);
+            ISearchResult etype = new SearchResult(cType);
             etypesSortedSearch.add(etype);
         }
 
