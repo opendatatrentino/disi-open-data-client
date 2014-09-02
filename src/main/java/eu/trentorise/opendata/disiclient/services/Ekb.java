@@ -7,7 +7,6 @@ import eu.trentorise.opendata.semantics.services.IEntityTypeService;
 import eu.trentorise.opendata.semantics.services.IIdentityService;
 import eu.trentorise.opendata.semantics.services.IKnowledgeService;
 import eu.trentorise.opendata.semantics.services.INLPService;
-import eu.trentorise.opendata.semantics.services.ISearchService;
 import eu.trentorise.opendata.semantics.services.ISemanticMatchingService;
 import eu.trentorise.opendata.disiclient.services.shematching.MatchingService;
 
@@ -29,8 +28,7 @@ public class Ekb implements IEkb {
     private  ISemanticMatchingService semanticMatchingService;
     private  IIdentityService identityService;
     private  IEntityTypeService entityTypeService;
-    private  IEntityService entityService;
-    private  ISearchService searchService;
+    private  IEntityService entityService;    
     private List<Locale> defaultLocales;
 
     public Ekb() {        
@@ -39,8 +37,7 @@ public class Ekb implements IEkb {
         this.knowledgeService = new KnowledgeService();
         this.identityService = new IdentityService();
         this.semanticMatchingService = new MatchingService();      
-        this.entityService = new EntityService(WebServiceURLs.getClientProtocol());
-        this.searchService = new Search(WebServiceURLs.getClientProtocol());
+        this.entityService = new EntityService(WebServiceURLs.getClientProtocol());        
         List<Locale> locs = new ArrayList();
         locs.add(Locale.ENGLISH);
         this.defaultLocales = Collections.unmodifiableList(locs);
@@ -77,10 +74,6 @@ public class Ekb implements IEkb {
 
     public IEntityService getEntityService() {
         return entityService;
-    }
-
-    public ISearchService getSearchService() {
-        return searchService;
     }
 
     /**

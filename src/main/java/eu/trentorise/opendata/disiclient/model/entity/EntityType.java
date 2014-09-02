@@ -249,7 +249,7 @@ public class EntityType implements IEntityType{
 		for (IAttributeDef attrDef:attrDefs){
 			if(attrDef.getURL().equals(URL)) {
 				return attrDef;
-			} else return null;
+			} 
 		}
 	
 		return null;

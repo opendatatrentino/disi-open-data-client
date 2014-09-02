@@ -183,10 +183,8 @@ public class AttributeDef implements IAttributeDef {
 		return this.id;
 	}
 
-	public String getURL() {
-		String fullUrl = WebServiceURLs.getURL();
-		String url  = fullUrl+"/attributedefinitions/"+this.id;
-		return url;	
+	public String getURL() {		
+		return WebServiceURLs.attrDefIDToURL(this.id);		
 	}
 
 	public AttributeDefinition convertAttributeDefinition(){

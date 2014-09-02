@@ -7,6 +7,7 @@ import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
 import eu.trentorise.opendata.semantics.services.IKnowledgeService;
 import eu.trentorise.opendata.disiclient.DisiClientException;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
+import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
@@ -88,6 +89,10 @@ public class KnowledgeService implements IKnowledgeService {
 
     public IConcept readRootConcept() {
         return getRootConcept();
+    }
+
+    public List<ISearchResult> searchConcepts(String partialName) {
+        throw new UnsupportedOperationException("todo implement me"); //To change body of generated methods, choose Tools | Templates.
     }
 
 }
