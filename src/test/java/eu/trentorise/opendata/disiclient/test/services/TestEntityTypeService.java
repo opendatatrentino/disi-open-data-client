@@ -34,7 +34,6 @@ public class TestEntityTypeService {
 //			System.out.println(ad.getName());
 //			System.out.println(ad.getDataType());
 //			System.out.println("AttributeDef Etype URL:"+ad.getEtypeURL());
-//<<<<<<< HEAD
 	//	} 
 		//		System.out.println("URL:"+etype.getURL());
 		//		System.out.println(etype.getName1());

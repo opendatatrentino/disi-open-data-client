@@ -7,6 +7,7 @@ import eu.trentorise.opendata.disiclient.model.entity.EntityType;
 import eu.trentorise.opendata.disiclient.model.entity.Structure;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
+import it.unitn.disi.sweb.webapi.client.kb.VocabularyClient;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
@@ -14,6 +15,7 @@ import it.unitn.disi.sweb.webapi.model.eb.Name;
 import it.unitn.disi.sweb.webapi.model.eb.Value;
 import it.unitn.disi.sweb.webapi.model.eb.sstring.SemanticString;
 import it.unitn.disi.sweb.webapi.model.filters.InstanceFilter;
+import it.unitn.disi.sweb.webapi.model.kb.vocabulary.Vocabulary;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.http.client.ClientProtocolException;
 
@@ -32,6 +35,9 @@ import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IValue;
+import eu.trentorise.opendata.semantics.model.knowledge.IDict;
+import eu.trentorise.opendata.semantics.model.knowledge.impl.Dict;
+import eu.trentorise.opendata.semantics.model.knowledge.impl.SemanticText;
 import eu.trentorise.opendata.semantics.services.IEntityService;
 import eu.trentorise.opendata.semantics.services.model.DataTypes;
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
@@ -261,12 +267,12 @@ public class EntityService implements IEntityService {
 		AttributeDef ad = (AttributeDef) attrDef;
 		//	System.out.println(attrDef.getDataType());
 		if (ad.getName(Locale.ENGLISH).equals("Name")) {
-			return createNameAttributeODR(attrDef, (String) value);
+			return createNameAttributeODR(attrDef,  value);
 
 		} 
 		if (ad.getName(Locale.ENGLISH).equals("Description")) {
-			return createDescriptionAttributeODR(attrDef, (String) value);
-			
+			return createDescriptionAttributeODR(attrDef,  value);
+
 		}else if (attrDef.getDataType().equals(DataTypes.STRUCTURE)) {
 
 			return createStructureAttribute(attrDef, (HashMap<IAttributeDef, Object>) value);
@@ -279,11 +285,25 @@ public class EntityService implements IEntityService {
 	}
 
 	private AttributeODR createDescriptionAttributeODR(IAttributeDef attrDef,
-			String value) {
-		SemanticString descr = new SemanticString();
-		descr.setText(value);
+			Object value) {
+		SemanticString descr = null; 
+
+		if(value instanceof String){
+			descr= new SemanticString();
+			String s = (String) value;
+			descr.setText(s);
+		} else if(value instanceof SemanticText ) 
+		{
+			SemanticText st= (SemanticText) value;
+			descr = SemanticTextFactory.semanticString(st);
+		} else 
+		{
+			throw new DisiClientException("Wrong value for the attribute is given! Accepted values are String and SemanticText."); 
+		}
+
 		ValueODR val = new ValueODR();
 		val.setValue(descr);
+
 		AttributeODR attribute = new AttributeODR(attrDef, val);
 		return attribute;
 	}
@@ -315,6 +335,16 @@ public class EntityService implements IEntityService {
 		AttributeODR a = new AttributeODR(api, nAtr);
 
 		return a;
+	}
+
+	private HashMap<String, Long> getVocabularies(){
+		HashMap<String, Long> mapVocabs = new HashMap<String, Long> ();
+		VocabularyClient vc = new VocabularyClient(api);
+		List<Vocabulary> vocabs =vc.readVocabularies(1L, null, null);
+		for (Vocabulary v: vocabs){
+			mapVocabs.put(v.getLanguageCode(), v.getId()); 
+		}
+		return mapVocabs;
 	}
 
 	private AttributeODR createNameAttributeODR1(IAttributeDef attrDef, String name) {
@@ -370,7 +400,10 @@ public class EntityService implements IEntityService {
 
 	}
 
-	public AttributeODR createNameAttributeODR(IAttributeDef attrDef, String name) {
+	public AttributeODR createNameAttributeODR(IAttributeDef attrDef, Object name) {
+
+		String nameInput=null;
+
 
 		Attribute entityNameAttribute = new Attribute();
 		entityNameAttribute.setDefinitionId(attrDef.getGUID());
@@ -386,8 +419,25 @@ public class EntityService implements IEntityService {
 		nameAttribute.setConceptId(2L);
 
 		List<Value> nameValues = new ArrayList<Value>();
+		//Vocabularies 
 
-		nameValues.add(new Value(name, 1L));
+		if (name instanceof String)
+		{
+			nameInput = (String) name; 
+			nameValues.add(new Value(nameInput, 1L));
+		}
+		else if (name instanceof IDict){
+			Dict nameDict=(Dict) name;
+			HashMap<String,Long> vocabs = getVocabularies();
+			Set<Locale> locs =nameDict.getLocales();
+			for (Locale l:locs){
+				nameValues.add(new Value(nameDict.getString(l), vocabs.get(l.toLanguageTag())));
+			}} 
+			else 		{
+				throw new DisiClientException("Wrong Name object is given. "
+						+ "Name object should be an instance of String or IDict classes.");
+			}
+
 		nameAttribute.setValues(nameValues);
 		nameAttributes.add(nameAttribute);
 		nameStructure.setAttributes(nameAttributes);
