@@ -267,13 +267,23 @@ public class TestEntityService {
     }
 
     @Test
-    public void testReadEntity() {
+    public void testReadEntityRavazzone() {
         EntityService es = new EntityService(api);
-        EntityODR entity = (EntityODR) es.readEntity(WebServiceURLs.entityIDToURL(15001L));
+        EntityODR entity = (EntityODR) es.readEntity(RAVAZZONE_URL);
         IntegrityChecker.checkEntity(entity);
         logger.info(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0));
         assertEquals(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0), "Località");
     }
+    
+    @Test
+    public void testReadCampanilPartenza() {
+        EntityService es = new EntityService(api);
+        EntityODR entity = (EntityODR) es.readEntity(CAMPANIL_PARTENZA_URL);
+        IntegrityChecker.checkEntity(entity);
+        logger.info(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0));
+        assertEquals(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0), "Località");
+    }
+    
 
 // todo Review commented test!       
 //		@Test
@@ -356,7 +366,7 @@ public class TestEntityService {
         }
         Entity en = new Entity();
         en.setEntityBaseId(1L);
-        en.setTypeId(12L);
+        en.setTypeId(FACILITY_ID);
         en.setAttributes(attrs1);
         EntityODR ent = new EntityODR(WebServiceURLs.getClientProtocol(), en);
         Long id = es.createEntity(ent);
@@ -420,7 +430,7 @@ public class TestEntityService {
     public void testCreateAttributeEntity() {
         EntityService es = new EntityService(api);
         EntityTypeService ets = new EntityTypeService();
-        EntityType etype = ets.getEntityType(12L);
+        EntityType etype = ets.getEntityType(FACILITY_ID);
         List<IAttributeDef> attrDefList = etype.getAttributeDefs();
         List<Attribute> attrs = new ArrayList<Attribute>();
 
