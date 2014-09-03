@@ -59,11 +59,9 @@ public class ValueODR extends Value implements IValue {
 
 	public Object getValue() {
 		if (this.value!=null){
-			//System.out.println(value.getClass());
 			if (value.getClass().equals(Name.class))
 			{
 				Instance instance= (Instance)this.value;
-				//System.out.println(value.toString());
 				EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
 				Structure name = es.readName(instance.getId());
 				this.value=name;
