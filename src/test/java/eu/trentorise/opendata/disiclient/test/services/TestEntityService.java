@@ -1,13 +1,5 @@
 package eu.trentorise.opendata.disiclient.test.services;
 
-import eu.trentorise.opendata.semantics.IntegrityChecker;
-import eu.trentorise.opendata.semantics.NotFoundException;
-import eu.trentorise.opendata.semantics.model.entity.IAttribute;
-import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
-import eu.trentorise.opendata.semantics.model.entity.IEntity;
-import eu.trentorise.opendata.semantics.model.entity.IStructure;
-import eu.trentorise.opendata.semantics.services.IEkb;
-import eu.trentorise.opendata.semantics.services.IEntityService;
 import eu.trentorise.opendata.disiclient.DisiClientException;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
@@ -24,6 +16,15 @@ import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.attrDefI
 import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.conceptIDToURL;
 import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.entityIDToURL;
 import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.etypeIDToURL;
+import eu.trentorise.opendata.semantics.IntegrityChecker;
+import eu.trentorise.opendata.semantics.NotFoundException;
+import eu.trentorise.opendata.semantics.model.entity.IAttribute;
+import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
+import eu.trentorise.opendata.semantics.model.entity.IEntity;
+import eu.trentorise.opendata.semantics.model.entity.IStructure;
+import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
+import eu.trentorise.opendata.semantics.services.IEkb;
+import eu.trentorise.opendata.semantics.services.IEntityService;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
 import it.unitn.disi.sweb.webapi.client.eb.EbClient;
@@ -95,18 +96,24 @@ public class TestEntityService {
     public static final String DETACHABLE_CHAIRLIFT_CONCEPT_URL = conceptIDToURL(DETACHABLE_CHAIRLIFT_CONCEPT_ID);
     public static final String CAMPANIL_PARTENZA_NAME_IT = "Campanil partenza";
 
-    public static final long ATTR_DEF_LATITUDE_ID = 69L;
-    public static final long ATTR_DEF_LONGITUDE_ID = 68L;
-    public static final long ATTR_DEF_CLASS = 58L;
 
     public static final long CLASS_CONCEPT_ID = 21987L;
-    public static final long FACILITY_ID = 12L;
-
-    public static final String ATTR_DEF_LATITUDE_URL = attrDefIDToURL(ATTR_DEF_LATITUDE_ID);
-    public static final String ATTR_DEF_LONGITUDE_URL = attrDefIDToURL(ATTR_DEF_LONGITUDE_ID);
-    public static final String ATTR_DEF_CLASS_URL = attrDefIDToURL(ATTR_DEF_CLASS);
     public static final String CLASS_CONCEPT_ID_URL = conceptIDToURL(CLASS_CONCEPT_ID);
+    
+    public static final long FACILITY_ID = 12L;
     public static final String FACILITY_URL = etypeIDToURL(FACILITY_ID);
+
+    public static final long ATTR_DEF_LATITUDE_ID = 69L;
+    public static final String ATTR_DEF_LATITUDE_URL = attrDefIDToURL(ATTR_DEF_LATITUDE_ID);
+    public static final long ATTR_DEF_LONGITUDE_ID = 68L;
+    public static final String ATTR_DEF_LONGITUDE_URL = attrDefIDToURL(ATTR_DEF_LONGITUDE_ID);
+    public static final long ATTR_DEF_CLASS = 58L;
+    public static final String ATTR_DEF_CLASS_URL = attrDefIDToURL(ATTR_DEF_CLASS);
+    public static final long ATTR_DEF_DESCRIPTION = 62L;
+    public static final String ATTR_DEF_DESCRIPTION_URL = attrDefIDToURL(ATTR_DEF_DESCRIPTION);
+    
+
+    
 
     private IProtocolClient api;
 
@@ -281,7 +288,11 @@ public class TestEntityService {
         EntityODR entity = (EntityODR) es.readEntity(CAMPANIL_PARTENZA_URL);
         IntegrityChecker.checkEntity(entity);
         logger.info(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0));
-        assertEquals(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0), "Infrastruttura");
+        
+        assertTrue(entity.getName().getStrings(Locale.ITALIAN).get(0).length() > 0);
+        assertTrue(entity.getDescription().getStrings(Locale.ITALIAN).get(0).length() > 0);
+        assertTrue(entity.getDescription().getStrings(Locale.ENGLISH).get(0).length() > 0);
+        assertNotNull(((ISemanticText) entity.getAttribute(ATTR_DEF_DESCRIPTION_URL).getValues().get(0).getValue()).getLocale());        
     }
     
 
