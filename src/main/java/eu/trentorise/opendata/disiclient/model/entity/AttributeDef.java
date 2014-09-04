@@ -111,7 +111,7 @@ public class AttributeDef implements IAttributeDef {
 		if (this.dataType.equals("LONG")) return DataTypes.LONG;
 		if (this.dataType.equals("CONCEPT")) return DataTypes.CONCEPT;
 		if (this.dataType.equals("SSTRING")) return DataTypes.SEMANTIC_TEXT;
-		if (this.dataType.equals("NLSTRING")) return DataTypes.NLSTRING;
+		if (this.dataType.equals("NLSTRING")) return DataTypes.STRING;
 		if (this.dataType.equals("ENTITY")) return DataTypes.ENTITY;
 		else return this.dataType;
 	}

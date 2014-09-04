@@ -92,7 +92,8 @@ public class KnowledgeService implements IKnowledgeService {
     }
 
     public List<ISearchResult> searchConcepts(String partialName) {
-        throw new UnsupportedOperationException("todo implement me"); //To change body of generated methods, choose Tools | Templates.
+    	List<ISearchResult> concepts = new ArrayList<ISearchResult>();
+		return concepts;
     }
 
 }

@@ -750,7 +750,8 @@ public class EntityService implements IEntityService {
 	}
 
     public List<ISearchResult> searchEntities(String partialName) {
-        throw new UnsupportedOperationException("todo implement me"); 
+    	 List<ISearchResult> entities = new ArrayList<ISearchResult>();
+    	 return entities;
     }
 
 
