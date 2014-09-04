@@ -86,7 +86,9 @@ public class EntityODR extends Structure implements IEntity {
 					if(val.getValue() instanceof SemanticText){
 						fixedVals.add(val);
 					} else {
-					SemanticText stext= convertSemanticStringToText ((SemanticString) val.getSemanticValue()) ;
+					SemanticText semtext= convertSemanticStringToText ((SemanticString) val.getSemanticValue()) ;
+					Locale loc = Locale.forLanguageTag(val.getLanguageCode());
+					SemanticText stext = (SemanticText) semtext.withLocale(loc);
 					Value fixedVal = new Value();
 					fixedVal.setValue(stext);
 					fixedVal.setId(val.getId());
