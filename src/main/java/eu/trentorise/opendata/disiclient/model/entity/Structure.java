@@ -119,6 +119,15 @@ public class Structure  extends Instance implements IStructure
 		String url  = fullUrl+"/types/"+super.getTypeId();
 		return url;
 	}
+	
+	Structure convertToStructure(it.unitn.disi.sweb.webapi.model.eb.Structure st){
+		Structure s = new Structure();
+		s.setAttributes(st.getAttributes()); 
+		s.setEntityBaseId(st.getEntityBaseId());
+		s.setTypeId(st.getTypeId());
+		s.setId(st.getId());
+		return s;
+	}
 
 }
 

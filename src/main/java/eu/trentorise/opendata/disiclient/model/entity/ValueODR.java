@@ -6,6 +6,7 @@ import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
 import it.unitn.disi.sweb.webapi.model.eb.Name;
 import it.unitn.disi.sweb.webapi.model.eb.Value;
+import eu.trentorise.opendata.semantics.model.entity.IStructure;
 import eu.trentorise.opendata.semantics.model.entity.IValue;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 
@@ -65,11 +66,18 @@ public class ValueODR extends Value implements IValue {
 				EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
 				Structure name = es.readName(instance.getId());
 				this.value=name;
+			}if (value.getClass().equals(it.unitn.disi.sweb.webapi.model.eb.Structure.class)){
+				Structure s = new Structure();
+				s = s.convertToStructure((it.unitn.disi.sweb.webapi.model.eb.Structure)value);
+				this.value =s ;
 			}
+
+
 			return this.value;}
 		else {
 			AttributeClient attrClient = new AttributeClient(this.api);
 			this.value = attrClient.readValue(this.attrId, this.id,null).getValue();
+
 		}
 		return value;
 	}

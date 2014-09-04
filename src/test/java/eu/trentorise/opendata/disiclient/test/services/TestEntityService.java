@@ -281,7 +281,7 @@ public class TestEntityService {
         EntityODR entity = (EntityODR) es.readEntity(CAMPANIL_PARTENZA_URL);
         IntegrityChecker.checkEntity(entity);
         logger.info(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0));
-        assertEquals(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0), "Località");
+        assertEquals(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0), "Infrastruttura");
     }
     
 
