@@ -166,11 +166,8 @@ public class AttributeDef implements IAttributeDef {
 		return this.presence;
 	}
 	public String getRegularExpression() {
-		// TODO Postponed due to the absence of the functionality on the API Client
-
-        throw new UnsupportedOperationException("todo to implement");
-
-
+		// TODO Postponed due to the absence of the functionality on the API Client            
+            throw new UnsupportedOperationException("todo to implement");
 	}
 
 	public void setRegularExpression(String regularExpression) {

@@ -1,5 +1,6 @@
 package eu.trentorise.opendata.disiclient.services;
 
+import eu.trentorise.opendata.disiclient.DisiClientException;
 import eu.trentorise.opendata.semantics.model.knowledge.IDict;
 import eu.trentorise.opendata.semantics.model.knowledge.IMeaning;
 import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
@@ -19,8 +20,6 @@ import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.urlToEnt
 import it.unitn.disi.sweb.core.nlp.model.NLComplexToken;
 import it.unitn.disi.sweb.core.nlp.model.NLEntityMeaning;
 import it.unitn.disi.sweb.core.nlp.model.NLMeaning;
-import it.unitn.disi.sweb.core.nlp.model.NLMultiWord;
-import it.unitn.disi.sweb.core.nlp.model.NLNamedEntity;
 import it.unitn.disi.sweb.core.nlp.model.NLSenseMeaning;
 import it.unitn.disi.sweb.core.nlp.model.NLSentence;
 import it.unitn.disi.sweb.core.nlp.model.NLText;
@@ -64,7 +63,7 @@ public class SemanticTextFactory {
     /**
      * We support NLMultiWord and NLNamedEntity
      */
-    private static boolean isUsedInMultiThing(NLToken token) {
+    private static boolean isUsedInComplexToken(NLToken token) {
         return token.isUsedInMultiWord() || token.isUsedInNamedEntity();
     }
 
@@ -72,7 +71,7 @@ public class SemanticTextFactory {
     /**
      * We support NLMultiWord and NLNamedEntity
      */
-    private static List<NLComplexToken> getMultiThings(NLToken token) {
+    private static List<NLComplexToken> getMultiTokens(NLToken token) {
         List<NLComplexToken> ret = new ArrayList();
         if (token.isUsedInMultiWord()) {
             ret.addAll(token.getMultiWords());
@@ -80,7 +79,6 @@ public class SemanticTextFactory {
         if (token.isUsedInNamedEntity()) {
             ret.addAll(token.getNamedEntities());
         }
-
         return ret;
     }
 
@@ -108,17 +106,20 @@ public class SemanticTextFactory {
         while (i < sentence.getTokens().size()) {
             NLToken t = sentence.getTokens().get(i);
 
-            if (isUsedInMultiThing(t)) {
-                if (getMultiThings(t).size() > 1) {
+            if (isUsedInComplexToken(t)) {
+                if (getMultiTokens(t).size() > 1) {
                     logger.warn("Found a token belonging to multiple words and/or named entities. Taking only the first one.");
                 }
-
-                NLComplexToken multiThing = getMultiThings(t).get(0); // t.getMultiWords().get(0);
+                if (getMultiTokens(t).isEmpty()) {
+                    throw new DisiClientException("I should get back at least one complex token!");
+                }
+                
+                NLComplexToken multiThing = getMultiTokens(t).get(0); // t.getMultiWords().get(0);
 
                 int tokensSize = 1;
                 for (int j = i + 1; j < sentence.getTokens().size(); j++) {
                     NLToken q = sentence.getTokens().get(j);
-                    if (!(isUsedInMultiThing(q) && getMultiThings(q).get(0).getId() == multiThing.getId())) {
+                    if (!(isUsedInComplexToken(q) && getMultiTokens(q).get(0).getId() == multiThing.getId())) {
                         break;
                     } else {
                         tokensSize += 1;

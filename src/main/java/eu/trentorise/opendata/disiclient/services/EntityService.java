@@ -252,6 +252,7 @@ public class EntityService implements IEntityService {
 
 	}
 
+        // TODO BUGGED This should cal in some way createAttribute for single values
 	public AttributeODR createAttribute(IAttributeDef attrDef, List<Object> values) {
 
 		List<ValueODR> vals = new ArrayList<ValueODR>();
@@ -266,7 +267,7 @@ public class EntityService implements IEntityService {
 
 	public AttributeODR createAttribute(IAttributeDef attrDef, Object value) {
 		AttributeDef ad = (AttributeDef) attrDef;
-		//	System.out.println(attrDef.getDataType());
+		
 		if (ad.getName(Locale.ENGLISH).equals("Name")) {
 			return createNameAttributeODR(attrDef,  value);
 
@@ -274,7 +275,7 @@ public class EntityService implements IEntityService {
 		if (ad.getName(Locale.ENGLISH).equals("Description")) {
 			return createDescriptionAttributeODR(attrDef,  value);
 
-		}else if (attrDef.getDataType().equals(DataTypes.STRUCTURE)) {
+		} else if (attrDef.getDataType().equals(DataTypes.STRUCTURE)) {
 
 			return createStructureAttribute(attrDef, (HashMap<IAttributeDef, Object>) value);
 		} else {
@@ -287,16 +288,21 @@ public class EntityService implements IEntityService {
 
 	private AttributeODR createDescriptionAttributeODR(IAttributeDef attrDef,
 			Object value) {
-		SemanticString descr = null; 
+		SemanticText descr = null; 
 
 		if(value instanceof String){
-			descr= new SemanticString();
+			/* david there should be only SemanticText 
+                        descr= new SemanticString();
 			String s = (String) value;
-			descr.setText(s);
+			descr.setText(s); */
+                        descr = new SemanticText((String) value); 
 		} else if(value instanceof SemanticText ) 
 		{
-			SemanticText st= (SemanticText) value;
-			descr = SemanticTextFactory.semanticString(st);
+			/* david  there should be only SemanticText 
+                            SemanticText st= (SemanticText) value;
+                            descr = SemanticTextFactory.semanticString(st);
+                        */
+                        descr = (SemanticText) value;
 		} else 
 		{
 			throw new DisiClientException("Wrong value for the attribute is given! Accepted values are String and SemanticText."); 
@@ -436,7 +442,7 @@ public class EntityService implements IEntityService {
 			}} 
 		else 		{
 			throw new DisiClientException("Wrong Name object is given. "
-					+ "Name object should be an instance of String or IDict classes.");
+					+ "Name object should be an instance of String or IDict classes. Found instead instance of class " + name.getClass().getSimpleName());
 		}
 
 		nameAttribute.setValues(nameValues);
@@ -577,5 +583,7 @@ public class EntityService implements IEntityService {
 		return entities;
 	}
 
-
+    public boolean isTemporaryURL(String entityURL) {
+        return entityURL.contains("instances/new/");
+    }
 }

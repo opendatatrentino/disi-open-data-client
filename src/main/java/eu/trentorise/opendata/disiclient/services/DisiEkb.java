@@ -20,7 +20,7 @@ import java.util.Locale;
  * @author David Leoni
  * 
  */
-public class Ekb implements IEkb {
+public class DisiEkb implements IEkb {
  
     
     private  INLPService NLPService;
@@ -31,7 +31,7 @@ public class Ekb implements IEkb {
     private  IEntityService entityService;    
     private List<Locale> defaultLocales;
 
-    public Ekb() {        
+    public DisiEkb() {        
         this.NLPService = new NLPService();
         this.entityTypeService = new EntityTypeService();
         this.knowledgeService = new KnowledgeService();

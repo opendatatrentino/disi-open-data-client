@@ -8,7 +8,7 @@ import eu.trentorise.opendata.disiclient.model.entity.EntityType;
 import eu.trentorise.opendata.disiclient.model.entity.Structure;
 import eu.trentorise.opendata.disiclient.model.entity.ValueODR;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
-import eu.trentorise.opendata.disiclient.services.Ekb;
+import eu.trentorise.opendata.disiclient.services.DisiEkb;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
@@ -99,6 +99,11 @@ public class TestEntityService {
 
     public static final long CLASS_CONCEPT_ID = 21987L;
     public static final String CLASS_CONCEPT_ID_URL = conceptIDToURL(CLASS_CONCEPT_ID);
+
+    
+    public static final long ROOT_ENTITY_ID = 21L;
+    public static final String ROOT_ENTITY_URL = etypeIDToURL(ROOT_ENTITY_ID);
+    
     
     public static final long FACILITY_ID = 12L;
     public static final String FACILITY_URL = etypeIDToURL(FACILITY_ID);
@@ -111,6 +116,8 @@ public class TestEntityService {
     public static final String ATTR_DEF_CLASS_URL = attrDefIDToURL(ATTR_DEF_CLASS);
     public static final long ATTR_DEF_DESCRIPTION = 62L;
     public static final String ATTR_DEF_DESCRIPTION_URL = attrDefIDToURL(ATTR_DEF_DESCRIPTION);
+    public static final long ATTR_DEF_PART_OF = 60L;
+    public static final String ATTR_DEF_PART_OF_URL = attrDefIDToURL(ATTR_DEF_PART_OF);
     
 
     
@@ -127,7 +134,7 @@ public class TestEntityService {
 
     @Test
     public void testPalazzettoReadNameEtype() {
-        IEkb disiEkb = new Ekb();
+        IEkb disiEkb = new DisiEkb();
 
         EntityODR entity = (EntityODR) disiEkb.getEntityService().readEntity(PALAZZETTO_URL);
         logger.info("\n\n *************   entity Palazzetto (" + PALAZZETTO_URL + ") ***************** \n\n" + entity);
@@ -144,7 +151,7 @@ public class TestEntityService {
 
     @Test
     public void testPalazzettoRead() {
-        IEkb disiEkb = new Ekb();
+        IEkb disiEkb = new DisiEkb();
 
         EntityODR entity = (EntityODR) disiEkb.getEntityService().readEntity(PALAZZETTO_URL);
         logger.info("\n\n *************   entity Palazzetto (" + PALAZZETTO_URL + ") ***************** \n\n" + entity);
@@ -162,7 +169,7 @@ public class TestEntityService {
 
     @Test
     public void testReadNonExistingEntity() {
-        IEkb disiEkb = new Ekb();
+        IEkb disiEkb = new DisiEkb();
         assertEquals(disiEkb.getEntityService().readEntity("http://blabla.com"), null);
     }
 
@@ -182,7 +189,7 @@ public class TestEntityService {
     @Test
     public void testUpdateNonExistingEntity() {
         EntityODR entity = new EntityODR();
-        IEkb ekb = new Ekb();
+        IEkb ekb = new DisiEkb();
         IEntityService es = ekb.getEntityService();
         entity.setEntityAttributes(new ArrayList());
         entity.setEtype(ekb.getEntityTypeService().getEntityType(FACILITY_URL));
@@ -216,7 +223,7 @@ public class TestEntityService {
 
         Instance inst = instanceClient.readInstance(15007L, null);
 
-        EntityODR entity = new EntityODR();
+        EntityODR entityToCreate = new EntityODR();
         List<Attribute> attributes = new ArrayList<Attribute>();
         ComplexType cType = ctypecl.readComplexType(inst.getTypeId(), null);
         EntityType etype = new EntityType(cType);
@@ -238,20 +245,20 @@ public class TestEntityService {
         }
 
         //	boolean isExistAttrClass=false;
-        ArrayList<Attribute> atrs = new ArrayList<Attribute>();
+        ArrayList<Attribute> attrsEntityToCreate = new ArrayList<Attribute>();
 
         for (Attribute a : attributes) {
 
             if (a.getDefinitionId() != attrDefClassAtrID) {
                 System.out.println(a.getName().get("en"));
-                atrs.add(a);
+                attrsEntityToCreate.add(a);
             }
         }
 		//logger.info("Etype id: "+inst.getTypeId());
         //assigning variables
-        entity.setAttributes(atrs);
-        entity.setEtype(etype);
-        entity.setEntityBaseId(101L);
+        entityToCreate.setAttributes(attrsEntityToCreate);
+        entityToCreate.setEtype(etype);
+        entityToCreate.setEntityBaseId(101L);
 		//  logger.info("entity: " + entity.toString());
         //es.createEntity(entity);
 
@@ -259,7 +266,7 @@ public class TestEntityService {
         EntityBase eb = ebc.readEntityBase(101L, null);
         int instanceNum = eb.getInstancesNumber();
 
-        String entityURL = es.createEntityURL(entity);
+        String entityURL = es.createEntityURL(entityToCreate);
 		//        es.ge
         //        inst = instanceClient.readInstance(id, null);
         EntityBase ebafter = ebc.readEntityBase(101L, null);
@@ -271,6 +278,12 @@ public class TestEntityService {
         int instanceNumAfterDel = ebafterDel.getInstancesNumber();
         assertEquals(instanceNumAfterDel, instanceNumAfterDel);
 
+    }
+    
+    @Test
+    public void testCreateEntityWithPartOf(){
+        EntityService es = new EntityService(api);
+        
     }
 
     @Test
@@ -299,7 +312,7 @@ public class TestEntityService {
 // todo Review commented test!       
 //		@Test
 //		public void testPalazzettoReadNameEtype1() {
-//			IEkb disiEkb = new Ekb();
+//			IEkb disiEkb = new DisiEkb();
 //
 //			EntityODR entity = (EntityODR) disiEkb.getEntityService().readEntity(PALAZZETTO_URL);
 //			logger.info("\n\n *************   entity Palazzetto (" + PALAZZETTO_URL + ") ***************** \n\n" + entity);

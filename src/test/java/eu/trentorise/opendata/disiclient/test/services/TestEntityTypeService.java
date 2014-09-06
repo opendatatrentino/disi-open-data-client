@@ -5,7 +5,7 @@ import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 import eu.trentorise.opendata.disiclient.model.entity.EntityType;
-import eu.trentorise.opendata.disiclient.services.Ekb;
+import eu.trentorise.opendata.disiclient.services.DisiEkb;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import org.junit.Test;
 
@@ -105,7 +105,7 @@ public class TestEntityTypeService {
 	
 	  @Test
 	public void testReadNonExistingEntityType(){
-		IEkb disiEkb = new Ekb();
+		IEkb disiEkb = new DisiEkb();
 
 		assertEquals(disiEkb.getEntityTypeService().getEntityType("http://blabla.com"), null);
 
@@ -175,7 +175,7 @@ public class TestEntityTypeService {
 //
 //    @Test
 //    public void testReadNonExistingEntityType() {
-//        IEkb disiEkb = new Ekb();
+//        IEkb disiEkb = new DisiEkb();
 //
 //        assertEquals(disiEkb.getEntityTypeService().getEntityType("http://blabla.com"), null);
 //

@@ -1,24 +1,25 @@
 package eu.trentorise.opendata.disiclient.services;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
+import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
+import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
+import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
 import eu.trentorise.opendata.disiclient.services.model.IDRes;
+import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
+import eu.trentorise.opendata.semantics.model.entity.IEntity;
+import eu.trentorise.opendata.semantics.model.knowledge.IDict;
+import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
+import eu.trentorise.opendata.semantics.services.IIdentityService;
+import eu.trentorise.opendata.semantics.services.model.IIDResult;
 import it.unitn.disi.sweb.webapi.client.eb.IDManagementClient;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.Name;
 import it.unitn.disi.sweb.webapi.model.odt.IDResult;
-import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
-import eu.trentorise.opendata.semantics.model.entity.IEntity;
-import eu.trentorise.opendata.semantics.model.knowledge.IDict;
-import eu.trentorise.opendata.semantics.services.IIdentityService;
-import eu.trentorise.opendata.semantics.services.model.IIDResult;
-import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
-import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
-import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
 
 public class IdentityService implements IIdentityService {
 
@@ -59,9 +60,21 @@ public class IdentityService implements IIdentityService {
 		for (Attribute atr : attrs){
 			if (atr.getDefinitionId()==64){
 				
+                                Object val = atr.getValues().get(0).getValue();
+                                String nameSt = null;
+                                
+                                // david: quick hack... so it accepts String in values  todo review 
+				if (val instanceof Name) {                                     
+                                    Name nm =(Name) val;
+                                    nameSt = (String) nm.getAttributes().get(0).getValues().get(0).getValue();
+                                } else if (val instanceof String){
+                                    nameSt = (String) val;
+                                } else if (val instanceof ISemanticText){
+                                    nameSt = ((ISemanticText) val).getText();
+                                } else {
+                                    throw new IllegalArgumentException("Found unhandled class! Value class is " + val.getClass().getSimpleName());
+                                }
 				
-				Name nm =(Name) atr.getValues().get(0).getValue();
-				String nameSt = (String) nm.getAttributes().get(0).getValues().get(0).getValue();
 				//String nameSt = nm.getNames().get("it").get(0);
 				Search search = new Search(WebServiceURLs.getClientProtocol());
 				List<Name> foundNames = search.nameSearch(nameSt);
@@ -77,7 +90,9 @@ public class IdentityService implements IIdentityService {
 				
 				attrs.add(a);
 				break;}
-				else break;
+				else {
+                                    break;
+                                }
 			}
 		}
 		

@@ -321,7 +321,7 @@
 			<groupId>com.github.jsonld-java</groupId>
 			<artifactId>jsonld-java</artifactId>
 			<version>0.5-SNAPSHOT</version>
-		</dependency>
+		</dependency>                
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>

@@ -1,22 +1,28 @@
 package eu.trentorise.opendata.disiclient.test.services;
 
-import eu.trentorise.opendata.disiclient.services.IdentityService;
-import eu.trentorise.opendata.disiclient.services.EntityService;
-import eu.trentorise.opendata.disiclient.services.EntityTypeService;
-import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
-import eu.trentorise.opendata.semantics.model.entity.IAttribute;
-import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
-import eu.trentorise.opendata.semantics.model.entity.IEntity;
-import eu.trentorise.opendata.semantics.services.model.AssignmentResult;
-import eu.trentorise.opendata.semantics.services.model.IIDResult;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
+import static eu.trentorise.opendata.disiclient.model.entity.EntityODR.disify;
 import eu.trentorise.opendata.disiclient.model.entity.EntityType;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
+import eu.trentorise.opendata.disiclient.services.EntityService;
+import eu.trentorise.opendata.disiclient.services.EntityTypeService;
+import eu.trentorise.opendata.disiclient.services.IdentityService;
+import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
+import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.attrDefIDToURL;
+import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.urlToEntityID;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.FACILITY_ID;
+import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.FACILITY_URL;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.PALAZZETTO_ID;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.PALAZZETTO_NAME_IT;
+import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.PALAZZETTO_URL;
+import eu.trentorise.opendata.semantics.model.entity.IAttribute;
+import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
+import eu.trentorise.opendata.semantics.model.entity.IEntity;
+import eu.trentorise.opendata.semantics.model.entity.IEntityType;
+import eu.trentorise.opendata.semantics.services.model.AssignmentResult;
+import eu.trentorise.opendata.semantics.services.model.IIDResult;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
@@ -25,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import static org.junit.Assert.*;
+import org.junit.Ignore;
 import org.junit.Test;
 
 
@@ -66,7 +73,7 @@ public class TestIDManagementService {
 
 		IdentityService idServ = new IdentityService();
 		EntityService enServ = new EntityService(getClientProtocol());
-		EntityODR entity = (EntityODR)enServ.readEntity(64000L);
+		EntityODR entity = (EntityODR)enServ.readEntity(PALAZZETTO_ID);
 		List<Attribute> attrs = entity.getAttributes();
 		List<Attribute> attrs1 = new ArrayList<Attribute>();
 		for (Attribute atr : attrs){
@@ -104,9 +111,10 @@ public class TestIDManagementService {
 
 
 	/**
+         * 
 	 * Don't want errors on empty array
 	 */
-	// @Test
+	@Test   
 	public void testIdManagementEmptyArray(){
 		IdentityService idServ= new IdentityService();
 		List res = idServ.assignURL(new ArrayList(),3);
@@ -225,6 +233,34 @@ public class TestIDManagementService {
 		//assertEquals(AssignmentResult.REUSE, results.get(0).getAssignmentResult());
 
 	}
+        
+        @Test
+        public void testRelationalAttribute(){
+            EntityService enServ =new EntityService(WebServiceURLs.getClientProtocol());
+            EntityTypeService etypeServ =new  EntityTypeService();
+            IdentityService idServ= new IdentityService();
+            
+            
+            
+            final EntityODR enodr = new EntityODR();
+                        
+            IEntityType facility = etypeServ.readEntityType(FACILITY_URL);
+            enodr.setEtype(facility); 
+            enodr.setEntityBaseId(1L); // todo fixed ID !            
+           
+            IEntity palazzetto = enServ.readEntity(PALAZZETTO_URL);
+            
+            List<IAttribute> attrs = new ArrayList();
+            attrs.add(enServ.createAttribute(facility.getAttrDef(facility.getNameAttrDef().getURL()),
+                                    "test entity")); // so doesn't complain about missing name...
+            
+            attrs.add(enServ.createAttribute(facility.getAttrDef(TestEntityService.ATTR_DEF_PART_OF_URL), palazzetto  ));            
+            
+            enodr.setStructureAttributes(attrs);
+            
+            // todo this call fails because tries to serialize the whole palazzetto as EntityODR
+            idServ.assignURL(new ArrayList(){{add(enodr);}}, 3);
+        }
 
 	@Test 
 	public void idServiceEntityMissing(){
