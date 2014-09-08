@@ -8,6 +8,7 @@ import eu.trentorise.opendata.disiclient.services.NLPService;
 import eu.trentorise.opendata.disiclient.services.SemanticTextFactory;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.urlToEntityID;
+import eu.trentorise.opendata.semantics.OpenEntityUtils;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
@@ -98,7 +99,7 @@ public class EntityODR extends Structure implements IEntity {
 						fixedVals.add(val);
 					} else {
 					SemanticText semtext= convertSemanticStringToText ((SemanticString) val.getSemanticValue()) ;
-					Locale loc = Locale.forLanguageTag(val.getLanguageCode());
+					Locale loc = OpenEntityUtils.languageTagToLocale(val.getLanguageCode()); // dav so java 6 doesn't bother us Locale.forLanguageTag(val.getLanguageCode());
 					SemanticText stext = (SemanticText) semtext.withLocale(loc);
 					Value fixedVal = new Value();
 					fixedVal.setValue(stext);

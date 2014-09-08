@@ -43,6 +43,7 @@ import eu.trentorise.opendata.semantics.services.model.DataTypes;
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
 import eu.trentorise.opendata.disiclient.model.entity.ValueODR;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
+import eu.trentorise.opendata.semantics.OpenEntityUtils;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 
 public class EntityService implements IEntityService {
@@ -438,7 +439,7 @@ public class EntityService implements IEntityService {
 			HashMap<String,Long> vocabs = getVocabularies();
 			Set<Locale> locs =nameDict.getLocales();
 			for (Locale l:locs){
-				nameValues.add(new Value(nameDict.getString(l), vocabs.get(l.toLanguageTag())));
+				nameValues.add(new Value(nameDict.getString(l), vocabs.get( OpenEntityUtils.localeToLanguageTag(l))));//dav so Java 6 doesn't bother us l.toLanguageTag())));
 			}} 
 		else 		{
 			throw new DisiClientException("Wrong Name object is given. "
