@@ -1,16 +1,5 @@
 package eu.trentorise.opendata.disiclient.services;
 
-import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
-import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
-import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
-import eu.trentorise.opendata.disiclient.services.model.IDRes;
-import eu.trentorise.opendata.disiclient.test.services.TestEntityService;
-import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
-import eu.trentorise.opendata.semantics.model.entity.IEntity;
-import eu.trentorise.opendata.semantics.model.knowledge.IDict;
-import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
-import eu.trentorise.opendata.semantics.services.IIdentityService;
-import eu.trentorise.opendata.semantics.services.model.IIDResult;
 import it.unitn.disi.sweb.webapi.client.eb.IDManagementClient;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
@@ -20,8 +9,16 @@ import it.unitn.disi.sweb.webapi.model.odt.IDResult;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+
+import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
+import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
+import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
+import eu.trentorise.opendata.disiclient.services.model.IDRes;
+import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
+import eu.trentorise.opendata.semantics.model.entity.IEntity;
+import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
+import eu.trentorise.opendata.semantics.services.IIdentityService;
+import eu.trentorise.opendata.semantics.services.model.IIDResult;
 
 
 public class IdentityService implements IIdentityService {
@@ -137,7 +134,7 @@ public class IdentityService implements IIdentityService {
 	private Entity checkPartOF(Entity entity) {
 		List<Attribute> atrs = entity.getAttributes();
 		for(Attribute a: atrs){
-			if(a.getDefinitionId()==60){
+			if(a.getValues().get(0).getValue() instanceof EntityODR){
 				
 				AttributeODR at = createRelationalAttr (a.getDefinitionId() ,a.getValues());
 				atrs.remove(a);

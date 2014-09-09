@@ -255,10 +255,6 @@ public class TestIDManagementService {
                                     "test entity")); // so doesn't complain about missing name...
            EntityODR  palazzetto1 = (EntityODR) palazzetto;
           
-//           EntityODR p = new EntityODR();
-//           p.setEntityBaseId(1L);
-//           p.setId(64000L);
-//           p.setTypeId(12L);
            attrs.add(enServ.createAttribute(facility.getAttrDef(TestEntityService.ATTR_DEF_PART_OF_URL),palazzetto1  ));            
             
             enodr.setStructureAttributes(attrs);
