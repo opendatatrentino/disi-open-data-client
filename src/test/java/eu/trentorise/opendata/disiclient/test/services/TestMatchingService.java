@@ -5,8 +5,10 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
+
 import org.junit.Test;
 
 import eu.trentorise.opendata.columnrecognizers.ColumnConceptCandidate;
@@ -95,8 +97,8 @@ public class TestMatchingService {
 			//List<IAttributeDef> attrs = eType.getAttributeDefs();
 			long conid = 2923L;
 			SchemaCorrespondence scCorr = (SchemaCorrespondence) mService.schemaMatch(eType,odrHeaders, conid);
-			
-			//System.out.println(scCorr.getScore());
+//			System.out.print(eType.getName().getString(Locale.ENGLISH)+ "  ");
+//			System.out.print(scCorr.getScore());
 			assertNotNull(scCorr.getScore());
 		//	assertNotNull(scCorr.getAttributeCorrespondence());
 			assertNotNull(scCorr.getEtype());}

@@ -253,11 +253,16 @@ public class TestIDManagementService {
             List<IAttribute> attrs = new ArrayList();
             attrs.add(enServ.createAttribute(facility.getAttrDef(facility.getNameAttrDef().getURL()),
                                     "test entity")); // so doesn't complain about missing name...
-            
-            attrs.add(enServ.createAttribute(facility.getAttrDef(TestEntityService.ATTR_DEF_PART_OF_URL), palazzetto  ));            
+           EntityODR  palazzetto1 = (EntityODR) palazzetto;
+          
+//           EntityODR p = new EntityODR();
+//           p.setEntityBaseId(1L);
+//           p.setId(64000L);
+//           p.setTypeId(12L);
+           attrs.add(enServ.createAttribute(facility.getAttrDef(TestEntityService.ATTR_DEF_PART_OF_URL),palazzetto1  ));            
             
             enodr.setStructureAttributes(attrs);
-            
+
             // todo this call fails because tries to serialize the whole palazzetto as EntityODR
             idServ.assignURL(new ArrayList(){{add(enodr);}}, 3);
         }
