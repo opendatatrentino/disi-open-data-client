@@ -2,6 +2,8 @@ package eu.trentorise.opendata.disiclient.test.model;
 
 import eu.trentorise.opendata.disiclient.services.SemanticTextFactory;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
+import eu.trentorise.opendata.semantics.IntegrityChecker;
+import static eu.trentorise.opendata.semantics.IntegrityChecker.checkSemanticText;
 import eu.trentorise.opendata.semantics.model.knowledge.IMeaning;
 import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
 import eu.trentorise.opendata.semantics.model.knowledge.ISentence;
@@ -14,7 +16,6 @@ import eu.trentorise.opendata.semantics.model.knowledge.impl.Sentence;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.Word;
 import it.unitn.disi.sweb.core.nlp.model.NLMeaning;
 import it.unitn.disi.sweb.core.nlp.model.NLMultiWord;
-import it.unitn.disi.sweb.core.nlp.model.NLNamedEntity;
 import it.unitn.disi.sweb.core.nlp.model.NLSenseMeaning;
 import it.unitn.disi.sweb.core.nlp.model.NLSentence;
 import it.unitn.disi.sweb.core.nlp.model.NLText;
@@ -77,6 +78,7 @@ public class SemanticTextFactoryTest {
         ISemanticText st = SemanticTextFactory.semanticText(nlText);
         assertEquals(st.getText(), nlText.getText());
         assertEquals(st.getLocale(), null);
+        IntegrityChecker.checkSemanticText(st);
     }
 
     /**
@@ -115,7 +117,8 @@ public class SemanticTextFactoryTest {
         nltext.addSentence(sentence);
 
         ISemanticText st = SemanticTextFactory.semanticText(nltext);
-
+        IntegrityChecker.checkSemanticText(st);
+        
         assertEquals(st.getText(), text);
         assertEquals(st.getSentences().size(), 1);
         assertEquals(st.getSentences().get(0).getWords().size(), 1);
@@ -125,6 +128,52 @@ public class SemanticTextFactoryTest {
 
     }
 
+    
+    /**
+     * one token in sentence with null id for concept 
+     */
+    @Test
+    public void testNLTextToSemanticTextNoMeaning() {
+
+        String text = "hello dear Refine";
+
+        NLText nltext = new NLText(text);
+        NLSentence sentence = new NLSentence(text);
+        sentence.setProp(NLTextUnit.PFX, "startOffset", 0);
+        sentence.setProp(NLTextUnit.PFX, "endOffset", text.length());
+
+        String dearWord = "dear";
+
+        Set<NLMeaning> meanings = new HashSet<NLMeaning>();
+        
+        NLSenseMeaning sm1 = new NLSenseMeaning("testLemma1", null, "NOUN", null, 4, 1, "test description");
+        // score must be set manually here, although on server will be computed from senseRank and senseFrequency
+        sm1.setScore(1);
+        sm1.setProbability((float) (1.0 / 6.0));
+        meanings.add(sm1);
+        
+        NLToken firstToken = new NLToken(dearWord, meanings);        
+        firstToken.setProp(NLTextUnit.PFX, "sentenceStartOffset", 6);
+        firstToken.setProp(NLTextUnit.PFX, "sentenceEndOffset", 10);
+
+        sentence.addToken(firstToken);
+        nltext.addSentence(sentence);
+
+        ISemanticText st = SemanticTextFactory.semanticText(nltext);
+        IntegrityChecker.checkSemanticText(st);
+        
+        assertEquals(st.getText(), text);
+        assertEquals(st.getSentences().size(), 1);
+        assertEquals(st.getSentences().get(0).getWords().size(), 1);
+        IWord word = st.getSentences().get(0).getWords().get(0);
+        assertEquals(1, word.getMeanings().size());        
+        assertNull(word.getSelectedMeaning());
+        IMeaning m = word.getMeanings().get(0);
+        assertNull(m.getURL());
+        assertEquals(m.getKind(), MeaningKind.CONCEPT);
+    }
+    
+    
     /**
      * tests two overlapping tokens
      */
@@ -168,7 +217,8 @@ public class SemanticTextFactoryTest {
         nltext.addSentence(sentence);
 
         ISemanticText st = SemanticTextFactory.semanticText(nltext);
-
+        checkSemanticText(st);
+        
         assertEquals(st.getText(), text);
         assertEquals(st.getSentences().size(), 1);
         assertEquals(st.getSentences().get(0).getWords().size(), 1);
@@ -251,7 +301,8 @@ public class SemanticTextFactoryTest {
         nltext.addSentence(sentence);
 
         ISemanticText st = SemanticTextFactory.semanticText(nltext);
-
+        checkSemanticText(st);
+        
         assertEquals(st.getText(), text);
         assertEquals(st.getSentences().size(), 1);
         assertEquals(st.getSentences().get(0).getWords().size(), 1);
@@ -265,6 +316,7 @@ public class SemanticTextFactoryTest {
     public void testSemanticStringToSemanticText_0() {
         SemanticString ss = new SemanticString();
         ISemanticText st = SemanticTextFactory.semanticText(ss);
+        checkSemanticText(st);
         assertEquals(ss.getText(), null);
         assertEquals(st.getText(), "");
         assertEquals(st.getSentences().size(), 1);
@@ -276,6 +328,7 @@ public class SemanticTextFactoryTest {
     public void testSemanticStringToSemanticText_1() {
         SemanticString ss = new SemanticString("ciao");
         ISemanticText st = SemanticTextFactory.semanticText(ss);
+        checkSemanticText(st);
         assertEquals(st.getText(), ss.getText());
         assertEquals(st.getSentences().size(), 1);
         assertEquals(st.getSentences().get(0).getWords().size(), 0);
@@ -301,6 +354,7 @@ public class SemanticTextFactoryTest {
         ccs.add(new ComplexConcept(sts));
         SemanticString ss = new SemanticString("ciao", ccs);
         ISemanticText st = SemanticTextFactory.semanticText(ss);
+        checkSemanticText(st);
         assertEquals(st.getText(), ss.getText());
         assertEquals(st.getSentences().size(), 1);
         assertEquals(st.getSentences().get(0).getWords().size(), 0);
@@ -315,6 +369,7 @@ public class SemanticTextFactoryTest {
         ccs.add(new ComplexConcept(sts));
         SemanticString ss = new SemanticString("ciao", ccs);
         ISemanticText st = SemanticTextFactory.semanticText(ss);
+        checkSemanticText(st);
         assertEquals(st.getText(), ss.getText());
         assertEquals(st.getSentences().size(), 1);
         assertEquals(st.getSentences().get(0).getWords().size(), 0);
@@ -329,6 +384,7 @@ public class SemanticTextFactoryTest {
         ccs.add(new ComplexConcept(sts));
         SemanticString ss = new SemanticString("hello dear Refine", ccs);
         ISemanticText st = SemanticTextFactory.semanticText(ss);
+        checkSemanticText(st);
         assertEquals(st.getText(), ss.getText());
         assertEquals(st.getSentences().size(), 1);
         assertEquals(st.getSentences().get(0).getWords().size(), 0);
@@ -348,6 +404,7 @@ public class SemanticTextFactoryTest {
         ccs.add(new ComplexConcept(sts));
         SemanticString ss = new SemanticString("hello dear Refine", ccs);
         ISemanticText st = SemanticTextFactory.semanticText(ss);
+        checkSemanticText(st);
         assertEquals(st.getText(), ss.getText());
         assertEquals(st.getSentences().size(), 1);
         assertEquals(st.getSentences().get(0).getWords().size(), 0);
@@ -371,6 +428,7 @@ public class SemanticTextFactoryTest {
         ccs.add(new ComplexConcept(sts));
         SemanticString ss = new SemanticString("hello dear Refine", ccs);
         ISemanticText st = SemanticTextFactory.semanticText(ss);
+        checkSemanticText(st);
         assertEquals(st.getText(), ss.getText());
         assertEquals(st.getSentences().size(), 1);
         assertEquals(st.getSentences().get(0).getWords().size(), 0);
@@ -400,6 +458,7 @@ public class SemanticTextFactoryTest {
         ccs.add(new ComplexConcept(sts));
         SemanticString ss = new SemanticString("hello dear Refine", ccs);
         ISemanticText st = SemanticTextFactory.semanticText(ss);
+        checkSemanticText(st);
         assertEquals(st.getText(), ss.getText());
         assertEquals(st.getSentences().size(), 1);
         assertEquals(st.getSentences().get(0).getWords().size(), 1);
