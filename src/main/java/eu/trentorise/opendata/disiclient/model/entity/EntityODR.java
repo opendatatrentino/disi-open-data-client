@@ -678,7 +678,9 @@ public class EntityODR extends Structure implements IEntity {
     /**
      * Converts from IEntity to disi client format. 
      *
-     * @param root When true, all first level attributes are copied to output entity. Eventual subentities in IValue are copied as non-root. When false, only URL and etype are copied to output entity.
+     * @param root When true, all first level attributes are copied to output entity. 
+     * Eventual subentities in IValue are copied as non-root. When false, only URL 
+     * and etype are copied to output entity.
      * 
      */
     public static EntityODR disify(IEntity entity, boolean root) {
