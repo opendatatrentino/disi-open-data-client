@@ -1,57 +1,26 @@
 package eu.trentorise.opendata.disiclient.services;
 
-import it.unitn.disi.sweb.webapi.client.eb.IDManagementClient;
-import it.unitn.disi.sweb.webapi.model.eb.Attribute;
-import it.unitn.disi.sweb.webapi.model.eb.Entity;
-import it.unitn.disi.sweb.webapi.model.eb.Name;
-import it.unitn.disi.sweb.webapi.model.eb.Value;
-import it.unitn.disi.sweb.webapi.model.odt.IDResult;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
+import static eu.trentorise.opendata.disiclient.model.entity.EntityODR.disify;
 import eu.trentorise.opendata.disiclient.services.model.IDRes;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
 import eu.trentorise.opendata.semantics.services.IIdentityService;
 import eu.trentorise.opendata.semantics.services.model.IIDResult;
+import it.unitn.disi.sweb.webapi.client.eb.IDManagementClient;
+import it.unitn.disi.sweb.webapi.model.eb.Attribute;
+import it.unitn.disi.sweb.webapi.model.eb.Entity;
+import it.unitn.disi.sweb.webapi.model.eb.Name;
+import it.unitn.disi.sweb.webapi.model.eb.Value;
+import it.unitn.disi.sweb.webapi.model.odt.IDResult;
+import java.util.ArrayList;
+import java.util.List;
 
 
-public class IdentityService implements IIdentityService {
-
-	public List<IIDResult> assignGUID(List<IEntity> ientities) {
-		if (ientities == null) {
-			List<IIDResult> idResults = new ArrayList<IIDResult>();
-			return idResults;
-		}
-		if (ientities.size() == 0) {
-			List<IIDResult> idResults = new ArrayList<IIDResult>();
-			return idResults;
-		} else {
-			IDManagementClient idManCl = new IDManagementClient(WebServiceURLs.getClientProtocol());
-			List<Entity> entities = new ArrayList<Entity>();
-			for (IEntity en : ientities) {
-				EntityODR ent = (EntityODR) en;
-				EntityODR entODR = convertNameAttr(ent);
-				Entity entity = entODR.convertToEntity();
-				entities.add(entity);
-
-
-			}
-			List<IDResult> results = idManCl.assignIdentifier(entities, 0);
-			List<IIDResult> idResults = new ArrayList<IIDResult>();
-			for (IDResult res : results) {
-				IDRes idRes = new IDRes(res);
-				idResults.add(idRes);
-			}
-			return idResults;
-		}
-	}
-
+public class IdentityService implements IIdentityService {	
 
 	private EntityODR convertNameAttr(EntityODR ent) {
 		List<Attribute> attrs = ent.getAttributes();
@@ -100,16 +69,29 @@ public class IdentityService implements IIdentityService {
 		return ent;
 	}
 
-	public List<IIDResult> assignURL(List<IEntity> entities, int numCandidates) {
+	public List<IIDResult> assignURL(List<IEntity> iEntities, int numCandidates) {            
 
-		if (entities == null) {
+		if (iEntities == null) {
 			List<IIDResult> idResults = new ArrayList<IIDResult>();
 			return idResults;
 		}
-		if (entities.size() == 0) {
+		if (iEntities.size() == 0) {
 			List<IIDResult> idResults = new ArrayList<IIDResult>();
 			return idResults;
 		} else {
+                        List<EntityODR> entities = new ArrayList();
+                        
+                        for (IEntity ie : iEntities){
+                            // todo commented optimisation so to force conversion and test the thing
+                            // if (ie instanceof EntityODR){
+                            //     entities.add((EntityODR) ie);
+                            // } else {
+                                entities.add(disify(ie, true));
+                            // }
+                                
+                                
+                        }
+                        
 			IDManagementClient idManCl = new IDManagementClient(WebServiceURLs.getClientProtocol());
 			List<Entity> resEntities = new ArrayList<Entity>();
 			for (IEntity en : entities) {

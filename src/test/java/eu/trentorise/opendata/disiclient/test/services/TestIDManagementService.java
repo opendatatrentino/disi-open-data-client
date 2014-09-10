@@ -96,7 +96,7 @@ public class TestIDManagementService {
 		List<IEntity> entities = new ArrayList<IEntity>();
 		entities.add(ent);
 
-		List<IIDResult> results=  idServ.assignGUID(entities);
+		List<IIDResult> results=  idServ.assignURL(entities, 3);
 		for (IIDResult res: results){
 			EntityODR entityODR =  (EntityODR) res.getResultEntity();
 
@@ -215,7 +215,7 @@ public class TestIDManagementService {
 		List<IEntity> entities = new ArrayList<IEntity>();
 		entities.add(ent);
 
-		List<IIDResult> results=  idServ.assignGUID(entities);
+		List<IIDResult> results=  idServ.assignURL(entities, 3);
 		for (IIDResult res: results){
 			EntityODR entityODR =  (EntityODR) res.getResultEntity();
 			System.out.println("result "+res.getAssignmentResult());
@@ -305,7 +305,7 @@ public class TestIDManagementService {
 		List<IEntity> entities = new ArrayList<IEntity>();
 		entities.add(ent);
 
-		List<IIDResult> results=  idServ.assignGUID(entities);
+		List<IIDResult> results=  idServ.assignURL(entities, 3);
 		for (IIDResult res: results){
 			EntityODR entityODR =  (EntityODR) res.getResultEntity();
 			//	System.out.println("result "+res.getAssignmentResult());

@@ -177,7 +177,7 @@ public class IntegrityCheckerTest {
 		entities.add(entity2);
 		entities.add(entity3);
 
-		List<IIDResult> results=  idServ.assignGUID(entities);
+		List<IIDResult> results=  idServ.assignURL(entities, 3);
 		for (IIDResult res: results){
 			System.out.println(res.getAssignmentResult().toString());
 		

@@ -1,6 +1,10 @@
 package eu.trentorise.opendata.disiclient.services;
 
 import eu.trentorise.opendata.disiclient.DisiClientException;
+import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.conceptIDToURL;
+import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.entityIDToURL;
+import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.urlToConceptID;
+import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.urlToEntityID;
 import eu.trentorise.opendata.semantics.model.knowledge.IDict;
 import eu.trentorise.opendata.semantics.model.knowledge.IMeaning;
 import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
@@ -13,13 +17,11 @@ import eu.trentorise.opendata.semantics.model.knowledge.impl.Meaning;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.SemanticText;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.Sentence;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.Word;
-import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.conceptIDToURL;
-import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.entityIDToURL;
-import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.urlToConceptID;
-import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.urlToEntityID;
 import it.unitn.disi.sweb.core.nlp.model.NLComplexToken;
 import it.unitn.disi.sweb.core.nlp.model.NLEntityMeaning;
 import it.unitn.disi.sweb.core.nlp.model.NLMeaning;
+import it.unitn.disi.sweb.core.nlp.model.NLMultiWord;
+import it.unitn.disi.sweb.core.nlp.model.NLNamedEntity;
 import it.unitn.disi.sweb.core.nlp.model.NLSenseMeaning;
 import it.unitn.disi.sweb.core.nlp.model.NLSentence;
 import it.unitn.disi.sweb.core.nlp.model.NLText;
@@ -82,6 +84,16 @@ public class SemanticTextFactory {
         return ret;
     }
 
+    private static MeaningKind getKind(NLComplexToken tok){
+        if (tok instanceof NLNamedEntity){
+            return MeaningKind.ENTITY;            
+        } else if (tok instanceof NLMultiWord){
+            return MeaningKind.CONCEPT;
+        } else {
+            throw new UnsupportedOperationException("NLComplexToken of class " + tok.getClass().getSimpleName() + " is not supported!");
+        }
+    };
+    
     /**
      * Transforms multiwords and named entities into tokens and only includes
      * tokens for which startOffset and endOffset are defined.
@@ -134,20 +146,36 @@ public class SemanticTextFactory {
                     continue;
                 } else {
                     Set<NLMeaning> ms = new HashSet(multiThing.getMeanings());
+                    
                     if (multiThing.getMeanings().isEmpty() && multiThing.getSelectedMeaning() != null){
                         ms.add(multiThing.getSelectedMeaning());
                     }
-                    TreeSet<IMeaning> sortedMeanings = makeSortedMeanings(ms);
                     
-                    if (sortedMeanings.size() > 0) {
-
-                        // odr todo 0.3
-                        MeaningStatus meaningStatus = MeaningStatus.SELECTED;
-                        IMeaning selectedMeaning = sortedMeanings.first();   // MeaningStatus meaningStatus = selectedMeaning == null ? MeaningStatus.TO_DISAMBIGUATE : MeaningStatus.SELECTED;
-                        words.add(new Word(startOffset + mtso,
-                                startOffset + mteo,
-                                meaningStatus, selectedMeaning, sortedMeanings));
+                    TreeSet<IMeaning> sortedMeanings;
+                    MeaningStatus meaningStatus;
+                    IMeaning selectedMeaning;
+                    
+                    if (ms.size() > 0) {
+                        sortedMeanings = makeSortedMeanings(ms);                        
+                                                
+                        if (sortedMeanings.first().getURL() != null){
+                            meaningStatus = MeaningStatus.SELECTED;
+                            selectedMeaning = sortedMeanings.first(); 
+                        }  else {
+                            meaningStatus = MeaningStatus.TO_DISAMBIGUATE;
+                            selectedMeaning = null;
+                        }
+                        
+                    } else { // no meanings, but we know the kind                        
+                        sortedMeanings = new TreeSet<IMeaning>();
+                        sortedMeanings.add(new Meaning(null, 1.0, getKind(multiThing)));
+                        meaningStatus = MeaningStatus.TO_DISAMBIGUATE;
+                        selectedMeaning = null;
                     }
+                    words.add(new Word( startOffset + mtso,
+                    startOffset + mteo,
+                    meaningStatus, selectedMeaning, sortedMeanings));
+
                     i += tokensSize;
                 }
 
@@ -273,8 +301,9 @@ public class SemanticTextFactory {
 
                         // overlapping terms are ignored
                         if (st.getOffset() != null && st.getOffset() >= pos) {
-
-                            List<IMeaning> meanings = new ArrayList<IMeaning>();
+                            
+                            List<IMeaning> meanings = new ArrayList();
+                            
                             if (st.getConceptTerms() != null) {
                                 for (ConceptTerm ct : st.getConceptTerms()) {
                                     if (ct.getValue() != null) {
@@ -284,8 +313,12 @@ public class SemanticTextFactory {
                                         } else {
                                             weight = ct.getWeight();
                                         }
-                                        meanings.add(new Meaning(conceptIDToURL(ct.getValue()),
-                                                weight, MeaningKind.CONCEPT));
+                                        Long id = ct.getValue();                                        
+                                        if (id != null){
+                                            meanings.add(new Meaning(conceptIDToURL(id),
+                                                                                    weight, MeaningKind.CONCEPT));                                            
+                                        }
+                                        
                                     }
                                 }
                             }
@@ -298,12 +331,16 @@ public class SemanticTextFactory {
                                         } else {
                                             weight = it.getWeight();
                                         }
-                                        meanings.add(new Meaning(conceptIDToURL(it.getValue()), weight, MeaningKind.ENTITY));
+                                        Long id = it.getValue();                                        
+                                        if (id != null){                                        
+                                            meanings.add(new Meaning(entityIDToURL(it.getValue()), weight, MeaningKind.ENTITY));
+                                        }
                                     }
 
                                 }
                             }
-                            if (meanings.size() > 0) {
+                            if (meanings.size() > 0) {                                
+                                
                                 IMeaning selectedMeaning = Meaning.disambiguate(meanings);
                                 MeaningStatus meaningStatus;
                                 if (selectedMeaning == null) {
@@ -332,7 +369,7 @@ public class SemanticTextFactory {
 
     /**
      * Returns a sorted set according to the probability of provided
-     * meanings.First element has the highest probability.
+     * meanings. First element has the highest probability.
 
      */
     private static TreeSet<IMeaning> makeSortedMeanings(Set<? extends NLMeaning> meanings) {
@@ -340,12 +377,19 @@ public class SemanticTextFactory {
         for (NLMeaning m : meanings) {    
             MeaningKind kind = null;
             String url = null;
+            Long id = null;
             if (m instanceof NLSenseMeaning){
                 kind = MeaningKind.CONCEPT;
-                url = conceptIDToURL(((NLSenseMeaning) m).getConceptId());
+                id = ((NLSenseMeaning) m).getConceptId();
+                if (id != null){
+                    url = conceptIDToURL(id);
+                }                
             } else if (m instanceof NLEntityMeaning){
                 kind = MeaningKind.ENTITY;
-                url = entityIDToURL(((NLEntityMeaning) m).getObjectID());
+                id = ((NLEntityMeaning) m).getObjectID();
+                if (id != null){
+                    url = entityIDToURL(id);
+                }                
             } else {
                 throw new IllegalArgumentException("Found an unsupported meaning type: " + m.getClass().getName());
             }
@@ -356,8 +400,8 @@ public class SemanticTextFactory {
 
 
     /**
-     * @param nlToken must have startOffset and endOffset and at least one
-     * meaning throws RuntimeException
+     * @param nlToken must have startOffset and endOffset a
+     * throws RuntimeException
      */
     private static Word stWord(NLToken nlToken, int sentenceStartOffset) {
 
@@ -365,11 +409,9 @@ public class SemanticTextFactory {
         Integer eo = (Integer) nlToken.getProp(NLTextUnit.PFX, "sentenceEndOffset");
 
         if (so == null || eo == null) {
-            throw new RuntimeException("Offsets within the sentence are null! sentenceStartOffset = " + so + " sentenceEndOffset = " + eo);
+            throw new IllegalArgumentException("Offsets within the sentence are null! sentenceStartOffset = " + so + " sentenceEndOffset = " + eo);
         }
-        if (nlToken.getMeanings().isEmpty()) {
-            throw new RuntimeException("Word must have at least one meaning!");
-        }
+
         int startOffset = sentenceStartOffset + so;
         int endOffset = sentenceStartOffset + eo;
         TreeSet<IMeaning> meanings = makeSortedMeanings(nlToken.getMeanings());
