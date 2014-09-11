@@ -46,7 +46,13 @@ public class IdentityService implements IIdentityService {
 
 				//String nameSt = nm.getNames().get("it").get(0);
 				Search search = new Search(WebServiceURLs.getClientProtocol());
-				List<Name> foundNames = search.nameSearch(nameSt);
+				List<Name> foundNames;
+				if(nameSt.equals("")){
+					foundNames = new ArrayList<Name>();
+				}
+				else{
+					foundNames = search.nameSearch(nameSt);
+				}
 				//	System.out.println("Found Names:"+foundNames.size());
 				if(foundNames.size()>0)
 				{
@@ -79,19 +85,17 @@ public class IdentityService implements IIdentityService {
 			List<IIDResult> idResults = new ArrayList<IIDResult>();
 			return idResults;
 		} else {
-                        List<EntityODR> entities = new ArrayList();
-                        
-                        for (IEntity ie : iEntities){
-                            // todo commented optimisation so to force conversion and test the thing
-                            // if (ie instanceof EntityODR){
-                            //     entities.add((EntityODR) ie);
-                            // } else {
-                                entities.add(disify(ie, true));
-                            // }
-                                
-                                
-                        }
-                        
+			List<EntityODR> entities = new ArrayList();
+
+			for (IEntity ie : iEntities){
+				// todo commented optimisation so to force conversion and test the thing
+				                             if (ie instanceof EntityODR){
+				                                 entities.add((EntityODR) ie);
+				                             } else {
+				                            	 entities.add(disify(ie, true));
+				                             }
+			}
+
 			IDManagementClient idManCl = new IDManagementClient(WebServiceURLs.getClientProtocol());
 			List<Entity> resEntities = new ArrayList<Entity>();
 			for (IEntity en : entities) {
@@ -117,7 +121,7 @@ public class IdentityService implements IIdentityService {
 		List<Attribute> atrs = entity.getAttributes();
 		for(Attribute a: atrs){
 			if(a.getValues().get(0).getValue() instanceof EntityODR){
-				
+
 				AttributeODR at = createRelationalAttr (a.getDefinitionId() ,a.getValues());
 				atrs.remove(a);
 				atrs.add(at.convertToAttribute());
