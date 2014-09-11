@@ -3,8 +3,23 @@ package eu.trentorise.opendata.disiclient.services;
 import eu.trentorise.opendata.disiclient.DisiClientException;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
+import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityType;
 import eu.trentorise.opendata.disiclient.model.entity.Structure;
+import eu.trentorise.opendata.disiclient.model.entity.ValueODR;
+import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
+import eu.trentorise.opendata.semantics.NotFoundException;
+import eu.trentorise.opendata.semantics.OpenEntityUtils;
+import eu.trentorise.opendata.semantics.model.entity.IAttribute;
+import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
+import eu.trentorise.opendata.semantics.model.entity.IEntity;
+import eu.trentorise.opendata.semantics.model.entity.IValue;
+import eu.trentorise.opendata.semantics.model.knowledge.IDict;
+import eu.trentorise.opendata.semantics.model.knowledge.impl.Dict;
+import eu.trentorise.opendata.semantics.model.knowledge.impl.SemanticText;
+import eu.trentorise.opendata.semantics.services.IEntityService;
+import eu.trentorise.opendata.semantics.services.model.DataTypes;
+import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
 import it.unitn.disi.sweb.webapi.client.kb.VocabularyClient;
@@ -13,10 +28,8 @@ import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
 import it.unitn.disi.sweb.webapi.model.eb.Name;
 import it.unitn.disi.sweb.webapi.model.eb.Value;
-import it.unitn.disi.sweb.webapi.model.eb.sstring.SemanticString;
 import it.unitn.disi.sweb.webapi.model.filters.InstanceFilter;
 import it.unitn.disi.sweb.webapi.model.kb.vocabulary.Vocabulary;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
@@ -27,27 +40,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.http.client.ClientProtocolException;
-
-import eu.trentorise.opendata.semantics.NotFoundException;
-import eu.trentorise.opendata.semantics.model.entity.IAttribute;
-import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
-import eu.trentorise.opendata.semantics.model.entity.IEntity;
-import eu.trentorise.opendata.semantics.model.entity.IValue;
-import eu.trentorise.opendata.semantics.model.knowledge.IDict;
-import eu.trentorise.opendata.semantics.model.knowledge.impl.Dict;
-import eu.trentorise.opendata.semantics.model.knowledge.impl.SemanticText;
-import eu.trentorise.opendata.semantics.services.IEntityService;
-import eu.trentorise.opendata.semantics.services.model.DataTypes;
-import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
-import eu.trentorise.opendata.disiclient.model.entity.ValueODR;
-import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
-import eu.trentorise.opendata.semantics.OpenEntityUtils;
-import eu.trentorise.opendata.semantics.services.model.ISearchResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EntityService implements IEntityService {
 
+        Logger logger = LoggerFactory.getLogger(EntityService.class);
+    
 	private IProtocolClient api;
 
 	public EntityService(IProtocolClient api) {
@@ -591,8 +591,9 @@ public class EntityService implements IEntityService {
 		return en;
 	}
 
-	public List<ISearchResult> searchEntities(String partialName) {
+	public List<ISearchResult> searchEntities(String partialName, String etypeURL) {
 		List<ISearchResult> entities = new ArrayList<ISearchResult>();
+                logger.warn("TRYING TO SEARCH ENTITIES - RETURNING NOTHING. TODO IMPLEMENT THIS");
 		return entities;
 	}
 

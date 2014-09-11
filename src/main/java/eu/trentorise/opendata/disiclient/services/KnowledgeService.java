@@ -8,6 +8,8 @@ import eu.trentorise.opendata.semantics.services.IKnowledgeService;
 import eu.trentorise.opendata.disiclient.DisiClientException;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
@@ -16,6 +18,8 @@ import eu.trentorise.opendata.semantics.services.model.ISearchResult;
  * 
  */
 public class KnowledgeService implements IKnowledgeService {
+    
+    Logger logger = LoggerFactory.getLogger(EntityService.class);
 
 	private static final long ROOT_CONCEPT_ID = 1;
         public static final long DESCRIPTION_CONCEPT_ID = 3L;
@@ -93,8 +97,10 @@ public class KnowledgeService implements IKnowledgeService {
     }
 
     public List<ISearchResult> searchConcepts(String partialName) {
+        
     	List<ISearchResult> concepts = new ArrayList<ISearchResult>();
-		return concepts;
+        logger.warn("TRYING TO SEARCH CONCEPTS - RETURNING NOTHING. TODO IMPLEMENT THIS");
+	return concepts;
     }
 
 }
