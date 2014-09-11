@@ -81,13 +81,12 @@ public class IdentityService implements IIdentityService {
 		} else {
                         List<EntityODR> entities = new ArrayList();
                         
-                        for (IEntity ie : iEntities){
-                            // todo commented optimisation so to force conversion and test the thing
-                            // if (ie instanceof EntityODR){
-                            //     entities.add((EntityODR) ie);
-                            // } else {
+                        for (IEntity ie : iEntities){                            
+                            if (ie instanceof EntityODR){
+                                 entities.add((EntityODR) ie);
+                             } else {
                                 entities.add(disify(ie, true));
-                            // }
+                             }
                                 
                                 
                         }
