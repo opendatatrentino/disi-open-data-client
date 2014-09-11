@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -27,6 +28,10 @@ import eu.trentorise.opendata.semantics.services.model.IAttributeCorrespondence;
 import eu.trentorise.opendata.semantics.services.model.ISchemaCorrespondence;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
+//import eu.trentorise.schemamatcher.implementation.services.SchemaImport;
+//import eu.trentorise.schemamatcher.implementation.services.SchemaMatcherFactory;
+//import eu.trentorise.schemamatcher.model.ISchema;
+//import eu.trentorise.schemamatcher.model.ISchemaMatcher;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
@@ -36,12 +41,9 @@ import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 
 public class MatchingService implements ISemanticMatchingService {
 
-
 	/** Methods run the process of matching. It gets ColumnConceptCandidate (1) and Etypes (many) as input.
 	 *  @return the list of schema corespondences 
 	 */
-
-
 	public List<ISchemaCorrespondence> matchSchemas( IResourceContext resourceContext,ITableResource tableResource){
 
 		List<ColumnConceptCandidate> odrHeaders =
@@ -73,13 +75,13 @@ public class MatchingService implements ISemanticMatchingService {
 		SchemaCorrespondence sCorrespondence = new SchemaCorrespondence();
 		sCorrespondence.setEtype(eType);
 		if (eType.getAttributeDefs().size()!=0){
-			
+
 			List<IAttributeCorrespondence> attrsCor = attributeMatching(eType.getAttributeDefs(),columnHeaders);
 			sCorrespondence.setAttributeCorrespondence(attrsCor);
-//			ConceptODR etypeConcept = (ConceptODR)eType.getConcept();
-			
+			//			ConceptODR etypeConcept = (ConceptODR)eType.getConcept();
+
 			float nameMatchScore= getConceptsDistance(odrNameConcept, eType.getConceptID());
-			
+
 			float sScore = computeSchemaCorrespondenceScore(sCorrespondence);
 			sScore= (sScore+nameMatchScore)/(sCorrespondence.getAttributeCorrespondence().size()+1);
 			sCorrespondence.setScore(sScore);
@@ -131,8 +133,8 @@ public class MatchingService implements ISemanticMatchingService {
 			for(IAttributeDef attrDef:eTypeAttributes ){
 				AttributeDef attr = (AttributeDef)attrDef;
 				//ConceptODR attrConcept = (ConceptODR)attr.getConcept();
-//				System.out.println(attr.getName(Locale.ENGLISH));
-//				System.out.println(attr.getETypeURL());
+				//				System.out.println(attr.getName(Locale.ENGLISH));
+				//				System.out.println(attr.getETypeURL());
 				long targetConceptID = attr.getConceptId();
 				Map.Entry<Long,Long> entry = new AbstractMap.SimpleEntry<Long,Long>(sourceConceptID,targetConceptID);
 				batch.add(entry);
@@ -189,5 +191,6 @@ public class MatchingService implements ISemanticMatchingService {
 	private IProtocolClient getClientProtocol(){
 		return  WebServiceURLs.getClientProtocol();
 	}
+
 
 }
