@@ -1,19 +1,19 @@
 package eu.trentorise.opendata.disiclient.test.services;
 
+import eu.trentorise.opendata.disiclient.model.entity.EntityType;
+import eu.trentorise.opendata.disiclient.services.DisiEkb;
+import eu.trentorise.opendata.disiclient.services.EntityTypeService;
+import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.NAME_URL;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
-import eu.trentorise.opendata.disiclient.model.entity.EntityType;
-import eu.trentorise.opendata.disiclient.services.DisiEkb;
-import eu.trentorise.opendata.disiclient.services.EntityTypeService;
-import org.junit.Test;
-
 import java.util.List;
 import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import org.junit.Test;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
@@ -42,7 +42,7 @@ public class TestEntityTypeService {
     public void testGetEntityTypesofStructure(){
     	 EntityTypeService ets = new EntityTypeService();
         // EntityType etype = (EntityType) ets.getEntityType(12L);
-         EntityType etype = (EntityType) ets.getEntityType(10L);
+         EntityType etype = (EntityType) ets.readEntityType(NAME_URL);
          System.out.println("Etype:"+etype);
          etype.getAttributeDefs();
     }

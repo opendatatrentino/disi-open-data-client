@@ -429,14 +429,14 @@ public class EntityService implements IEntityService {
 		entityNameAttribute.setDefinitionId(attrDef.getGUID());
 
 		Name nameStructure = new Name();
-		nameStructure.setEntityBaseId(1L);
+		nameStructure.setEntityBaseId(1L); //NOTE HARCODED TODO change
 		nameStructure.setTypeId(10L); //NOTE HARCODED TODO change
 
 		List<Attribute> nameAttributes = new ArrayList<Attribute>();
 
 		Attribute nameAttribute = new Attribute();
 		nameAttribute.setDefinitionId(55L); //NOTE HARCODED TODO change
-		nameAttribute.setConceptId(2L);
+		nameAttribute.setConceptId(2L); //NOTE HARCODED TODO change
 
 		List<Value> nameValues = new ArrayList<Value>();
 		//Vocabularies 

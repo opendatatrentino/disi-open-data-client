@@ -119,6 +119,8 @@ public class TestEntityService {
     public static final long ATTR_DEF_PART_OF = 60L;
     public static final String ATTR_DEF_PART_OF_URL = attrDefIDToURL(ATTR_DEF_PART_OF);
     
+    public static final long NAME_ID = 10L;
+    public static final String NAME_URL = etypeIDToURL(NAME_ID);
 
     
 
