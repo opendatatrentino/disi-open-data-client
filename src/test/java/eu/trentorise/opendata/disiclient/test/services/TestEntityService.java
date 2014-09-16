@@ -34,7 +34,9 @@ import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.EntityBase;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
+import it.unitn.disi.sweb.webapi.model.eb.Name;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
+
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,6 +44,7 @@ import java.util.List;
 import java.util.Locale;
 
 import static org.junit.Assert.*;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -138,7 +141,6 @@ public class TestEntityService {
 
         EntityODR entity = (EntityODR) disiEkb.getEntityService().readEntity(PALAZZETTO_URL);
         logger.info("\n\n *************   entity Palazzetto (" + PALAZZETTO_URL + ") ***************** \n\n" + entity);
-        EntityTypeService es = new EntityTypeService();
         IAttributeDef nameAttrDef = entity.getEtype().getNameAttrDef();
         IStructure nameValue = (IStructure) entity.getAttribute(nameAttrDef.getURL()).getValues().get(0).getValue();
 
@@ -176,7 +178,7 @@ public class TestEntityService {
     @Test
     public void testReadNonExistingEntities() {
         EntityService es = new EntityService(api);
-        List<String> entitieURLs = new ArrayList();
+        List<String> entitieURLs = new ArrayList<String>();
         entitieURLs.add("non-existing-url");
         entitieURLs.add(WebServiceURLs.entityIDToURL(RAVAZZONE_ID));
         thrown.expect(DisiClientException.class);
@@ -191,7 +193,7 @@ public class TestEntityService {
         EntityODR entity = new EntityODR();
         IEkb ekb = new DisiEkb();
         IEntityService es = ekb.getEntityService();
-        entity.setEntityAttributes(new ArrayList());
+        entity.setEntityAttributes(new ArrayList<IAttribute>());
         entity.setEtype(ekb.getEntityTypeService().getEntityType(FACILITY_URL));
         entity.setEntityBaseId(1L);
         entity.setURL("http://blabla.org");
@@ -280,11 +282,6 @@ public class TestEntityService {
 
     }
     
-    @Test
-    public void testCreateEntityWithPartOf(){
-        EntityService es = new EntityService(api);
-        
-    }
 
     @Test
     public void testReadEntityRavazzone() {
@@ -337,7 +334,7 @@ public class TestEntityService {
     @Test
     public void testReadEntities() {
         EntityService es = new EntityService(api);
-        List<String> entitieURLs = new ArrayList();
+        List<String> entitieURLs = new ArrayList<String>();
         entitieURLs.add(PALAZZETTO_URL);
 
         entitieURLs.add(RAVAZZONE_URL);
@@ -354,7 +351,7 @@ public class TestEntityService {
     @Test
     public void testReadZeroEntities() {
         EntityService es = new EntityService(api);
-        assertEquals(es.readEntities(new ArrayList()).size(), 0);
+        assertEquals(es.readEntities(new ArrayList<String>()).size(), 0);
     }
 
     @Test
@@ -368,14 +365,14 @@ public class TestEntityService {
             if (atr.getName().get("en").equalsIgnoreCase("Name")) {
                 attrs1.add(atr);
             } else if (atr.getName().get("en").equalsIgnoreCase("Longitude")) {
-                IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
-                AttributeODR attr = es.createAttribute(atDef, 11.466f);
-                Attribute a = attr.convertToAttribute();
+//                IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
+//                AttributeODR attr = es.createAttribute(atDef, 11.466f);
+//                Attribute a = attr.convertToAttribute();
                 attrs1.add(atr);
             } else if (atr.getName().get("en").equalsIgnoreCase("Latitude")) {
-                IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
-                AttributeODR attr = es.createAttribute(atDef, 46.289f);
-                Attribute a = attr.convertToAttribute();
+//                IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
+//                AttributeODR attr = es.createAttribute(atDef, 46.289f);
+//                Attribute a = attr.convertToAttribute();
                 attrs1.add(atr);
 
             } else if (atr.getName().get("en").equalsIgnoreCase("Class")) {
@@ -475,30 +472,30 @@ public class TestEntityService {
 
             if (atd.getName().getString(Locale.ENGLISH).equals("Name")) {
                 //  logger.info(atd.getName());
-                AttributeODR attr = es.createAttribute(atd, "My test name");
+                AttributeODR attr = es.createAttribute(atd, "TestName");
                 Attribute a = attr.convertToAttribute();
                 attrs.add(a);
-            }
+            } else 
 
             if (atd.getName().getString(Locale.ENGLISH).equals("Class")) {
                 //  logger.info(atd.getName());
                 AttributeODR attr = es.createAttribute(atd, 123L);
                 Attribute a = attr.convertToAttribute();
                 attrs.add(a);
-            }
+            } else 
 
             if (atd.getName().getString(Locale.ENGLISH).equals("Latitude")) {
                 //       logger.info(atd.getName());
                 AttributeODR attr = es.createAttribute(atd, 12.123F);
                 Attribute a = attr.convertToAttribute();
                 attrs.add(a);
-            }
+            } else 
             if (atd.getName().getString(Locale.ENGLISH).equals("Longitude")) {
                 //     logger.info(atd.getName());
                 AttributeODR attr = es.createAttribute(atd, 56.567F);
                 Attribute a = attr.convertToAttribute();
                 attrs.add(a);
-            }
+            } else 
             if (atd.getName().getString(Locale.ENGLISH).equals("Opening hours")) {
 				//     logger.info(atd.getName());
                 //      logger.info(atd.getURL());
@@ -528,11 +525,27 @@ public class TestEntityService {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
+  
+    
     @Test
-    public void testEmptyExportToJsonLd() {
-        EntityService es = new EntityService(api);
-        thrown.expect(DisiClientException.class);
-        es.exportToJsonLd(new ArrayList(), new PrintWriter(System.out));
+   public void createNameStructure(){
+
+    	EntityService es =new EntityService();
+    	EntityODR en = (EntityODR) es.readEntity(15001L);
+//    	
+//    	AttributeDef atrDef = new AttributeDef(169);
+//    	AttributeODR nameAtr = es.createNameAttributeODR(atrDef, name);
+    	
+    	for (IAttribute a: ((IStructure) en).getStructureAttributes()){
+    		
+//    		System.out.println(a.getAttrDef().getName().getString(Locale.ENGLISH));
+//    		//System.out.println(a.getAttrDef().getRangeEtypeURL());
+//    		//System.out.println(a.getAttrDef().getEType());
+//    		System.out.println(a.getAttrDef().getGUID());
+//    		System.out.println(a.getAttrDef().getConcept().getGUID());
+
+
+    		}
     }
 
 }

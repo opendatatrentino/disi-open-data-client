@@ -1,5 +1,32 @@
 package eu.trentorise.opendata.disiclient.services;
 
+import it.unitn.disi.sweb.webapi.client.IProtocolClient;
+import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
+import it.unitn.disi.sweb.webapi.client.kb.VocabularyClient;
+import it.unitn.disi.sweb.webapi.model.eb.Attribute;
+import it.unitn.disi.sweb.webapi.model.eb.Entity;
+import it.unitn.disi.sweb.webapi.model.eb.Instance;
+import it.unitn.disi.sweb.webapi.model.eb.Name;
+import it.unitn.disi.sweb.webapi.model.eb.Value;
+import it.unitn.disi.sweb.webapi.model.filters.InstanceFilter;
+import it.unitn.disi.sweb.webapi.model.kb.vocabulary.Vocabulary;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.lang3.LocaleUtils;
+import org.apache.http.client.ClientProtocolException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import eu.trentorise.opendata.disiclient.DisiClientException;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
@@ -20,34 +47,11 @@ import eu.trentorise.opendata.semantics.model.knowledge.impl.SemanticText;
 import eu.trentorise.opendata.semantics.services.IEntityService;
 import eu.trentorise.opendata.semantics.services.model.DataTypes;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
-import it.unitn.disi.sweb.webapi.client.IProtocolClient;
-import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
-import it.unitn.disi.sweb.webapi.client.kb.VocabularyClient;
-import it.unitn.disi.sweb.webapi.model.eb.Attribute;
-import it.unitn.disi.sweb.webapi.model.eb.Entity;
-import it.unitn.disi.sweb.webapi.model.eb.Instance;
-import it.unitn.disi.sweb.webapi.model.eb.Name;
-import it.unitn.disi.sweb.webapi.model.eb.Value;
-import it.unitn.disi.sweb.webapi.model.filters.InstanceFilter;
-import it.unitn.disi.sweb.webapi.model.kb.vocabulary.Vocabulary;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import org.apache.http.client.ClientProtocolException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class EntityService implements IEntityService {
 
-        Logger logger = LoggerFactory.getLogger(EntityService.class);
-    
+	Logger logger = LoggerFactory.getLogger(EntityService.class);
+
 	private IProtocolClient api;
 
 	public EntityService(IProtocolClient api) {
@@ -92,7 +96,7 @@ public class EntityService implements IEntityService {
 		if (!isExistAttrClass){
 			Attribute a =createClassAttribute(attrDefClassAtrID, etype.getConceptID());
 			e.getAttributes().add(a);
-			System.out.println("Default class attribute is assigned ");
+			logger.warn("Default class attribute is assigned");
 		}
 
 		//System.out.println("Class exists: truw");
@@ -169,10 +173,10 @@ public class EntityService implements IEntityService {
 	public List<IEntity> readEntities(List<String> entityURLs) {
 
 		if (entityURLs.size() == 0) {
-			return new ArrayList();
+			return new ArrayList<IEntity>();
 		}
 
-		List<Long> entityIDs = new ArrayList();
+		List<Long> entityIDs = new ArrayList<Long>();
 
 		for (String entityURL : entityURLs) {
 			Long id= WebServiceURLs.urlToEntityID(entityURL);
@@ -190,7 +194,7 @@ public class EntityService implements IEntityService {
 
 		List instances = instanceCl.readInstancesById(entityIDs, instFilter);
 		List<Entity> entities = (List<Entity>) instances;
-		List<IEntity> ret = new ArrayList();
+		List<IEntity> ret = new ArrayList<IEntity>();
 		for (Entity epEnt : entities) {
 			ret.add(new EntityODR(this.api, epEnt));
 		}
@@ -280,9 +284,9 @@ public class EntityService implements IEntityService {
 
 				return createStructureAttribute(attrDef, (HashMap<IAttributeDef, Object>) value);
 			} 
-//			else if (ad.getName(Locale.ENGLISH).equals("Part of")){
-//				return createRelationalAttribute(attrDef,  value);
-//			}
+		//			else if (ad.getName(Locale.ENGLISH).equals("Part of")){
+		//				return createRelationalAttribute(attrDef,  value);
+		//			}
 
 			else {
 				ValueODR val = new ValueODR();
@@ -292,12 +296,7 @@ public class EntityService implements IEntityService {
 			}
 	}
 
-	private AttributeODR createRelationalAttribute(IAttributeDef attrDef,
-			Object value) {
-		AttributeODR  atr = new AttributeODR();
 
-		return null;
-	}
 
 	private AttributeODR createDescriptionAttributeODR(IAttributeDef attrDef,
 			Object value) {
@@ -337,7 +336,7 @@ public class EntityService implements IEntityService {
 		AttributeDef adef = (AttributeDef) attrDef;
 		attributeStructure.setTypeId(adef.getRangeEntityTypeID());
 
-		Iterator it = atributes.entrySet().iterator();
+		Iterator<?> it = atributes.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry pairs = (Map.Entry) it.next();
 			AttributeODR aodr = createAttribute((IAttributeDef) pairs.getKey(), pairs.getValue());
@@ -392,7 +391,6 @@ public class EntityService implements IEntityService {
 
 		entityNameattributes.add(nameAttribute);
 		nameStructure.setAttributes(entityNameattributes);
-		AttributeODR atODR = new AttributeODR();
 		Attribute nAtr = new Attribute();
 		nAtr.setDefinitionId(attrDef.getGUID());
 		List<Value> values = new ArrayList<Value>();
@@ -409,7 +407,6 @@ public class EntityService implements IEntityService {
 	 */
 	public AttributeODR createNameAttribute(IAttributeDef attrDef, Name name) {
 
-		AttributeODR atODR = new AttributeODR();
 		Attribute nAtr = new Attribute();
 		nAtr.setDefinitionId(attrDef.getGUID());
 		List<Value> values = new ArrayList<Value>();
@@ -429,14 +426,29 @@ public class EntityService implements IEntityService {
 		entityNameAttribute.setDefinitionId(attrDef.getGUID());
 
 		Name nameStructure = new Name();
-		nameStructure.setEntityBaseId(1L);
-		nameStructure.setTypeId(10L); //NOTE HARCODED TODO change
+		nameStructure.setEntityBaseId(1L); //NOTE HARCODED TODO change
+		logger.warn("Entity Base ID is 1.");
+
+		long etypeID = WebServiceURLs.urlToEtypeID(attrDef.getRangeEtypeURL());
+		nameStructure.setTypeId(etypeID);
+
+		EntityTypeService ets = new EntityTypeService();
+		EntityType etype = (EntityType) ets.readEntityType(attrDef.getRangeEtypeURL());
+		List<IAttributeDef> etypeAtrDefs = etype.getAttributeDefs();
+		Long atrDefId=null; 
+		for (IAttributeDef atrdef : etypeAtrDefs){
+			if (atrdef.getName().getString(LocaleUtils.toLocale("en")).equalsIgnoreCase("Name"))
+			{
+				atrDefId = atrdef.getGUID();
+			}
+		}
+
 
 		List<Attribute> nameAttributes = new ArrayList<Attribute>();
 
 		Attribute nameAttribute = new Attribute();
-		nameAttribute.setDefinitionId(55L); //NOTE HARCODED TODO change
-		nameAttribute.setConceptId(2L);
+		nameAttribute.setDefinitionId(atrDefId); 
+		nameAttribute.setConceptId(attrDef.getConcept().getGUID()); 
 
 		List<Value> nameValues = new ArrayList<Value>();
 		//Vocabularies 
@@ -444,7 +456,7 @@ public class EntityService implements IEntityService {
 		if (name instanceof String)
 		{
 			nameInput = (String) name; 
-			nameValues.add(new Value(nameInput, 1L));
+			nameValues.add(new Value(nameInput, 1L)); //NOTE HARCODED vocabulary TODO change
 		}
 		else if (name instanceof IDict){
 			Dict nameDict=(Dict) name;
@@ -593,7 +605,7 @@ public class EntityService implements IEntityService {
 
 	public List<ISearchResult> searchEntities(String partialName, String etypeURL) {
 		List<ISearchResult> entities = new ArrayList<ISearchResult>();
-                logger.warn("TRYING TO SEARCH ENTITIES - RETURNING NOTHING. TODO IMPLEMENT THIS");
+		logger.warn("TRYING TO SEARCH ENTITIES - RETURNING NOTHING. TODO IMPLEMENT THIS");
 		return entities;
 	}
 

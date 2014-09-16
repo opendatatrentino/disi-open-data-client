@@ -590,16 +590,14 @@ public class EntityODR extends Structure implements IEntity {
 
     private SemanticText convertSemanticStringToText(SemanticString sstring) {
 
-        SemanticTextFactory stf = new SemanticTextFactory();
-        SemanticText stext = (SemanticText) stf.semanticText(sstring);
+        SemanticText stext = (SemanticText) SemanticTextFactory.semanticText(sstring);
 
         return stext;
     }
 
     private SemanticString convertSemTextToSemString(SemanticText stext) {
 
-        SemanticTextFactory stf = new SemanticTextFactory();
-        SemanticString sstring = stf.semanticString(stext);
+        SemanticString sstring = SemanticTextFactory.semanticString(stext);
 
         return sstring;
     }
