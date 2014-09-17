@@ -94,7 +94,7 @@ public class EntityODR extends Structure implements IEntity {
         for (Attribute at : attrs) {
             if (at.getConceptId() == null) {
                 continue;
-            }
+            } else
             if (at.getConceptId() == KnowledgeService.DESCRIPTION_CONCEPT_ID) {
                 List<Value> vals = at.getValues();
                 List<Value> fixedVals = new ArrayList<Value>();
@@ -113,7 +113,7 @@ public class EntityODR extends Structure implements IEntity {
                     }
                 }
                 at.setValues(fixedVals);
-            }
+            } else 
 
             if (at.getDataType() == DataType.CONCEPT) {
                 List<Value> vals = at.getValues();
@@ -135,8 +135,8 @@ public class EntityODR extends Structure implements IEntity {
                 }
                 at.setValues(fixedVals);
             }
-
-            if (at.getConceptId() == 5L) { // todo hardcoded long
+            else 
+            if ((at.getConceptId() == 5L)&&(at.getValues().size()!=0)) { // todo hardcoded long
                 List<Value> vals = at.getValues();
                 List<Value> fixedVals = new ArrayList<Value>();
                 EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
@@ -150,7 +150,7 @@ public class EntityODR extends Structure implements IEntity {
 
                 at.setValues(fixedVals);
             }
-
+            else 
             if (at.getConceptId() == 111001L) { // todo hardcoded long
                 List<Value> vals = at.getValues();
                 List<Value> fixedVals = new ArrayList<Value>();
