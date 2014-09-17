@@ -1,24 +1,20 @@
 package eu.trentorise.opendata.disiclient.services.model;
 
-import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
-import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
+import it.unitn.disi.sweb.webapi.client.IProtocolClient;
+import it.unitn.disi.sweb.webapi.model.odt.IDResult;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.services.model.AssignmentResult;
 import eu.trentorise.opendata.semantics.services.model.IIDResult;
-import it.unitn.disi.sweb.webapi.client.IProtocolClient;
-import it.unitn.disi.sweb.webapi.model.eb.Attribute;
-import it.unitn.disi.sweb.webapi.model.eb.Entity;
-import it.unitn.disi.sweb.webapi.model.odt.IDResult;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class IDRes  extends IDResult implements IIDResult {
 
@@ -60,9 +56,9 @@ public class IDRes  extends IDResult implements IIDResult {
 			//	EntityService es = new EntityService(this.api);
 
 
-			IEntity ent = 	entityForNewResults();
-			this.entity = ent;
-			return ent;
+			//IEntity ent = 	entityForNewResults();
+			//this.entity = ent;
+			return this.entity;
 		}else{
 
 			EntityODR e = new EntityODR();
@@ -120,58 +116,58 @@ public class IDRes  extends IDResult implements IIDResult {
 
 
 
-	private IEntity entityForNewResults(){
-		EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
-
-                logger.warn("TODO REVIEW WHY IT IS READING PALAZZETTO HERE??"); 
-		EntityODR entity = (EntityODR)enServ.readEntity(64000L);
-		List<Attribute> attrs = entity.getAttributes();
-		List<Attribute> attrs1 = new ArrayList<Attribute>();
-		for (Attribute atr : attrs){
-
-			if (atr.getName().get("en").equalsIgnoreCase("Name")){
-				attrs1.add(atr);
-
-			}
-
-			if (atr.getName().get("en").equalsIgnoreCase("Description")){
-				attrs1.add(atr);
-
-			}
-
-			if (atr.getName().get("en").equalsIgnoreCase("Latitude")){
-				AttributeDef ad = new AttributeDef(atr.getDefinitionId());
-				AttributeODR attr = enServ.createAttribute(ad, createRandomFloat());
-				Attribute a=attr.convertToAttribute();
-				attrs1.add(a);
-
-			}
-			else if (atr.getName().get("en").equalsIgnoreCase("Longitude")){
-				attrs1.add(atr);
-			} 
-			else 
-				if (atr.getName().get("en").equalsIgnoreCase("Class")){
-					attrs1.add(atr);
-				}
-		}
-		Entity en = new Entity();
-		en.setEntityBaseId(1L);
-                logger.warn("HARD CODED TYPE ID");
-		en.setTypeId(12L);
-		en.setAttributes(attrs1);
-		en.setId(1L);
-		IEntity ent = new EntityODR(WebServiceURLs.getClientProtocol(),en);
-		return ent;
-	}
-	private float createRandomFloat()
-	{
-		float minX = 50.0f;
-		float maxX = 100.0f;
-
-		Random rand = new Random();
-
-		float finalX = rand.nextFloat() * (maxX - minX) + minX;
-		return finalX;
-	}
+//	private IEntity entityForNewResults(){
+//		EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
+//
+//                logger.warn("TODO REVIEW WHY IT IS READING PALAZZETTO HERE??"); 
+//		EntityODR entity = (EntityODR)enServ.readEntity(64000L);
+//		List<Attribute> attrs = entity.getAttributes();
+//		List<Attribute> attrs1 = new ArrayList<Attribute>();
+//		for (Attribute atr : attrs){
+//
+//			if (atr.getName().get("en").equalsIgnoreCase("Name")){
+//				attrs1.add(atr);
+//
+//			}
+//
+//			if (atr.getName().get("en").equalsIgnoreCase("Description")){
+//				attrs1.add(atr);
+//
+//			}
+//
+//			if (atr.getName().get("en").equalsIgnoreCase("Latitude")){
+//				AttributeDef ad = new AttributeDef(atr.getDefinitionId());
+//				AttributeODR attr = enServ.createAttribute(ad, createRandomFloat());
+//				Attribute a=attr.convertToAttribute();
+//				attrs1.add(a);
+//
+//			}
+//			else if (atr.getName().get("en").equalsIgnoreCase("Longitude")){
+//				attrs1.add(atr);
+//			} 
+//			else 
+//				if (atr.getName().get("en").equalsIgnoreCase("Class")){
+//					attrs1.add(atr);
+//				}
+//		}
+//		Entity en = new Entity();
+//		en.setEntityBaseId(1L);
+//                logger.warn("HARD CODED TYPE ID");
+//		en.setTypeId(12L);
+//		en.setAttributes(attrs1);
+//		en.setId(1L);
+//		IEntity ent = new EntityODR(WebServiceURLs.getClientProtocol(),en);
+//		return ent;
+//	}
+//	private float createRandomFloat()
+//	{
+//		float minX = 50.0f;
+//		float maxX = 100.0f;
+//
+//		Random rand = new Random();
+//
+//		float finalX = rand.nextFloat() * (maxX - minX) + minX;
+//		return finalX;
+//	}
 }
 
