@@ -550,4 +550,10 @@ public class TestEntityService {
     		}
     }
 
+   @Test
+   public void testReadEntity_2(){
+       EntityService es = new EntityService();       
+       es.readEntity("http://opendata.disi.unitn.it:8080/odr/instances/41950");
+   }
+   
 }

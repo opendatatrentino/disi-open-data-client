@@ -8,7 +8,6 @@ import eu.trentorise.opendata.disiclient.services.NLPService;
 import eu.trentorise.opendata.disiclient.services.SemanticTextFactory;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.urlToEntityID;
-import eu.trentorise.opendata.semantics.OpenEntityUtils;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
@@ -19,6 +18,7 @@ import eu.trentorise.opendata.semantics.model.knowledge.IDict;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.Dict;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.SemanticText;
 import eu.trentorise.opendata.semantics.services.model.DataTypes;
+import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
 import it.unitn.disi.sweb.webapi.client.kb.ComplexTypeClient;
@@ -34,14 +34,12 @@ import it.unitn.disi.sweb.webapi.model.eb.sstring.SemanticString;
 import it.unitn.disi.sweb.webapi.model.kb.concepts.Concept;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
 import it.unitn.disi.sweb.webapi.model.kb.types.DataType;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,7 +101,7 @@ public class EntityODR extends Structure implements IEntity {
                         fixedVals.add(val);
                     } else {
                         SemanticText semtext = convertSemanticStringToText((SemanticString) val.getSemanticValue());
-                        Locale loc = OpenEntityUtils.languageTagToLocale(val.getLanguageCode()); // dav so java 6 doesn't bother us Locale.forLanguageTag(val.getLanguageCode());
+                        Locale loc = TraceProvUtils.languageTagToLocale(val.getLanguageCode()); // dav so java 6 doesn't bother us Locale.forLanguageTag(val.getLanguageCode());
                         SemanticText stext = (SemanticText) semtext.withLocale(loc);
                         Value fixedVal = new Value();
                         fixedVal.setValue(stext);
@@ -135,7 +133,7 @@ public class EntityODR extends Structure implements IEntity {
                 at.setValues(fixedVals);
             }
 
-            if (at.getConceptId() == 5L) {
+            if (at.getConceptId() == 5L) { // todo hardcoded long
                 List<Value> vals = at.getValues();
                 List<Value> fixedVals = new ArrayList<Value>();
                 EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
@@ -150,7 +148,7 @@ public class EntityODR extends Structure implements IEntity {
                 at.setValues(fixedVals);
             }
 
-            if (at.getConceptId() == 111001L) {
+            if (at.getConceptId() == 111001L) { // todo hardcoded long
                 List<Value> vals = at.getValues();
                 List<Value> fixedVals = new ArrayList<Value>();
                 EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
