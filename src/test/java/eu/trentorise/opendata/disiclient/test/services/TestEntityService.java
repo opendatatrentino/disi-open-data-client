@@ -565,7 +565,7 @@ public class TestEntityService {
 
         IStructure nameStruct = (IStructure) nameAttr.getValues().get(0).getValue();
 
-        assertEquals(nameStruct.getEtypeURL(), nameAttrDef.getRangeEtypeURL());
+        assertEquals(nameAttrDef.getRangeEtypeURL(), nameStruct.getEtypeURL());
 
     }
 }
