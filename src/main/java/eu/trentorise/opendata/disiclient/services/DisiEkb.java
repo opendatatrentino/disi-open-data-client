@@ -1,11 +1,6 @@
 package eu.trentorise.opendata.disiclient.services;
 
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-
 import eu.trentorise.opendata.disiclient.services.shematching.MatchingService;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.IEntityService;
@@ -14,6 +9,12 @@ import eu.trentorise.opendata.semantics.services.IIdentityService;
 import eu.trentorise.opendata.semantics.services.IKnowledgeService;
 import eu.trentorise.opendata.semantics.services.INLPService;
 import eu.trentorise.opendata.semantics.services.ISemanticMatchingService;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -21,7 +22,8 @@ import eu.trentorise.opendata.semantics.services.ISemanticMatchingService;
  * 
  */
 public class DisiEkb implements IEkb {
- 
+    
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
     
     private  INLPService NLPService;
     private  IKnowledgeService knowledgeService;
@@ -76,11 +78,9 @@ public class DisiEkb implements IEkb {
         return entityService;
     }
 
-    /**
-     * odr d 0.3 hard coding locales support!
-    */
     public List<Locale> getSupportedLocales() {
         List<Locale> ret = new ArrayList<Locale>();
+        logger.warn("TODO LOCALES SUPPORT IS HARD CODED!");
         ret.add(Locale.ITALIAN);
         ret.add(Locale.ENGLISH);
         return ret;

@@ -1,16 +1,5 @@
 package eu.trentorise.opendata.disiclient.services.model;
 
-import it.unitn.disi.sweb.webapi.client.IProtocolClient;
-import it.unitn.disi.sweb.webapi.model.eb.Attribute;
-import it.unitn.disi.sweb.webapi.model.eb.Entity;
-import it.unitn.disi.sweb.webapi.model.odt.IDResult;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-
 import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
@@ -19,12 +8,25 @@ import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.services.model.AssignmentResult;
 import eu.trentorise.opendata.semantics.services.model.IIDResult;
+import it.unitn.disi.sweb.webapi.client.IProtocolClient;
+import it.unitn.disi.sweb.webapi.model.eb.Attribute;
+import it.unitn.disi.sweb.webapi.model.eb.Entity;
+import it.unitn.disi.sweb.webapi.model.odt.IDResult;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class IDRes  extends IDResult implements IIDResult {
 
 	IProtocolClient api;
 	IEntity entity;
 	AssignmentResult asResult;
+        
+        private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public IDRes(IDResult result ){
 
@@ -117,9 +119,11 @@ public class IDRes  extends IDResult implements IIDResult {
 		return url;	}
 
 
+
 	private IEntity entityForNewResults(){
 		EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
 
+                logger.warn("TODO REVIEW WHY IT IS READING PALAZZETTO HERE??"); 
 		EntityODR entity = (EntityODR)enServ.readEntity(64000L);
 		List<Attribute> attrs = entity.getAttributes();
 		List<Attribute> attrs1 = new ArrayList<Attribute>();
@@ -152,6 +156,7 @@ public class IDRes  extends IDResult implements IIDResult {
 		}
 		Entity en = new Entity();
 		en.setEntityBaseId(1L);
+                logger.warn("HARD CODED TYPE ID");
 		en.setTypeId(12L);
 		en.setAttributes(attrs1);
 		en.setId(1L);
