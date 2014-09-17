@@ -423,8 +423,8 @@ public class EntityService implements IEntityService {
 		entityNameAttribute.setDefinitionId(attrDef.getGUID());
 
 		Name nameStructure = new Name();
-		nameStructure.setEntityBaseId(1L); //NOTE HARCODED TODO change
-		logger.warn("Entity Base ID is 1.");
+		nameStructure.setEntityBaseId(1L); 
+		logger.warn("TODO HARDCODED ENTITY BASE ID TO 1.");
 
 		long etypeID = WebServiceURLs.urlToEtypeID(attrDef.getRangeEtypeURL());
 		nameStructure.setTypeId(etypeID);
