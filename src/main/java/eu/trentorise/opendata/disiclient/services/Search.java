@@ -69,11 +69,11 @@ public class Search {
 
 		for(Instance instance: instances ){
 			EntityType etype =ets.getEntityType(instance.getTypeId());
-			TraceProvUtils tpv = new TraceProvUtils();
-			if(etype.getName().getString(tpv.languageTagToLocale("en")).equals("Name"))
-					{			Name name =  (Name) instance;
-					names.add(name);
-					}
+			if(etype.getName().getString(TraceProvUtils.languageTagToLocale("en")).equals("Name"))
+			{		
+				Name name =  (Name) instance;
+				names.add(name);
+			}
 		}
 
 		return names;
@@ -94,8 +94,10 @@ public class Search {
 	 */
 	private List<IEntity> convertInstancesToEntities( List<Instance> instances){
 		List<IEntity> entities = new ArrayList<IEntity>();
+		EntityTypeService ets = new EntityTypeService();
 		for(Instance instance: instances ){
-			if(instance.getTypeId()!=10){
+			EntityType etype =ets.getEntityType(instance.getTypeId());
+			if(etype.getName().getString(TraceProvUtils.languageTagToLocale("en")).equals("Name")){
 				System.out.println(instance.getTypeId());
 				Entity entity =  (Entity) instance;
 				EntityODR entityODR = new EntityODR(api, entity);
