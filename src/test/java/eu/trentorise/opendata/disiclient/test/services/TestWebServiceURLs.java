@@ -1,8 +1,10 @@
 package eu.trentorise.opendata.disiclient.test.services;
 
-import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
+
+import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 
 /**
  *

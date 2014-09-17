@@ -1,19 +1,8 @@
 package eu.trentorise.opendata.disiclient.test.model;
 
-import eu.trentorise.opendata.disiclient.services.SemanticTextFactory;
-import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
-import eu.trentorise.opendata.semantics.IntegrityChecker;
 import static eu.trentorise.opendata.semantics.IntegrityChecker.checkSemanticText;
-import eu.trentorise.opendata.semantics.model.knowledge.IMeaning;
-import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
-import eu.trentorise.opendata.semantics.model.knowledge.ISentence;
-import eu.trentorise.opendata.semantics.model.knowledge.IWord;
-import eu.trentorise.opendata.semantics.model.knowledge.MeaningKind;
-import eu.trentorise.opendata.semantics.model.knowledge.MeaningStatus;
-import eu.trentorise.opendata.semantics.model.knowledge.impl.Meaning;
-import eu.trentorise.opendata.semantics.model.knowledge.impl.SemanticText;
-import eu.trentorise.opendata.semantics.model.knowledge.impl.Sentence;
-import eu.trentorise.opendata.semantics.model.knowledge.impl.Word;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import it.unitn.disi.sweb.core.nlp.model.NLMeaning;
 import it.unitn.disi.sweb.core.nlp.model.NLMultiWord;
 import it.unitn.disi.sweb.core.nlp.model.NLSenseMeaning;
@@ -27,13 +16,28 @@ import it.unitn.disi.sweb.webapi.model.eb.sstring.InstanceTerm;
 import it.unitn.disi.sweb.webapi.model.eb.sstring.SemanticString;
 import it.unitn.disi.sweb.webapi.model.eb.sstring.SemanticTerm;
 import it.unitn.disi.sweb.webapi.model.eb.sstring.StringTerm;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import static org.junit.Assert.*;
+
 import org.junit.Test;
+
+import eu.trentorise.opendata.disiclient.services.SemanticTextFactory;
+import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
+import eu.trentorise.opendata.semantics.IntegrityChecker;
+import eu.trentorise.opendata.semantics.model.knowledge.IMeaning;
+import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
+import eu.trentorise.opendata.semantics.model.knowledge.ISentence;
+import eu.trentorise.opendata.semantics.model.knowledge.IWord;
+import eu.trentorise.opendata.semantics.model.knowledge.MeaningKind;
+import eu.trentorise.opendata.semantics.model.knowledge.MeaningStatus;
+import eu.trentorise.opendata.semantics.model.knowledge.impl.Meaning;
+import eu.trentorise.opendata.semantics.model.knowledge.impl.SemanticText;
+import eu.trentorise.opendata.semantics.model.knowledge.impl.Sentence;
+import eu.trentorise.opendata.semantics.model.knowledge.impl.Word;
 
 /**
  *

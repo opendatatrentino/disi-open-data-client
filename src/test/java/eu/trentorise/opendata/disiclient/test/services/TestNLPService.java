@@ -161,6 +161,25 @@
 //
 package eu.trentorise.opendata.disiclient.test.services;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import it.unitn.disi.sweb.core.nlp.model.NLEntityMeaning;
+import it.unitn.disi.sweb.core.nlp.model.NLText;
+import it.unitn.disi.sweb.core.nlp.model.NLToken;
+import it.unitn.disi.sweb.webapi.model.PipelineDescription;
+import it.unitn.disi.sweb.webapi.model.eb.sstring.ComplexConcept;
+import it.unitn.disi.sweb.webapi.model.eb.sstring.SemanticString;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import org.junit.Ignore;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.KnowledgeService;
 import eu.trentorise.opendata.disiclient.services.NLPService;
@@ -174,23 +193,6 @@ import eu.trentorise.opendata.semantics.model.knowledge.IWord;
 import eu.trentorise.opendata.semantics.model.knowledge.MeaningKind;
 import eu.trentorise.opendata.semantics.model.knowledge.MeaningStatus;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.SemanticText;
-import it.unitn.disi.sweb.core.nlp.model.NLEntityMeaning;
-import it.unitn.disi.sweb.core.nlp.model.NLText;
-import it.unitn.disi.sweb.core.nlp.model.NLToken;
-import it.unitn.disi.sweb.webapi.model.PipelineDescription;
-import it.unitn.disi.sweb.webapi.model.eb.sstring.ComplexConcept;
-import it.unitn.disi.sweb.webapi.model.eb.sstring.SemanticString;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
-import static org.junit.Assert.*;
-import org.junit.Ignore;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Testing the client implementaion of NLP services.

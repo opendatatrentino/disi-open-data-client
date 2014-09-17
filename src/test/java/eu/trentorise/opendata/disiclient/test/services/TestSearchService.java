@@ -1,8 +1,6 @@
 package eu.trentorise.opendata.disiclient.test.services;
 
-import static org.junit.Assert.*;
-
-import eu.trentorise.opendata.disiclient.services.Search;
+import static org.junit.Assert.assertNotNull;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
 import it.unitn.disi.sweb.webapi.model.eb.Name;
@@ -13,6 +11,7 @@ import java.util.Locale;
 import org.junit.Before;
 import org.junit.Test;
 
+import eu.trentorise.opendata.disiclient.services.Search;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 
 

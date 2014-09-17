@@ -2,9 +2,9 @@ package eu.trentorise.opendata.disiclient.services.model;
 
 import java.util.List;
 
+import eu.trentorise.opendata.disiclient.model.entity.EntityType;
 import eu.trentorise.opendata.semantics.services.model.IAttributeCorrespondence;
 import eu.trentorise.opendata.semantics.services.model.ISchemaCorrespondence;
-import eu.trentorise.opendata.disiclient.model.entity.EntityType;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>

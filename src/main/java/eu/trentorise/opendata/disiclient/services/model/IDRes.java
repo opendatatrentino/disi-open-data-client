@@ -1,6 +1,5 @@
 package eu.trentorise.opendata.disiclient.services.model;
 
-import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
@@ -12,13 +11,14 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import eu.trentorise.opendata.semantics.model.entity.IEntity;
-import eu.trentorise.opendata.semantics.services.model.AssignmentResult;
-import eu.trentorise.opendata.semantics.services.model.IIDResult;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
+import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
+import eu.trentorise.opendata.semantics.model.entity.IEntity;
+import eu.trentorise.opendata.semantics.services.model.AssignmentResult;
+import eu.trentorise.opendata.semantics.services.model.IIDResult;
 
 public class IDRes  extends IDResult implements IIDResult {
 

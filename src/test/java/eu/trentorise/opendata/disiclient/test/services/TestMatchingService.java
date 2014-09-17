@@ -5,18 +5,16 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-
-import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 
 import org.junit.Test;
 
 import eu.trentorise.opendata.columnrecognizers.ColumnConceptCandidate;
 import eu.trentorise.opendata.columnrecognizers.ColumnRecognizer;
-import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.disiclient.model.entity.EntityType;
+import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import eu.trentorise.opendata.disiclient.services.model.SchemaCorrespondence;
 import eu.trentorise.opendata.disiclient.services.shematching.MatchingService;
+import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 
 public class TestMatchingService {
 

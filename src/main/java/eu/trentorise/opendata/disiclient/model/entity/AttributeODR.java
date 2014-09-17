@@ -8,10 +8,10 @@ import it.unitn.disi.sweb.webapi.model.eb.Value;
 import java.util.ArrayList;
 import java.util.List;
 
+import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IValue;
-import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>

@@ -1,22 +1,9 @@
 package eu.trentorise.opendata.disiclient.services;
 
-import eu.trentorise.opendata.disiclient.DisiClientException;
 import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.conceptIDToURL;
 import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.entityIDToURL;
 import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.urlToConceptID;
 import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.urlToEntityID;
-import eu.trentorise.opendata.semantics.model.knowledge.IDict;
-import eu.trentorise.opendata.semantics.model.knowledge.IMeaning;
-import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
-import eu.trentorise.opendata.semantics.model.knowledge.ISentence;
-import eu.trentorise.opendata.semantics.model.knowledge.IWord;
-import eu.trentorise.opendata.semantics.model.knowledge.MeaningKind;
-import eu.trentorise.opendata.semantics.model.knowledge.MeaningStatus;
-import eu.trentorise.opendata.semantics.model.knowledge.impl.Dict;
-import eu.trentorise.opendata.semantics.model.knowledge.impl.Meaning;
-import eu.trentorise.opendata.semantics.model.knowledge.impl.SemanticText;
-import eu.trentorise.opendata.semantics.model.knowledge.impl.Sentence;
-import eu.trentorise.opendata.semantics.model.knowledge.impl.Word;
 import it.unitn.disi.sweb.core.nlp.model.NLComplexToken;
 import it.unitn.disi.sweb.core.nlp.model.NLEntityMeaning;
 import it.unitn.disi.sweb.core.nlp.model.NLMeaning;
@@ -32,6 +19,7 @@ import it.unitn.disi.sweb.webapi.model.eb.sstring.ConceptTerm;
 import it.unitn.disi.sweb.webapi.model.eb.sstring.InstanceTerm;
 import it.unitn.disi.sweb.webapi.model.eb.sstring.SemanticString;
 import it.unitn.disi.sweb.webapi.model.eb.sstring.SemanticTerm;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -39,9 +27,25 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
+
 import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import eu.trentorise.opendata.disiclient.DisiClientException;
+import eu.trentorise.opendata.semantics.model.knowledge.IDict;
+import eu.trentorise.opendata.semantics.model.knowledge.IMeaning;
+import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
+import eu.trentorise.opendata.semantics.model.knowledge.ISentence;
+import eu.trentorise.opendata.semantics.model.knowledge.IWord;
+import eu.trentorise.opendata.semantics.model.knowledge.MeaningKind;
+import eu.trentorise.opendata.semantics.model.knowledge.MeaningStatus;
+import eu.trentorise.opendata.semantics.model.knowledge.impl.Dict;
+import eu.trentorise.opendata.semantics.model.knowledge.impl.Meaning;
+import eu.trentorise.opendata.semantics.model.knowledge.impl.SemanticText;
+import eu.trentorise.opendata.semantics.model.knowledge.impl.Sentence;
+import eu.trentorise.opendata.semantics.model.knowledge.impl.Word;
 
 /**
  * Class to convert SemanticText to/from NLText and SemanticString.

@@ -587,6 +587,7 @@ public class EntityService implements IEntityService {
 	}
 
 	public void exportToCsv(List<String> entityURLs, Writer writer) {
+		//TODO exportToCsv
 		throw new UnsupportedOperationException("todo to implement");
 
 	}

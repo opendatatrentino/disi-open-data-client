@@ -1,5 +1,36 @@
 package eu.trentorise.opendata.disiclient.test.services;
 
+import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.attrDefIDToURL;
+import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.conceptIDToURL;
+import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.entityIDToURL;
+import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.etypeIDToURL;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import it.unitn.disi.sweb.webapi.client.IProtocolClient;
+import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
+import it.unitn.disi.sweb.webapi.client.eb.EbClient;
+import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
+import it.unitn.disi.sweb.webapi.client.kb.ComplexTypeClient;
+import it.unitn.disi.sweb.webapi.model.eb.Attribute;
+import it.unitn.disi.sweb.webapi.model.eb.Entity;
+import it.unitn.disi.sweb.webapi.model.eb.EntityBase;
+import it.unitn.disi.sweb.webapi.model.eb.Instance;
+import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import eu.trentorise.opendata.disiclient.DisiClientException;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
@@ -12,10 +43,6 @@ import eu.trentorise.opendata.disiclient.services.DisiEkb;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
-import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.attrDefIDToURL;
-import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.conceptIDToURL;
-import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.entityIDToURL;
-import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.etypeIDToURL;
 import eu.trentorise.opendata.semantics.IntegrityChecker;
 import eu.trentorise.opendata.semantics.NotFoundException;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
@@ -25,32 +52,6 @@ import eu.trentorise.opendata.semantics.model.entity.IStructure;
 import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.IEntityService;
-import it.unitn.disi.sweb.webapi.client.IProtocolClient;
-import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
-import it.unitn.disi.sweb.webapi.client.eb.EbClient;
-import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
-import it.unitn.disi.sweb.webapi.client.kb.ComplexTypeClient;
-import it.unitn.disi.sweb.webapi.model.eb.Attribute;
-import it.unitn.disi.sweb.webapi.model.eb.Entity;
-import it.unitn.disi.sweb.webapi.model.eb.EntityBase;
-import it.unitn.disi.sweb.webapi.model.eb.Instance;
-import it.unitn.disi.sweb.webapi.model.eb.Name;
-import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
-
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-
-import static org.junit.Assert.*;
-
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>

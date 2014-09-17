@@ -3,13 +3,14 @@ package eu.trentorise.opendata.disiclient.services;
 import java.util.ArrayList;
 import java.util.List;
 
-import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
-import eu.trentorise.opendata.semantics.services.IKnowledgeService;
-import eu.trentorise.opendata.disiclient.DisiClientException;
-import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
-import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import eu.trentorise.opendata.disiclient.DisiClientException;
+import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
+import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
+import eu.trentorise.opendata.semantics.services.IKnowledgeService;
+import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>

@@ -1,38 +1,38 @@
 package eu.trentorise.opendata.disiclient.test.services;
 
+import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.FACILITY_ID;
+import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.FACILITY_URL;
+import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.PALAZZETTO_ID;
+import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.PALAZZETTO_NAME_IT;
+import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.PALAZZETTO_URL;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import it.unitn.disi.sweb.webapi.client.IProtocolClient;
+import it.unitn.disi.sweb.webapi.model.eb.Attribute;
+import it.unitn.disi.sweb.webapi.model.eb.Entity;
+import it.unitn.disi.sweb.webapi.model.eb.Value;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import org.junit.Test;
+
 import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
-import static eu.trentorise.opendata.disiclient.model.entity.EntityODR.disify;
 import eu.trentorise.opendata.disiclient.model.entity.EntityType;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import eu.trentorise.opendata.disiclient.services.IdentityService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
-import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.attrDefIDToURL;
-import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.urlToEntityID;
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.FACILITY_ID;
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.FACILITY_URL;
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.PALAZZETTO_ID;
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.PALAZZETTO_NAME_IT;
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.PALAZZETTO_URL;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.services.model.AssignmentResult;
 import eu.trentorise.opendata.semantics.services.model.IIDResult;
-import it.unitn.disi.sweb.webapi.client.IProtocolClient;
-import it.unitn.disi.sweb.webapi.model.eb.Attribute;
-import it.unitn.disi.sweb.webapi.model.eb.Entity;
-import it.unitn.disi.sweb.webapi.model.eb.Value;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import static org.junit.Assert.*;
-import org.junit.Ignore;
-import org.junit.Test;
 
 
 /**

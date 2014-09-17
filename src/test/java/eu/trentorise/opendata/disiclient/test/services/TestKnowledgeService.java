@@ -1,20 +1,19 @@
 package eu.trentorise.opendata.disiclient.test.services;
 
-import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
-import eu.trentorise.opendata.disiclient.DisiClientException;
-import eu.trentorise.opendata.disiclient.services.KnowledgeService;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+
 import java.util.ArrayList;
 import java.util.List;
-import static org.junit.Assert.assertEquals;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotEquals;
 
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import eu.trentorise.opendata.disiclient.DisiClientException;
+import eu.trentorise.opendata.disiclient.services.KnowledgeService;
+import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
 
 public class TestKnowledgeService {
 

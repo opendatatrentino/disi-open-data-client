@@ -1,17 +1,13 @@
 package eu.trentorise.opendata.disiclient.test.model;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-
-import java.util.Locale;
 
 import org.junit.Test;
 
-import eu.trentorise.opendata.semantics.model.entity.IAttribute;
-import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.disiclient.model.entity.Structure;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
+import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 
 
 public class TestStructure {

@@ -75,7 +75,6 @@ public class EntityExportService {
 		for (IAttributeDef attrDef: attributeDefs){
 			System.out.println(attrDef.getName().getString(Locale.ENGLISH));
 			System.out.println(attrDef.getURL());
-
 		}
 		return null;
 	}
@@ -100,18 +99,15 @@ public class EntityExportService {
 			finJsonObject.add(attrDef.getName().getString(Locale.ENGLISH), jsonObjectAttr);
 		}
 
-		//	finJsonObject.add("@context", jsonObject);
 		finJsonObject.addProperty("xsd", "http://www.w3.org/2001/XMLSchema#");
 		finJsonObject.addProperty("oe", WebServiceURLs.getURL()+"/datatypes");
 
-		//System.out.println(finJsonObject);
 		return finJsonObject;
 	}
 
 	public void  convertToJsonLd(InputStream inputStream, Writer writer) throws IOException{
 
 
-		//FileWriter fw = new FileWriter(file.getAbsoluteFile());
 		BufferedWriter bw = new BufferedWriter(writer);
 
 		JsonStreamParser parser = new JsonStreamParser(new InputStreamReader(inputStream));

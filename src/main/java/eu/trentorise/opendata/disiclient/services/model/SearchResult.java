@@ -1,14 +1,16 @@
 package eu.trentorise.opendata.disiclient.services.model;
 
+import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
+
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.Map;
+
 import eu.trentorise.opendata.disiclient.services.NLPService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.knowledge.IDict;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.Dict;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
-import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Map;
 
 /**
  * Todo this currently makes sense only for etypes. According to openentity API 0.21.0

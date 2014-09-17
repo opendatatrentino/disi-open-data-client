@@ -1,19 +1,21 @@
 package eu.trentorise.opendata.disiclient.services;
 
-import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
-import eu.trentorise.opendata.semantics.model.knowledge.IResourceContext;
-import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
-import eu.trentorise.opendata.semantics.model.knowledge.ITableResource;
-import eu.trentorise.opendata.semantics.services.INLPService;
 import it.unitn.disi.sweb.core.nlp.model.NLText;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.nlp.PipelineClient;
 import it.unitn.disi.sweb.webapi.model.NLPInput;
 import it.unitn.disi.sweb.webapi.model.PipelineDescription;
+
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
+import eu.trentorise.opendata.semantics.model.knowledge.IResourceContext;
+import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
+import eu.trentorise.opendata.semantics.model.knowledge.ITableResource;
+import eu.trentorise.opendata.semantics.services.INLPService;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>

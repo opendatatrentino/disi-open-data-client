@@ -1,19 +1,21 @@
 package eu.trentorise.opendata.disiclient.test.services;
 
+import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.NAME_URL;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.List;
+import java.util.Locale;
+
+import org.junit.Test;
+
 import eu.trentorise.opendata.disiclient.model.entity.EntityType;
 import eu.trentorise.opendata.disiclient.services.DisiEkb;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.NAME_URL;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
-import java.util.List;
-import java.util.Locale;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import org.junit.Test;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>

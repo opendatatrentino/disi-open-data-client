@@ -1,6 +1,12 @@
 package eu.trentorise.opendata.disiclient.services;
 
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+
+import eu.trentorise.opendata.disiclient.services.shematching.MatchingService;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.IEntityService;
 import eu.trentorise.opendata.semantics.services.IEntityTypeService;
@@ -8,12 +14,6 @@ import eu.trentorise.opendata.semantics.services.IIdentityService;
 import eu.trentorise.opendata.semantics.services.IKnowledgeService;
 import eu.trentorise.opendata.semantics.services.INLPService;
 import eu.trentorise.opendata.semantics.services.ISemanticMatchingService;
-import eu.trentorise.opendata.disiclient.services.shematching.MatchingService;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
 
 /**
  *

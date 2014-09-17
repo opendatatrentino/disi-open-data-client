@@ -1,19 +1,19 @@
 package eu.trentorise.opendata.disiclient.model.knowledge;
 
+import it.unitn.disi.sweb.webapi.client.IProtocolClient;
+import it.unitn.disi.sweb.webapi.client.kb.ConceptClient;
+import it.unitn.disi.sweb.webapi.model.kb.concepts.Concept;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 import eu.trentorise.opendata.disiclient.services.NLPService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
 import eu.trentorise.opendata.semantics.model.knowledge.IDict;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.Dict;
-import it.unitn.disi.sweb.webapi.client.IProtocolClient;
-import it.unitn.disi.sweb.webapi.client.kb.ConceptClient;
-import it.unitn.disi.sweb.webapi.model.Pagination;
-import it.unitn.disi.sweb.webapi.model.kb.concepts.Concept;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 public class ConceptODR implements IConcept{
 

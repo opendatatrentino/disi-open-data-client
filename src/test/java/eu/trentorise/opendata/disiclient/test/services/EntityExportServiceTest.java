@@ -5,9 +5,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import eu.trentorise.opendata.disiclient.services.EntityExportService;
-import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import org.junit.Test;
+
+import eu.trentorise.opendata.disiclient.services.EntityExportService;
 
 
 public class EntityExportServiceTest {
