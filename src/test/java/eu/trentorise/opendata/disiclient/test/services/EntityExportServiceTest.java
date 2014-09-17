@@ -15,7 +15,7 @@ public class EntityExportServiceTest {
 	@Test
 	public void generateContextTest() throws IOException{
 		EntityExportService ess = new EntityExportService();
-		EntityTypeService ets = new EntityTypeService();
+		//EntityTypeService ets = new EntityTypeService();
 		//EntityType etype = ets.getEntityType(12L);
 
 		List<Long> entities = new ArrayList<Long>();

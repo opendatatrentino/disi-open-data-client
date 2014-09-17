@@ -38,14 +38,14 @@ public class DisiEkb implements IEkb {
         this.identityService = new IdentityService();
         this.semanticMatchingService = new MatchingService();      
         this.entityService = new EntityService(WebServiceURLs.getClientProtocol());        
-        List<Locale> locs = new ArrayList();
+        List<Locale> locs = new ArrayList<Locale>();
         locs.add(Locale.ENGLISH);
         this.defaultLocales = Collections.unmodifiableList(locs);
     }
     
 
     public void setDefaultLocales(List<Locale> locales) {
-        this.defaultLocales = Collections.unmodifiableList(new ArrayList(locales));
+        this.defaultLocales = Collections.unmodifiableList(new ArrayList<Locale>(locales));
     }
 
     public List<Locale> getDefaultLocales() {

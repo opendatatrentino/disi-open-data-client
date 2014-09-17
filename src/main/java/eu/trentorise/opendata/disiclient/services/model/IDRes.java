@@ -156,8 +156,6 @@ public class IDRes  extends IDResult implements IIDResult {
 		en.setAttributes(attrs1);
 		en.setId(1L);
 		IEntity ent = new EntityODR(WebServiceURLs.getClientProtocol(),en);
-		long id = enServ.createEntity(ent);
-		IEntity finalEn = enServ.readEntity(id);
 		return ent;
 	}
 	private float createRandomFloat()

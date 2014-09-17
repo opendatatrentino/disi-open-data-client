@@ -1,10 +1,5 @@
 package eu.trentorise.opendata.disiclient.services.shematching;
 
-import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
-import eu.trentorise.opendata.disiclient.model.entity.EntityType;
-import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
-import eu.trentorise.opendata.disiclient.services.model.AttributeCorrespondence;
-import eu.trentorise.opendata.disiclient.services.model.SchemaCorrespondence;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.kb.ConceptClient;
 
@@ -13,12 +8,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import eu.trentorise.opendata.columnrecognizers.ColumnConceptCandidate;
 import eu.trentorise.opendata.columnrecognizers.ColumnRecognizer;
+import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
+import eu.trentorise.opendata.disiclient.model.entity.EntityType;
+import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
+import eu.trentorise.opendata.disiclient.services.EntityTypeService;
+import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
+import eu.trentorise.opendata.disiclient.services.model.AttributeCorrespondence;
+import eu.trentorise.opendata.disiclient.services.model.SchemaCorrespondence;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.model.knowledge.IResourceContext;
@@ -26,12 +27,6 @@ import eu.trentorise.opendata.semantics.model.knowledge.ITableResource;
 import eu.trentorise.opendata.semantics.services.ISemanticMatchingService;
 import eu.trentorise.opendata.semantics.services.model.IAttributeCorrespondence;
 import eu.trentorise.opendata.semantics.services.model.ISchemaCorrespondence;
-import eu.trentorise.opendata.disiclient.services.EntityTypeService;
-import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
-//import eu.trentorise.schemamatcher.implementation.services.SchemaImport;
-//import eu.trentorise.schemamatcher.implementation.services.SchemaMatcherFactory;
-//import eu.trentorise.schemamatcher.model.ISchema;
-//import eu.trentorise.schemamatcher.model.ISchemaMatcher;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
@@ -139,7 +134,6 @@ public class MatchingService implements ISemanticMatchingService {
 				Map.Entry<Long,Long> entry = new AbstractMap.SimpleEntry<Long,Long>(sourceConceptID,targetConceptID);
 				batch.add(entry);
 			}
-			String st = batch.toString();
 			List<Integer> distances = getBatchDistance(batch);
 			for(int i=0; i<eTypeAttributes.size(); i++  ){
 				AttributeDef attr = (AttributeDef)eTypeAttributes.get(i);

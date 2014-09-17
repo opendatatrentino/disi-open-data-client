@@ -118,7 +118,6 @@ public class EntityType implements IEntityType{
 	}
 
 	public void removeAttributeDef(long attrDefID) {
-		//TODO properly test this part
 		List<IAttributeDef> attrDefList = this.attrs;
 		for(int i=0; i<attrDefList.size(); i++){
 			AttributeDef attrDef =(AttributeDef) attrDefList.get(i);
@@ -132,7 +131,6 @@ public class EntityType implements IEntityType{
 		//adding attribute on server side
 		AttributeDefinitionClient attrDefCl = new AttributeDefinitionClient(WebServiceURLs.getClientProtocol());
 		List<AttributeDefinition> attrList  =attrDefCl.readAttributeDefinitions(this.id, null, null, null);
-		//TODO properly test this part
 		for(int i=0; i<attrList.size(); i++){
 			if (attrDefID==attrList.get(i).getId()){
 				attrDefList.remove(i);
@@ -182,7 +180,7 @@ public class EntityType implements IEntityType{
 
 	public IDict getName() {
 		Dict dict = new Dict();
-		Iterator it = this.name.entrySet().iterator();
+		Iterator<?> it = this.name.entrySet().iterator();
 		while(it.hasNext()){
 			Map.Entry pairs = (Map.Entry)it.next();
 			Locale l = NLPService.languageTagToLocale((String)pairs.getKey());
@@ -194,7 +192,7 @@ public class EntityType implements IEntityType{
 
 	public IDict getDescription() {
 		Dict dict = new Dict();
-		Iterator it = this.description.entrySet().iterator();
+		Iterator<?> it = this.description.entrySet().iterator();
 		while(it.hasNext()){
 			Map.Entry pairs = (Map.Entry)it.next();
 			Locale l = NLPService.languageTagToLocale((String)pairs.getKey());
@@ -219,7 +217,6 @@ public class EntityType implements IEntityType{
 		List<IAttributeDef> attrDefs =getAttributeDefs();
 		for (IAttributeDef attr: attrDefs){
 			AttributeDef ad = (AttributeDef) attr;
-			String adName = ad.getName(Locale.ENGLISH);
 			if (ad.getName(Locale.ENGLISH).equalsIgnoreCase("name")){
 				return attr;
 			}

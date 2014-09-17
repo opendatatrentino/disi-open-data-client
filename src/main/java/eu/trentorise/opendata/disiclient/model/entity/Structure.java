@@ -2,7 +2,6 @@ package eu.trentorise.opendata.disiclient.model.entity;
 
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
-import it.unitn.disi.sweb.webapi.model.Pagination;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
 import it.unitn.disi.sweb.webapi.model.eb.Name;
@@ -43,7 +42,6 @@ public class Structure  extends Instance implements IStructure
 		}else 
 		{
 			AttributeClient attrCl = new AttributeClient(getClientProtocol());
-			Pagination page = new Pagination(1,10);
 			List<Attribute> attrs =attrCl.readAttributes(super.getId(), null, null);
 			super.setAttributes(attrs);
 			List<IAttribute> attrODR = convertToAttributeODR(attrs);

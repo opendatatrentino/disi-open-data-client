@@ -1,8 +1,6 @@
 package eu.trentorise.opendata.disiclient.services;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -10,9 +8,6 @@ import java.io.Writer;
 import java.util.List;
 import java.util.Locale;
 
-import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
-import eu.trentorise.opendata.disiclient.model.entity.EntityType;
-import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.fluent.Form;
 import org.apache.http.client.fluent.Request;
@@ -23,6 +18,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonStreamParser;
 
+import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
+import eu.trentorise.opendata.disiclient.model.entity.EntityType;
+import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
@@ -32,59 +30,34 @@ import eu.trentorise.opendata.semantics.services.model.DataTypes;
 public class EntityExportService {
 
 	private static final String   regexInput = "@type";        
-	private static final String   regexOutput = "#type";
+	//private static final String   regexOutput = "#type";
 
 
-	//	/**The method aims to change  @type keyword reserved by json-LD to #type in the file returned from the server
-	//	 * 
-	//	 */
-	//	private void cleanFile(String fileName, String inputText){
-	//
-	//		PrintWriter out;
-	//		try {
-	//			out = new PrintWriter(fileName);
-	//			out.print(inputText);
-	//		} catch (FileNotFoundException e) {
-	//			throw new DisiClientException("Error while creating print writer", e);
-	//		}
-	//
-	//	}
 
-	//	/** Method substitute reserved by JSON-LD keywords with @-symbol to #-symbol 
-	//	 * @param input string 
-	//	 * @return output string without @-keywords
-	//	 */
-	//	public String  replaceReservedKeyWords(String input){
-	//		Pattern pattern = Pattern.compile(regexInput, Pattern.CASE_INSENSITIVE);
-	//		Matcher matcher = pattern.matcher(input);
-	//		String output = matcher.replaceAll(regexOutput);     // all matches
-	//		return output;
-	//	} 
-
-	/** Reads file and convert text from it to String
-	 * @param fileName
-	 * @return
-	 * @throws IOException
-	 */
-	private String readFile(String fileName) throws IOException{
-		String input="";
-
-		BufferedReader br = new BufferedReader(new FileReader(fileName));
-		try {
-			StringBuilder sb = new StringBuilder();
-			String  line = br.readLine();
-
-			while (line != null) {
-				sb.append(line);
-				sb.append(System.getProperty("line.separator"));
-				line = br.readLine();
-			}
-			input = sb.toString();
-		} finally {
-			br.close();
-		}
-		return input;
-	}
+//	/** Reads file and convert text from it to String
+//	 * @param fileName
+//	 * @return
+//	 * @throws IOException
+//	 */
+//	private String readFile(String fileName) throws IOException{
+//		String input="";
+//
+//		BufferedReader br = new BufferedReader(new FileReader(fileName));
+//		try {
+//			StringBuilder sb = new StringBuilder();
+//			String  line = br.readLine();
+//
+//			while (line != null) {
+//				sb.append(line);
+//				sb.append(System.getProperty("line.separator"));
+//				line = br.readLine();
+//			}
+//			input = sb.toString();
+//		} finally {
+//			br.close();
+//		}
+//		return input;
+//	}
 
 	/** The method generates JSON-LD @context 
 	 * @param id
@@ -107,26 +80,9 @@ public class EntityExportService {
 		return null;
 	}
 
-	//	public void generateContext() throws IOException, JsonLdError{
-	//		GsonBuilder builder = new GsonBuilder();
-	//		Gson gson = builder.create();
-	//		//EntityContexJSONLD context = new EntityContexJSONLD();
-	//		context.setAttributeDefUrl("www.example.com");
-	//		context.setDataType(DataType.BOOLEAN);
-	//
-	//		JsonObject obj = new JsonObject();
-	//		obj.addProperty("@id", context.getAttributeDefUrl());
-	//		obj.addProperty("@type", context.getDataType().toString());
-	//
-	//		JsonObject jsonObjectAttrdefName = new JsonObject();
-	//		jsonObjectAttrdefName.add("Name", obj); 
-	//
-	//		System.out.println(jsonObjectAttrdefName.toString());
-	//	}
 
 	public JsonObject generateEtypeContext(IEntityType etype){
 		List<IAttributeDef> attrDefs = etype.getAttributeDefs();
-		JsonObject jsonObject = new JsonObject();
 		JsonObject finJsonObject = new JsonObject();
 
 
@@ -135,10 +91,10 @@ public class EntityExportService {
 			JsonObject jsonObjectAttr = new JsonObject();
 			jsonObjectAttr.addProperty("@id", attrDef.getURL());
 			if(attrDef.getDataType().equals(DataTypes.STRUCTURE)){
-				jsonObjectAttr.addProperty("@type", attrDef.getRangeEtypeURL());
+				jsonObjectAttr.addProperty(regexInput, attrDef.getRangeEtypeURL());
 			} else 
 			{
-				jsonObjectAttr.addProperty("@type", attrDef.getDataType());
+				jsonObjectAttr.addProperty(regexInput, attrDef.getDataType());
 
 			}
 			finJsonObject.add(attrDef.getName().getString(Locale.ENGLISH), jsonObjectAttr);
@@ -182,7 +138,7 @@ public class EntityExportService {
 		obj.remove("creationDate");
 		obj.remove("modificationDate");
 		obj.remove("dataType");
-		obj.remove("@type");
+		obj.remove(regexInput);
 		obj.remove("typeId");
 		obj.remove("globalId");
 
@@ -193,7 +149,6 @@ public class EntityExportService {
 		Long conceptTypeID = codr.readConceptGUID(typeId);
 
 
-		EntityExportService ess = new EntityExportService();
 		EntityTypeService ets = new EntityTypeService();
 		/////////////////!!!!!!!!!!!!!IMPORTANT CHANGE THE ETYPE ID!!!!!!!!!!!!!!///////////
 		EntityType etype = ets.getEntityTypeByConcept(conceptTypeID);
@@ -210,7 +165,6 @@ public class EntityExportService {
 
 			Long attrGlobalConceptID = attrObj.get("conceptId").getAsLong();
 			obj.remove("conceptId");
-			ConceptODR conceptOdr = new ConceptODR(); 
 			Long attrConceptID = codr.readConceptGUID(attrGlobalConceptID);
 
 			//	System.out.println(attrConceptID);

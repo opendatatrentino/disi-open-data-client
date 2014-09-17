@@ -55,7 +55,7 @@ public class SemanticTextFactory {
 
 
     /**
-     * TODO - it always return the lemma in english!!!
+     * TODO - it always return the lemma in English!!!
      */
     public static IDict meaningToDict(NLMeaning meaning) {
         return new Dict(meaning.getLemma());

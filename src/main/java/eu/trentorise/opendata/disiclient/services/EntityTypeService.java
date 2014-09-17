@@ -19,7 +19,10 @@ import it.unitn.disi.sweb.webapi.model.kb.types.AttributeDefinition;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
 
 import java.util.*;
+
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
@@ -28,15 +31,19 @@ import org.apache.commons.lang3.StringUtils;
  *
  */
 public class EntityTypeService implements IEntityTypeService {
+	Logger logger = LoggerFactory.getLogger(EntityService.class);
 
     public static final double MAX_SCORE_FOR_NO_FIRST_LETTER_MATCH = 0.3;
     private static final Comparator SINGLE = new ValueComparator();
 
     public List<IEntityType> getAllEntityTypes() {
         KbClient kbClient = new KbClient(getClientProtocol());
+        
         //TODO decide what to do with knowledge base id which knowldege base id to take the first one? 
         List<KnowledgeBase> kbList = kbClient.readKnowledgeBases(null);
+        logger.warn("The Knowledge base is set to default (the first KB from the returned list of KB).");
         long kbId = kbList.get(0).getId();
+        
         ComplexTypeClient ctc = new ComplexTypeClient(getClientProtocol());
         ComplexTypeFilter ctFilter = new ComplexTypeFilter();
         ctFilter.setIncludeRestrictions(true);

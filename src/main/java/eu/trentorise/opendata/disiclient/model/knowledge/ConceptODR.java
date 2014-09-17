@@ -60,17 +60,25 @@ public class ConceptODR implements IConcept{
 		return concepts.get(0).getId();
 	}
 
-	private List<ConceptODR> readConcepts(String label){
-		ConceptClient client = new ConceptClient(WebServiceURLs.getClientProtocol());
-		List <ConceptODR> conOdrList = new ArrayList<ConceptODR>();
-		Pagination page = new Pagination();
-		List<Concept> concList = client.readConcepts(1L, null, null, label, null, null);
-		for (Concept con: concList){
-		
-			ConceptODR conceptODR = new ConceptODR(con);	
-			conOdrList.add(conceptODR);
-		}
-		return conOdrList;
+//	private List<ConceptODR> readConcepts(String label){
+//		ConceptClient client = new ConceptClient(WebServiceURLs.getClientProtocol());
+//		List <ConceptODR> conOdrList = new ArrayList<ConceptODR>();
+//		Pagination page = new Pagination();
+//		List<Concept> concList = client.readConcepts(1L, null, null, label, null, null);
+//		for (Concept con: concList){
+//		
+//			ConceptODR conceptODR = new ConceptODR(con);	
+//			conOdrList.add(conceptODR);
+//		}
+//		return conOdrList;
+//	}
+
+	public String getLabel() {
+		return label;
+	}
+
+	public IProtocolClient getApi() {
+		return api;
 	}
 
 	public Long getId(){
@@ -89,7 +97,7 @@ public class ConceptODR implements IConcept{
 
 	public IDict getDescription() {
 		Dict dict = new Dict();
-		Iterator it = this.description.entrySet().iterator();
+		Iterator<?> it = this.description.entrySet().iterator();
 		while(it.hasNext()){
 			Map.Entry pairs = (Map.Entry)it.next();
 			Locale l = NLPService.languageTagToLocale((String) pairs.getKey());
@@ -101,7 +109,7 @@ public class ConceptODR implements IConcept{
 
 	public IDict getName() {
 		Dict dict = new Dict();
-		Iterator it = this.name.entrySet().iterator();
+		Iterator<?> it = this.name.entrySet().iterator();
 		while(it.hasNext()){
 			Map.Entry pairs = (Map.Entry)it.next();
 			Locale l = NLPService.languageTagToLocale((String)pairs.getKey());

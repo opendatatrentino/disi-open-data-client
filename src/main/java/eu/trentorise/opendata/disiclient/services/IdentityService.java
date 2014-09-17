@@ -86,7 +86,7 @@ public class IdentityService implements IIdentityService {
 			return idResults;
 		} else {
 
-			List<EntityODR> entities = new ArrayList();
+			List<EntityODR> entities = new ArrayList<EntityODR>();
 
 			for (IEntity ie : iEntities){				
 				                             if (ie instanceof EntityODR){

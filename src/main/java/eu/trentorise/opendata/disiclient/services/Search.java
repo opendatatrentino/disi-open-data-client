@@ -65,7 +65,7 @@ public class Search {
 		List<Name> names = new ArrayList<Name>();
 		
 		for(Instance instance: instances ){
-			if(instance.getTypeId()==10){  //TODO WARNING HARDCODING entity type NAME!!!!!!!!!!!!
+			if((instance.getTypeId()==10)||(instance.getTypeId()==23)){  //TODO WARNING HARDCODING entity type NAME!!!!!!!!!!!!
 			Name name =  (Name) instance;
 			names.add(name);
 			}

@@ -33,7 +33,7 @@ public class SearchResult implements ISearchResult {
 
     public IDict getName() {
         Dict dict = new Dict();
-        Iterator it = this.name.entrySet().iterator();
+        Iterator<?> it = this.name.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pairs = (Map.Entry) it.next();
             Locale l = NLPService.languageTagToLocale((String) pairs.getKey());

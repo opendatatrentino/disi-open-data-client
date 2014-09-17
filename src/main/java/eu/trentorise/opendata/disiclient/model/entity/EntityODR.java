@@ -34,12 +34,14 @@ import it.unitn.disi.sweb.webapi.model.eb.sstring.SemanticString;
 import it.unitn.disi.sweb.webapi.model.kb.concepts.Concept;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
 import it.unitn.disi.sweb.webapi.model.kb.types.DataType;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -263,7 +265,7 @@ public class EntityODR extends Structure implements IEntity {
             for (Name name : this.names) {
                 Map<String, List<String>> nameMap = name.getNames();
 
-                Iterator it = nameMap.entrySet().iterator();
+                Iterator<?> it = nameMap.entrySet().iterator();
                 while (it.hasNext()) {
                     Map.Entry pairs = (Map.Entry) it.next();
                     Locale l = NLPService.languageTagToLocale((String) pairs.getKey());
@@ -354,17 +356,7 @@ public class EntityODR extends Structure implements IEntity {
         this.duration = duration;
     }
 
-	//	public String getURI() {
-    //		throw new UnsupportedOperationException("Such a field does not exists in the model.");
-    //	}
-    //
-    //	public String getExternalID() {
-    //		throw new UnsupportedOperationException("Such a field does not exists in the model.");
-    //	}
-    //
-    //	public void setExternalID(String externalID) {
-    //		throw new UnsupportedOperationException("Such a field does not exists in the model.");
-    //	}
+	
     public List<IAttribute> getEntityAttributes() {
         if (super.getAttributes() != null) {
             List<IAttribute> atrs = convertToAttributeODR(super.getAttributes());
@@ -507,28 +499,7 @@ public class EntityODR extends Structure implements IEntity {
         return stName.get(0);
     }
 
-	//	public void setName(Locale locale, String name) {
-    //
-    //		EntityService entServ = new EntityService(this.api);
-    //		Name nameStructure = new Name();
-    //		List<Attribute> attributes = super.getAttributes();
-    //		Attribute nameAttribute = new Attribute();
-    //		List<IAttributeDef> attrs = this.getEtype().getAttributeDefs();
-    //		Long nameAttrDefID= 0L;
-    //		for (IAttributeDef atd:attrs){
-    //			AttributeDef ad = (AttributeDef) atd;
-    //			if (ad.getName(locale.ENGLISH).equals("Name"))
-    //				//				AttributeDef ad = (AttributeDef) atd;
-    //				//				nameAttrDefID =ad.getGUID();
-    //		}
-    //		nameAttribute.setDefinitionId(nameAttrDefID);
-    //		attributes.add(nameAttribute);
-    //		List<Value>nameValues=new ArrayList<Value>();
-    //		nameValues.add(new Value(name, 1L));
-    //		nameAttribute.setValues(nameValues);
-    //		attributes.add(nameAttribute);
-    //
-    //	}
+
     public void setName(Locale locale, List<String> names) {
         throw new UnsupportedOperationException("todo to implement");
 
@@ -543,7 +514,7 @@ public class EntityODR extends Structure implements IEntity {
         if (descriptionMap.isEmpty()) {
             return dict;
         }
-        Iterator it = descriptionMap.entrySet().iterator();
+        Iterator<?> it = descriptionMap.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pairs = (Map.Entry) it.next();
             Locale l = NLPService.languageTagToLocale((String) pairs.getKey());
@@ -570,14 +541,14 @@ public class EntityODR extends Structure implements IEntity {
         }
         SemanticTextFactory stf = new SemanticTextFactory();
 
-        Iterator it = descriptionSString.entrySet().iterator();
+        Iterator<?> it = descriptionSString.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pairs = (Map.Entry) it.next();
             List<SemanticText> sTextList = new ArrayList<SemanticText>();
 
             List<SemanticString> SStringList = (List<SemanticString>) pairs.getValue();
             for (SemanticString sstring : SStringList) {
-                SemanticText stext = (SemanticText) stf.semanticText(sstring);
+                SemanticText stext = (SemanticText) SemanticTextFactory.semanticText(sstring);
                 sTextList.add(stext);
             }
             odrDescriptionMap.put((String) pairs.getKey(), sTextList);
@@ -605,11 +576,10 @@ public class EntityODR extends Structure implements IEntity {
     public Map<String, List<SemanticString>> convertDescriptionToSWEB(Map<String, List<SemanticText>> descriptionSText) {
 
         Map<String, List<SemanticString>> epDescriptionMap = new HashMap<String, List<SemanticString>>();
-        SemanticTextFactory stf = new SemanticTextFactory();
         if (descriptionSText == null) {
             return epDescriptionMap;
         }
-        Iterator it = descriptionSText.entrySet().iterator();
+        Iterator<?> it = descriptionSText.entrySet().iterator();
 
         while (it.hasNext()) {
             Map.Entry pairs = (Map.Entry) it.next();
@@ -617,7 +587,7 @@ public class EntityODR extends Structure implements IEntity {
 
             List<SemanticText> SStringList = (List<SemanticText>) pairs.getValue();
             for (SemanticText stext : SStringList) {
-                SemanticString sstring = (SemanticString) stf.semanticString(stext);
+                SemanticString sstring = (SemanticString) SemanticTextFactory.semanticString(stext);
                 sStringList.add(sstring);
             }
             epDescriptionMap.put((String) pairs.getKey(), sStringList);
@@ -655,7 +625,7 @@ public class EntityODR extends Structure implements IEntity {
      */
     private static Map<IAttributeDef, Object> disifyStructure(IStructure structure) {
 
-        HashMap<IAttributeDef, Object> map = new HashMap();
+        HashMap<IAttributeDef, Object> map = new HashMap<IAttributeDef, Object>();
 
         for (IAttribute subattr : structure.getStructureAttributes()) {
             for (IValue val : subattr.getValues()) {
@@ -678,7 +648,7 @@ public class EntityODR extends Structure implements IEntity {
         EntityODR enodr = new EntityODR();
 
         EntityService es = new EntityService();
-        List<IAttribute> newAttrs = new ArrayList();
+        List<IAttribute> newAttrs = new ArrayList<IAttribute>();
 
         if (root) {
             Object nameAttrDefURL = entity.getEtype().getNameAttrDef().getURL();
@@ -686,7 +656,7 @@ public class EntityODR extends Structure implements IEntity {
                 IAttributeDef attrDef = attr.getAttrDef();
                 AttributeODR attrODR;
 
-                List<Object> objects = new ArrayList();
+                List<Object> objects = new ArrayList<Object>();
 
                 if (DataTypes.ENTITY.equals(attrDef.getDataType())) {
                     logger.warn("DISIFY: SKIPPING RELATIONAL ATTRIBUTE WITH ATTR DEF URL: "+ attrDef.getURL()+ " - TODO SUPPORT RELATIONAL ATTRIBUTES");

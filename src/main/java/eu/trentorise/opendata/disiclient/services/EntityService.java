@@ -366,39 +366,39 @@ public class EntityService implements IEntityService {
 		return mapVocabs;
 	}
 
-	private AttributeODR createNameAttributeODR1(IAttributeDef attrDef, String name) {
-
-		EntityTypeService ets = new EntityTypeService();
-		//get Name Etype
-
-		EntityType etpe = ets.getEntityType(attrDef.getRangeEType().getURL());
-		Name nameStructure = new Name();
-		List<Attribute> entityNameattributes = new ArrayList<Attribute>();
-		nameStructure.setEntityBaseId(1L);
-
-		Attribute nameAttribute = new Attribute();
-
-		List<IAttributeDef> atsd = etpe.getAttributeDefs();
-		// here we take the only one attribute definition from Name etype 
-		nameAttribute.setDefinitionId(atsd.get(0).getGUID());
-		nameAttribute.setConceptId(atsd.get(0).getConcept().getGUID());
-		List<Value> nameValues = new ArrayList<Value>();
-		//BE CAREFULL WITH VOCABULARY
-
-		nameValues.add(new Value(name, 1L));
-		nameAttribute.setValues(nameValues);
-		//AttributeODR nameAttributeODR = new AttributeODR(api,nameAttribute);
-
-		entityNameattributes.add(nameAttribute);
-		nameStructure.setAttributes(entityNameattributes);
-		Attribute nAtr = new Attribute();
-		nAtr.setDefinitionId(attrDef.getGUID());
-		List<Value> values = new ArrayList<Value>();
-		values.add(new Value(nameStructure));
-		nAtr.setValues(values);
-		AttributeODR a = new AttributeODR(api, nAtr);
-		return a;
-	}
+//	private AttributeODR createNameAttributeODR1(IAttributeDef attrDef, String name) {
+//
+//		EntityTypeService ets = new EntityTypeService();
+//		//get Name Etype
+//
+//		EntityType etpe = ets.getEntityType(attrDef.getRangeEType().getURL());
+//		Name nameStructure = new Name();
+//		List<Attribute> entityNameattributes = new ArrayList<Attribute>();
+//		nameStructure.setEntityBaseId(1L);
+//
+//		Attribute nameAttribute = new Attribute();
+//
+//		List<IAttributeDef> atsd = etpe.getAttributeDefs();
+//		// here we take the only one attribute definition from Name etype 
+//		nameAttribute.setDefinitionId(atsd.get(0).getGUID());
+//		nameAttribute.setConceptId(atsd.get(0).getConcept().getGUID());
+//		List<Value> nameValues = new ArrayList<Value>();
+//		//BE CAREFULL WITH VOCABULARY
+//
+//		logger.warn("The vocabulary is 1");
+//		nameValues.add(new Value(name, 1L));
+//		nameAttribute.setValues(nameValues);
+//
+//		entityNameattributes.add(nameAttribute);
+//		nameStructure.setAttributes(entityNameattributes);
+//		Attribute nAtr = new Attribute();
+//		nAtr.setDefinitionId(attrDef.getGUID());
+//		List<Value> values = new ArrayList<Value>();
+//		values.add(new Value(nameStructure));
+//		nAtr.setValues(values);
+//		AttributeODR a = new AttributeODR(api, nAtr);
+//		return a;
+//	}
 
 	/**
 	 * Creates Attribute from Name.class
@@ -456,7 +456,8 @@ public class EntityService implements IEntityService {
 		if (name instanceof String)
 		{
 			nameInput = (String) name; 
-			nameValues.add(new Value(nameInput, 1L)); //NOTE HARCODED vocabulary TODO change
+			logger.warn("No Locale is provided for name"+name+"The vocabulary is set to '1'");
+			nameValues.add(new Value(nameInput, 1L)); 
 		}
 		else if (name instanceof IDict){
 			Dict nameDict=(Dict) name;
