@@ -13,9 +13,11 @@ import java.util.List;
 import java.util.Locale;
 
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
+import eu.trentorise.opendata.disiclient.model.entity.EntityType;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
+import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
 
 
 public class Search {
@@ -29,7 +31,7 @@ public class Search {
 	}
 
 	public String[][] searchEQL(String eqlQuery) {
-        throw new UnsupportedOperationException("todo to implement");
+		throw new UnsupportedOperationException("todo to implement");
 	}
 
 	public List<List<IEntity>> search(IEntityType entityType,
@@ -60,20 +62,23 @@ public class Search {
 		return names;
 	}
 
-	
+
 	private List<Name> getNames(List<Instance> instances) {
 		List<Name> names = new ArrayList<Name>();
-		
+		EntityTypeService ets = new EntityTypeService();
+
 		for(Instance instance: instances ){
-			if((instance.getTypeId()==10)||(instance.getTypeId()==23)){  //TODO WARNING HARDCODING entity type NAME!!!!!!!!!!!!
-			Name name =  (Name) instance;
-			names.add(name);
-			}
+			EntityType etype =ets.getEntityType(instance.getTypeId());
+			TraceProvUtils tpv = new TraceProvUtils();
+			if(etype.getName().getString(tpv.languageTagToLocale("en")).equals("Name"))
+					{			Name name =  (Name) instance;
+					names.add(name);
+					}
 		}
-		
+
 		return names;
 	}
-	
+
 
 	public List<IEntity> conceptSearch(String conceptSearchQuery) {
 		InstanceClient client = new InstanceClient(api);
