@@ -37,7 +37,7 @@ public class DisiEkb implements IEkb {
         this.knowledgeService = new KnowledgeService();
         this.identityService = new IdentityService();
         this.semanticMatchingService = new MatchingService();      
-        this.entityService = new EntityService(WebServiceURLs.getClientProtocol());        
+        this.entityService = (IEntityService) new EntityService(WebServiceURLs.getClientProtocol());        
         List<Locale> locs = new ArrayList<Locale>();
         locs.add(Locale.ENGLISH);
         this.defaultLocales = Collections.unmodifiableList(locs);

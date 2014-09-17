@@ -467,8 +467,15 @@ public class TestNLPService {
 
         assertEquals(MeaningKind.ENTITY, word.getSelectedMeaning().getKind());
 
+        String url = word.getSelectedMeaning().getURL();
+        
+        assertNotNull(url);
+        
         EntityService es = new EntityService();
-        IEntity ent = es.readEntity(word.getSelectedMeaning().getURL());
+        
+        
+        
+        IEntity ent = es.readEntity(url);
         assertTrue(ent != null);
         assertEquals(word.getSelectedMeaning().getURL(), ent.getURL());
     }
