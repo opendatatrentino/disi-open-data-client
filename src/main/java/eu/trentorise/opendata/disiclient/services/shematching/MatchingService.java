@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
+
 import eu.trentorise.opendata.columnrecognizers.ColumnConceptCandidate;
 import eu.trentorise.opendata.columnrecognizers.ColumnRecognizer;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
@@ -36,6 +38,9 @@ import eu.trentorise.opendata.semantics.services.model.ISchemaCorrespondence;
 
 public class MatchingService implements ISemanticMatchingService {
 
+	private final static Logger logger = Logger.getLogger(MatchingService.class.getName());
+
+	
 	/** Methods run the process of matching. It gets ColumnConceptCandidate (1) and Etypes (many) as input.
 	 *  @return the list of schema corespondences 
 	 */
@@ -44,6 +49,9 @@ public class MatchingService implements ISemanticMatchingService {
 		List<ColumnConceptCandidate> odrHeaders =
 				ColumnRecognizer.computeScoredCandidates(tableResource.getHeaders(), tableResource.getColumns());
 		long odrName=ColumnRecognizer.conceptFromText(resourceContext.getResourceName());
+		if(odrName==-1){
+			logger.warn("Concept recognizer is unable to extract concept for resource name: " +resourceContext.getResourceName());
+		}
 		//long odrName=2923L;
 		EntityTypeService etypeService = new EntityTypeService();
 		List<IEntityType> etypes = etypeService.getAllEntityTypes();
@@ -160,6 +168,9 @@ public class MatchingService implements ISemanticMatchingService {
 	 * @return
 	 */
 	public float getConceptsDistance( long source, long target){
+		if((source==-1)||(target==-1)){
+			return 0;
+		}
 		ConceptClient cClient = new ConceptClient(getClientProtocol());
 		float score  = (float)cClient.getDistanceUsingLca(source,target);
 		if (score==-1) return 0;

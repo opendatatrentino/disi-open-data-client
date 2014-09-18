@@ -98,11 +98,11 @@ public class TestIDManagementService {
 
 		List<IIDResult> results=  idServ.assignURL(entities, 3);
 		for (IIDResult res: results){
-			EntityODR entityODR =  (EntityODR) res.getResultEntity();
+			//EntityODR entityODR =  (EntityODR) res.getResultEntity();
 
-			System.out.println("result "+res.getAssignmentResult());
-			System.out.println("Global id: "+res.getGUID());
-			System.out.println("Local id: "+entityODR.getLocalID());
+//			System.out.println("result "+res.getAssignmentResult());
+//			System.out.println("Global id: "+res.getGUID());
+//			System.out.println("Local id: "+entityODR.getLocalID());
 			assertEquals(AssignmentResult.NEW, res.getAssignmentResult());
 		}
 
