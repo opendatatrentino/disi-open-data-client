@@ -556,6 +556,8 @@ public class TestEntityService {
         EntityService es = new EntityService();
         IEntity en = es.readEntity(ANDALO_URL);
 
+        IntegrityChecker.checkEntity(en);
+        
         IAttributeDef nameAttrDef = en.getEtype().getNameAttrDef();
         String nameAttrDefURL = nameAttrDef.getURL();
         logger.info("nameAttrDefURL = " + nameAttrDefURL);
