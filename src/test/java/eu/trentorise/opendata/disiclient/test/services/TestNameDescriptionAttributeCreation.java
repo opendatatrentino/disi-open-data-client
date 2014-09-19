@@ -48,7 +48,7 @@ public class TestNameDescriptionAttributeCreation {
 		EntityODR entity = (EntityODR)enServ.readEntity(PALAZZETTO_ID);
 		List<Attribute> attrs=entity.getAttributes();
 		List<Attribute> attrs1=new ArrayList<Attribute>();
-		List<IAttribute> iattr=entity.getStructureAttributes();
+		//List<IAttribute> iattr=entity.getStructureAttributes();
 		for (Attribute atr : attrs){
 			if (atr.getName().get("en").equalsIgnoreCase("Name")){
 				Attribute a =createAttributeNameEntityWithDict(newNames);
