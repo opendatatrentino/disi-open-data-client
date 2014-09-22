@@ -361,6 +361,7 @@ public class EntityService implements IEntityService {
 			HashMap<IAttributeDef, Object> atributes) {
 		List<Attribute> attrs = new ArrayList<Attribute>();
 		it.unitn.disi.sweb.webapi.model.eb.Structure attributeStructure = new it.unitn.disi.sweb.webapi.model.eb.Structure();
+		logger.warn("Hardcoded entity base id 1");
 		attributeStructure.setEntityBaseId(1L);
 
 		AttributeDef adef = (AttributeDef) attrDef;
@@ -458,12 +459,15 @@ public class EntityService implements IEntityService {
 		Name nameStructure = new Name();
 		nameStructure.setEntityBaseId(1L); 
 		logger.warn("TODO HARDCODED ENTITY BASE ID TO 1.");
-
-		long etypeID = WebServiceURLs.urlToEtypeID(attrDef.getRangeEtypeURL());
+		long etypeID;
+//		if(attrDef.getRangeEtypeURL()==null){
+//			etypeID=10L;
+//		}else 
+		 etypeID = WebServiceURLs.urlToEtypeID(attrDef.getRangeEtypeURL());
 		nameStructure.setTypeId(etypeID);
 
 		EntityTypeService ets = new EntityTypeService();
-		EntityType etype = (EntityType) ets.readEntityType(attrDef.getRangeEtypeURL());
+		EntityType etype = (EntityType) ets.readEntityType(WebServiceURLs.etypeIDToURL(etypeID));
 		List<IAttributeDef> etypeAtrDefs = etype.getAttributeDefs();
 		Long atrDefId=null; 
 		for (IAttributeDef atrdef : etypeAtrDefs){

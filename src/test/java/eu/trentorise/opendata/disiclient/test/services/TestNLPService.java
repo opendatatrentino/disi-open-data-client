@@ -175,7 +175,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -251,9 +250,7 @@ public class TestNLPService {
         }
     };
 
-    // TODO REVIEW IGNORED TEST        
     @Test
-    @Ignore
     public void testGetAllPipelinesDescription() {
         NLPService nlpService = new NLPService();
         List<PipelineDescription> pipelines = nlpService.readPipelinesDescription();
@@ -264,7 +261,6 @@ public class TestNLPService {
         assertNotNull(pipelines.get(0));
     }
 
-    // TODO REVIEW COMMENTED TEST
     @Test
     public void testRunBatchNLP() {
 
@@ -273,7 +269,6 @@ public class TestNLPService {
         List<ISemanticText> output = nlpService.runNLP(PRODOTTI_CERTIFICATI_DESCRIPTIONS);
         //		System.out.println(output.get(0).getSentences().get(0).getWords().get(0).getMeanings().get(0).getURL());
         //		System.out.println(output.get(0).getSentences().get(0).getWords().get(0).getMeanings().get(0).getProbability());
-        //
         //		System.out.println(output.get(0).getSentences().get(0).getStartOffset());
         //		System.out.println(output.get(0).getSentences().get(0).getEndOffset());
 
@@ -299,7 +294,6 @@ public class TestNLPService {
         assertNotNull(output);
     }
 
-    // TODO REVIEW COMMENTED TEST
     @Test
     public void testNLPService() {
         String testText = "Formaggio fresco a pasta filata, molle e a fermentazione lattica. Viene impiegato latte vaccino e caglio bovino liquido."
