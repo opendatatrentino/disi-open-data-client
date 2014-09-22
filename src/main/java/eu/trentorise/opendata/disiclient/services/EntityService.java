@@ -641,6 +641,9 @@ public class EntityService implements IEntityService {
 		return entities;
 	}
 
+	/* (non-Javadoc)
+	 * @see eu.trentorise.opendata.semantics.services.IEntityService#isTemporaryURL(java.lang.String)
+	 */
 	public boolean isTemporaryURL(String entityURL) {
 		return entityURL.contains("instances/new/");
 	}
