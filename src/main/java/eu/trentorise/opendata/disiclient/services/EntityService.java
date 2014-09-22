@@ -29,7 +29,10 @@ import it.unitn.disi.sweb.webapi.model.eb.Instance;
 import it.unitn.disi.sweb.webapi.model.eb.Name;
 import it.unitn.disi.sweb.webapi.model.eb.Value;
 import it.unitn.disi.sweb.webapi.model.filters.InstanceFilter;
+import it.unitn.disi.sweb.webapi.model.kb.concepts.Concept;
+import it.unitn.disi.sweb.webapi.model.kb.types.DataType;
 import it.unitn.disi.sweb.webapi.model.kb.vocabulary.Vocabulary;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
@@ -40,6 +43,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+
 import org.apache.commons.lang3.LocaleUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.slf4j.Logger;
@@ -217,6 +221,35 @@ public class EntityService implements IEntityService {
 
 		Name name = (Name) instance;
 		Structure structureName = new Structure();
+		List<Attribute> atrs = name.getAttributes();
+
+		for (Attribute a: atrs){
+
+			if(a.getDataType()==DataType.CONCEPT)
+			{
+				List<Value> vals = a.getValues();
+				List<Value> fixedVals = new ArrayList<Value>();
+
+				for (Value val : vals) {
+
+					if (val.getValue().getClass().equals(ConceptODR.class)) {
+						fixedVals.add(val);
+						continue;
+					}
+					Concept c = (Concept) val.getValue();
+					ConceptODR codr = new ConceptODR(c);
+
+					ValueODR fixedVal = new ValueODR();
+					fixedVal.setId(val.getId());
+					// fixedVal.setDataType(IConcept.class);
+					fixedVal.setValue(codr);
+					fixedVals.add(fixedVal);
+				}
+				a.setValues(fixedVals);		
+			}
+		}
+
+
 		structureName.setAttributes(name.getAttributes());
 		structureName.setId(name.getId());
 		structureName.setTypeId(name.getTypeId());
@@ -370,39 +403,39 @@ public class EntityService implements IEntityService {
 		return mapVocabs;
 	}
 
-//	private AttributeODR createNameAttributeODR1(IAttributeDef attrDef, String name) {
-//
-//		EntityTypeService ets = new EntityTypeService();
-//		//get Name Etype
-//
-//		EntityType etpe = ets.getEntityType(attrDef.getRangeEType().getURL());
-//		Name nameStructure = new Name();
-//		List<Attribute> entityNameattributes = new ArrayList<Attribute>();
-//		nameStructure.setEntityBaseId(1L);
-//
-//		Attribute nameAttribute = new Attribute();
-//
-//		List<IAttributeDef> atsd = etpe.getAttributeDefs();
-//		// here we take the only one attribute definition from Name etype 
-//		nameAttribute.setDefinitionId(atsd.get(0).getGUID());
-//		nameAttribute.setConceptId(atsd.get(0).getConcept().getGUID());
-//		List<Value> nameValues = new ArrayList<Value>();
-//		//BE CAREFULL WITH VOCABULARY
-//
-//		logger.warn("The vocabulary is 1");
-//		nameValues.add(new Value(name, 1L));
-//		nameAttribute.setValues(nameValues);
-//
-//		entityNameattributes.add(nameAttribute);
-//		nameStructure.setAttributes(entityNameattributes);
-//		Attribute nAtr = new Attribute();
-//		nAtr.setDefinitionId(attrDef.getGUID());
-//		List<Value> values = new ArrayList<Value>();
-//		values.add(new Value(nameStructure));
-//		nAtr.setValues(values);
-//		AttributeODR a = new AttributeODR(api, nAtr);
-//		return a;
-//	}
+	//	private AttributeODR createNameAttributeODR1(IAttributeDef attrDef, String name) {
+	//
+	//		EntityTypeService ets = new EntityTypeService();
+	//		//get Name Etype
+	//
+	//		EntityType etpe = ets.getEntityType(attrDef.getRangeEType().getURL());
+	//		Name nameStructure = new Name();
+	//		List<Attribute> entityNameattributes = new ArrayList<Attribute>();
+	//		nameStructure.setEntityBaseId(1L);
+	//
+	//		Attribute nameAttribute = new Attribute();
+	//
+	//		List<IAttributeDef> atsd = etpe.getAttributeDefs();
+	//		// here we take the only one attribute definition from Name etype 
+	//		nameAttribute.setDefinitionId(atsd.get(0).getGUID());
+	//		nameAttribute.setConceptId(atsd.get(0).getConcept().getGUID());
+	//		List<Value> nameValues = new ArrayList<Value>();
+	//		//BE CAREFULL WITH VOCABULARY
+	//
+	//		logger.warn("The vocabulary is 1");
+	//		nameValues.add(new Value(name, 1L));
+	//		nameAttribute.setValues(nameValues);
+	//
+	//		entityNameattributes.add(nameAttribute);
+	//		nameStructure.setAttributes(entityNameattributes);
+	//		Attribute nAtr = new Attribute();
+	//		nAtr.setDefinitionId(attrDef.getGUID());
+	//		List<Value> values = new ArrayList<Value>();
+	//		values.add(new Value(nameStructure));
+	//		nAtr.setValues(values);
+	//		AttributeODR a = new AttributeODR(api, nAtr);
+	//		return a;
+	//	}
 
 	/**
 	 * Creates Attribute from Name.class
