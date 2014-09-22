@@ -63,10 +63,17 @@ public class EntityService implements IEntityService {
 	}
 
 	public Long createEntity(IEntity entity) {
-		EntityODR ent = (EntityODR) entity;
+                
+                EntityODR ent;
+                if (entity instanceof EntityODR){
+                    ent = (EntityODR) entity;
+                } else {
+                    ent = EntityODR.disify(entity, true);   
+                }
+		 
 		Entity e = ent.convertToEntity();
 		InstanceClient instanceCl = new InstanceClient(this.api);
-		System.out.println(e.toString());
+		logger.info(e.toString());
 		EntityTypeService es = new EntityTypeService();
 		EntityType etype= es.getEntityType(e.getTypeId());
 
@@ -149,7 +156,7 @@ public class EntityService implements IEntityService {
 
 	public void deleteEntity(String entityURL) {
 		InstanceClient instanceCl = new InstanceClient(this.api);
-		Long entityID = getEntityIdFromURL(entityURL);
+		Long entityID = WebServiceURLs.urlToEntityID(entityURL);
 		Instance instance = instanceCl.readInstance(entityID, null);
 		instanceCl.delete(instance);
 	}
@@ -502,16 +509,9 @@ public class EntityService implements IEntityService {
 
 	public IEntity readEntity(String URL) {
 
-		String s;
-		try {
-			s = URL.substring(URL.indexOf("es/") + 3);
-		} catch (Exception e) {
-			return null;
-		}
-
 		Long typeID;
-		try {
-			typeID = Long.parseLong(s);
+		try {			
+                        typeID = WebServiceURLs.urlToEntityID(URL);
 		} catch (Exception e) {
 			return null;
 		}
@@ -519,19 +519,9 @@ public class EntityService implements IEntityService {
 		return readEntity(typeID);
 	}
 
-	public Long getEntityIdFromURL(String URL) {
-
-		String s = URL.substring(URL.indexOf("es/") + 3);
-		Long typeID = Long.parseLong(s);
-		return typeID;
-	}
-
 	public String createEntityURL(IEntity entity) {
-		Long id = createEntity(entity);
-
-		String fullUrl = WebServiceURLs.getURL();
-		String url = fullUrl + "/instances/" + id;
-		return url;
+		Long id = createEntity(entity);				
+                return WebServiceURLs.entityIDToURL(id);
 	}
 
 	public void exportToRdf(List<String> entityURLs, Writer writer) {
