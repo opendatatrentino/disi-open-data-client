@@ -94,7 +94,7 @@ public class TestEntityService {
      * chairlift. Has attributes orari. Has descriptions both in Italian and
      * English. Name is only in Italian.
      */
-    public static final long CAMPANIL_PARTENZA_ID = 64235L;
+    public static final long CAMPANIL_PARTENZA_ID = 1L;
     public static final String CAMPANIL_PARTENZA_URL = entityIDToURL(CAMPANIL_PARTENZA_ID);
     public static final long DETACHABLE_CHAIRLIFT_CONCEPT_ID = 111009L;
     public static final String DETACHABLE_CHAIRLIFT_CONCEPT_URL = conceptIDToURL(DETACHABLE_CHAIRLIFT_CONCEPT_ID);
@@ -558,13 +558,13 @@ public class TestEntityService {
     }
 //    
 //    @Test 
-//    public void testDisify(){
-//    	EntityService es = new EntityService();
-//        IEntity en = es.readEntity(CAMPANIL_PARTENZA_URL);
-//        EntityODR e = (EntityODR) en;
-//        IEntity ent = EntityODR.disify(e, true);
-//        Long l=es.createEntity(ent);
-//        logger.info(l.toString());
-//        assertNotNull(ent);
-//    }
+    public void testDisify(){
+    	EntityService es = new EntityService();
+        IEntity en = es.readEntity(CAMPANIL_PARTENZA_URL);
+        EntityODR e = (EntityODR) en;
+        IEntity ent = EntityODR.disify(e, true);
+        Long l=es.createEntity(ent);
+        logger.info(l.toString());
+        assertNotNull(ent);
+    }
 }
