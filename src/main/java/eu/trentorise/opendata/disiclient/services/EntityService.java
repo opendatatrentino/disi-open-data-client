@@ -528,9 +528,15 @@ public class EntityService implements IEntityService {
 
 	}
 
+        
+        
 	public void updateEntity(IEntity entity) {
-
-		EntityODR ent = (EntityODR) entity;
+                EntityODR ent;
+                if (entity instanceof EntityODR){
+                    ent = (EntityODR) entity;
+                } else {
+                    ent = EntityODR.disify(entity, true);   
+                }		
 		Entity e = ent.convertToEntity();
 		InstanceClient instanceCl = new InstanceClient(this.api);
 		try {
