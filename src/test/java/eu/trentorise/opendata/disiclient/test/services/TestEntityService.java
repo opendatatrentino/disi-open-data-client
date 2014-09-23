@@ -556,8 +556,8 @@ public class TestEntityService {
         assertEquals(nameAttrDef.getRangeEtypeURL(), nameStruct.getEtypeURL());
 
     }
-//    
-//    @Test 
+   
+    //@Test 
     public void testDisify(){
     	EntityService es = new EntityService();
         IEntity en = es.readEntity(CAMPANIL_PARTENZA_URL);

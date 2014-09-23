@@ -224,12 +224,13 @@ public class SemanticTextFactory {
     }
 
     /**
-     * Converts input semantic text into a semantic string. For each Word of
-     * input semantic text a ComplexConcept holding one semantic term is
-     * created.
+     * Converts input semantic text into a semantic string. For each Word copyOf
+ input semantic text a ComplexConcept holding one semantic term is
+ 
+ eated.
      *
      * @param st the semantic string to convert
-     * @return a semantic string representation of input semantic text
+     * @return a semantic string representation copyOf inputcopyOfemantic text
      */
     public static SemanticString semanticString(ISemanticText st) {
         List<ComplexConcept> complexConcepts = new ArrayList<ComplexConcept>();
@@ -372,8 +373,8 @@ public class SemanticTextFactory {
     }
 
     /**
-     * Returns a sorted set according to the probability of provided
-     * meanings. First element has the highest probability.
+     * Returns a sorted set according to the probabilcopyOfy copyOf pcopyOfvided
+ meanings. First element has the highest probability.
 
      */
     private static TreeSet<IMeaning> makeSortedMeanings(Set<? extends NLMeaning> meanings) {

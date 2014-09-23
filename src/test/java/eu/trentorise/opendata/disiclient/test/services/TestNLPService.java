@@ -330,7 +330,7 @@ public class TestNLPService {
 
         NLPService nlpService = new NLPService();
 
-        SemanticText singleText = new SemanticText(nlpService.runNLP("Trento"));
+        ISemanticText singleText = nlpService.runNLP("Trento");
 
         assertEquals(1, singleText.getSentences().get(0).getWords().size());
 
@@ -378,10 +378,10 @@ public class TestNLPService {
     public void testSingleConcept() {
         NLPService nlpService = new NLPService();
 
-        SemanticText singleOdrText = new SemanticText(nlpService.runNLP("Cabinovia"));
-        assertEquals(1, singleOdrText.getSentences().get(0).getWords().size());
+        ISemanticText singleSemText = nlpService.runNLP("Cabinovia");
+        assertEquals(1, singleSemText.getSentences().get(0).getWords().size());
 
-        IWord word = singleOdrText.getSentences().get(0).getWords().get(0);
+        IWord word = singleSemText.getSentences().get(0).getWords().get(0);
 
         assertEquals(MeaningStatus.SELECTED, word.getMeaningStatus());
         IMeaning m = word.getSelectedMeaning();
@@ -400,7 +400,7 @@ public class TestNLPService {
     public void testMultiWord() {
         NLPService nlpService = new NLPService();
 
-        ISemanticText semText = new SemanticText(nlpService.runNLP("Seggiovia ad agganciamento automatico"));
+        ISemanticText semText = nlpService.runNLP("Seggiovia ad agganciamento automatico");
 
         assertEquals(1, semText.getSentences().get(0).getWords().size());
 
@@ -413,7 +413,7 @@ public class TestNLPService {
     public void testNamedEntity() {
         NLPService nlpService = new NLPService();
 
-        ISemanticText semText = new SemanticText(nlpService.runNLP("Trento"));
+        ISemanticText semText = nlpService.runNLP("Trento");
 
         assertEquals(1, semText.getSentences().get(0).getWords().size());
 

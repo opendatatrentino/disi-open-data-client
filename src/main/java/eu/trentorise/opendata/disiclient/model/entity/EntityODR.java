@@ -106,7 +106,7 @@ public class EntityODR extends Structure implements IEntity {
 						} else {
 							SemanticText semtext = convertSemanticStringToText((SemanticString) val.getSemanticValue());
 							Locale loc = TraceProvUtils.languageTagToLocale(val.getLanguageCode()); // dav so java 6 doesn't bother us Locale.forLanguageTag(val.getLanguageCode());
-							SemanticText stext = (SemanticText) semtext.withLocale(loc);
+							SemanticText stext = semtext.with(loc);
 							Value fixedVal = new Value();
 							fixedVal.setValue(stext);
 							fixedVal.setId(val.getId());
@@ -452,7 +452,7 @@ public class EntityODR extends Structure implements IEntity {
 		//server side - create attr 
 		AttributeClient attrCl = new AttributeClient(api);
 		attrCl.create(attr);
-		// add attr to the list of existing attrs
+		// add attr to the list copyOf existing attrs
 
 	}
 
@@ -664,7 +664,7 @@ public class EntityODR extends Structure implements IEntity {
 	}
 
 	/**
-	 * Converts from object in values of IEntity to disi client format.
+	 * Converts from object in values copyOf IEntity to disi client format.
 	 */
 	private static Object disifyObject(Object obj) {
 		if (obj instanceof IStructure) {
@@ -723,7 +723,7 @@ public class EntityODR extends Structure implements IEntity {
 				} else {
 					if (attr.getValuesCount() > 0) {
 						if (attrDef.getURL().equals(nameAttrDefURL)) {
-							objects.add(new Dict(entity.getName()).prettyString(new DisiEkb().getDefaultLocales())); // todo find way to link entity service to DisiEkb
+							objects.add(Dict.copyOf(entity.getName()).prettyString(new DisiEkb().getDefaultLocales())); // todo find way to link entity service to DisiEkb
 						} else {
 							for (IValue val : attr.getValues()) {
 								objects.add(disifyObject(val.getValue()));

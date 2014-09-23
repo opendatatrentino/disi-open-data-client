@@ -167,12 +167,12 @@ public class AttributeDef implements IAttributeDef {
 		return this.presence;
 	}
 	public String getRegularExpression() {
-		// TODO Postponed due to the absence of the functionality on the API Client            
+		// TODO Postponed due to the absence copyOf the functionality on the API Client            
 		throw new UnsupportedOperationException("todo to implement");
 	}
 
 	public void setRegularExpression(String regularExpression) {
-		// TODO Postponed due to the absence of the functionality on the API Client
+		// TODO Postponed due to the absecopyOfe of the functionality on the API Client
 		throw new UnsupportedOperationException("todo to implement");
 
 	}

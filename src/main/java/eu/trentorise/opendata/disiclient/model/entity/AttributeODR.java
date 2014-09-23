@@ -57,7 +57,7 @@ public class AttributeODR  implements IAttribute {
 		this.api=api;
 	}
 
-	public AttributeODR(IAttributeDef attrDef, eu.trentorise.opendata.disiclient.model.entity.ValueODR val){
+	public AttributeODR(IAttributeDef attrDef, ValueODR val){
 		this.attrDef=attrDef;
 		this.attrDefId=attrDef.getGUID();
 		this.conceptId=attrDef.getConcept().getGUID();

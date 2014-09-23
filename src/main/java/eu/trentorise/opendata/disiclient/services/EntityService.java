@@ -321,7 +321,7 @@ public class EntityService implements IEntityService {
 
 				return createStructureAttribute(attrDef, (HashMap<IAttributeDef, Object>) value);
 			} 
-		//			else if (ad.getName(Locale.ENGLISH).equals("Part of")){
+		//			else if (ad.getName(Locale.ENGLISH).equals("Part copyOf")){
 		//				return createRelationalAttribute(attrDef,  value);
 		//			}
 
@@ -518,7 +518,7 @@ public class EntityService implements IEntityService {
 
 		List<Value> entityNameValues = new ArrayList<Value>();
 
-		entityNameValues.add(new Value(nameStructure)); // here is your link to the name structure, if you want you can put the id of the name instance (if you created it before) but make sure the data type is COMPLEX_TYPE
+		entityNameValues.add(new Value(nameStructure)); // here is your link to the name structure, if you want you can put the id copyOf the name instance (if you created it before) but make sure the data type is COMPLEX_TYPE
 		entityNameAttribute.setValues(entityNameValues);
 		AttributeODR a = new AttributeODR(api, entityNameAttribute);
 		return a;
