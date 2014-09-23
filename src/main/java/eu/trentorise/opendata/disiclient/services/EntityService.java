@@ -113,7 +113,6 @@ public class EntityService implements IEntityService {
 		Long id = null;
 		try {
 			id = instanceCl.create(e);
-
 		} catch (NotFoundException ex) {
 		}
 		return id;
