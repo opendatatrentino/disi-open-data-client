@@ -109,7 +109,7 @@ public class Structure  extends Instance implements IStructure
 				return attribute;
 			}
 		}
-		throw new DisiClientException("There is no attribute in the structure with a given attributeDef");
+		throw new DisiClientException("There is no attribute having attributeDef URL: " + attrDefURL + " in the structure with URL " + getURL());
 	}
 
 	public String getEtypeURL() {

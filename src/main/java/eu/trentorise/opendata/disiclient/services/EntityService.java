@@ -185,13 +185,10 @@ public class EntityService implements IEntityService {
 
 		List<Long> entityIDs = new ArrayList<Long>();
 
-		for (String entityURL : entityURLs) {
-			Long id= WebServiceURLs.urlToEntityID(entityURL);
-			if(id!=null){
-				entityIDs.add(WebServiceURLs.urlToEntityID(entityURL));}
-			else throw new DisiClientException("Id of the entity is NULL");
-		}
-
+		for (String entityURL : entityURLs) {                    
+                    entityIDs.add(WebServiceURLs.urlToEntityID(entityURL));
+                }		
+        
 		InstanceClient instanceCl = new InstanceClient(this.api);
 
 		InstanceFilter instFilter = new InstanceFilter();

@@ -87,24 +87,11 @@ public class WebServiceURLs {
     }
 
     /**
-     * If URL is invalid returns null. todo should call {@link #parseID(java.lang.String, java.lang.String) } and throw
-     * IllegalArgumentException instead 
+     * @throws IllegalArgumentException on unparseable URL
      */
     @Nullable
     public static Long urlToEntityID(String URL) {
-        String s;
-        try {
-            s = URL.substring(URL.indexOf(ENTITY_PREFIX) + ENTITY_PREFIX.length());
-        } catch (Exception e) {
-            return (Long) null;
-        }
-
-        try {
-            return Long.parseLong(s);
-        } catch (NumberFormatException ex) {
-            return (Long) null;
-        }
-
+        return parseID(ENTITY_PREFIX, URL);
     }
 
     public static String attrDefIDToURL(long id) {
