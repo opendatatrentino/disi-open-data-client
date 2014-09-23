@@ -17,6 +17,7 @@ import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.EntityBase;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
+import it.unitn.disi.sweb.webapi.model.eb.Value;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
 
 import java.util.ArrayList;
@@ -49,6 +50,7 @@ import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IStructure;
+import eu.trentorise.opendata.semantics.model.entity.IValue;
 import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.IEntityService;
@@ -571,6 +573,12 @@ public class TestEntityService {
 		EntityService es = new EntityService();
 		IEntity en = es.readEntity(POVO_URL);
 		EntityODR e = (EntityODR) en;
+		
+		AttributeODR a = (AttributeODR) en.getStructureAttributes().get(2);
+		IValue val = new ValueODR();
+		val.setValue(15.2f);
+		a.addValue(val);;
+		
 		IEntity ent = EntityODR.disify(e, true);
 		assertNotNull(ent);
 		Long l = null;

@@ -725,7 +725,6 @@ public class EntityODR extends Structure implements IEntity {
 					EntityODR enODR = disify((IEntity) attr.getFirstValue().getValue(), false);
 					attrODR = es.createAttribute(attrDef, enODR);
 					newAttrs.add(attrODR);
-				//	logger.warn("DISIFY: SKIPPING RELATIONAL ATTRIBUTE WITH ATTR DEF URL: "+ attrDef.getURL()+ " - TODO SUPPORT RELATIONAL ATTRIBUTES");
 
 				} else {
 					if (attr.getValuesCount() > 0) {
@@ -738,7 +737,11 @@ public class EntityODR extends Structure implements IEntity {
 						}
 
 						if (objects.size() > 1) {
-							logger.warn("TODO FOUND MULTI VALUED ATTRIBUTE TO CREATE, TAKING ONLY FIRST VALUE");
+							//logger.warn("TODO FOUND MULTI VALUED ATTRIBUTE TO CREATE, TAKING ONLY FIRST VALUE");
+							
+							attrODR = es.createAttribute(attrDef, objects);
+							newAttrs.add(attrODR);
+							
 						}
 						Object obj = objects.get(0);
 						attrODR = es.createAttribute(attrDef, obj);
