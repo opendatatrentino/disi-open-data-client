@@ -24,6 +24,7 @@ public class KnowledgeService implements IKnowledgeService {
 
 	private static final long ROOT_CONCEPT_ID = 1;
 	public static final long DESCRIPTION_CONCEPT_ID = 3L;
+	public static final long PARTOF_CONCEPT_ID = 3L;
 	//	public List<IConcept> getConcepts(List<Long> GUIDs) {
 	//		List<IConcept> iconcepts = new ArrayList<IConcept>();
 	//

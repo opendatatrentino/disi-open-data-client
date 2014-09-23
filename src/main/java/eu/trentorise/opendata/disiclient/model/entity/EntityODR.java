@@ -504,7 +504,9 @@ public class EntityODR extends Structure implements IEntity {
 		entity.setTypeId(this.getTypeId());
 		entity.setDuration(this.duration);
 		List<Attribute> attrs = super.getAttributes();
+		if(attrs!=null){
 		List<Attribute> attrsFixed = new ArrayList<Attribute>();
+		
 		for (Attribute at : attrs) {
 			if (at.getConceptId() == null) {
 				attrsFixed.add(at);
@@ -527,13 +529,17 @@ public class EntityODR extends Structure implements IEntity {
 					}
 				}
 				at.setValues(fixedVals);
+			} else if (at.getConceptId()==22L){
+				EntityODR enodr =(EntityODR) at.getValues().get(0).getValue();
+				Entity en = enodr.convertToEntity();
+				at.getValues().get(0).setValue(en);
 			}
 
 			attrsFixed.add(at);
 		}
-
+	
 		entity.setAttributes(attrsFixed);
-
+		}
 		entity.setDescriptions(convertDescriptionToSWEB(this.descriptions));
 		entity.setEnd(this.end);
 		entity.setGlobalId(this.globalId);
@@ -557,6 +563,7 @@ public class EntityODR extends Structure implements IEntity {
 
 
 	public void setName(Locale locale, List<String> names) {
+	//	this.names = names;
 		throw new UnsupportedOperationException("todo to implement");
 
 	}
@@ -718,7 +725,6 @@ public class EntityODR extends Structure implements IEntity {
 					EntityODR enODR = disify((IEntity) attr.getFirstValue().getValue(), false);
 					attrODR = es.createAttribute(attrDef, enODR);
 					newAttrs.add(attrODR);
-				//	logger.warn("DISIFY: SKIPPING RELATIONAL ATTRIBUTE WITH ATTR DEF URL: "+ attrDef.getURL()+ " - TODO SUPPORT RELATIONAL ATTRIBUTES");
 
 				} else {
 					if (attr.getValuesCount() > 0) {
@@ -731,7 +737,11 @@ public class EntityODR extends Structure implements IEntity {
 						}
 
 						if (objects.size() > 1) {
-							logger.warn("TODO FOUND MULTI VALUED ATTRIBUTE TO CREATE, TAKING ONLY FIRST VALUE");
+							//logger.warn("TODO FOUND MULTI VALUED ATTRIBUTE TO CREATE, TAKING ONLY FIRST VALUE");
+							
+							attrODR = es.createAttribute(attrDef, objects);
+							newAttrs.add(attrODR);
+							
 						}
 						Object obj = objects.get(0);
 						attrODR = es.createAttribute(attrDef, obj);
