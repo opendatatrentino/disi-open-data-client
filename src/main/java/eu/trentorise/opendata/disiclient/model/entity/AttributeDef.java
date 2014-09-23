@@ -41,7 +41,7 @@ public class AttributeDef implements IAttributeDef {
 	private IConcept concept;
 
 	public AttributeDef(AttributeDefinition attrDef){
-		
+
 		this.isSet = attrDef.isSet();
 		this.categoryId = attrDef.getCategoryId();
 		this.conceptId = attrDef.getConceptId();
@@ -168,12 +168,12 @@ public class AttributeDef implements IAttributeDef {
 	}
 	public String getRegularExpression() {
 		// TODO Postponed due to the absence of the functionality on the API Client            
-            throw new UnsupportedOperationException("todo to implement");
+		throw new UnsupportedOperationException("todo to implement");
 	}
 
 	public void setRegularExpression(String regularExpression) {
 		// TODO Postponed due to the absence of the functionality on the API Client
-            throw new UnsupportedOperationException("todo to implement");
+		throw new UnsupportedOperationException("todo to implement");
 
 	}
 

@@ -2,6 +2,7 @@ package eu.trentorise.opendata.disiclient.services;
 
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
+import it.unitn.disi.sweb.webapi.client.kb.ConceptClient;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
 import it.unitn.disi.sweb.webapi.model.eb.Name;
@@ -17,6 +18,7 @@ import eu.trentorise.opendata.disiclient.model.entity.EntityType;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
+import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
 
 
@@ -82,11 +84,22 @@ public class Search {
 
 	public List<IEntity> conceptSearch(String conceptSearchQuery) {
 		InstanceClient client = new InstanceClient(api);
+		ConceptClient cclient = new ConceptClient(api);
+		//cclient.
+		
 		InstanceSearchResult result = client.searchInstances(conceptSearchQuery, 1, null, null, null, null);
 		List<Instance> resInstances = result.getResults();
 		List<IEntity> resEntities  = convertInstancesToEntities(resInstances);
 		return resEntities;
 	}
+	
+//	public List<ISearchResult> conceptSearch(String conceptSearchQuery) {
+//		InstanceClient client = new InstanceClient(api);
+//		InstanceSearchResult result = client.searchInstances(conceptSearchQuery, 1, null, null, null, null);
+//		List<Instance> resInstances = result.getResults();
+//		List<IEntity> resEntities  = convertInstancesToEntities(resInstances);
+//		return resEntities;
+//	}
 
 	/** Method converts list of SWEB instances to ODR entities 
 	 * @param instances list of instances from the server

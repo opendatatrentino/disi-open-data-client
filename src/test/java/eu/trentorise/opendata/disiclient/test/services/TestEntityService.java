@@ -308,22 +308,7 @@ public class TestEntityService {
         assertNotNull(((ISemanticText) entity.getAttribute(ATTR_DEF_DESCRIPTION_URL).getValues().get(0).getValue()).getLocale());
     }
 
-// todo Review commented test!       
-//		@Test
-//		public void testPalazzettoReadNameEtype1() {
-//			IEkb disiEkb = new DisiEkb();
-//
-//			EntityODR entity = (EntityODR) disiEkb.getEntityService().readEntity(PALAZZETTO_URL);
-//			logger.info("\n\n *************   entity Palazzetto (" + PALAZZETTO_URL + ") ***************** \n\n" + entity);
-//	               
-//	                IAttributeDef nameAttrDef = entity.getEtype().getNameAttrDef();
-//	                IStructure nameValue = (IStructure) entity.getAttribute(nameAttrDef.getURL()).getValues().get(0).getValue();
-//	                assertTrue(nameValue.getEtype() != null);  
-//	
-//		assertTrue(entity.getName().getString(Locale.ITALIAN).length() > 0);
-//			// assertTrue(entity.getDescription().getString(Locale.ITALIAN).length() > 0);
-//	
-//		}
+
     @Test
     public void testReadStructure() {
         EntityService es = new EntityService(api);
@@ -342,7 +327,7 @@ public class TestEntityService {
         entitieURLs.add(RAVAZZONE_URL);
         List<IEntity> entities = es.readEntities(entitieURLs);
         for (IEntity entity : entities) {
-     //       IntegrityChecker.checkEntity(entity);
+            IntegrityChecker.checkEntity(entity);
         }
         
         logger.info(entities.get(0).getName().getStrings(Locale.ITALIAN).get(0));
@@ -571,4 +556,15 @@ public class TestEntityService {
         assertEquals(nameAttrDef.getRangeEtypeURL(), nameStruct.getEtypeURL());
 
     }
+//    
+//    @Test 
+//    public void testDisify(){
+//    	EntityService es = new EntityService();
+//        IEntity en = es.readEntity(CAMPANIL_PARTENZA_URL);
+//        EntityODR e = (EntityODR) en;
+//        IEntity ent = EntityODR.disify(e, true);
+//        Long l=es.createEntity(ent);
+//        logger.info(l.toString());
+//        assertNotNull(ent);
+//    }
 }

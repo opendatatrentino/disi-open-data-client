@@ -715,7 +715,9 @@ public class EntityODR extends Structure implements IEntity {
 				List<Object> objects = new ArrayList<Object>();
 
 				if (DataTypes.ENTITY.equals(attrDef.getDataType())) {
-					logger.warn("DISIFY: SKIPPING RELATIONAL ATTRIBUTE WITH ATTR DEF URL: "+ attrDef.getURL()+ " - TODO SUPPORT RELATIONAL ATTRIBUTES");
+					disify((IEntity) attr.getFirstValue().getValue(), false);
+				//	logger.warn("DISIFY: SKIPPING RELATIONAL ATTRIBUTE WITH ATTR DEF URL: "+ attrDef.getURL()+ " - TODO SUPPORT RELATIONAL ATTRIBUTES");
+
 				} else {
 					if (attr.getValuesCount() > 0) {
 						if (attrDef.getURL().equals(nameAttrDefURL)) {

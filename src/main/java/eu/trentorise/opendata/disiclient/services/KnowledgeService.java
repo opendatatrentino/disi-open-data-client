@@ -19,11 +19,11 @@ import eu.trentorise.opendata.semantics.services.model.ISearchResult;
  * 
  */
 public class KnowledgeService implements IKnowledgeService {
-    
-    Logger logger = LoggerFactory.getLogger(EntityService.class);
+
+	Logger logger = LoggerFactory.getLogger(KnowledgeService.class);
 
 	private static final long ROOT_CONCEPT_ID = 1;
-        public static final long DESCRIPTION_CONCEPT_ID = 3L;
+	public static final long DESCRIPTION_CONCEPT_ID = 3L;
 	//	public List<IConcept> getConcepts(List<Long> GUIDs) {
 	//		List<IConcept> iconcepts = new ArrayList<IConcept>();
 	//
@@ -36,31 +36,32 @@ public class KnowledgeService implements IKnowledgeService {
 	//	}
 
 
-	
-	
-	public IConcept getConcept(String URL) {
-		
 
-		//Long conceptId = Long.parseLong(s);
+
+	public IConcept getConcept(String URL) {
+
+		Long conceptId;
+
 		String s;
 		try {
-    		s = URL.substring(URL.indexOf("ts/") + 3);
-        } catch (Exception e) {
-             throw new DisiClientException("Wrong Concept URL!");
-        }
+			s = URL.substring(URL.indexOf("ts/") + 3);
+		} catch (Exception e) {
+			return null;
 
-        Long conceptId;
-        try {
-        	conceptId = Long.parseLong(s);
-        } catch (Exception e) {
-            throw new DisiClientException("Wrong concept ID!");
-        }
-        
-		
+			//throw new DisiClientException("Wrong Concept URL!");
+		}
+
+		try {
+			conceptId = Long.parseLong(s);
+		} catch (Exception e) {
+			return null;
+
+			//throw new DisiClientException("Wrong concept ID!");
+		} 
+
+
 		ConceptODR concept = new ConceptODR();
 		concept = concept.readConcept(conceptId);
-
-		//System.out.println(concept.getURL());
 
 		return concept;
 	}
@@ -85,23 +86,25 @@ public class KnowledgeService implements IKnowledgeService {
 		return concept;
 	}
 
-    public List<IConcept> readConcepts(List<String> URLs) {
-        return getConcepts(URLs);
-    }
+	public List<IConcept> readConcepts(List<String> URLs) {
+		return getConcepts(URLs);
+	}
 
-    public IConcept readConcept(String URL) {
-        return getConcept(URL);
-    }
+	public IConcept readConcept(String URL) {
+		return getConcept(URL);
+	}
 
-    public IConcept readRootConcept() {
-        return getRootConcept();
-    }
+	public IConcept readRootConcept() {
+		return getRootConcept();
+	}
 
-    public List<ISearchResult> searchConcepts(String partialName) {
-        
-    	List<ISearchResult> concepts = new ArrayList<ISearchResult>();
-        logger.warn("TRYING TO SEARCH CONCEPTS - RETURNING NOTHING. TODO IMPLEMENT THIS");
-	return concepts;
-    }
+	public List<ISearchResult> searchConcepts(String partialName) {
+
+		List<ISearchResult> concepts = new ArrayList<ISearchResult>();
+		
+		
+		logger.warn("TRYING TO SEARCH CONCEPTS - RETURNING NOTHING. TODO IMPLEMENT THIS");
+		return concepts;
+	}
 
 }

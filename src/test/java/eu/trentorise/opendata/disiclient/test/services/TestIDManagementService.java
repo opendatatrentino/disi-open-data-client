@@ -98,11 +98,6 @@ public class TestIDManagementService {
 
 		List<IIDResult> results=  idServ.assignURL(entities, 3);
 		for (IIDResult res: results){
-			//EntityODR entityODR =  (EntityODR) res.getResultEntity();
-
-//			System.out.println("result "+res.getAssignmentResult());
-//			System.out.println("Global id: "+res.getGUID());
-//			System.out.println("Local id: "+entityODR.getLocalID());
 			assertEquals(AssignmentResult.NEW, res.getAssignmentResult());
 		}
 
@@ -350,75 +345,10 @@ public class TestIDManagementService {
 
 		Attribute a = null;
 		for (IAttributeDef atd: attrDefList){
-			//			if (atd.getName().getString(Locale.ENGLISH).equals("Name")){
-			//				System.out.println(atd.getName());
-			//				System.out.println(atd.getGUID());
-			//				System.out.println(atd.getDataType());
-			//				if (atd.getDataType().equals(DataTypes.STRUCTURE)){
-			//					System.out.println(atd.getRangeEType().getURL());
-			//					EntityType etpe =	ets.getEntityType(atd.getRangeEType().getURL());
-			//					List<IAttributeDef>atsd = etpe.getAttributeDefs();
-			//					for (IAttributeDef a:atsd){
-			//						System.out.println(a.getGUID());
-			//					}
-			//
-			//				}
-
-			//			if (atd.getName().getString(Locale.ENGLISH).equals("Name")){
-			//				System.out.println(atd.getName());
-			//				AttributeODR attr = es.createNameAttribute(atd,(Name)value);
-			//				a=attr.convertToAttribute();
-			//				return a;
-			//			}
-			//
-			//			if (atd.getName().getString(Locale.ENGLISH).equals("Class")){
-			//				System.out.println(atd.getName());
-			//				AttributeODR attr = es.createAttribute(atd,clazz);
-			//				Attribute a=attr.convertToAttribute();
-			//				attrs.add(a);
-			//			}
-
-			//						if (atd.getName().getString(Locale.ENGLISH).equals("Foursquare ID")){
-			//							AttributeODR attr = es.createAttribute(atd, (String)value);
-			//							 a = attr.convertToAttribute();
-			//							attrs.add(a);
-			//						}
-
-			//			if (atd.getName().getString(Locale.ENGLISH).equals("Latitude")){
-			//				System.out.println(atd.getName());
-			//				AttributeODR attr = es.createAttribute(atd,latitude);
-			//				Attribute a=attr.convertToAttribute();
-			//				attrs.add(a);
-			//			}
-			//			if (atd.getName().getString(Locale.ENGLISH).equals("Longitude")){
-			//				System.out.println(atd.getName());
-			//				AttributeODR attr = es.createAttribute(atd,longitude);
-			//				 a=attr.convertToAttribute();
-			//			}
-
-			//									if (atd.getName().getString(Locale.ENGLISH).equals("Opening hours")){
-			//										System.out.println(atd.getName());
-			//										AttributeDef openHourAtDef = new AttributeDef(31L);
-			//										AttributeDef closeHourAtDef = new AttributeDef(30L);
-			//										
-			//										HashMap<AttributeDef, Object> attrMap = new HashMap<AttributeDef,Object>();
-			//										attrMap.put(openHourAtDef, openTime);
-			//										attrMap.put(closeHourAtDef, closeTime);
-			//										
-			//										AttributeODR attr = es.createAttribute(atd,attrMap);
-			//										Attribute a=attr.convertToAttribute();
-			//										attrs.add(a);
-			//								}
 		}
-		//		EntityODR e = new EntityODR();
-		//		e.setEntityBaseId(1L);
-		//		e.setTypeId(12L);
-		//		e.setAttributes(attrs);
 
 		return a;
 
-		//		long id = es.createEntity(e);
-		//		System.out.println("Entity id:"+id);
 	}
 
 }

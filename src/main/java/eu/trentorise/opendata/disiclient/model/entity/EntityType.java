@@ -219,7 +219,7 @@ public class EntityType implements IEntityType{
 		for (IAttributeDef attr: attrDefs){
 			AttributeDef ad = (AttributeDef) attr;
 			if (ad.getName(Locale.ENGLISH).equalsIgnoreCase("name")){
-				System.out.println(ad.getName(Locale.ENGLISH));
+			//	System.out.println(ad.getName(Locale.ENGLISH));
 				return attr;
 			}
 		}
