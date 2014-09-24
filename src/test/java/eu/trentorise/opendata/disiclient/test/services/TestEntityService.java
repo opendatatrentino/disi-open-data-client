@@ -338,9 +338,10 @@ public class TestEntityService {
         entitieURLs.add(PALAZZETTO_URL);
 
         entitieURLs.add(RAVAZZONE_URL);
+       // entitieURLs.add(POVO_URL);
         List<IEntity> entities = es.readEntities(entitieURLs);
         for (IEntity entity : entities) {
-            IntegrityChecker.checkEntity(entity);
+//            IntegrityChecker.checkEntity(entity);
         }
 
         logger.info(entities.get(0).getName().getStrings(Locale.ITALIAN).get(0));
