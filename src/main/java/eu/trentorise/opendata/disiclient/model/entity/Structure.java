@@ -118,7 +118,7 @@ public class Structure  extends Instance implements IStructure
 		return url;
 	}
 	
-	Structure convertToStructure(it.unitn.disi.sweb.webapi.model.eb.Structure st){
+	public Structure convertToStructure(it.unitn.disi.sweb.webapi.model.eb.Structure st){
 		Structure s = new Structure();
 		s.setAttributes(st.getAttributes()); 
 		s.setEntityBaseId(st.getEntityBaseId());
@@ -127,6 +127,17 @@ public class Structure  extends Instance implements IStructure
 		return s;
 	}
 
+	public it.unitn.disi.sweb.webapi.model.eb.Structure convertToSwebStructure( Structure s){
+		
+		it.unitn.disi.sweb.webapi.model.eb.Structure strSweb = new it.unitn.disi.sweb.webapi.model.eb.Structure();
+		
+		strSweb.setAttributes(s.getAttributes());
+		strSweb.setEntityBaseId(s.getEntityBaseId());
+		strSweb.setId(s.getId());
+		strSweb.setTypeId(s.getTypeId());
+		
+		return strSweb;
+	}
 }
 
 

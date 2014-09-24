@@ -508,6 +508,7 @@ public class EntityODR extends Structure implements IEntity {
 		List<Attribute> attrsFixed = new ArrayList<Attribute>();
 		
 		for (Attribute at : attrs) {
+			//System.out.println(at.getName());
 			if (at.getConceptId() == null) {
 				attrsFixed.add(at);
 				continue;
@@ -529,10 +530,15 @@ public class EntityODR extends Structure implements IEntity {
 					}
 				}
 				at.setValues(fixedVals);
-			} else if (at.getConceptId()==22L){
+			} else if ((at.getConceptId()==22L||at.getConceptId()==5L)&&((at.getValues().get(0).getValue() instanceof EntityODR))){
 				EntityODR enodr =(EntityODR) at.getValues().get(0).getValue();
 				Entity en = enodr.convertToEntity();
 				at.getValues().get(0).setValue(en);
+			} else if ( at.getValues().get(0).getValue() instanceof Structure)
+			{
+				Structure structure = (Structure) at.getValues().get(0).getValue();
+				it.unitn.disi.sweb.webapi.model.eb.Structure ebStr = structure.convertToSwebStructure(structure);
+				at.getValues().get(0).setValue(ebStr);
 			}
 
 			attrsFixed.add(at);

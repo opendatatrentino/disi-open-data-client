@@ -98,7 +98,7 @@ public class TestEntityService {
      * chairlift. Has attributes orari. Has descriptions both in Italian and
      * English. Name is only in Italian.
      */
-    public static final long CAMPANIL_PARTENZA_ID = 1L;
+    public static final long CAMPANIL_PARTENZA_ID = 64235L;
     public static final String CAMPANIL_PARTENZA_URL = entityIDToURL(CAMPANIL_PARTENZA_ID);
     public static final long DETACHABLE_CHAIRLIFT_CONCEPT_ID = 111009L;
     public static final String DETACHABLE_CHAIRLIFT_CONCEPT_URL = conceptIDToURL(DETACHABLE_CHAIRLIFT_CONCEPT_ID);
@@ -265,7 +265,7 @@ public class TestEntityService {
         for (Attribute a : attributes) {
 
             if (a.getDefinitionId() != attrDefClassAtrID) {
-                System.out.println(a.getName().get("en"));
+              //  System.out.println(a.getName().get("en"));
                 attrsEntityToCreate.add(a);
             }
         }
@@ -281,6 +281,8 @@ public class TestEntityService {
         EntityBase eb = ebc.readEntityBase(1L, null);
         int instanceNum = eb.getInstancesNumber();
         String entityURL = null;
+//        entityURL = es.createEntityURL(entityToCreate);
+//        es.deleteEntity(entityURL);
         try {
             entityURL = es.createEntityURL(entityToCreate);
 			//        es.ge

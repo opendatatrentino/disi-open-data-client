@@ -107,7 +107,6 @@ public class IdentityService implements IIdentityService {
 				Entity entity = entODR.convertToEntity();
 				checkPartOF(entity);
 				resEntities.add(entity);
-
 			}
 			List<IDResult> results = idManCl.assignIdentifier(resEntities, 0);
 			List<IIDResult> idResults = new ArrayList<IIDResult>();
