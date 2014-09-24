@@ -556,7 +556,9 @@ public class EntityODR extends StructureODR implements IEntity {
                                         fixedVal.setValue(ebStr);
                                         fixedVal.setId(val.getId());                                        
                                         fixedVals.add(fixedVal);                                                                                
-                                }                                
+                                } else {
+                                    fixedVals.add(val);
+                                }                    
                             }
                             if (fixedVals.size() > 0){
                                 atFixed.setValues(fixedVals);
