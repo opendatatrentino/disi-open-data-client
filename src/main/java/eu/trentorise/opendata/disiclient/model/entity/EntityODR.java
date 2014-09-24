@@ -57,6 +57,10 @@ public class EntityODR extends Structure implements IEntity {
 
 	private static final Logger logger = LoggerFactory.getLogger(EntityODR.class.getName());
 
+	public static final Long PART_OF_CONCEPT_ID1=5l;
+	public static final Long PART_OF_CONCEPT_ID2=22l;
+
+	
 	private List<Name> names;
 
 	private Map<String, List<SemanticText>> descriptions;
@@ -167,7 +171,7 @@ public class EntityODR extends Structure implements IEntity {
 							at.setValues(fixedVals);		
 						}
 						else 
-							if ((at.getConceptId() == 5L)&&(at.getValues().size()!=0)) { // todo hardcoded long
+							if ((at.getConceptId() == PART_OF_CONCEPT_ID1)&&(at.getValues().size()!=0)) { // todo hardcoded long
 								List<Value> vals = at.getValues();
 								List<Value> fixedVals = new ArrayList<Value>();
 								EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
@@ -509,13 +513,14 @@ public class EntityODR extends Structure implements IEntity {
 		
 		for (Attribute at : attrs) {
 			//System.out.println(at.getName());
+			Attribute atFixed = at;
 			if (at.getConceptId() == null) {
-				attrsFixed.add(at);
+				attrsFixed.add(atFixed);
 				continue;
 			} else if (at.getConceptId() == KnowledgeService.DESCRIPTION_CONCEPT_ID) {
 				List<Value> vals = at.getValues();
 				List<Value> fixedVals = new ArrayList<Value>();
-
+			
 				for (Value val : vals) {
 					if (val.getValue() instanceof String) {
 						fixedVals.add(val);
@@ -529,19 +534,20 @@ public class EntityODR extends Structure implements IEntity {
 						fixedVals.add(fixedVal);
 					}
 				}
-				at.setValues(fixedVals);
-			} else if ((at.getConceptId()==22L||at.getConceptId()==5L)&&((at.getValues().get(0).getValue() instanceof EntityODR))){
+				atFixed.setValues(fixedVals);
+			} else if ((at.getConceptId()==PART_OF_CONCEPT_ID2||at.getConceptId()==PART_OF_CONCEPT_ID1)&&(at.getValues().size()!=0)&&((at.getValues().get(0).getValue() instanceof EntityODR))){
 				EntityODR enodr =(EntityODR) at.getValues().get(0).getValue();
 				Entity en = enodr.convertToEntity();
-				at.getValues().get(0).setValue(en);
+				atFixed.getValues().get(0).setValue(en);
+				
 			} else if ( at.getValues().get(0).getValue() instanceof Structure)
 			{
 				Structure structure = (Structure) at.getValues().get(0).getValue();
 				it.unitn.disi.sweb.webapi.model.eb.Structure ebStr = structure.convertToSwebStructure(structure);
-				at.getValues().get(0).setValue(ebStr);
+				atFixed.getValues().get(0).setValue(ebStr);
 			}
 
-			attrsFixed.add(at);
+			attrsFixed.add(atFixed);
 		}
 	
 		entity.setAttributes(attrsFixed);

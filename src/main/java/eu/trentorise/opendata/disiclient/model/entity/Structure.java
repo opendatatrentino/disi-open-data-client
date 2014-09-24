@@ -130,8 +130,26 @@ public class Structure  extends Instance implements IStructure
 	public it.unitn.disi.sweb.webapi.model.eb.Structure convertToSwebStructure( Structure s){
 		
 		it.unitn.disi.sweb.webapi.model.eb.Structure strSweb = new it.unitn.disi.sweb.webapi.model.eb.Structure();
-		
+		List<Attribute> attrs = s.getAttributes();
+		List<Attribute> attrsFixed = new ArrayList<Attribute>() ;
+
+		for (Attribute a : attrs)
+		{
+			Attribute atFixed= a;
+			if ((a.getValues().get(0).getValue() instanceof EntityODR)){
+				EntityODR e  = (EntityODR) a.getValues().get(0).getValue();
+				atFixed.getValues().get(0).setValue( e.convertToEntity());
+			} else if (((a.getValues().get(0).getValue() instanceof Structure))){
+				Structure  strODR  = (Structure) a.getValues().get(0).getValue();
+				it.unitn.disi.sweb.webapi.model.eb.Structure strFixed = convertToSwebStructure(strODR);
+				atFixed.getValues().get(0).setValue(strFixed);
+
+			}
+			attrsFixed.add(atFixed);
+			
+		}
 		strSweb.setAttributes(s.getAttributes());
+		
 		strSweb.setEntityBaseId(s.getEntityBaseId());
 		strSweb.setId(s.getId());
 		strSweb.setTypeId(s.getTypeId());
