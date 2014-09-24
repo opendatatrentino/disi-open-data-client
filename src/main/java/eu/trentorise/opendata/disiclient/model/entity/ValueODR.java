@@ -40,7 +40,7 @@ public class ValueODR extends Value implements IValue {
 			Instance instance= (Instance)this.value;
 			//System.out.println(value.toString());
 			EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
-			Structure structure = es.readName(instance.getId());
+			StructureODR structure = es.readName(instance.getId());
 			//Structure structure = 
 			this.value=structure;
 		} else this.value=value.getValue();
@@ -63,10 +63,10 @@ public class ValueODR extends Value implements IValue {
 			{
 				Instance instance= (Instance)this.value;
 				EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
-				Structure name = es.readName(instance.getId());
+				StructureODR name = es.readName(instance.getId());
 				this.value=name;
 			}if (value.getClass().equals(it.unitn.disi.sweb.webapi.model.eb.Structure.class)){
-				Structure s = new Structure();
+				StructureODR s = new StructureODR();
 				s = s.convertToStructure((it.unitn.disi.sweb.webapi.model.eb.Structure)value);
 				this.value =s ;
 			}

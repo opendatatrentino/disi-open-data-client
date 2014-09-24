@@ -16,7 +16,7 @@ import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.model.entity.IStructure;
 
-public class Structure  extends Instance implements IStructure
+public class StructureODR  extends Instance implements IStructure
 {
 
 	private IProtocolClient api;
@@ -26,12 +26,12 @@ public class Structure  extends Instance implements IStructure
 		return super.getId();
 	}
 
-	public Structure(){
+	public StructureODR(){
 		this.api = getClientProtocol();
 
 	}
 
-	public Structure(Name name){
+	public StructureODR(Name name){
 		this.api = getClientProtocol();
 	}
 
@@ -118,8 +118,8 @@ public class Structure  extends Instance implements IStructure
 		return url;
 	}
 	
-	public Structure convertToStructure(it.unitn.disi.sweb.webapi.model.eb.Structure st){
-		Structure s = new Structure();
+	public StructureODR convertToStructure(it.unitn.disi.sweb.webapi.model.eb.Structure st){
+		StructureODR s = new StructureODR();
 		s.setAttributes(st.getAttributes()); 
 		s.setEntityBaseId(st.getEntityBaseId());
 		s.setTypeId(st.getTypeId());
@@ -127,7 +127,7 @@ public class Structure  extends Instance implements IStructure
 		return s;
 	}
 
-	public it.unitn.disi.sweb.webapi.model.eb.Structure convertToSwebStructure( Structure s){
+	public it.unitn.disi.sweb.webapi.model.eb.Structure convertToSwebStructure( StructureODR s){
 		
 		it.unitn.disi.sweb.webapi.model.eb.Structure strSweb = new it.unitn.disi.sweb.webapi.model.eb.Structure();
 		List<Attribute> attrs = s.getAttributes();
@@ -139,8 +139,8 @@ public class Structure  extends Instance implements IStructure
 			if ((a.getValues().get(0).getValue() instanceof EntityODR)){
 				EntityODR e  = (EntityODR) a.getValues().get(0).getValue();
 				atFixed.getValues().get(0).setValue( e.convertToEntity());
-			} else if (((a.getValues().get(0).getValue() instanceof Structure))){
-				Structure  strODR  = (Structure) a.getValues().get(0).getValue();
+			} else if (((a.getValues().get(0).getValue() instanceof StructureODR))){
+				StructureODR  strODR  = (StructureODR) a.getValues().get(0).getValue();
 				it.unitn.disi.sweb.webapi.model.eb.Structure strFixed = convertToSwebStructure(strODR);
 				atFixed.getValues().get(0).setValue(strFixed);
 

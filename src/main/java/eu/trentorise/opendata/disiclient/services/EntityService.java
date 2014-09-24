@@ -5,7 +5,7 @@ import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityType;
-import eu.trentorise.opendata.disiclient.model.entity.Structure;
+import eu.trentorise.opendata.disiclient.model.entity.StructureODR;
 import eu.trentorise.opendata.disiclient.model.entity.ValueODR;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.semantics.NotFoundException;
@@ -204,7 +204,7 @@ public class EntityService implements IEntityService {
 		return ret;
 	}
 
-	public Structure readName(long entityID) {
+	public StructureODR readName(long entityID) {
 		InstanceClient instanceCl = new InstanceClient(this.api);
 
 		InstanceFilter instFilter = new InstanceFilter();
@@ -215,7 +215,7 @@ public class EntityService implements IEntityService {
 		Instance instance = instanceCl.readInstance(entityID, instFilter);
 
 		Name name = (Name) instance;
-		Structure structureName = new Structure();
+		StructureODR structureName = new StructureODR();
 		List<Attribute> atrs = name.getAttributes();
 
 		for (Attribute a: atrs){
@@ -253,7 +253,7 @@ public class EntityService implements IEntityService {
 		return structureName;
 	}
 
-	public Structure readStructure(long entityID) {
+	public StructureODR readStructure(long entityID) {
 		InstanceClient instanceCl = new InstanceClient(this.api);
 
 		InstanceFilter instFilter = new InstanceFilter();
@@ -264,7 +264,7 @@ public class EntityService implements IEntityService {
 		Instance instance = instanceCl.readInstance(entityID, instFilter);
 
 		it.unitn.disi.sweb.webapi.model.eb.Structure structure = (it.unitn.disi.sweb.webapi.model.eb.Structure) instance;
-		Structure structureName = new Structure();
+		StructureODR structureName = new StructureODR();
 		structureName.setAttributes(structure.getAttributes());
 		structureName.setTypeId(structure.getTypeId());
 		structureName.setEntityBaseId(1L);

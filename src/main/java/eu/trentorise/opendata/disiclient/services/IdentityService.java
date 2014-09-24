@@ -104,8 +104,7 @@ public class IdentityService implements IIdentityService {
 			for (IEntity en : entities) {
 				EntityODR ent = (EntityODR) en;
 				EntityODR entODR = convertNameAttr(ent);
-				Entity entity = entODR.convertToEntity();
-				checkPartOF(entity);
+				Entity entity = entODR.convertToEntity();				
 				resEntities.add(entity);
 			}
 			List<IDResult> results = idManCl.assignIdentifier(resEntities, 0);
@@ -117,40 +116,5 @@ public class IdentityService implements IIdentityService {
 			return idResults;
 		}
 	}
-
-
-	private Entity checkPartOF(Entity entity) {
-		List<Attribute> atrs = entity.getAttributes();
-		for(Attribute a: atrs){
-			if(a.getValues().get(0).getValue() instanceof EntityODR){
-
-				AttributeODR at = createRelationalAttr (a.getDefinitionId() ,a.getValues());
-				atrs.remove(a);
-				atrs.add(at.convertToAttribute());
-				return entity;
-			}
-		}
-
-		return entity;
-	}
-
-
-	private AttributeODR createRelationalAttr(Long definitionId, List<Value> values) {
-		Attribute a = new Attribute();
-		a.setDefinitionId(definitionId);
-		EntityODR e = (EntityODR) values.get(0).getValue();
-		System.out.println(e);
-
-		Entity relEn = new Entity();
-		relEn.setEntityBaseId(1L);
-		relEn.setId(e.getId());
-		relEn.setTypeId(e.getTypeId());
-
-		EntityService enServ= new EntityService();
-		IAttributeDef ad = new AttributeDef(definitionId);
-		AttributeODR at = enServ.createAttribute(ad, relEn);            
-		return at;
-
-	}
-
+      
 }

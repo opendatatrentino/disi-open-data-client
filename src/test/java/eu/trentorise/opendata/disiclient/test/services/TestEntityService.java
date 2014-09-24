@@ -4,7 +4,7 @@ import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityType;
-import eu.trentorise.opendata.disiclient.model.entity.Structure;
+import eu.trentorise.opendata.disiclient.model.entity.StructureODR;
 import eu.trentorise.opendata.disiclient.model.entity.ValueODR;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.disiclient.services.DisiEkb;
@@ -325,7 +325,7 @@ public class TestEntityService {
     @Test
     public void testReadStructure() {
         EntityService es = new EntityService(api);
-        Structure structure = (Structure) es.readStructure(64001L);
+        StructureODR structure = (StructureODR) es.readStructure(64001L);
         IntegrityChecker.checkStructure(structure);
         logger.info(structure.getEtype().getName().getStrings(Locale.ITALIAN).get(0));
         assertEquals(structure.getEtype().getName().getStrings(Locale.ITALIAN).get(0), "Nome");
