@@ -291,8 +291,10 @@ public class TestEntityService {
             EntityBase ebafter = ebc.readEntityBase(1L, null);
             int instanceNumAfter = ebafter.getInstancesNumber();
             assertEquals(instanceNum + 1, instanceNumAfter);
-        } finally {
-            es.deleteEntity(entityURL);
+        } finally {    
+            if (entityURL != null){
+                es.deleteEntity(entityURL);
+            }
         }
         EntityBase ebafterDel = ebc.readEntityBase(1L, null);
         int instanceNumAfterDel = ebafterDel.getInstancesNumber();
@@ -580,15 +582,17 @@ public class TestEntityService {
         AttributeODR a = (AttributeODR) en.getStructureAttributes().get(2);
         IValue val = new ValueODR();
         val.setValue(15.2f);
-        a.addValue(val);;
+        a.addValue(val);
 
         IEntity ent = EntityODR.disify(e, true);
         assertNotNull(ent);
-        Long l = null;
+        String URL = null;
         try {
-            l = es.createEntity(ent);
+            URL = es.createEntityURL(ent);
         } finally {
-            es.deleteEntity(l);
+            if (URL != null) {
+                es.deleteEntity(URL);
+            }
         }
     }
 }

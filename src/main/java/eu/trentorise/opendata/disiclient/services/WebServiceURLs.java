@@ -1,17 +1,16 @@
 package eu.trentorise.opendata.disiclient.services;
 
+import eu.trentorise.opendata.semantics.IntegrityChecker;
+import eu.trentorise.opendata.semantics.IntegrityException;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
 import java.util.Properties;
-
 import javax.annotation.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +40,11 @@ public class WebServiceURLs {
      * @throws IllegalArgumentException on unparseable URL
      */    
     private static long parseID(String prefix, String URL) {
+        try {
+            IntegrityChecker.checkURL(URL);
+        } catch (IntegrityException ex){
+            throw new IllegalArgumentException(ex);
+        }
         int pos = URL.indexOf(prefix) + prefix.length();
         if (pos == -1) {
             throw new IllegalArgumentException("Invalid URL for object of type " + prefix + ": " + URL);
