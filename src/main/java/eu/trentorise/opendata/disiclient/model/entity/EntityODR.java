@@ -512,7 +512,8 @@ public class EntityODR extends Structure implements IEntity {
 		
 		for (Attribute at : attrs) {
 			//System.out.println(at.getName());
-			Attribute atFixed = at;
+			Attribute atFixed = new Attribute();
+			atFixed = at;
 			if (at.getConceptId() == null) {
 				attrsFixed.add(atFixed);
 				continue;
