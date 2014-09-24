@@ -40,7 +40,6 @@ import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.model.entity.IStructure;
 import eu.trentorise.opendata.semantics.model.entity.IValue;
-import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
 import eu.trentorise.opendata.semantics.model.knowledge.IDict;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.Dict;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.SemanticText;
@@ -722,18 +721,21 @@ public class EntityODR extends Structure implements IEntity {
 		if (root) {
 			Object nameAttrDefURL = entity.getEtype().getNameAttrDef().getURL();
 			for (IAttribute attr : entity.getStructureAttributes()) {
+                            if (attr.getValuesCount() > 0) {
 				IAttributeDef attrDef = attr.getAttrDef();
 				AttributeODR attrODR;
-
+                                
 				List<Object> objects = new ArrayList<Object>();
 
 				if (DataTypes.ENTITY.equals(attrDef.getDataType())) {
-					EntityODR enODR = disify((IEntity) attr.getFirstValue().getValue(), false);
-					attrODR = es.createAttribute(attrDef, enODR);
+                                        List<EntityODR> ensODR = new ArrayList();
+                                        for (IValue v :  attr.getValues()){
+                                            ensODR.add(disify((IEntity) v.getValue(), false));
+                                        }					
+					attrODR = es.createAttribute(attrDef, ensODR);
 					newAttrs.add(attrODR);
-
 				} else {
-					if (attr.getValuesCount() > 0) {
+					
 						if (attrDef.getURL().equals(nameAttrDefURL)) {
 							objects.add(Dict.copyOf(entity.getName()).prettyString(new DisiEkb().getDefaultLocales())); // todo find way to link entity service to DisiEkb
 						} else {
@@ -742,16 +744,9 @@ public class EntityODR extends Structure implements IEntity {
 							}
 						}
 
-						if (objects.size() > 1) {
-							//logger.warn("TODO FOUND MULTI VALUED ATTRIBUTE TO CREATE, TAKING ONLY FIRST VALUE");
-							
-							attrODR = es.createAttribute(attrDef, objects);
-							newAttrs.add(attrODR);
-							
-						}
-						Object obj = objects.get(0);
-						attrODR = es.createAttribute(attrDef, obj);
-						newAttrs.add(attrODR);
+								
+						attrODR = es.createAttribute(attrDef, objects);
+						newAttrs.add(attrODR);												
 					}
 
 				}
