@@ -32,6 +32,8 @@ import it.unitn.disi.sweb.webapi.model.filters.InstanceFilter;
 import it.unitn.disi.sweb.webapi.model.kb.concepts.Concept;
 import it.unitn.disi.sweb.webapi.model.kb.types.DataType;
 import it.unitn.disi.sweb.webapi.model.kb.vocabulary.Vocabulary;
+
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
@@ -43,6 +45,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+
 import org.apache.commons.lang3.LocaleUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.slf4j.Logger;
@@ -582,8 +585,53 @@ public class EntityService implements IEntityService {
 	}
 
 	public void exportToRdf(List<String> entityURLs, Writer writer) {
-		throw new UnsupportedOperationException("todo to implement");
+		if (entityURLs.isEmpty()) 
+		{
+			throw new DisiClientException("The list of entities for export is empty");
+		}
 
+
+
+		String filename = "test" + System.currentTimeMillis();
+		EntityExportService ees = new EntityExportService();
+		List<Long> entitiesID = new ArrayList<Long>();
+
+		for (String entityURL : entityURLs) {
+			
+			Long eID = WebServiceURLs.urlToEntityID(entityURL);
+			entitiesID.add(eID);
+		}
+		
+		Long fileId = null;
+		try {
+			fileId = ees.methodPost(entitiesID, filename);
+		} catch (ClientProtocolException e) {
+			throw new DisiClientException("Error while getting fileId", e);
+		} catch (IOException e) {
+			throw new DisiClientException("Error while getting fileId", e);
+		}
+		
+		InputStream is = null;
+		try {
+			is = ees.methodGet(fileId, "sem" + filename);
+		} catch (ClientProtocolException e) {
+			throw new DisiClientException("Error while getting input stream", e);
+		} catch (IOException e) {
+			throw new DisiClientException("Error while getting input stream", e);
+		}
+		
+		BufferedWriter bw = new BufferedWriter(writer);
+	    int letter;  
+	    try {
+			while ((letter = is.read()) != -1) {  
+			  bw.write((char) letter);  
+			  bw.flush();  
+			}
+		} catch (IOException e) {
+		
+			e.printStackTrace();
+		}  
+		
 	}
 
 	public void exportToJsonLd(List<String> entityURLs, Writer writer) throws DisiClientException  {
