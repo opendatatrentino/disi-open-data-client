@@ -5,7 +5,7 @@ import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityType;
-import eu.trentorise.opendata.disiclient.model.entity.Structure;
+import eu.trentorise.opendata.disiclient.model.entity.StructureODR;
 import eu.trentorise.opendata.disiclient.model.entity.ValueODR;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.semantics.NotFoundException;
@@ -32,18 +32,17 @@ import it.unitn.disi.sweb.webapi.model.filters.InstanceFilter;
 import it.unitn.disi.sweb.webapi.model.kb.concepts.Concept;
 import it.unitn.disi.sweb.webapi.model.kb.types.DataType;
 import it.unitn.disi.sweb.webapi.model.kb.vocabulary.Vocabulary;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.commons.lang3.LocaleUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.slf4j.Logger;
@@ -205,7 +204,7 @@ public class EntityService implements IEntityService {
 		return ret;
 	}
 
-	public Structure readName(long entityID) {
+	public StructureODR readName(long entityID) {
 		InstanceClient instanceCl = new InstanceClient(this.api);
 
 		InstanceFilter instFilter = new InstanceFilter();
@@ -216,7 +215,7 @@ public class EntityService implements IEntityService {
 		Instance instance = instanceCl.readInstance(entityID, instFilter);
 
 		Name name = (Name) instance;
-		Structure structureName = new Structure();
+		StructureODR structureName = new StructureODR();
 		List<Attribute> atrs = name.getAttributes();
 
 		for (Attribute a: atrs){
@@ -254,7 +253,7 @@ public class EntityService implements IEntityService {
 		return structureName;
 	}
 
-	public Structure readStructure(long entityID) {
+	public StructureODR readStructure(long entityID) {
 		InstanceClient instanceCl = new InstanceClient(this.api);
 
 		InstanceFilter instFilter = new InstanceFilter();
@@ -265,7 +264,7 @@ public class EntityService implements IEntityService {
 		Instance instance = instanceCl.readInstance(entityID, instFilter);
 
 		it.unitn.disi.sweb.webapi.model.eb.Structure structure = (it.unitn.disi.sweb.webapi.model.eb.Structure) instance;
-		Structure structureName = new Structure();
+		StructureODR structureName = new StructureODR();
 		structureName.setAttributes(structure.getAttributes());
 		structureName.setTypeId(structure.getTypeId());
 		structureName.setEntityBaseId(1L);
@@ -290,22 +289,13 @@ public class EntityService implements IEntityService {
 
 	}
 
-	// TODO BUGGED This should cal in some way createAttribute for single values
-	public AttributeODR createAttribute(IAttributeDef attrDef, List<Object> values) {
-
-		List<ValueODR> vals = new ArrayList<ValueODR>();
-		for (Object obj : values) {
-			ValueODR value = new ValueODR();
-			value.setValue(obj);
-			vals.add(value);
-		}
-		AttributeODR attribute = new AttributeODR(attrDef, vals);
-		return attribute;
-	}
-
-	public AttributeODR createAttribute(IAttributeDef attrDef, Object value) {
+        /**
+         * @param value Note: can be a Collection
+         */
+	public AttributeODR createAttribute(IAttributeDef attrDef, Object value) {                                    
 		AttributeDef ad = (AttributeDef) attrDef;
-
+                                
+                
 		if (ad.getName(Locale.ENGLISH).equals("Name")) {
 			return createNameAttributeODR(attrDef,  value);
 
@@ -314,53 +304,84 @@ public class EntityService implements IEntityService {
 				return createDescriptionAttributeODR(attrDef,  value);
 
 			} else if (attrDef.getDataType().equals(DataTypes.STRUCTURE)) {
-
-				return createStructureAttribute(attrDef, (HashMap<IAttributeDef, Object>) value);
+                                if (value instanceof Collection){ // notice in Java a Map is *NOT* an instance of Collection
+                                    return createStructureAttribute(attrDef, (Collection) value);
+                                } else {
+                                    List<HashMap<IAttributeDef, Object>> hashMaps = new ArrayList();
+                                    hashMaps.add((HashMap<IAttributeDef, Object>) value);
+                                    return createStructureAttribute(attrDef, hashMaps);
+                                }
+				
 			} 
 		//			else if (ad.getName(Locale.ENGLISH).equals("Part copyOf")){
 		//				return createRelationalAttribute(attrDef,  value);
 		//			}
 
 			else {
+                            if (value instanceof Collection){
+                                List<ValueODR> valsODR = new ArrayList<ValueODR>();
+                                for (Object obj : (Collection) value) {
+                                        ValueODR valODR = new ValueODR();
+                                        valODR.setValue(obj);
+                                        valsODR.add(valODR);
+                                }
+                                return new AttributeODR(attrDef, valsODR);   
+                            } else {
 				ValueODR val = new ValueODR();
 				val.setValue(value);
-				AttributeODR attribute = new AttributeODR(attrDef, val);
-				return attribute;
+				return new AttributeODR(attrDef, val);
+                            }                            
+                
 			}
 	}
 
-
-
-	private AttributeODR createDescriptionAttributeODR(IAttributeDef attrDef,
-			Object value) {
-		SemanticText descr = null; 
-
-		if(value instanceof String){
+        /**
+         * @param descr either a String or a SemanticText instance
+         * @return the description as SemanticText
+         * @throws IllegalArgumentException if descr is not of the proper type
+         */
+        private SemanticText descrToSemText(Object descr){
+		if(descr instanceof String){
 			/* david there should be only SemanticText 
                         descr= new SemanticString();
 			String s = (String) value;
 			descr.setText(s); */
-			descr = new SemanticText((String) value); 
-		} else if(value instanceof SemanticText ) 
+			return new SemanticText((String) descr); 
+		} else if(descr instanceof SemanticText ) 
 		{
 			/* david  there should be only SemanticText 
                             SemanticText st= (SemanticText) value;
                             descr = SemanticTextFactory.semanticString(st);
 			 */
-			descr = (SemanticText) value;
-		} else 
-		{
-			throw new DisiClientException("Wrong value for the attribute is given! Accepted values are String and SemanticText."); 
-		}
+			return (SemanticText) descr;
+		} else {
+			throw new IllegalArgumentException("Wrong value for the attribute is given! Accepted values are String and SemanticText."); 
+		}                        
+        }
+        
+        /**
+         * 
+         * @param descr either a String, a SemanticText, or a Collection of String or SemanticText
+         * @throws IllegalArgumentException if descr is not of the proper type
+         */
+	private AttributeODR createDescriptionAttributeODR(IAttributeDef attrDef,
+			Object descr) {                
+                if (descr instanceof Collection){
+                    List<ValueODR> valsODR = new ArrayList<ValueODR>();
+                    for (Object obj : (Collection) descr) {
+                            ValueODR valODR = new ValueODR();
+                            valODR.setValue(descrToSemText(obj));
+                            valsODR.add(valODR);
+                    }
+                    return new AttributeODR(attrDef, valsODR);   
+                } else {
+                    ValueODR val = new ValueODR();
+                    val.setValue(descrToSemText(descr));
+                    return new AttributeODR(attrDef, val);
+                }                 
+        }
 
-		ValueODR val = new ValueODR();
-		val.setValue(descr);
-
-		AttributeODR attribute = new AttributeODR(attrDef, val);
-		return attribute;
-	}
-
-	public AttributeODR createStructureAttribute(IAttributeDef attrDef,
+        private it.unitn.disi.sweb.webapi.model.eb.Structure createStructure(IAttributeDef attrDef,
 			HashMap<IAttributeDef, Object> atributes) {
 		List<Attribute> attrs = new ArrayList<Attribute>();
 		it.unitn.disi.sweb.webapi.model.eb.Structure attributeStructure = new it.unitn.disi.sweb.webapi.model.eb.Structure();
@@ -378,11 +399,20 @@ public class EntityService implements IEntityService {
 			it.remove();
 		}
 		attributeStructure.setAttributes(attrs);
+                return attributeStructure;
+        }
+        
+	private AttributeODR createStructureAttribute(IAttributeDef attrDef,
+			Collection<HashMap<IAttributeDef, Object>> structs) {
 
 		Attribute nAtr = new Attribute();
 		nAtr.setDefinitionId(attrDef.getGUID());
-		List<Value> values = new ArrayList<Value>();
-		values.add(new Value(attributeStructure));
+		List<Value> values = new ArrayList<Value>();            
+                
+                for (HashMap<IAttributeDef, Object> structMap : structs){
+                    values.add(new Value(createStructure(attrDef, structMap)));
+                }
+		
 		nAtr.setValues(values);
 
 		AttributeODR a = new AttributeODR(api, nAtr);
@@ -451,10 +481,42 @@ public class EntityService implements IEntityService {
 
 	}
 
+        /**
+         * 
+         * @param name a String or an IDict
+         * @return a Value representing the name
+         * @throws IllegalArgumentException if name is not of the proper class
+         */
+        private List<Value> nameToValue(Object name){
+            List<Value> nameValues = new ArrayList();
+		if (name instanceof String)
+		{
+			String nameInput = (String) name; 
+			logger.warn("No Locale is provided for name"+name+"The vocabulary is set to '1'");
+			nameValues.add(new Value(nameInput, 1L)); 
+                        return nameValues;
+		} else if (name instanceof IDict){
+			Dict nameDict=(Dict) name;
+			HashMap<String,Long> vocabs = getVocabularies();
+			Set<Locale> locs =nameDict.getLocales();
+			for (Locale l:locs){
+				nameValues.add(new Value(nameDict.getString(l), vocabs.get( TraceProvUtils.localeToLanguageTag(l))));//dav so Java 6 doesn't bother us l.toLanguageTag())));
+			}                     
+                        return nameValues;
+                } else {
+                        throw new IllegalArgumentException("Wrong Name object is given. "
+					+ "Name object should be an instance of String or IDict classes. Found instead instance of class " + name.getClass().getSimpleName());
+                        }
+            
+            
+        }
+        
+        /**
+         * 
+         * @param attrDef
+         * @param name can be a String, an IDict or a Collection of String or IDict.
+         */
 	public AttributeODR createNameAttributeODR(IAttributeDef attrDef, Object name) {
-
-		String nameInput=null;
-
 
 		Attribute entityNameAttribute = new Attribute();
 		entityNameAttribute.setDefinitionId(attrDef.getGUID());
@@ -489,24 +551,14 @@ public class EntityService implements IEntityService {
 
 		List<Value> nameValues = new ArrayList<Value>();
 		//Vocabularies 
-
-		if (name instanceof String)
-		{
-			nameInput = (String) name; 
-			logger.warn("No Locale is provided for name"+name+"The vocabulary is set to '1'");
-			nameValues.add(new Value(nameInput, 1L)); 
-		}
-		else if (name instanceof IDict){
-			Dict nameDict=(Dict) name;
-			HashMap<String,Long> vocabs = getVocabularies();
-			Set<Locale> locs =nameDict.getLocales();
-			for (Locale l:locs){
-				nameValues.add(new Value(nameDict.getString(l), vocabs.get( TraceProvUtils.localeToLanguageTag(l))));//dav so Java 6 doesn't bother us l.toLanguageTag())));
-			}} 
-		else 		{
-			throw new DisiClientException("Wrong Name object is given. "
-					+ "Name object should be an instance of String or IDict classes. Found instead instance of class " + name.getClass().getSimpleName());
-		}
+                
+                if (name instanceof Collection){
+                    for (Object n : (Collection) name){
+                        nameValues.addAll(nameToValue(n));                        
+                    }
+                } else {
+                     nameValues.addAll(nameToValue(name));
+                } 
 
 		nameAttribute.setValues(nameValues);
 		nameAttributes.add(nameAttribute);

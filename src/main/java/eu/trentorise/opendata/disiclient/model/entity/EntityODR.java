@@ -1,6 +1,24 @@
 package eu.trentorise.opendata.disiclient.model.entity;
 
+import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
+import eu.trentorise.opendata.disiclient.services.DisiEkb;
+import eu.trentorise.opendata.disiclient.services.EntityService;
+import eu.trentorise.opendata.disiclient.services.KnowledgeService;
+import eu.trentorise.opendata.disiclient.services.NLPService;
+import eu.trentorise.opendata.disiclient.services.SemanticTextFactory;
+import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.urlToEntityID;
+import eu.trentorise.opendata.semantics.model.entity.IAttribute;
+import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
+import eu.trentorise.opendata.semantics.model.entity.IEntity;
+import eu.trentorise.opendata.semantics.model.entity.IEntityType;
+import eu.trentorise.opendata.semantics.model.entity.IStructure;
+import eu.trentorise.opendata.semantics.model.entity.IValue;
+import eu.trentorise.opendata.semantics.model.knowledge.IDict;
+import eu.trentorise.opendata.semantics.model.knowledge.impl.Dict;
+import eu.trentorise.opendata.semantics.model.knowledge.impl.SemanticText;
+import eu.trentorise.opendata.semantics.services.model.DataTypes;
+import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
 import it.unitn.disi.sweb.webapi.client.kb.ComplexTypeClient;
@@ -11,41 +29,20 @@ import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
 import it.unitn.disi.sweb.webapi.model.eb.Moment;
 import it.unitn.disi.sweb.webapi.model.eb.Name;
+import it.unitn.disi.sweb.webapi.model.eb.Structure;
 import it.unitn.disi.sweb.webapi.model.eb.Value;
 import it.unitn.disi.sweb.webapi.model.eb.sstring.SemanticString;
 import it.unitn.disi.sweb.webapi.model.kb.concepts.Concept;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
 import it.unitn.disi.sweb.webapi.model.kb.types.DataType;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
-import eu.trentorise.opendata.disiclient.services.DisiEkb;
-import eu.trentorise.opendata.disiclient.services.EntityService;
-import eu.trentorise.opendata.disiclient.services.KnowledgeService;
-import eu.trentorise.opendata.disiclient.services.NLPService;
-import eu.trentorise.opendata.disiclient.services.SemanticTextFactory;
-import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
-import eu.trentorise.opendata.semantics.model.entity.IAttribute;
-import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
-import eu.trentorise.opendata.semantics.model.entity.IEntity;
-import eu.trentorise.opendata.semantics.model.entity.IEntityType;
-import eu.trentorise.opendata.semantics.model.entity.IStructure;
-import eu.trentorise.opendata.semantics.model.entity.IValue;
-import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
-import eu.trentorise.opendata.semantics.model.knowledge.IDict;
-import eu.trentorise.opendata.semantics.model.knowledge.impl.Dict;
-import eu.trentorise.opendata.semantics.model.knowledge.impl.SemanticText;
-import eu.trentorise.opendata.semantics.services.model.DataTypes;
-import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
@@ -53,7 +50,7 @@ import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
  * @date 06 Aug 2014
  *
  */
-public class EntityODR extends Structure implements IEntity {
+public class EntityODR extends StructureODR implements IEntity {
 
 	private static final Logger logger = LoggerFactory.getLogger(EntityODR.class.getName());
 
@@ -512,16 +509,22 @@ public class EntityODR extends Structure implements IEntity {
 		List<Attribute> attrsFixed = new ArrayList<Attribute>();
 		
 		for (Attribute at : attrs) {
-			//System.out.println(at.getName());
 			Attribute atFixed = new Attribute();
-			atFixed = at;
-			
-			if (at.getConceptId() == null) {
-				attrsFixed.add(atFixed);
-				continue;
-			}	else
-			
-				if (at.getConceptId() == KnowledgeService.DESCRIPTION_CONCEPT_ID) {
+                        atFixed.setCategoryId(at.getCategoryId());
+                        atFixed.setConceptId(at.getConceptId());
+                        atFixed.setDataType(at.getDataType());
+                        atFixed.setDefinitionId(at.getDefinitionId());
+                        atFixed.setId(at.getId());
+                        atFixed.setInstanceId(at.getInstanceId());
+                        atFixed.setName(at.getName());
+                        
+                        
+//			if (at.getConceptId() == null) {
+//				attrsFixed.add(atFixed);
+//				continue;
+//			}
+		//	else
+				if ((at.getConceptId() != null)&&(at.getConceptId() == KnowledgeService.DESCRIPTION_CONCEPT_ID)) {
 				List<Value> vals = at.getValues();
 				List<Value> fixedVals = new ArrayList<Value>();
 			
@@ -529,7 +532,6 @@ public class EntityODR extends Structure implements IEntity {
 					if (val.getValue() instanceof String) {
 						fixedVals.add(val);
 					} else {
-
 						SemanticString sstring = convertSemTextToSemString((SemanticText) val.getValue());
 						Value fixedVal = new Value();
 						fixedVal.setSemanticValue(sstring);
@@ -539,19 +541,32 @@ public class EntityODR extends Structure implements IEntity {
 					}
 				}
 				atFixed.setValues(fixedVals);
-			} else if ((at.getConceptId()==PART_OF_CONCEPT_ID2||at.getConceptId()==PART_OF_CONCEPT_ID1)&&(at.getValues().size()!=0)&&((at.getValues().get(0).getValue() instanceof EntityODR))){
-				EntityODR enodr =(EntityODR) at.getValues().get(0).getValue();
-				Entity en = enodr.convertToEntity();
-				atFixed.getValues().get(0).setValue(en);
-				
-			} else if ( at.getValues().get(0).getValue() instanceof Structure)
-			{
-				Structure structure = (Structure) at.getValues().get(0).getValue();
-				it.unitn.disi.sweb.webapi.model.eb.Structure ebStr = structure.convertToSwebStructure(structure);
-				atFixed.getValues().get(0).setValue(ebStr);
-				
-			}
-
+			} else {
+                            List<Value> fixedVals = new ArrayList<Value>();
+                            for (Value val : at.getValues()){
+                                if (val.getValue() instanceof EntityODR){
+                                        EntityODR enodr =(EntityODR) val.getValue();
+                                        Entity en = enodr.convertToEntity();
+                                        Value fixedVal = new Value();
+                                        fixedVal.setValue(en);
+                                        fixedVal.setId(val.getId());
+                                        fixedVals.add(fixedVal);
+                                } else if (val.getValue() instanceof StructureODR) {
+                                        StructureODR structureODR = (StructureODR) val.getValue();
+                                        Structure ebStr = structureODR.convertToSwebStructure(structureODR);
+                                        Value fixedVal = new Value();
+                                        fixedVal.setValue(ebStr);
+                                        fixedVal.setId(val.getId());                                        
+                                        fixedVals.add(fixedVal);                                                                                
+                                } else {
+                                    fixedVals.add(val);
+                                }                    
+                            }
+                           // if (fixedVals.size() > 0){
+                                atFixed.setValues(fixedVals);
+                            //}
+                        }
+                        
 			attrsFixed.add(atFixed);
 		}
 	
@@ -733,18 +748,21 @@ public class EntityODR extends Structure implements IEntity {
 		if (root) {
 			Object nameAttrDefURL = entity.getEtype().getNameAttrDef().getURL();
 			for (IAttribute attr : entity.getStructureAttributes()) {
+                            if (attr.getValuesCount() > 0) {
 				IAttributeDef attrDef = attr.getAttrDef();
 				AttributeODR attrODR;
-
+                                
 				List<Object> objects = new ArrayList<Object>();
 
 				if (DataTypes.ENTITY.equals(attrDef.getDataType())) {
-					EntityODR enODR = disify((IEntity) attr.getFirstValue().getValue(), false);
-					attrODR = es.createAttribute(attrDef, enODR);
+                                        List<EntityODR> ensODR = new ArrayList();
+                                        for (IValue v :  attr.getValues()){
+                                            ensODR.add(disify((IEntity) v.getValue(), false));
+                                        }					
+					attrODR = es.createAttribute(attrDef, ensODR);
 					newAttrs.add(attrODR);
-
 				} else {
-					if (attr.getValuesCount() > 0) {
+					
 						if (attrDef.getURL().equals(nameAttrDefURL)) {
 							objects.add(Dict.copyOf(entity.getName()).prettyString(new DisiEkb().getDefaultLocales())); // todo find way to link entity service to DisiEkb
 						} else {
@@ -753,16 +771,9 @@ public class EntityODR extends Structure implements IEntity {
 							}
 						}
 
-						if (objects.size() > 1) {
-							//logger.warn("TODO FOUND MULTI VALUED ATTRIBUTE TO CREATE, TAKING ONLY FIRST VALUE");
-							
-							attrODR = es.createAttribute(attrDef, objects);
-							newAttrs.add(attrODR);
-							
-						}
-						Object obj = objects.get(0);
-						attrODR = es.createAttribute(attrDef, obj);
-						newAttrs.add(attrODR);
+								
+						attrODR = es.createAttribute(attrDef, objects);
+						newAttrs.add(attrODR);												
 					}
 
 				}

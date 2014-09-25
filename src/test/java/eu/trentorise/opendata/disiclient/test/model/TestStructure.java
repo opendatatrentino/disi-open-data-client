@@ -4,7 +4,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import eu.trentorise.opendata.disiclient.model.entity.Structure;
+import eu.trentorise.opendata.disiclient.model.entity.StructureODR;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
@@ -18,7 +18,7 @@ public class TestStructure {
 		
 		EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
 		Long entityID= 64008L;
-		Structure structure =es.readStructure(entityID);
+		StructureODR structure =es.readStructure(entityID);
 		IAttribute attribute = structure.getAttribute("http://opendata.disi.unitn.it:8080/odr/attributedefinitions/177");
 //		String url = structure.getEtypeURL();
 //		System.out.println(url);
@@ -31,7 +31,7 @@ public class TestStructure {
 //	public void testGetStructureEtypeL(){
 //		EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
 //		Long entityID= 64008L;
-//		Structure structure =es.readStructure(entityID);
+//		StructureODR structure =es.readStructure(entityID);
 //		IEntityType etype= structure.getEtype();
 //		assertEquals("Facility", etype.getName().getString(Locale.ENGLISH));
 //	}

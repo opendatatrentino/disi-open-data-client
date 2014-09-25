@@ -4,7 +4,7 @@ import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityType;
-import eu.trentorise.opendata.disiclient.model.entity.Structure;
+import eu.trentorise.opendata.disiclient.model.entity.StructureODR;
 import eu.trentorise.opendata.disiclient.model.entity.ValueODR;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.disiclient.services.DisiEkb;
@@ -291,8 +291,10 @@ public class TestEntityService {
             EntityBase ebafter = ebc.readEntityBase(1L, null);
             int instanceNumAfter = ebafter.getInstancesNumber();
             assertEquals(instanceNum + 1, instanceNumAfter);
-        } finally {
-            es.deleteEntity(entityURL);
+        } finally {    
+            if (entityURL != null){
+                es.deleteEntity(entityURL);
+            }
         }
         EntityBase ebafterDel = ebc.readEntityBase(1L, null);
         int instanceNumAfterDel = ebafterDel.getInstancesNumber();
@@ -325,7 +327,7 @@ public class TestEntityService {
     @Test
     public void testReadStructure() {
         EntityService es = new EntityService(api);
-        Structure structure = (Structure) es.readStructure(64001L);
+        StructureODR structure = (StructureODR) es.readStructure(64001L);
         IntegrityChecker.checkStructure(structure);
         logger.info(structure.getEtype().getName().getStrings(Locale.ITALIAN).get(0));
         assertEquals(structure.getEtype().getName().getStrings(Locale.ITALIAN).get(0), "Nome");
@@ -580,15 +582,17 @@ public class TestEntityService {
         AttributeODR a = (AttributeODR) en.getStructureAttributes().get(2);
         IValue val = new ValueODR();
         val.setValue(15.2f);
-        a.addValue(val);;
+        a.addValue(val);
 
         IEntity ent = EntityODR.disify(e, true);
         assertNotNull(ent);
-        Long l = null;
+        String URL = null;
         try {
-            l = es.createEntity(ent);
+            URL = es.createEntityURL(ent);
         } finally {
-            es.deleteEntity(l);
+            if (URL != null) {
+                es.deleteEntity(URL);
+            }
         }
     }
 }
