@@ -590,19 +590,15 @@ public class EntityService implements IEntityService {
 
 		if (entityURLs.isEmpty()) 
 		{
-			throw new DisiClientException("The list of entities for export is empty");
+			throw new IllegalArgumentException("The list of entities to export is empty");
 		}
 
-
-
-		String filename = "test" + System.currentTimeMillis();
+                String filename = "test" + System.currentTimeMillis();
 		EntityExportService ees = new EntityExportService();
 		List<Long> entitiesID = new ArrayList<Long>();
 
-		for (String entityURL : entityURLs) {
-			String s = entityURL.substring(entityURL.indexOf("es/") + 3);
-			Long eID = Long.parseLong(s);
-			entitiesID.add(eID);
+		for (String entityURL : entityURLs) {                        
+			entitiesID.add(WebServiceURLs.urlToEntityID(entityURL));
 		}
 
 		Long fileId = null;

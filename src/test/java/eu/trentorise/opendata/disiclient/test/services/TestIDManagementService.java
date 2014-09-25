@@ -234,7 +234,7 @@ public class TestIDManagementService {
 	}
         
 	@Test
-	public void testCertifiedProductIdMissingClass(){
+	public void testMissingClassCertifiedProduct(){
 		EntityService enServ =new EntityService(WebServiceURLs.getClientProtocol());
 		IdentityService idServ= new IdentityService();				
 		
