@@ -89,9 +89,15 @@ public class EntityTypeService implements IEntityTypeService {
         ctFilter.setIncludeRestrictions(true);
         ctFilter.setIncludeAttributes(true);
         ctFilter.setIncludeAttributesAsProperties(true);
-        List<ComplexType> complexTypes = ctc.readComplexTypes(1L, conceptId, null, ctFilter);
-        ComplexType complexType = complexTypes.get(0);
+        
+        logger.warn("The Knowledge base is set to default: '1'.");
 
+        List<ComplexType> complexTypes = ctc.readComplexTypes(1L, conceptId, null, ctFilter);
+      
+        ComplexType complexType = complexTypes.get(0);
+        if(complexTypes.size()>1){
+        logger.warn("There are "+complexTypes.size()+" Entity types for a given concept. The first one will be returned!.");
+        }
         EntityType eType = new EntityType(complexType);
         AttributeDefinitionClient attrDefs = new AttributeDefinitionClient(getClientProtocol());
         AttributeDefinitionFilter adf = new AttributeDefinitionFilter();

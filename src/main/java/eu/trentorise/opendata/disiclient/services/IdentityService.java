@@ -30,14 +30,13 @@ public class IdentityService implements IIdentityService {
 
 		for (Attribute atr : attrs){
 			if (atr.getDefinitionId()==64){
-
-				Object val = atr.getValues().get(0).getValue();
+				List<Value> vals = atr.getValues();
+				Object val = vals.iterator().next().getValue();
 				String nameSt = null;
-
 				// david: quick hack... so it accepts String in values  todo review 
 				if (val instanceof Name) {                                     
 					Name nm =(Name) val;
-					nameSt = (String) nm.getAttributes().get(0).getValues().get(0).getValue();
+					nameSt = (String) nm.getAttributes().iterator().next().getValues().iterator().next().getValue();
 				} else if (val instanceof String){
 					nameSt = (String) val;
 				} else if (val instanceof ISemanticText){
@@ -46,7 +45,6 @@ public class IdentityService implements IIdentityService {
 					throw new IllegalArgumentException("Found unhandled class! Value class is " + val.getClass().getSimpleName());
 				}
 
-				//String nameSt = nm.getNames().get("it").get(0);
 				Search search = new Search(WebServiceURLs.getClientProtocol());
 				List<Name> foundNames;
 				if(nameSt.equals("")){
@@ -55,11 +53,10 @@ public class IdentityService implements IIdentityService {
 				else{
 					foundNames = search.nameSearch(nameSt);
 				}
-				//	System.out.println("Found Names:"+foundNames.size());
-				if(foundNames.size()>0)
+ 				if(foundNames.size()>0)
 				{
 					IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
-					AttributeODR attr =enServ.createNameAttribute(atDef, foundNames.get(0));
+					AttributeODR attr =enServ.createNameAttribute(atDef, foundNames.iterator().next());
 					Attribute a=attr.convertToAttribute();
 
 
@@ -70,6 +67,7 @@ public class IdentityService implements IIdentityService {
 				else {
 					break;
 				}
+
 			}
 		}
 
@@ -91,11 +89,11 @@ public class IdentityService implements IIdentityService {
 			List<EntityODR> entities = new ArrayList<EntityODR>();
 
 			for (IEntity ie : iEntities){				
-				                             if (ie instanceof EntityODR){
-				                                 entities.add((EntityODR) ie);
-				                             } else {
-				                            	 entities.add(disify(ie, true));
-				                             }
+				if (ie instanceof EntityODR){
+					entities.add((EntityODR) ie);
+				} else {
+					entities.add(disify(ie, true));
+				}
 			}
 
 
@@ -116,5 +114,5 @@ public class IdentityService implements IIdentityService {
 			return idResults;
 		}
 	}
-      
+
 }

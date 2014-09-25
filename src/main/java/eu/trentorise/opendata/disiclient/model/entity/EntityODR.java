@@ -57,7 +57,7 @@ public class EntityODR extends StructureODR implements IEntity {
 	public static final Long PART_OF_CONCEPT_ID1=5l;
 	public static final Long PART_OF_CONCEPT_ID2=22l;
 
-	
+
 	private List<Name> names;
 
 	private Map<String, List<SemanticText>> descriptions;
@@ -117,31 +117,34 @@ public class EntityODR extends StructureODR implements IEntity {
 					at.setValues(fixedVals);
 				} else 
 					if (at.getValues().get(0).getValue() instanceof Name) {
-						Name n =(Name) at.getValues().get(0).getValue();
-						List<Attribute> atrs = n.getAttributes();
-						for (Attribute a: atrs){
+						List<Value> values = at.getValues();
+						for (Value v: values){
+							Name n =(Name) v.getValue();
+							List<Attribute> atrs = n.getAttributes();
+							for (Attribute a: atrs){
 
-							if(a.getDataType()==DataType.CONCEPT)
-							{
-								List<Value> vals = a.getValues();
-								List<Value> fixedVals = new ArrayList<Value>();
+								if(a.getDataType()==DataType.CONCEPT)
+								{
+									List<Value> vals = a.getValues();
+									List<Value> fixedVals = new ArrayList<Value>();
 
-								for (Value val : vals) {
+									for (Value val : vals) {
 
-									if (val.getValue().getClass().equals(ConceptODR.class)) {
-										fixedVals.add(val);
-										continue;
+										if (val.getValue().getClass().equals(ConceptODR.class)) {
+											fixedVals.add(val);
+											continue;
+										}
+										Concept c = (Concept) val.getValue();
+										ConceptODR codr = new ConceptODR(c);
+
+										ValueODR fixedVal = new ValueODR();
+										fixedVal.setId(val.getId());
+										// fixedVal.setDataType(IConcept.class);
+										fixedVal.setValue(codr);
+										fixedVals.add(fixedVal);
 									}
-									Concept c = (Concept) val.getValue();
-									ConceptODR codr = new ConceptODR(c);
-
-									ValueODR fixedVal = new ValueODR();
-									fixedVal.setId(val.getId());
-									// fixedVal.setDataType(IConcept.class);
-									fixedVal.setValue(codr);
-									fixedVals.add(fixedVal);
-								}
-								a.setValues(fixedVals);							}
+									a.setValues(fixedVals);							}
+							}
 						}
 					}
 					else
@@ -172,14 +175,18 @@ public class EntityODR extends StructureODR implements IEntity {
 								List<Value> vals = at.getValues();
 								List<Value> fixedVals = new ArrayList<Value>();
 								EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
+								logger.info("PART_OF attrbiute can not have multiple values, we take the first (and only) one");
 								Instance inst = (Instance) vals.get(0).getValue();
 								IEntity e = es.readEntity(inst.getId());
 								//	EntityODR enodr = new EntityODR(WebServiceURLs.getClientProtocol(), e);
-								Value fixedVal = new Value();
-								fixedVal.setId(vals.get(0).getId());
-								fixedVal.setValue(e);
-								fixedVals.add(fixedVal);
 
+								for (Value v: vals)
+								{
+									Value fixedVal = new Value();
+									fixedVal.setId(v.getId());
+									fixedVal.setValue(e);
+									fixedVals.add(fixedVal);
+								}
 								at.setValues(fixedVals);
 							}
 							else 
@@ -187,15 +194,20 @@ public class EntityODR extends StructureODR implements IEntity {
 									List<Value> vals = at.getValues();
 									List<Value> fixedVals = new ArrayList<Value>();
 									EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
-									Instance inst = (Instance) vals.get(0).getValue();
-									IStructure e = es.readStructure(inst.getId());
-									//	EntityODR enodr = new EntityODR(WebServiceURLs.getClientProtocol(), e);
-									Value fixedVal = new Value();
-									fixedVal.setId(vals.get(0).getId());
-									fixedVal.setValue(e);
-									fixedVals.add(fixedVal);
+									for(Value v: vals){
+										Instance inst = (Instance) v.getValue();
+										IStructure e = es.readStructure(inst.getId());
 
-									at.setValues(fixedVals);
+
+										Value fixedVal = new Value();
+										fixedVal.setId(v.getId());
+										fixedVal.setValue(e);
+
+
+										fixedVals.add(fixedVal);
+
+										at.setValues(fixedVals);
+									}
 								}
 		}
 
@@ -326,10 +338,11 @@ public class EntityODR extends StructureODR implements IEntity {
 				while (it.hasNext()) {
 					Map.Entry pairs = (Map.Entry) it.next();
 					Locale l = NLPService.languageTagToLocale((String) pairs.getKey());
-					ArrayList<String> vals = (ArrayList<String>) pairs.getValue();
-					//System.out.println(vals.get(0));
-					dict = dict.putTranslation(l, vals.get(0));
 
+					ArrayList<String> vals = (ArrayList<String>) pairs.getValue();
+					for (String s:vals){
+						dict = dict.putTranslation(l, s);
+					}
 				}
 
 			}
@@ -506,71 +519,71 @@ public class EntityODR extends StructureODR implements IEntity {
 		entity.setDuration(this.duration);
 		List<Attribute> attrs = super.getAttributes();
 		if(attrs!=null){
-		List<Attribute> attrsFixed = new ArrayList<Attribute>();
-		
-		for (Attribute at : attrs) {
-			Attribute atFixed = new Attribute();
-                        atFixed.setCategoryId(at.getCategoryId());
-                        atFixed.setConceptId(at.getConceptId());
-                        atFixed.setDataType(at.getDataType());
-                        atFixed.setDefinitionId(at.getDefinitionId());
-                        atFixed.setId(at.getId());
-                        atFixed.setInstanceId(at.getInstanceId());
-                        atFixed.setName(at.getName());
-                        
-                        
-//			if (at.getConceptId() == null) {
-//				attrsFixed.add(atFixed);
-//				continue;
-//			}
-		//	else
+			List<Attribute> attrsFixed = new ArrayList<Attribute>();
+
+			for (Attribute at : attrs) {
+				Attribute atFixed = new Attribute();
+				atFixed.setCategoryId(at.getCategoryId());
+				atFixed.setConceptId(at.getConceptId());
+				atFixed.setDataType(at.getDataType());
+				atFixed.setDefinitionId(at.getDefinitionId());
+				atFixed.setId(at.getId());
+				atFixed.setInstanceId(at.getInstanceId());
+				atFixed.setName(at.getName());
+
+
+				//			if (at.getConceptId() == null) {
+				//				attrsFixed.add(atFixed);
+				//				continue;
+				//			}
+				//	else
 				if ((at.getConceptId() != null)&&(at.getConceptId() == KnowledgeService.DESCRIPTION_CONCEPT_ID)) {
-				List<Value> vals = at.getValues();
-				List<Value> fixedVals = new ArrayList<Value>();
-			
-				for (Value val : vals) {
-					if (val.getValue() instanceof String) {
-						fixedVals.add(val);
-					} else {
-						SemanticString sstring = convertSemTextToSemString((SemanticText) val.getValue());
-						Value fixedVal = new Value();
-						fixedVal.setSemanticValue(sstring);
-						fixedVal.setValue(sstring.getText());
-						fixedVal.setId(val.getId());
-						fixedVals.add(fixedVal);
+					List<Value> vals = at.getValues();
+					List<Value> fixedVals = new ArrayList<Value>();
+
+					for (Value val : vals) {
+						if (val.getValue() instanceof String) {
+							fixedVals.add(val);
+						} else {
+							SemanticString sstring = convertSemTextToSemString((SemanticText) val.getValue());
+							Value fixedVal = new Value();
+							fixedVal.setSemanticValue(sstring);
+							fixedVal.setValue(sstring.getText());
+							fixedVal.setId(val.getId());
+							fixedVals.add(fixedVal);
+						}
 					}
+					atFixed.setValues(fixedVals);
+				} else {
+					List<Value> fixedVals = new ArrayList<Value>();
+					for (Value val : at.getValues()){
+						if (val.getValue() instanceof EntityODR){
+							EntityODR enodr =(EntityODR) val.getValue();
+							Entity en = enodr.convertToEntity();
+							Value fixedVal = new Value();
+							fixedVal.setValue(en);
+							fixedVal.setId(val.getId());
+							fixedVals.add(fixedVal);
+						} else if (val.getValue() instanceof StructureODR) {
+							StructureODR structureODR = (StructureODR) val.getValue();
+							Structure ebStr = structureODR.convertToSwebStructure(structureODR);
+							Value fixedVal = new Value();
+							fixedVal.setValue(ebStr);
+							fixedVal.setId(val.getId());                                        
+							fixedVals.add(fixedVal);                                                                                
+						} else {
+							fixedVals.add(val);
+						}                    
+					}
+					// if (fixedVals.size() > 0){
+					atFixed.setValues(fixedVals);
+					//}
 				}
-				atFixed.setValues(fixedVals);
-			} else {
-                            List<Value> fixedVals = new ArrayList<Value>();
-                            for (Value val : at.getValues()){
-                                if (val.getValue() instanceof EntityODR){
-                                        EntityODR enodr =(EntityODR) val.getValue();
-                                        Entity en = enodr.convertToEntity();
-                                        Value fixedVal = new Value();
-                                        fixedVal.setValue(en);
-                                        fixedVal.setId(val.getId());
-                                        fixedVals.add(fixedVal);
-                                } else if (val.getValue() instanceof StructureODR) {
-                                        StructureODR structureODR = (StructureODR) val.getValue();
-                                        Structure ebStr = structureODR.convertToSwebStructure(structureODR);
-                                        Value fixedVal = new Value();
-                                        fixedVal.setValue(ebStr);
-                                        fixedVal.setId(val.getId());                                        
-                                        fixedVals.add(fixedVal);                                                                                
-                                } else {
-                                    fixedVals.add(val);
-                                }                    
-                            }
-                           // if (fixedVals.size() > 0){
-                                atFixed.setValues(fixedVals);
-                            //}
-                        }
-                        
-			attrsFixed.add(atFixed);
-		}
-	
-		entity.setAttributes(attrsFixed);
+
+				attrsFixed.add(atFixed);
+			}
+
+			entity.setAttributes(attrsFixed);
 		}
 		entity.setDescriptions(convertDescriptionToSWEB(this.descriptions));
 		entity.setEnd(this.end);
@@ -587,15 +600,16 @@ public class EntityODR extends StructureODR implements IEntity {
 	}
 
 	public String getName(Locale locale) {
-
+		logger.info("Returned only the first value of the name. Hovewer, the number of values is: "+this.names.size());
 		Map<String, List<String>> name = this.names.get(0).getNames();
 		List<String> stName = name.get(NLPService.localeToLanguageTag(locale));
+		logger.info("Returned only the first value of the name for a given locale. Hovewer, the number of values is: "+stName.size());
 		return stName.get(0);
 	}
 
 
 	public void setName(Locale locale, List<String> names) {
-	//	this.names = names;
+		//	this.names = names;
 		throw new UnsupportedOperationException("todo to implement");
 
 	}
@@ -614,8 +628,9 @@ public class EntityODR extends StructureODR implements IEntity {
 			Map.Entry pairs = (Map.Entry) it.next();
 			Locale l = NLPService.languageTagToLocale((String) pairs.getKey());
 			ArrayList<SemanticText> vals = (ArrayList<SemanticText>) pairs.getValue();
-			dict = dict.putTranslation(l, vals.get(0).getText());
-
+			for (SemanticText stexts : vals){
+				dict = dict.putTranslation(l, stexts.getText());
+			}
 		}
 
 		return dict;
@@ -748,21 +763,21 @@ public class EntityODR extends StructureODR implements IEntity {
 		if (root) {
 			Object nameAttrDefURL = entity.getEtype().getNameAttrDef().getURL();
 			for (IAttribute attr : entity.getStructureAttributes()) {
-                            if (attr.getValuesCount() > 0) {
-				IAttributeDef attrDef = attr.getAttrDef();
-				AttributeODR attrODR;
-                                
-				List<Object> objects = new ArrayList<Object>();
+				if (attr.getValuesCount() > 0) {
+					IAttributeDef attrDef = attr.getAttrDef();
+					AttributeODR attrODR;
 
-				if (DataTypes.ENTITY.equals(attrDef.getDataType())) {
-                                        List<EntityODR> ensODR = new ArrayList();
-                                        for (IValue v :  attr.getValues()){
-                                            ensODR.add(disify((IEntity) v.getValue(), false));
-                                        }					
-					attrODR = es.createAttribute(attrDef, ensODR);
-					newAttrs.add(attrODR);
-				} else {
-					
+					List<Object> objects = new ArrayList<Object>();
+
+					if (DataTypes.ENTITY.equals(attrDef.getDataType())) {
+						List<EntityODR> ensODR = new ArrayList();
+						for (IValue v :  attr.getValues()){
+							ensODR.add(disify((IEntity) v.getValue(), false));
+						}					
+						attrODR = es.createAttribute(attrDef, ensODR);
+						newAttrs.add(attrODR);
+					} else {
+
 						if (attrDef.getURL().equals(nameAttrDefURL)) {
 							objects.add(Dict.copyOf(entity.getName()).prettyString(new DisiEkb().getDefaultLocales())); // todo find way to link entity service to DisiEkb
 						} else {
@@ -771,7 +786,7 @@ public class EntityODR extends StructureODR implements IEntity {
 							}
 						}
 
-								
+
 						attrODR = es.createAttribute(attrDef, objects);
 						newAttrs.add(attrODR);												
 					}

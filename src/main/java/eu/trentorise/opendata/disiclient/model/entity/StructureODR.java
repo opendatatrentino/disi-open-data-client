@@ -5,6 +5,7 @@ import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
 import it.unitn.disi.sweb.webapi.model.eb.Name;
+import it.unitn.disi.sweb.webapi.model.eb.Value;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,12 +56,12 @@ public class StructureODR  extends Instance implements IStructure
 
 	public IEntityType getEtype() {		
 		EntityTypeService ets = new EntityTypeService();
-                Long id = super.getTypeId();
-                if (id == null){
-                    throw new RuntimeException("Got a null id for super.getTypeId() in Structure.java!");
-                } else {
-                    return ets.getEntityType((long) id);
-                }	
+		Long id = super.getTypeId();
+		if (id == null){
+			throw new RuntimeException("Got a null id for super.getTypeId() in Structure.java!");
+		} else {
+			return ets.getEntityType((long) id);
+		}	
 	}
 
 	public void setEtype(IEntityType type) {
@@ -117,7 +118,7 @@ public class StructureODR  extends Instance implements IStructure
 		String url  = fullUrl+"/types/"+super.getTypeId();
 		return url;
 	}
-	
+
 	public StructureODR convertToStructure(it.unitn.disi.sweb.webapi.model.eb.Structure st){
 		StructureODR s = new StructureODR();
 		s.setAttributes(st.getAttributes()); 
@@ -128,32 +129,55 @@ public class StructureODR  extends Instance implements IStructure
 	}
 
 	public it.unitn.disi.sweb.webapi.model.eb.Structure convertToSwebStructure( StructureODR s){
-		
+
 		it.unitn.disi.sweb.webapi.model.eb.Structure strSweb = new it.unitn.disi.sweb.webapi.model.eb.Structure();
 		List<Attribute> attrs = s.getAttributes();
 		List<Attribute> attrsFixed = new ArrayList<Attribute>() ;
 
 		for (Attribute a : attrs)
 		{
-			Attribute atFixed= a;
-			if ((a.getValues().get(0).getValue() instanceof EntityODR)){
-				EntityODR e  = (EntityODR) a.getValues().get(0).getValue();
-				atFixed.getValues().get(0).setValue( e.convertToEntity());
-			} else if (((a.getValues().get(0).getValue() instanceof StructureODR))){
-				StructureODR  strODR  = (StructureODR) a.getValues().get(0).getValue();
-				it.unitn.disi.sweb.webapi.model.eb.Structure strFixed = convertToSwebStructure(strODR);
-				atFixed.getValues().get(0).setValue(strFixed);
+			Attribute atFixed = new Attribute();
+			atFixed.setCategoryId(a.getCategoryId());
+			atFixed.setConceptId(a.getConceptId());
+			atFixed.setDataType(a.getDataType());
+			atFixed.setDefinitionId(a.getDefinitionId());
+			atFixed.setId(a.getId());
+			atFixed.setInstanceId(a.getInstanceId());
+			atFixed.setName(a.getName());
 
+			if ((a.getValues().get(0).getValue() instanceof EntityODR)){
+				List<Value> vals = a.getValues();
+				List<Value> valsF = new ArrayList<Value>(); 
+				for (Value v : vals){
+					EntityODR e  = (EntityODR)v.getValue();
+					Value vf = new Value();
+					vf.setValue( e.convertToEntity());
+					valsF.add(vf);
+				}
+				atFixed.setValues(valsF);
+
+			} else if (((a.getValues().get(0).getValue() instanceof StructureODR))){
+				List<Value> vals = a.getValues();
+				List<Value> valsF = new ArrayList<Value>(); 
+
+				for (Value v : vals){
+					StructureODR  strODR  = (StructureODR) v.getValue();
+					it.unitn.disi.sweb.webapi.model.eb.Structure strFixed = convertToSwebStructure(strODR);
+
+					Value vf = new Value();
+					vf.setValue( strFixed);
+					valsF.add(vf);
+				}
+				atFixed.setValues(valsF);
 			}
 			attrsFixed.add(atFixed);
-			
 		}
 		strSweb.setAttributes(s.getAttributes());
-		
+
 		strSweb.setEntityBaseId(s.getEntityBaseId());
 		strSweb.setId(s.getId());
 		strSweb.setTypeId(s.getTypeId());
-		
+
 		return strSweb;
 	}
 }
