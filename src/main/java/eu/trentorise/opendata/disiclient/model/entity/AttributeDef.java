@@ -128,27 +128,6 @@ public class AttributeDef implements IAttributeDef {
 			} 	
 			else return null;
 
-			//			if (this.conceptId==5){
-			//				ComplexType cType = ctc.readComplexType(21L, null);
-			//				EntityType  etype = new EntityType(cType);
-			//				return etype; 
-			//			}  else
-			//				if ((this.conceptId==73462)||(this.conceptId==73562)){
-			//					ComplexType cType = ctc.readComplexType(16L, null);
-			//					EntityType  etype = new EntityType(cType);
-			//					return etype; 
-			//				}  else
-			//					if (this.conceptId==72844){
-			//						ComplexType cType = ctc.readComplexType(3L, null);
-			//						EntityType  etype = new EntityType(cType);
-			//						return etype; 
-			//					}  					
-			//			List<ComplexType> cType = ctc.readComplexTypes(1L, this.conceptId, null, null);
-			//			if(cType.size()>0){
-			//				EntityType  etype = new EntityType(cType.get(0));
-			//				return etype;} else 
-			//					return null;
-			//		} 
 		} else return null;
 	}
 

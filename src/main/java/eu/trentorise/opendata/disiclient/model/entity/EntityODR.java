@@ -515,10 +515,13 @@ public class EntityODR extends Structure implements IEntity {
 			//System.out.println(at.getName());
 			Attribute atFixed = new Attribute();
 			atFixed = at;
+			
 			if (at.getConceptId() == null) {
 				attrsFixed.add(atFixed);
 				continue;
-			} else if (at.getConceptId() == KnowledgeService.DESCRIPTION_CONCEPT_ID) {
+			}	else
+			
+				if (at.getConceptId() == KnowledgeService.DESCRIPTION_CONCEPT_ID) {
 				List<Value> vals = at.getValues();
 				List<Value> fixedVals = new ArrayList<Value>();
 			
@@ -546,6 +549,7 @@ public class EntityODR extends Structure implements IEntity {
 				Structure structure = (Structure) at.getValues().get(0).getValue();
 				it.unitn.disi.sweb.webapi.model.eb.Structure ebStr = structure.convertToSwebStructure(structure);
 				atFixed.getValues().get(0).setValue(ebStr);
+				
 			}
 
 			attrsFixed.add(atFixed);

@@ -149,7 +149,7 @@ public class AttributeODR  implements IAttribute {
 	}
 
 	public IValue getFirstValue() {
-		return this.values.get(0);
+		return this.values.iterator().next();
 	}
 
 	public Long getValuesCount() {
@@ -199,6 +199,7 @@ public class AttributeODR  implements IAttribute {
 				return;
 			}
 		}
+		
 		ValueODR val = (ValueODR) newValue;
 		Long id = attr.getValues().get(0).getId();
 		val.setId(id);
