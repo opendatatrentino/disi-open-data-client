@@ -199,11 +199,11 @@ public class AttributeODR  implements IAttribute {
 				return;
 			}
 		}
-		
+
 		ValueODR val = (ValueODR) newValue;
-		Long id = attr.getValues().get(0).getId();
+		Long id = attr.getValues().iterator().next().getId();
 		val.setId(id);
-		
+
 		if (values.size()==1){
 			values.remove(0);
 		}
@@ -227,9 +227,9 @@ public class AttributeODR  implements IAttribute {
 		return url;	
 	}
 
-    
-    public IAttributeDef getAttrDef() {
-        return getAttributeDefinition();
-    }
+
+	public IAttributeDef getAttrDef() {
+		return getAttributeDefinition();
+	}
 
 }

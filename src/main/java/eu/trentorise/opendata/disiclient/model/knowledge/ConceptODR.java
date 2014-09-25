@@ -9,6 +9,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
 import eu.trentorise.opendata.disiclient.services.NLPService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
@@ -16,6 +20,8 @@ import eu.trentorise.opendata.semantics.model.knowledge.IDict;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.Dict;
 
 public class ConceptODR implements IConcept{
+
+	private static  final Logger logger=  LoggerFactory.getLogger(ConceptODR.class.getName());
 
 	private long id;
 	private String label;
@@ -39,7 +45,7 @@ public class ConceptODR implements IConcept{
 
 		ConceptClient client = new ConceptClient(WebServiceURLs.getClientProtocol());
 		Concept conc = client.readConcept(conceptId, false);
-		
+
 		ConceptODR conceptODR = new ConceptODR(conc);
 		return conceptODR;
 	}
@@ -47,31 +53,33 @@ public class ConceptODR implements IConcept{
 	public ConceptODR readConceptGlobalID(long glId){
 
 		ConceptClient client = new ConceptClient(WebServiceURLs.getClientProtocol());
-
+		logger.warn("Entity Base is 1");
 		List<Concept> concepts = client.readConcepts(1L, glId, null, null, null, null);
-
 		ConceptODR conceptODR = new ConceptODR(concepts.get(0));
+		logger.warn("Only the first concept is returned. The number of returned concepts is: "+concepts.size() );
 		return conceptODR;
 	}
 
 	public Long readConceptGUID(long glId){
 		ConceptClient client = new ConceptClient(WebServiceURLs.getClientProtocol());
+		logger.warn("Entity Base is 1");
 		List<Concept> concepts = client.readConcepts(1L, glId, null, null, null, null);
+		logger.warn("Only the first concept is returned. The number of returned concepts is: "+concepts.size() );
 		return concepts.get(0).getId();
 	}
 
-//	private List<ConceptODR> readConcepts(String label){
-//		ConceptClient client = new ConceptClient(WebServiceURLs.getClientProtocol());
-//		List <ConceptODR> conOdrList = new ArrayList<ConceptODR>();
-//		Pagination page = new Pagination();
-//		List<Concept> concList = client.readConcepts(1L, null, null, label, null, null);
-//		for (Concept con: concList){
-//		
-//			ConceptODR conceptODR = new ConceptODR(con);	
-//			conOdrList.add(conceptODR);
-//		}
-//		return conOdrList;
-//	}
+	//	private List<ConceptODR> readConcepts(String label){
+	//		ConceptClient client = new ConceptClient(WebServiceURLs.getClientProtocol());
+	//		List <ConceptODR> conOdrList = new ArrayList<ConceptODR>();
+	//		Pagination page = new Pagination();
+	//		List<Concept> concList = client.readConcepts(1L, null, null, label, null, null);
+	//		for (Concept con: concList){
+	//		
+	//			ConceptODR conceptODR = new ConceptODR(con);	
+	//			conOdrList.add(conceptODR);
+	//		}
+	//		return conOdrList;
+	//	}
 
 	public String getLabel() {
 		return label;
