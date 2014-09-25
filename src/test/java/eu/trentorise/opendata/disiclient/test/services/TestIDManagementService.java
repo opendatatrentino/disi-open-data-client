@@ -122,28 +122,10 @@ public class TestIDManagementService {
 		EntityService enServ =new EntityService(WebServiceURLs.getClientProtocol());
 		IdentityService idServ= new IdentityService();
 		String name = PALAZZETTO_NAME_IT;
-		//String name = "my entity name";
-		//		Search search = new Search(WebServiceURLs.getClientProtocol());
-		//		List<Name> names = search.nameSearch(name);
-
-		//		for (Name n: names ){
-		//			System.out.println("Names:"+n);
-		//		}
-
-
 		EntityODR entity = (EntityODR)enServ.readEntity(PALAZZETTO_ID);
 		List<Attribute> attrs=entity.getAttributes();
 		List<Attribute> attrs1=new ArrayList<Attribute>();
 		List<IAttribute> iattr=entity.getStructureAttributes();
-//
-//		for (IAttribute atr : iattr){
-//
-//			if (atr.getAttributeDefinition().getName().getString(Locale.ENGLISH).equalsIgnoreCase("Name")){
-//				System.out.println(atr.getValues().get(0).getValue());
-//				Attribute a =createAttributeNameEntity(name);
-//				attrs1.add(a);
-//			} 
-//		}
 
 		for (Attribute atr : attrs){
 			if (atr.getName().get("en").equalsIgnoreCase("Name")){
@@ -151,13 +133,6 @@ public class TestIDManagementService {
 				attrs1.add(a);
 			} 
 			else 
-//				if (atr.getName().get("en").equalsIgnoreCase("Description")){
-//					IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
-//					//Value v = atr.getValues().get(0);
-//				//	AttributeODR attr = enServ.createAttribute(atDef, "my description");
-//					//Attribute a=attr.convertToAttribute();
-//					attrs1.add(atr);
-//				} 
 				if (atr.getName().get("en").equalsIgnoreCase("Longitude")){
 					IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
 					AttributeODR attr = enServ.createAttribute(atDef, 11.466894f);
@@ -179,23 +154,6 @@ public class TestIDManagementService {
 					Attribute a=attr.convertToAttribute();
 					attrs1.add(a);
 				} 
-			//				else
-			//		    if (atr.getName().get("en").equalsIgnoreCase("Opening hours")) {
-			//                System.out.println(atr.getName());
-			//                AttributeDef openHourAD = new AttributeDef(31L);
-			//                AttributeDef closeHourAD = new AttributeDef(30L);
-			//
-			//                HashMap<AttributeDef, Object> attrMap = new HashMap<AttributeDef, Object>();
-			//                attrMap.put(openHourAD, "8.00");
-			//                attrMap.put(closeHourAD, "18.00");
-			//                AttributeDef atDef = new AttributeDef(66L);
-			//                
-			//
-			//                AttributeODR attr = enServ.createAttribute(atDef, attrMap);
-			//                Attribute a = attr.convertToAttribute();
-			//                attrs1.add(a);
-			//   }
-
 		}
 
 		Entity en = new Entity();
@@ -219,14 +177,55 @@ public class TestIDManagementService {
 			assertEquals(AssignmentResult.REUSE, res.getAssignmentResult());
 
 		}
-		//ent.setGlobalId(10002538L);
-		Long id = enServ.createEntity(ent);
+	}
+	
+	@Test
+	public void testIdMissingClass(){
+		EntityService enServ =new EntityService(WebServiceURLs.getClientProtocol());
+		IdentityService idServ= new IdentityService();
+		String name = PALAZZETTO_NAME_IT;
+		EntityODR entity = (EntityODR)enServ.readEntity(PALAZZETTO_ID);
+		List<Attribute> attrs=entity.getAttributes();
+		List<Attribute> attrs1=new ArrayList<Attribute>();
+		List<IAttribute> iattr=entity.getStructureAttributes();
 
+		for (Attribute atr : attrs){
+			if (atr.getName().get("en").equalsIgnoreCase("Name")){
+				Attribute a =createAttributeNameEntity(name);
+				attrs1.add(a);
+			} 
+			else 
+				if (atr.getName().get("en").equalsIgnoreCase("Longitude")){
+					IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
+					AttributeODR attr = enServ.createAttribute(atDef, 11.466894f);
+					Attribute a=attr.convertToAttribute();
+					attrs1.add(a);
+				} 
+				else if (atr.getName().get("en").equalsIgnoreCase("Latitude")){
+					IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
+					AttributeODR attr = enServ.createAttribute(atDef, 46.289413f);
+					Attribute a=attr.convertToAttribute();
+					attrs1.add(a);
+					//					
+				}
+		}
 
-		System.out.println(id);
+		Entity en = new Entity();
+		en.setEntityBaseId(1L);
+		en.setTypeId(FACILITY_ID);
+		en.setAttributes(attrs1);
+		EntityODR ent = new EntityODR(WebServiceURLs.getClientProtocol(),en);
+		System.out.println("Name:" +ent.getName());
+		System.out.println("Name:" +ent.getDescription());
 
-		//assertEquals(AssignmentResult.REUSE, results.get(0).getAssignmentResult());
+		List<IEntity> entities = new ArrayList<IEntity>();
+		entities.add(ent);
 
+		List<IIDResult> results=  idServ.assignURL(entities, 3);
+		for (IIDResult res: results){
+			assertEquals(AssignmentResult.NEW, res.getAssignmentResult());
+
+		}
 	}
         
         @Test
