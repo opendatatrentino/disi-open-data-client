@@ -11,6 +11,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import eu.trentorise.opendata.disiclient.services.EntityExportService;
@@ -26,27 +27,41 @@ public class EntityExportServiceTest {
 	public static final String ENTITY2_URL =  WebServiceURLs.entityIDToURL(ENTITY2);
 	public static final long ENTITY3 = 7L;
 	public static final String ENTITY3_URL =  WebServiceURLs.entityIDToURL(ENTITY3);
+	List<String> entities;
+	EntityExportService ess = new EntityExportService();
+	EntityService es = new EntityService();
 
-	@Test
-	public void generateContextTest() throws IOException{
-		EntityExportService ess = new EntityExportService();
-		EntityService es = new EntityService();
+	@Before
+	public void test() {
 
-		List<String> entities = new ArrayList<String>();
+		entities = new ArrayList<String>();
 		entities.add(ENTITY1_URL);
 		entities.add(ENTITY2_URL);
 		entities.add(ENTITY3_URL);
+	}
+	@Test
+	public void testExportToJsonLd() throws IOException{
 		String filename=System.currentTimeMillis()+"myFirstTest.txt";
-
 		Writer writer = new FileWriter(filename);
 		es.exportToJsonLd(entities,  writer);
 		assertNotNull(writer);
-
 		BufferedReader br = new BufferedReader(new FileReader(filename));
 		assertNotNull(br.readLine());
 		br.close();
-		
 	}
+
+	@Test 
+	public void testExportToRDF() throws IOException{
+		String filename=System.currentTimeMillis()+"myFirstTest.txt";
+		Writer writer = new FileWriter(filename);
+		es.exportToRdf(entities,  writer);
+		assertNotNull(writer);
+		BufferedReader br = new BufferedReader(new FileReader(filename));
+		assertNotNull(br.readLine());
+		br.close();
+	}
+
+
 
 
 }
