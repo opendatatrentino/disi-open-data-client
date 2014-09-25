@@ -3,6 +3,8 @@ package eu.trentorise.opendata.disiclient.test.services;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
@@ -34,12 +36,16 @@ public class EntityExportServiceTest {
 		entities.add(ENTITY1_URL);
 		entities.add(ENTITY2_URL);
 		entities.add(ENTITY3_URL);
-		String filename="myFirstTest.txt";
+		String filename=System.currentTimeMillis()+"myFirstTest.txt";
 
-		Writer writer = new FileWriter(System.currentTimeMillis()+filename);
+		Writer writer = new FileWriter(filename);
 		es.exportToJsonLd(entities,  writer);
 		assertNotNull(writer);
 
+		BufferedReader br = new BufferedReader(new FileReader(filename));
+		assertNotNull(br.readLine());
+		br.close();
+		
 	}
 
 
