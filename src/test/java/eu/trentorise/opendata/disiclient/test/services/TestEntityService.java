@@ -139,6 +139,18 @@ public class TestEntityService {
     
     public static final long ATTR_TYPE_OF_CERTIFICATE = 110L;
     public static final String ATTR_TYPE_OF_CERTIFICATE_URL = attrDefIDToURL(ATTR_TYPE_OF_CERTIFICATE);
+
+    
+    /**
+     * It is of type 'Certified product'
+     * NOTE: CREATED WITH ODR, WILL DISAPPEAR FROM SERVER ONCE IT IS REGENERATED
+     */
+    public static final long MELA_VAL_DI_NON = 75167L;
+    /**
+     * NOTE: CREATED WITH ODR, WILL DISAPPEAR FROM SERVER ONCE IT IS REGENERATED
+     */
+    public static final String MELA_VAL_DI_NON_URL = WebServiceURLs.entityIDToURL(MELA_VAL_DI_NON);
+    
     
     
     private IProtocolClient api;
@@ -603,4 +615,15 @@ public class TestEntityService {
             }
         }
     }
+    
+   /**
+     * NOTE: USES ENTITY CREATED WITH ODR, WILL DISAPPEAR FROM SERVER ONCE IT IS
+     * REGENERATED
+     */
+    @Test
+    public void testReadMelaValDiNon() {
+        EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
+        IEntity mela = enServ.readEntity(MELA_VAL_DI_NON_URL);
+        IntegrityChecker.checkEntity(mela);
+    }      
 }
