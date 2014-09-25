@@ -47,7 +47,6 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
  * @author David Leoni <david.leoni@unitn.it>
- * @date 06 Aug 2014
  *
  */
 public class EntityODR extends StructureODR implements IEntity {
@@ -92,7 +91,8 @@ public class EntityODR extends StructureODR implements IEntity {
 		this.setTypeId(entity.getTypeId());
 		super.setEntityBaseId(entity.getEntityBaseId());
 		List<Attribute> attrs = entity.getAttributes();
-		//TODO should not be in constructor
+                
+                logger.warn("TRYING TO CREATE EntityODR FROM SWEB Entity IN EntityODR CONSTRUCTOR. TODO REVIEW THIS CODE!");
 		for (Attribute at : attrs) {
 			if (at.getConceptId() == null) {
 				continue;
@@ -170,23 +170,26 @@ public class EntityODR extends StructureODR implements IEntity {
 							}
 							at.setValues(fixedVals);		
 						}
-						else 
+						else {
+                                                    logger.warn("IN EntityODR CONSTRUCTOR: WE NEED GENERIC CODE FOR RELATIONAL ATTRIBUTES! TODO REVIEW!");
 							if ((at.getConceptId() == PART_OF_CONCEPT_ID1)&&(at.getValues().size()!=0)) { // todo hardcoded long
 								List<Value> vals = at.getValues();
 								List<Value> fixedVals = new ArrayList<Value>();
 								EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
 								logger.info("PART_OF attrbiute can not have multiple values, we take the first (and only) one");
-								Instance inst = (Instance) vals.get(0).getValue();
-								IEntity e = es.readEntity(inst.getId());
+                                                                if (vals.size() > 0){
+                                                                    Instance inst = (Instance) vals.get(0).getValue();
+                                                                    IEntity e = es.readEntity(inst.getId());
 								//	EntityODR enodr = new EntityODR(WebServiceURLs.getClientProtocol(), e);
 
-								for (Value v: vals)
-								{
-									Value fixedVal = new Value();
-									fixedVal.setId(v.getId());
-									fixedVal.setValue(e);
-									fixedVals.add(fixedVal);
-								}
+                                                                    for (Value v: vals)
+                                                                    {
+                                                                            Value fixedVal = new Value();
+                                                                            fixedVal.setId(v.getId());
+                                                                            fixedVal.setValue(e);
+                                                                            fixedVals.add(fixedVal);
+                                                                    }
+                                                                }
 								at.setValues(fixedVals);
 							}
 							else 
@@ -203,12 +206,12 @@ public class EntityODR extends StructureODR implements IEntity {
 										fixedVal.setId(v.getId());
 										fixedVal.setValue(e);
 
-
 										fixedVals.add(fixedVal);
 
 										at.setValues(fixedVals);
 									}
 								}
+                                                }
 		}
 
 		super.setAttributes(attrs);
@@ -225,6 +228,7 @@ public class EntityODR extends StructureODR implements IEntity {
 
 	}
 
+        /** IT'S NEVER CALLED - TODO REVIEW */
 	private void fixConcept(Attribute at) {
 		List<Value> vals = at.getValues();
 		List<Value> fixedVals = new ArrayList<Value>();
@@ -301,15 +305,12 @@ public class EntityODR extends StructureODR implements IEntity {
 		this.globalId = globalId;
 	}
 
-	public String getURL() {
-		String fullUrl = WebServiceURLs.getURL();
-		String url = "";
+	public String getURL() {            
 		if (this.localId != null) {
-			url = fullUrl + "/instances/" + this.localId;
+			return WebServiceURLs.entityIDToURL(this.localId);
 		} else {
-			url = fullUrl + "/instances/" + this.getId();
-		}
-		return url;
+                        return  WebServiceURLs.entityIDToURL(this.getId());			
+		}		
 	}
 
 	public void setURL(String sUrl) {

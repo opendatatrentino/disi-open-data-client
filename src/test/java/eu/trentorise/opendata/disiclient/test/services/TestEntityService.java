@@ -117,7 +117,7 @@ public class TestEntityService {
     public static final String ROOT_ENTITY_URL = etypeIDToURL(ROOT_ENTITY_ID);
 
     public static final long FACILITY_ID = 12L;
-    public static final String FACILITY_URL = etypeIDToURL(FACILITY_ID);
+    public static final String FACILITY_URL = etypeIDToURL(FACILITY_ID);            
 
     public static final long ATTR_DEF_LATITUDE_ID = 69L;
     public static final String ATTR_DEF_LATITUDE_URL = attrDefIDToURL(ATTR_DEF_LATITUDE_ID);
@@ -133,6 +133,14 @@ public class TestEntityService {
     public static final long NAME_ID = 10L;
     public static final String NAME_URL = etypeIDToURL(NAME_ID);
 
+    // Certified product stuff 
+    public static final long CERTIFIED_PRODUCT_ID = 17L;
+    public static final String CERTIFIED_PRODUCT_URL = etypeIDToURL(CERTIFIED_PRODUCT_ID);
+    
+    public static final long ATTR_TYPE_OF_CERTIFICATE = 110L;
+    public static final String ATTR_TYPE_OF_CERTIFICATE_URL = attrDefIDToURL(ATTR_TYPE_OF_CERTIFICATE);
+    
+    
     private IProtocolClient api;
 
     Logger logger = LoggerFactory.getLogger(this.getClass());
