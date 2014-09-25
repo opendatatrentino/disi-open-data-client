@@ -118,7 +118,7 @@ public class EntityService implements IEntityService {
 
 	}
 
-	private Attribute createClassAttribute(Long attrDefClassAtrID, Long conceptID) {
+	public Attribute createClassAttribute(Long attrDefClassAtrID, Long conceptID) {
 		IAttributeDef atrDef =new AttributeDef(attrDefClassAtrID);
 		ConceptODR concept = new ConceptODR();
 		concept = concept.readConcept(conceptID);
