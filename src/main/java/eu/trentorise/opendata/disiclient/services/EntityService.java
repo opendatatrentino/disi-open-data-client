@@ -590,7 +590,6 @@ public class EntityService implements IEntityService {
 
 		if (entityURLs.isEmpty()) 
 		{
-			//return;
 			throw new DisiClientException("The list of entities for export is empty");
 		}
 
