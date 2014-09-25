@@ -1,23 +1,5 @@
 package eu.trentorise.opendata.disiclient.test.services;
 
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.FACILITY_ID;
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.FACILITY_URL;
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.PALAZZETTO_ID;
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.PALAZZETTO_NAME_IT;
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.PALAZZETTO_URL;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import it.unitn.disi.sweb.webapi.client.IProtocolClient;
-import it.unitn.disi.sweb.webapi.model.eb.Attribute;
-import it.unitn.disi.sweb.webapi.model.eb.Entity;
-import it.unitn.disi.sweb.webapi.model.eb.Value;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
-import org.junit.Test;
-
 import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
@@ -27,12 +9,36 @@ import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import eu.trentorise.opendata.disiclient.services.IdentityService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
+import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.CERTIFIED_PRODUCT_ID;
+import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.CERTIFIED_PRODUCT_URL;
+import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.FACILITY_ID;
+import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.FACILITY_URL;
+import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.PALAZZETTO_ID;
+import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.PALAZZETTO_NAME_IT;
+import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.PALAZZETTO_URL;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.services.model.AssignmentResult;
 import eu.trentorise.opendata.semantics.services.model.IIDResult;
+import it.unitn.disi.sweb.webapi.client.IProtocolClient;
+import it.unitn.disi.sweb.webapi.model.eb.Attribute;
+import it.unitn.disi.sweb.webapi.model.eb.Entity;
+import it.unitn.disi.sweb.webapi.model.eb.Value;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
 
 /**
@@ -180,14 +186,13 @@ public class TestIDManagementService {
 	}
 	
 	@Test
-	public void testIdMissingClass(){
+	public void testFacilityIdMissingClass(){
 		EntityService enServ =new EntityService(WebServiceURLs.getClientProtocol());
 		IdentityService idServ= new IdentityService();
 		String name = PALAZZETTO_NAME_IT;
 		EntityODR entity = (EntityODR)enServ.readEntity(PALAZZETTO_ID);
 		List<Attribute> attrs=entity.getAttributes();
-		List<Attribute> attrs1=new ArrayList<Attribute>();
-		List<IAttribute> iattr=entity.getStructureAttributes();
+		List<Attribute> attrs1=new ArrayList<Attribute>();		
 
 		for (Attribute atr : attrs){
 			if (atr.getName().get("en").equalsIgnoreCase("Name")){
@@ -227,6 +232,39 @@ public class TestIDManagementService {
 
 		}
 	}
+        
+	@Test
+	public void testCertifiedProductIdMissingClass(){
+		EntityService enServ =new EntityService(WebServiceURLs.getClientProtocol());
+		IdentityService idServ= new IdentityService();				
+		
+                EntityTypeService ets = new EntityTypeService();
+                IEntityType et = ets.readEntityType(CERTIFIED_PRODUCT_URL);
+                
+                IAttributeDef certificateTypeAttrDef = et.getAttrDef(TestEntityService.ATTR_TYPE_OF_CERTIFICATE_URL);
+                
+                assertNotNull(certificateTypeAttrDef);
+                
+                IAttribute attr = enServ.createAttribute(certificateTypeAttrDef, "Please work");                                     
+                
+		EntityODR en = new EntityODR();
+		en.setEntityBaseId(1L);
+		en.setTypeId(CERTIFIED_PRODUCT_ID);                
+                
+                List<IAttribute> attrs = new ArrayList();
+                attrs.add(attr);
+                en.setStructureAttributes(attrs);
+                                
+		List<IEntity> entities = new ArrayList<IEntity>();
+		entities.add(en);
+
+		List<IIDResult> results=  idServ.assignURL(entities, 3);
+		for (IIDResult res: results){
+			assertEquals(AssignmentResult.NEW, res.getAssignmentResult());
+		}
+	}
+        
+        
         
         @Test
         public void testRelationalAttribute(){
