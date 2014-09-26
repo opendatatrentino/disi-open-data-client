@@ -7,10 +7,10 @@ import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.CERTIFIED_PRODUCT_ID;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.CERTIFIED_PRODUCT_URL;
+import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.MELA_VAL_DI_NON_URL;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -22,7 +22,6 @@ import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -44,14 +43,6 @@ public class EntityExportServiceTest {
     EntityExportService ess = new EntityExportService();
     EntityService es = new EntityService();
 
-    /**
-     * NOTE: CREATED WITH ODR, WILL DISAPPEAR FROM SERVER ONCE IT IS REGENERATED
-     */
-    private static final long MELA_VAL_DI_NON = 75167L;
-    /**
-     * NOTE: CREATED WITH ODR, WILL DISAPPEAR FROM SERVER ONCE IT IS REGENERATED
-     */
-    private static final String MELA_VAL_DI_NON_URL = WebServiceURLs.entityIDToURL(MELA_VAL_DI_NON);
 
     @Before
     public void test() {
@@ -143,4 +134,6 @@ public class EntityExportServiceTest {
         assertTrue(sw.toString().length() > 0);
     }
 
+   
+    
 }

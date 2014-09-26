@@ -587,7 +587,7 @@ public class EntityService implements IEntityService {
 	public void exportToRdf(List<String> entityURLs, Writer writer) {
 		if (entityURLs.isEmpty()) 
 		{
-			throw new DisiClientException("The list of entities for export is empty");
+			throw new IllegalArgumentException("The list of entities for export is empty");
 		}
 
 
