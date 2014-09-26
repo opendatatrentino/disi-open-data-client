@@ -18,7 +18,6 @@ import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
  * @author David Leoni <david.leoni@unitn.it>
- * @date 23 July 2014
  *
  */
 public class KnowledgeService implements IKnowledgeService {
@@ -77,8 +76,6 @@ public class KnowledgeService implements IKnowledgeService {
         }
         return concepts;
     }
-
-
 
     public IConcept getRootConcept() {
         ConceptODR concept = new ConceptODR();

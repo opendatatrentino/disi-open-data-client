@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.disiclient.services.NLPService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
@@ -16,60 +17,69 @@ import eu.trentorise.opendata.semantics.model.knowledge.impl.Dict;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 
 /**
- * Todo this currently makes sense only for etypes. According to openentity API
- * 0.21.0 should also work for entity and concept search results.
+ * Todo this currently makes sense only for etypes. According to openentity API 0.21.0
+ * should also work for entity and concept search results.
  *
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
  * @author David Leoni <david.leoni@unitn.it>
  */
 public class SearchResult implements ISearchResult {
 
-    private Long id;
-    private Map<String, String> name;
-    private IDict dict;
+	private Long id;
+	private Map<String, String> name;
+	private IDict dict;
+	private String url;
 
-    public SearchResult(ComplexType cType) {
-        this.id = cType.getId();
-        this.name = cType.getName();
-    }
 
-    public SearchResult(Entity instance) {
-        this.id = instance.getId();
-        Map<String, List<String>> names = instance.getNames().iterator().next().getNames();
-        Dict dict = new Dict();
-        Iterator<?> it = names.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pairs = (Map.Entry) it.next();
-            Locale l = NLPService.languageTagToLocale((String) pairs.getKey());
-            for (String s : (List<String>) pairs.getValue()) {
-                dict = dict.putTranslation(l, s);
-            }
-        }
-        this.dict = dict;
+	public SearchResult(ComplexType cType) {
+		this.id = cType.getId();
+		this.name = cType.getName();
+		this.url=WebServiceURLs.etypeIDToURL(cType.getId());
+	}
+	public SearchResult(ConceptODR codr) {
+		this.id = codr.getId(); 
+		this.dict = codr.getName();
+		this.url=WebServiceURLs.conceptIDToURL(codr.getId());
 
-    }
+	}
 
-    public SearchResult() {
-    }
+	public SearchResult(Entity instance) {
+		this.id = instance.getId();
+		Map<String,List<String>> names = instance.getNames().iterator().next().getNames();
+		Dict dict = new Dict();
+		Iterator<?> it = names.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry pairs = (Map.Entry) it.next();
+			Locale l = NLPService.languageTagToLocale((String) pairs.getKey());
+			for (String s: (List<String>)pairs.getValue()){
+				dict = dict.putTranslation(l, s);
+			}
+		}
+		this.dict=dict;
+		this.url = WebServiceURLs.entityIDToURL(instance.getId());
+	}
 
-    public String getURL() {
-        return WebServiceURLs.etypeIDToURL(this.id);
-    }
 
-    public IDict getName() {
-        if (this.dict != null) {
-            return dict;
-        } else {
+	public SearchResult() {
+	}
 
-            Dict dict = new Dict();
-            Iterator<?> it = this.name.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry pairs = (Map.Entry) it.next();
-                Locale l = NLPService.languageTagToLocale((String) pairs.getKey());
-                dict = dict.putTranslation(l, (String) pairs.getValue());
-            }
-            return dict;
-        }
-    }
+	public String getURL() {
+		return this.url;
+	}
+
+	public IDict getName() {
+		if (this.dict!=null){
+			return dict;
+		} else{
+
+			Dict dict = new Dict();
+			Iterator<?> it = this.name.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry pairs = (Map.Entry) it.next();
+				Locale l = NLPService.languageTagToLocale((String) pairs.getKey());
+				dict = dict.putTranslation(l, (String) pairs.getValue());
+			}
+			return dict;}
+	}
 
 }

@@ -22,7 +22,7 @@ public class TestKnowledgeService {
 	
     List<Object> guids = new ArrayList<Object>() {
         {
-            add(132L);
+            add(132L); // TODO PUT NAMES
             add(46263L);
             add(46270L);
         }
