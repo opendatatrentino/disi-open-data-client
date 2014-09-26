@@ -13,7 +13,6 @@ import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -23,8 +22,8 @@ import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import org.junit.Before;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +38,7 @@ public class EntityExportServiceTest {
     public static final String ENTITY1_URL = WebServiceURLs.entityIDToURL(ENTITY1);
     public static final long ENTITY2 = 4L;
     public static final String ENTITY2_URL = WebServiceURLs.entityIDToURL(ENTITY2);
-    public static final long ENTITY3 = 7L;
+    public static final long ENTITY3 = 7;
     public static final String ENTITY3_URL = WebServiceURLs.entityIDToURL(ENTITY3);
     List<String> entities;
     EntityExportService ess = new EntityExportService();
@@ -137,7 +136,7 @@ public class EntityExportServiceTest {
         EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
 
         StringWriter sw = new StringWriter();
-        List<String> entityURLs = new ArrayList();
+        List<String> entityURLs = new ArrayList<String>();
         entityURLs.add(MELA_VAL_DI_NON_URL);
         enServ.exportToJsonLd(entityURLs, sw);
         logger.info("JSONLD = " + sw.toString());

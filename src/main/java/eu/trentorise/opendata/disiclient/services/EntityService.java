@@ -694,7 +694,11 @@ public class EntityService implements IEntityService {
 
 	public List<ISearchResult> searchEntities(String partialName, String etypeURL) {
 		List<ISearchResult> entities = new ArrayList<ISearchResult>();
-		logger.warn("TRYING TO SEARCH ENTITIES - RETURNING NOTHING. TODO IMPLEMENT THIS");
+
+		Search search = new Search(api);
+		entities = search.searchEntities(partialName, etypeURL);
+		
+		
 		return entities;
 	}
 

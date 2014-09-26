@@ -30,34 +30,6 @@ import eu.trentorise.opendata.semantics.services.model.DataTypes;
 public class EntityExportService {
 
 	private static final String   regexInput = "@type";        
-	//private static final String   regexOutput = "#type";
-
-
-
-//	/** Reads file and convert text from it to String
-//	 * @param fileName
-//	 * @return
-//	 * @throws IOException
-//	 */
-//	private String readFile(String fileName) throws IOException{
-//		String input="";
-//
-//		BufferedReader br = new BufferedReader(new FileReader(fileName));
-//		try {
-//			StringBuilder sb = new StringBuilder();
-//			String  line = br.readLine();
-//
-//			while (line != null) {
-//				sb.append(line);
-//				sb.append(System.getProperty("line.separator"));
-//				line = br.readLine();
-//			}
-//			input = sb.toString();
-//		} finally {
-//			br.close();
-//		}
-//		return input;
-//	}
 
 	/** The method generates JSON-LD @context 
 	 * @param id
@@ -200,7 +172,7 @@ public class EntityExportService {
 	public Long methodPost(List<Long> entitiesId, String fileName) throws ClientProtocolException, IOException{
 
 		String formatedEntities = entitiesId.toString().replace("[", "").replace("]", "").replace(" ", "");
-		System.out.println(WebServiceURLs.getURL());
+		//System.out.println(WebServiceURLs.getURL());
 		Response response = Request.Post(WebServiceURLs.getURL()+"/data/export")
 				.bodyForm(Form.form().add("entityBase", "1").add("fileName", fileName).add("id", formatedEntities).add("maxDepth", "1").build())
 				.execute();
