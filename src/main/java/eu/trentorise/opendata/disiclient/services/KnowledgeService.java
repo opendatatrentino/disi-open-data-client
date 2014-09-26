@@ -1,13 +1,16 @@
 package eu.trentorise.opendata.disiclient.services;
 
+import it.unitn.disi.sweb.webapi.client.kb.ConceptClient;
+import it.unitn.disi.sweb.webapi.model.kb.concepts.Concept;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.trentorise.opendata.disiclient.DisiClientException;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
+import eu.trentorise.opendata.disiclient.services.model.SearchResult;
 import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
 import eu.trentorise.opendata.semantics.services.IKnowledgeService;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
@@ -75,6 +78,8 @@ public class KnowledgeService implements IKnowledgeService {
         return concepts;
     }
 
+
+
     public IConcept getRootConcept() {
         ConceptODR concept = new ConceptODR();
         concept = concept.readConcept(ROOT_CONCEPT_ID);
@@ -95,10 +100,18 @@ public class KnowledgeService implements IKnowledgeService {
 
     public List<ISearchResult> searchConcepts(String partialName) {
 
-        List<ISearchResult> concepts = new ArrayList<ISearchResult>();
+        List<ISearchResult> conceptRes = new ArrayList<ISearchResult>();
+        ConceptClient client = new ConceptClient(WebServiceURLs.getClientProtocol());
+        logger.warn("Knowledge base is set to default (1)");
+        List<Concept> concepts = client.readConcepts(1L, null, null, partialName, null, null);
 
-        logger.warn("TRYING TO SEARCH CONCEPTS - RETURNING NOTHING. TODO IMPLEMENT THIS");
-        return concepts;
+        for (Concept c : concepts) {
+            ConceptODR codr = new ConceptODR(c);
+            SearchResult sr = new SearchResult(codr);
+            conceptRes.add(sr);
+        }
+
+        return conceptRes;
     }
 
 }

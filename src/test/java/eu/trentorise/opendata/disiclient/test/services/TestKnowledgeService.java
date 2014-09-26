@@ -2,26 +2,24 @@ package eu.trentorise.opendata.disiclient.test.services;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.trentorise.opendata.disiclient.DisiClientException;
-import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.KnowledgeService;
 import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 
 public class TestKnowledgeService {
 
-    Logger logger = LoggerFactory.getLogger(TestKnowledgeService.class);
+	Logger logger = LoggerFactory.getLogger(TestKnowledgeService.class);
 
+	
     List<Object> guids = new ArrayList<Object>() {
         {
             add(132L);
@@ -30,26 +28,31 @@ public class TestKnowledgeService {
         }
     };
 
+
 //	@Rule
 //	public ExpectedException thrown= ExpectedException.none(); 
 //	
-    @Test
+	
+    @Test    
     public void testReadConcept() {
         KnowledgeService kserv = new KnowledgeService();
         String url = "http://opendata.disi.unitn.it:8080/odr/concepts/120";
         IConcept con = kserv.readConcept(url);
         assertEquals(con.getURL(), url);
     }
-
+    
+    
     @Test
     public void testReadNonExistingConcept() {
         KnowledgeService kserv = new KnowledgeService();
         String url = "blabla";
         IConcept con = kserv.readConcept(url);
-        // thrown.expect(DisiClientException.class);
+       // thrown.expect(DisiClientException.class);
 
         assertEquals(con, null);
     }
+    
+    
 
     @Test
     public void testGetRootConcept() {
@@ -72,18 +75,19 @@ public class TestKnowledgeService {
 
         conceptURLs.add("non-existing-url");
         conceptURLs.add(rootConceptURL);
-        //    thrown.expect(DisiClientException.class);
         List<IConcept> concepts = ets.readConcepts(conceptURLs);
         assertEquals(concepts.get(0), null);
         assertEquals(concepts.get(1).getURL(), rootConceptURL);
     }
 
-    // @Test
-    public void testSearchConcept() {
+    @Test
+    public void testSearchConcept(){
         KnowledgeService ks = new KnowledgeService();
-        List<ISearchResult> res = ks.searchConcepts("Trento");
-        logger.info(res.get(0).toString());
-
+        List<ISearchResult>res = ks.searchConcepts("cat");
+        for (ISearchResult r: res){ 
+        	assertNotNull(r.getName());
+        	assertNotNull(r.getURL());
+        }
     }
-
+    
 }
