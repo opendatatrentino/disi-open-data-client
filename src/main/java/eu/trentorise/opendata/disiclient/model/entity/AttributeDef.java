@@ -21,234 +21,268 @@ import eu.trentorise.opendata.semantics.model.knowledge.IDict;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.Dict;
 import eu.trentorise.opendata.semantics.services.model.DataTypes;
 
-/** 
+/**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
  * @date 25 Feb 2014
- * 
+ *
  */
 public class AttributeDef implements IAttributeDef {
 
-	private long categoryId;
-	private long conceptId;
-	private String dataType;
-	private long id;
-	private Map<String,String> description;
-	public Map<String,String> name;
-	private long typeId;
-	private boolean presence;
-	private boolean isSet;
-	private Integer entityTypeID;
-	private IConcept concept;
+    private long categoryId;
+    private long conceptId;
+    private String dataType;
+    private long id;
+    private Map<String, String> description;
+    public Map<String, String> name;
+    private long typeId;
+    private boolean presence;
+    private boolean isSet;
+    private Integer entityTypeID;
+    private IConcept concept;
 
-	public AttributeDef(AttributeDefinition attrDef){
+    public AttributeDef(AttributeDefinition attrDef) {
 
-		this.isSet = attrDef.isSet();
-		this.categoryId = attrDef.getCategoryId();
-		this.conceptId = attrDef.getConceptId();
-		this.dataType = attrDef.getDataType().name();
-		this.id = attrDef.getId();
-		this.description = attrDef.getDescription();
-		this.name = attrDef.getName();
-		this.typeId=attrDef.getTypeId();
-		if(attrDef.getRestrictionOnList()!=null){
-			this.entityTypeID=(Integer) attrDef.getRestrictionOnList().getDefaultValue();
-		}
-		if ((attrDef.getPresence().equals("STRICTLY_MANDATORY"))||(attrDef.getPresence().equals("MANDATORY")))
-		{this.presence=true;}
-		else {this.presence=false;}		
-	}
+        this.isSet = attrDef.isSet();
+        this.categoryId = attrDef.getCategoryId();
+        this.conceptId = attrDef.getConceptId();
+        this.dataType = attrDef.getDataType().name();
+        this.id = attrDef.getId();
+        this.description = attrDef.getDescription();
+        this.name = attrDef.getName();
+        this.typeId = attrDef.getTypeId();
+        if (attrDef.getRestrictionOnList() != null) {
+            this.entityTypeID = (Integer) attrDef.getRestrictionOnList().getDefaultValue();
+        }
+        if ((attrDef.getPresence().equals("STRICTLY_MANDATORY")) || (attrDef.getPresence().equals("MANDATORY"))) {
+            this.presence = true;
+        } else {
+            this.presence = false;
+        }
+    }
 
-	public AttributeDef (long id){
-		AttributeDefinitionClient attrDefClient = new AttributeDefinitionClient(getClientProtocol());
-		AttributeDefinitionFilter attrDefFilter = new AttributeDefinitionFilter();
-		attrDefFilter.setIncludeRestrictions(true);
-		AttributeDefinition attrDef = attrDefClient.readAttributeDefinition(id, attrDefFilter);
-		this.isSet = attrDef.isSet();
-		this.categoryId = attrDef.getCategoryId();
-		this.conceptId = attrDef.getConceptId();
-		this.dataType = attrDef.getDataType().name();
-		this.id = attrDef.getId();
-		this.description = attrDef.getDescription();
-		this.name = attrDef.getName();
-		this.typeId=attrDef.getTypeId();
-		if(attrDef.getRestrictionOnList()!=null){
-			this.entityTypeID=(Integer) attrDef.getRestrictionOnList().getDefaultValue();
-		}
-		if ((attrDef.getPresence().equals("STRICTLY_MANDATORY"))||(attrDef.getPresence().equals("MANDATORY")))
-		{this.presence=true;}
-		else {this.presence=false;}		
-	}
+    public AttributeDef(long id) {
+        AttributeDefinitionClient attrDefClient = new AttributeDefinitionClient(getClientProtocol());
+        AttributeDefinitionFilter attrDefFilter = new AttributeDefinitionFilter();
+        attrDefFilter.setIncludeRestrictions(true);
+        AttributeDefinition attrDef = attrDefClient.readAttributeDefinition(id, attrDefFilter);
+        this.isSet = attrDef.isSet();
+        this.categoryId = attrDef.getCategoryId();
+        this.conceptId = attrDef.getConceptId();
+        this.dataType = attrDef.getDataType().name();
+        this.id = attrDef.getId();
+        this.description = attrDef.getDescription();
+        this.name = attrDef.getName();
+        this.typeId = attrDef.getTypeId();
+        if (attrDef.getRestrictionOnList() != null) {
+            this.entityTypeID = (Integer) attrDef.getRestrictionOnList().getDefaultValue();
+        }
+        if ((attrDef.getPresence().equals("STRICTLY_MANDATORY")) || (attrDef.getPresence().equals("MANDATORY"))) {
+            this.presence = true;
+        } else {
+            this.presence = false;
+        }
+    }
 
-	@Override
-	public String toString() {
-		return "AttributeDef [categoryId=" + categoryId + ", conceptId="
-				+ conceptId + ", dataType=" + dataType + ", id=" + id
-				+ ", description=" + description + ", name=" + name
-				+ ", typeId=" + typeId + ", presence=" + presence + "]";
-	}
+    @Override
+    public String toString() {
+        return "AttributeDef [categoryId=" + categoryId + ", conceptId="
+                + conceptId + ", dataType=" + dataType + ", id=" + id
+                + ", description=" + description + ", name=" + name
+                + ", typeId=" + typeId + ", presence=" + presence + "]";
+    }
 
-	private IProtocolClient getClientProtocol(){
-		return WebServiceURLs.getClientProtocol();
-	}
+    private IProtocolClient getClientProtocol() {
+        return WebServiceURLs.getClientProtocol();
+    }
 
-	public String getName(Locale locale) {
-		return this.name.get(locale.toString());
-	}
+    public String getName(Locale locale) {
+        return this.name.get(locale.toString());
+    }
 
-	public String getDataType() {
-		if (this.dataType.equals("COMPLEX_TYPE")){
-			ComplexTypeClient ctc = new ComplexTypeClient(getClientProtocol());
-			ComplexType cType = ctc.readComplexType(this.entityTypeID, null);
-			if(cType.getClass().getName().equalsIgnoreCase("it.unitn.disi.sweb.webapi.model.kb.types.EntityType"))
-			{return DataTypes.ENTITY;} 
-			else return DataTypes.STRUCTURE; 
-		}
-		if (this.dataType.equals("STRUCTURE")) return DataTypes.STRUCTURE;
-		if (this.dataType.equals("STRING")) return DataTypes.STRING;
-		if (this.dataType.equals("BOOLEAN")) return DataTypes.BOOLEAN;
-		if (this.dataType.equals("DATE")) return DataTypes.DATE;
-		if (this.dataType.equals("INTEGER")) return DataTypes.INTEGER;
-		if (this.dataType.equals("FLOAT")) return DataTypes.FLOAT;
-		if (this.dataType.equals("LONG")) return DataTypes.LONG;
-		if (this.dataType.equals("CONCEPT")) return DataTypes.CONCEPT;
-		if (this.dataType.equals("SSTRING")) return DataTypes.SEMANTIC_TEXT;
-		if (this.dataType.equals("NLSTRING")) return DataTypes.STRING;
-		if (this.dataType.equals("ENTITY")) return DataTypes.ENTITY;
-		else return this.dataType;
-	}
+    public String getDataType() {
+        if (this.dataType.equals("COMPLEX_TYPE")) {
+            ComplexTypeClient ctc = new ComplexTypeClient(getClientProtocol());
+            ComplexType cType = ctc.readComplexType(this.entityTypeID, null);
+            if (cType.getClass().getName().equalsIgnoreCase("it.unitn.disi.sweb.webapi.model.kb.types.EntityType")) {
+                return DataTypes.ENTITY;
+            } else {
+                return DataTypes.STRUCTURE;
+            }
+        }
+        if (this.dataType.equals("STRUCTURE")) {
+            return DataTypes.STRUCTURE;
+        }
+        if (this.dataType.equals("STRING")) {
+            return DataTypes.STRING;
+        }
+        if (this.dataType.equals("BOOLEAN")) {
+            return DataTypes.BOOLEAN;
+        }
+        if (this.dataType.equals("DATE")) {
+            return DataTypes.DATE;
+        }
+        if (this.dataType.equals("INTEGER")) {
+            return DataTypes.INTEGER;
+        }
+        if (this.dataType.equals("FLOAT")) {
+            return DataTypes.FLOAT;
+        }
+        if (this.dataType.equals("LONG")) {
+            return DataTypes.LONG;
+        }
+        if (this.dataType.equals("CONCEPT")) {
+            return DataTypes.CONCEPT;
+        }
+        if (this.dataType.equals("SSTRING")) {
+            return DataTypes.SEMANTIC_TEXT;
+        }
+        if (this.dataType.equals("NLSTRING")) {
+            return DataTypes.STRING;
+        }
+        if (this.dataType.equals("ENTITY")) {
+            return DataTypes.ENTITY;
+        } else {
+            return this.dataType;
+        }
+    }
 
-	public EntityType getRangeEType() {
-		if (this.dataType.equals("COMPLEX_TYPE")){
+    public EntityType getRangeEType() {
+        if (this.dataType.equals("COMPLEX_TYPE")) {
 
-			ComplexTypeClient ctc = new ComplexTypeClient(getClientProtocol());
-			if (this.entityTypeID!=null){
-				ComplexType cType = ctc.readComplexType(this.entityTypeID, null);
-				EntityType  etype = new EntityType(cType);
-				return etype;
-			} 	
-			else return null;
+            ComplexTypeClient ctc = new ComplexTypeClient(getClientProtocol());
+            if (this.entityTypeID != null) {
+                ComplexType cType = ctc.readComplexType(this.entityTypeID, null);
+                EntityType etype = new EntityType(cType);
+                return etype;
+            } else {
+                return null;
+            }
 
-		} else return null;
-	}
+        } else {
+            return null;
+        }
+    }
 
-	public IConcept getConcept() {
-		long id = this.conceptId;
-		ConceptODR concept = new ConceptODR();
-		this.concept = concept.readConcept(id);
-		return this.concept;
-	}
+    public IConcept getConcept() {
+        long id = this.conceptId;
+        ConceptODR concept = new ConceptODR();
+        this.concept = concept.readConcept(id);
+        return this.concept;
+    }
 
-	public boolean isSet() {
-		return this.isSet;
-	}
+    public boolean isSet() {
+        return this.isSet;
+    }
 
-	public boolean isMandatory() {
-		return this.presence;
-	}
-	public String getRegularExpression() {
-		// TODO Postponed due to the absence copyOf the functionality on the API Client            
-		throw new UnsupportedOperationException("todo to implement");
-	}
+    public boolean isMandatory() {
+        return this.presence;
+    }
 
-	public void setRegularExpression(String regularExpression) {
-		// TODO Postponed due to the absecopyOfe of the functionality on the API Client
-		throw new UnsupportedOperationException("todo to implement");
+    public String getRegularExpression() {
+        // TODO Postponed due to the absence copyOf the functionality on the API Client            
+        throw new UnsupportedOperationException("todo to implement");
+    }
 
-	}
+    public void setRegularExpression(String regularExpression) {
+        // TODO Postponed due to the absecopyOfe of the functionality on the API Client
+        throw new UnsupportedOperationException("todo to implement");
 
-	public Long getGUID() {
-		return this.id;
-	}
+    }
 
-	public String getURL() {		
-		return WebServiceURLs.attrDefIDToURL(this.id);		
-	}
+    public Long getGUID() {
+        return this.id;
+    }
 
-	public AttributeDefinition convertAttributeDefinition(){
-		AttributeDefinition atr = new AttributeDefinition();
-		atr.setCategoryId(this.categoryId);
-		atr.setConceptId(conceptId);
-		ODRDataType dataT= new ODRDataType(); 
-		atr.setDataType(dataT.convertDataType(this.dataType));
-		atr.setDescription(this.description);
-		atr.setId(id);
-		atr.setName(this.name);
-		if (presence=true)
-		{atr.setPresence(Presence.MANDATORY);}
-		atr.setSet(this.isSet);
-		atr.setTypeId(this.typeId);
-		return atr;
-	}
+    public String getURL() {
+        return WebServiceURLs.attrDefIDToURL(this.id);
+    }
 
-	public long getId(){
-		return this.id;
-	}
+    public AttributeDefinition convertAttributeDefinition() {
+        AttributeDefinition atr = new AttributeDefinition();
+        atr.setCategoryId(this.categoryId);
+        atr.setConceptId(conceptId);
+        ODRDataType dataT = new ODRDataType();
+        atr.setDataType(dataT.convertDataType(this.dataType));
+        atr.setDescription(this.description);
+        atr.setId(id);
+        atr.setName(this.name);
+        if (presence = true) {
+            atr.setPresence(Presence.MANDATORY);
+        }
+        atr.setSet(this.isSet);
+        atr.setTypeId(this.typeId);
+        return atr;
+    }
 
-	public long getConceptId(){
-		return this.conceptId;	
-	}
+    public long getId() {
+        return this.id;
+    }
 
-	public AttributeDefinition addAttributeDefinition(){
-		AttributeDefinitionClient attrDefClient = new AttributeDefinitionClient(getClientProtocol());
-		AttributeDefinition attrDef = attrDefClient.readAttributeDefinition(id, null);
-		return attrDef;
-	}
+    public long getConceptId() {
+        return this.conceptId;
+    }
 
-	public Long getEType() {
-		return this.typeId;
-	}
+    public AttributeDefinition addAttributeDefinition() {
+        AttributeDefinitionClient attrDefClient = new AttributeDefinitionClient(getClientProtocol());
+        AttributeDefinition attrDef = attrDefClient.readAttributeDefinition(id, null);
+        return attrDef;
+    }
 
-	public long getRangeEntityTypeID(){
-		return this.entityTypeID.longValue();
-	}
+    public Long getEType() {
+        return this.typeId;
+    }
 
-	public String getEtypeURL() {
-		String fullUrl = WebServiceURLs.getURL();
-		String url  = fullUrl+"/types/"+this.typeId;
-		return url;
-	}
+    public long getRangeEntityTypeID() {
+        return this.entityTypeID.longValue();
+    }
 
-	public String getRangeEtypeURL() {
-		if (this.entityTypeID==null)
-		{return null;} 
-		else {		
-			String fullUrl = WebServiceURLs.getURL();
-			String url  = fullUrl+"/types/"+this.entityTypeID;
-			return url;
-		}
-	}
+    public String getEtypeURL() {
+        String fullUrl = WebServiceURLs.getURL();
+        String url = fullUrl + "/types/" + this.typeId;
+        return url;
+    }
 
-	public IDict getName() {
-		Dict dict = new Dict();
-		Iterator<?> it = this.name.entrySet().iterator();
-		while(it.hasNext()){
-			Map.Entry pairs = (Map.Entry)it.next();
-			Locale l = NLPService.languageTagToLocale((String) pairs.getKey());
-			dict = dict.putTranslation(l, (String)pairs.getValue());
+    public String getRangeEtypeURL() {
+        if (this.entityTypeID == null) {
+            return null;
+        } else {
+            String fullUrl = WebServiceURLs.getURL();
+            String url = fullUrl + "/types/" + this.entityTypeID;
+            return url;
+        }
+    }
 
-		}
-		return dict;
-	}
+    public IDict getName() {
+        Dict dict = new Dict();
+        Iterator<?> it = this.name.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pairs = (Map.Entry) it.next();
+            Locale l = NLPService.languageTagToLocale((String) pairs.getKey());
+            dict = dict.putTranslation(l, (String) pairs.getValue());
 
-	public IDict getDescription() {
-		Dict dict = new Dict();
-		Iterator<?> it = this.description.entrySet().iterator();
-		while(it.hasNext()){
-			Map.Entry pairs = (Map.Entry)it.next();
-			Locale l = NLPService.languageTagToLocale((String)pairs.getKey());
-			dict = dict.putTranslation(l, (String)pairs.getValue());
-		}
-		return dict;
-	}
+        }
+        return dict;
+    }
 
-	public String getConceptURL() {
-		String fullUrl = WebServiceURLs.getURL();
-		String url  = fullUrl+"/concepts/"+this.conceptId;
-		return url;
-	}
+    public IDict getDescription() {
+        Dict dict = new Dict();
+        Iterator<?> it = this.description.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pairs = (Map.Entry) it.next();
+            Locale l = NLPService.languageTagToLocale((String) pairs.getKey());
+            dict = dict.putTranslation(l, (String) pairs.getValue());
+        }
+        return dict;
+    }
 
-	public boolean isList() {
-		return this.isSet;
-	}
+    public String getConceptURL() {
+        String fullUrl = WebServiceURLs.getURL();
+        String url = fullUrl + "/concepts/" + this.conceptId;
+        return url;
+    }
+
+    public boolean isList() {
+        return this.isSet;
+    }
 
 }

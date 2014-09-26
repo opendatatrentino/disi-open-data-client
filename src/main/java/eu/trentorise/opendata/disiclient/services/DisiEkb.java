@@ -1,6 +1,5 @@
 package eu.trentorise.opendata.disiclient.services;
 
-
 import eu.trentorise.opendata.disiclient.services.shematching.MatchingService;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.IEntityService;
@@ -19,32 +18,31 @@ import org.slf4j.LoggerFactory;
 /**
  *
  * @author David Leoni
- * 
+ *
  */
 public class DisiEkb implements IEkb {
-    
+
     private Logger logger = LoggerFactory.getLogger(this.getClass());
-    
-    private  INLPService NLPService;
-    private  IKnowledgeService knowledgeService;
-    private  ISemanticMatchingService semanticMatchingService;
-    private  IIdentityService identityService;
-    private  IEntityTypeService entityTypeService;
-    private  IEntityService entityService;    
+
+    private INLPService NLPService;
+    private IKnowledgeService knowledgeService;
+    private ISemanticMatchingService semanticMatchingService;
+    private IIdentityService identityService;
+    private IEntityTypeService entityTypeService;
+    private IEntityService entityService;
     private List<Locale> defaultLocales;
 
-    public DisiEkb() {        
+    public DisiEkb() {
         this.NLPService = new NLPService();
         this.entityTypeService = new EntityTypeService();
         this.knowledgeService = new KnowledgeService();
         this.identityService = new IdentityService();
-        this.semanticMatchingService = new MatchingService();      
-        this.entityService = (IEntityService) new EntityService(WebServiceURLs.getClientProtocol());        
+        this.semanticMatchingService = new MatchingService();
+        this.entityService = (IEntityService) new EntityService(WebServiceURLs.getClientProtocol());
         List<Locale> locs = new ArrayList<Locale>();
         locs.add(Locale.ENGLISH);
         this.defaultLocales = Collections.unmodifiableList(locs);
     }
-    
 
     public void setDefaultLocales(List<Locale> locales) {
         this.defaultLocales = Collections.unmodifiableList(new ArrayList<Locale>(locales));
@@ -55,7 +53,7 @@ public class DisiEkb implements IEkb {
     }
 
     public INLPService getNLPService() {
-        return NLPService;        
+        return NLPService;
     }
 
     public IKnowledgeService getKnowledgeService() {

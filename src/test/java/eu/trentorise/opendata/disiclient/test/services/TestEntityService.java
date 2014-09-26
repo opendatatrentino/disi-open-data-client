@@ -122,7 +122,7 @@ public class TestEntityService {
     public static final String ROOT_ENTITY_URL = etypeIDToURL(ROOT_ENTITY_ID);
 
     public static final long FACILITY_ID = 12L;
-    public static final String FACILITY_URL = etypeIDToURL(FACILITY_ID);            
+    public static final String FACILITY_URL = etypeIDToURL(FACILITY_ID);
 
     public static final long ATTR_DEF_LATITUDE_ID = 69L;
     public static final String ATTR_DEF_LATITUDE_URL = attrDefIDToURL(ATTR_DEF_LATITUDE_ID);
@@ -141,23 +141,20 @@ public class TestEntityService {
     // Certified product stuff 
     public static final long CERTIFIED_PRODUCT_ID = 17L;
     public static final String CERTIFIED_PRODUCT_URL = etypeIDToURL(CERTIFIED_PRODUCT_ID);
-    
+
     public static final long ATTR_TYPE_OF_CERTIFICATE = 110L;
     public static final String ATTR_TYPE_OF_CERTIFICATE_URL = attrDefIDToURL(ATTR_TYPE_OF_CERTIFICATE);
 
-    
     /**
-     * It is of type 'Certified product'
-     * NOTE: CREATED WITH ODR, WILL DISAPPEAR FROM SERVER ONCE IT IS REGENERATED
+     * It is of type 'Certified product' NOTE: CREATED WITH ODR, WILL DISAPPEAR
+     * FROM SERVER ONCE IT IS REGENERATED
      */
     public static final long MELA_VAL_DI_NON = 75167L;
     /**
      * NOTE: CREATED WITH ODR, WILL DISAPPEAR FROM SERVER ONCE IT IS REGENERATED
      */
     public static final String MELA_VAL_DI_NON_URL = WebServiceURLs.entityIDToURL(MELA_VAL_DI_NON);
-    
-    
-    
+
     private IProtocolClient api;
 
     Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -238,7 +235,8 @@ public class TestEntityService {
         try {
             es.updateEntity(entity);
             fail("Should have failed while updating non existing entity!");
-        } catch (NotFoundException ex) {
+        }
+        catch (NotFoundException ex) {
 
         }
     }
@@ -271,7 +269,7 @@ public class TestEntityService {
 
         //instantiation of variables
         attributes = attrClient.readAttributes(15007L, null, null);
-		//EntityTypeService es = new EntityTypeService();
+        //EntityTypeService es = new EntityTypeService();
         //	EntityType etype= es.getEntityType(e.getTypeId());
 
         List<IAttributeDef> attrDefs = etype.getAttributeDefs();
@@ -290,16 +288,16 @@ public class TestEntityService {
         for (Attribute a : attributes) {
 
             if (a.getDefinitionId() != attrDefClassAtrID) {
-              //  System.out.println(a.getName().get("en"));
+                //  System.out.println(a.getName().get("en"));
                 attrsEntityToCreate.add(a);
             }
         }
-		//logger.info("Etype id: "+inst.getTypeId());
+        //logger.info("Etype id: "+inst.getTypeId());
         //assigning variables
         entityToCreate.setAttributes(attrsEntityToCreate);
         entityToCreate.setEtype(etype);
         entityToCreate.setEntityBaseId(1L);
-		//  logger.info("entity: " + entity.toString());
+        //  logger.info("entity: " + entity.toString());
         //es.createEntity(entity);
 
         EbClient ebc = new EbClient(api);
@@ -310,14 +308,15 @@ public class TestEntityService {
 //        es.deleteEntity(entityURL);
         try {
             entityURL = es.createEntityURL(entityToCreate);
-			//        es.ge
+            //        es.ge
             //        inst = instanceClient.readInstance(id, null);
 
             EntityBase ebafter = ebc.readEntityBase(1L, null);
             int instanceNumAfter = ebafter.getInstancesNumber();
             assertEquals(instanceNum + 1, instanceNumAfter);
-        } finally {    
-            if (entityURL != null){
+        }
+        finally {
+            if (entityURL != null) {
                 es.deleteEntity(entityURL);
             }
         }
@@ -365,7 +364,7 @@ public class TestEntityService {
         entitieURLs.add(PALAZZETTO_URL);
 
         entitieURLs.add(RAVAZZONE_URL);
-       // entitieURLs.add(POVO_URL);
+        // entitieURLs.add(POVO_URL);
         List<IEntity> entities = es.readEntities(entitieURLs);
         for (IEntity entity : entities) {
 //            IntegrityChecker.checkEntity(entity);
@@ -394,12 +393,12 @@ public class TestEntityService {
             if (atr.getName().get("en").equalsIgnoreCase("Name")) {
                 attrs1.add(atr);
             } else if (atr.getName().get("en").equalsIgnoreCase("Longitude")) {
-				//                IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
+                //                IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
                 //                AttributeODR attr = es.createAttribute(atDef, 11.466f);
                 //                Attribute a = attr.convertToAttribute();
                 attrs1.add(atr);
             } else if (atr.getName().get("en").equalsIgnoreCase("Latitude")) {
-				//                IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
+                //                IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
                 //                AttributeODR attr = es.createAttribute(atDef, 46.289f);
                 //                Attribute a = attr.convertToAttribute();
                 attrs1.add(atr);
@@ -446,7 +445,7 @@ public class TestEntityService {
 
         IEntity updatedEntity = es.readEntity(id);
         assertEquals(5, updatedEntity.getStructureAttributes().size());
-		//--------Entity Update Test end---------
+        //--------Entity Update Test end---------
         //--------Value Update Test start--------
         ValueODR val = new ValueODR();
         Float testNewValue = 0.0f;
@@ -456,7 +455,7 @@ public class TestEntityService {
 
             if (atr.getName().get("en").equalsIgnoreCase("Longitude")) {
                 AttributeODR attrODR = new AttributeODR(api, atr);
-				//				ValueODR val = (ValueODR) attrODR.getValues().get(0);
+                //				ValueODR val = (ValueODR) attrODR.getValues().get(0);
                 //				val.setValue(value);
                 es.updateAttributeValue(newEntityODR, attrODR, val);
             }
@@ -485,7 +484,7 @@ public class TestEntityService {
         List<Attribute> attrs = new ArrayList<Attribute>();
 
         for (IAttributeDef atd : attrDefList) {
-			//			if (atd.getName().getString(Locale.ENGLISH).equals("Name")){
+            //			if (atd.getName().getString(Locale.ENGLISH).equals("Name")){
             //				logger.info(atd.getName());
             //				logger.info(atd.getGUID());
             //				logger.info(atd.getDataType());
@@ -520,7 +519,7 @@ public class TestEntityService {
                 Attribute a = attr.convertToAttribute();
                 attrs.add(a);
             } else if (atd.getName().getString(Locale.ENGLISH).equals("Opening hours")) {
-				//     logger.info(atd.getName());
+                //     logger.info(atd.getName());
                 //      logger.info(atd.getURL());
 
                 AttributeDef openHourAD = new AttributeDef(ATTR_DEF_HOURS_OPENING_HOUR);
@@ -553,13 +552,13 @@ public class TestEntityService {
 
         EntityService es = new EntityService();
         EntityODR en = (EntityODR) es.readEntity(15001L);
-		//    	
+        //    	
         //    	AttributeDef atrDef = new AttributeDef(169);
         //    	AttributeODR nameAtr = es.createNameAttributeODR(atrDef, name);
 
         for (IAttribute a : ((IStructure) en).getStructureAttributes()) {
 
-			//    		System.out.println(a.getAttrDef().getName().getString(Locale.ENGLISH));
+            //    		System.out.println(a.getAttrDef().getName().getString(Locale.ENGLISH));
             //    		//System.out.println(a.getAttrDef().getRangeEtypeURL());
             //    		//System.out.println(a.getAttrDef().getEType());
             //    		System.out.println(a.getAttrDef().getGUID());
@@ -614,14 +613,15 @@ public class TestEntityService {
         String URL = null;
         try {
             URL = es.createEntityURL(ent);
-        } finally {
+        }
+        finally {
             if (URL != null) {
                 es.deleteEntity(URL);
             }
         }
     }
-    
-   /**
+
+    /**
      * NOTE: USES ENTITY CREATED WITH ODR, WILL DISAPPEAR FROM SERVER ONCE IT IS
      * REGENERATED
      */
@@ -630,18 +630,18 @@ public class TestEntityService {
         EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
         IEntity mela = enServ.readEntity(MELA_VAL_DI_NON_URL);
         IntegrityChecker.checkEntity(mela);
-    }      
-    
+    }
+
     @Test
-    public void testEntitySearch(){
+    public void testEntitySearch() {
         EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
 
-		String etypeURL = WebServiceURLs.etypeIDToURL(18L);
-		List<ISearchResult> sResults = enServ.searchEntities("Povo", etypeURL);
-		for (ISearchResult sr :sResults){
-			assertNotNull(sr.getURL());
-			assertNotNull(sr.getName());
+        String etypeURL = WebServiceURLs.etypeIDToURL(18L);
+        List<ISearchResult> sResults = enServ.searchEntities("Povo", etypeURL);
+        for (ISearchResult sr : sResults) {
+            assertNotNull(sr.getURL());
+            assertNotNull(sr.getName());
 
-		}
+        }
     }
 }

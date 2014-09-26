@@ -5,17 +5,16 @@ package eu.trentorise.opendata.disiclient;
  */
 public class DisiClientException extends RuntimeException {
 
+    public DisiClientException(String s) {
+        super(s);
+    }
 
-        public DisiClientException(String s){
-            super(s);
-        }
+    public DisiClientException(String s, Exception ex) {
+        super(s, ex);
+    }
 
-        public DisiClientException(String s, Exception ex) {
-            super(s, ex);
-        }
-
-        public DisiClientException(Exception ex) {
-            super(ex);
-        }
+    public DisiClientException(Exception ex) {
+        super(ex);
+    }
 
 }

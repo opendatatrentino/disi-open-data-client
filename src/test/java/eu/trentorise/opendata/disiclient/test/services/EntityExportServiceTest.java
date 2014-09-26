@@ -27,8 +27,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
 public class EntityExportServiceTest {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -43,7 +41,6 @@ public class EntityExportServiceTest {
     EntityExportService ess = new EntityExportService();
     EntityService es = new EntityService();
 
-
     @Before
     public void test() {
 
@@ -52,8 +49,6 @@ public class EntityExportServiceTest {
         entities.add(ENTITY2_URL);
         entities.add(ENTITY3_URL);
     }
-
-  
 
     @Test
     public void testExportToJsonLd() throws IOException {
@@ -109,7 +104,8 @@ public class EntityExportServiceTest {
             enServ.exportToJsonLd(entityURLs, sw);
             logger.info("JSONLD = " + sw.toString());
             assertTrue(sw.toString().length() > 0);
-        } finally {
+        }
+        finally {
             if (enURL != null) {
                 enServ.deleteEntity(enURL);
             }
@@ -134,6 +130,4 @@ public class EntityExportServiceTest {
         assertTrue(sw.toString().length() > 0);
     }
 
-   
-    
 }

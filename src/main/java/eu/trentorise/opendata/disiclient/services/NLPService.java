@@ -24,11 +24,10 @@ import eu.trentorise.opendata.semantics.services.INLPService;
  */
 public class NLPService implements INLPService {
 
-    
     /**
      * Java 7 has Locale.toLanguageTag(format), but we target Java 6 so we use
      * this substitute
-     */    
+     */
     static public String localeToLanguageTag(Locale locale) {
         return MessageFormat.format("{0}-{1}",
                 locale.getLanguage(),
@@ -61,7 +60,7 @@ public class NLPService implements INLPService {
         // TODO implementation is required
     }
 
-       //	public ISemanticText runNLP(String nlText) {
+    //	public ISemanticText runNLP(String nlText) {
     //
     //		PipelineClient pipClient = new PipelineClient(getClientProtocol());
     //		NLPInput input = new NLPInput();
@@ -89,7 +88,7 @@ public class NLPService implements INLPService {
         NLPInput input = new NLPInput();
         List<String> text = new ArrayList<String>();
         text.add(nlText);
-        input.setText(text);        
+        input.setText(text);
         NLText[] processedText = pipClient.run("NamedEntityPipeline", input, 1l);
         //		for (NLText nlext : processedText) {
         //		   System.out.println(nlext.toString());
@@ -122,16 +121,13 @@ public class NLPService implements INLPService {
         return sText;
     }
 
+    public List<ISemanticText> runNLP(List<String> texts, IConcept parentConcept) {
+        //TODO consider the parentConcept parameter as soon as API will be ready
+        return runNLP(texts);
+    }
 
-	public List<ISemanticText> runNLP(List<String> texts, IConcept parentConcept) {
-		//TODO consider the parentConcept parameter as soon as API will be ready
-		return  runNLP(texts);
-	}
-
-	public List<ISemanticText> runNER(List<String> texts) {
-		throw new UnsupportedOperationException("To be implemented on the server side");
-	}
-
-
+    public List<ISemanticText> runNER(List<String> texts) {
+        throw new UnsupportedOperationException("To be implemented on the server side");
+    }
 
 }

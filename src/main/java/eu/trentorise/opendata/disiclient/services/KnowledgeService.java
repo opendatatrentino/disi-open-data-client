@@ -16,96 +16,89 @@ import eu.trentorise.opendata.semantics.services.model.ISearchResult;
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
  * @author David Leoni <david.leoni@unitn.it>
  * @date 23 July 2014
- * 
+ *
  */
 public class KnowledgeService implements IKnowledgeService {
 
-	Logger logger = LoggerFactory.getLogger(KnowledgeService.class);
+    Logger logger = LoggerFactory.getLogger(KnowledgeService.class);
 
-	private static final long ROOT_CONCEPT_ID = 1;
-	public static final long DESCRIPTION_CONCEPT_ID = 3L;
-	public static final long PARTOF_CONCEPT_ID = 3L;
-	//	public List<IConcept> getConcepts(List<Long> GUIDs) {
-	//		List<IConcept> iconcepts = new ArrayList<IConcept>();
-	//
-	//		for (Long guid :GUIDs){
-	//			ConceptODR con = new ConceptODR();
-	//			con = con.readConceptGlobalID(guid);
-	//			iconcepts.add(con);
-	//		}
-	//		return iconcepts;
-	//	}
+    private static final long ROOT_CONCEPT_ID = 1;
+    public static final long DESCRIPTION_CONCEPT_ID = 3L;
+    public static final long PARTOF_CONCEPT_ID = 3L;
+    //	public List<IConcept> getConcepts(List<Long> GUIDs) {
+    //		List<IConcept> iconcepts = new ArrayList<IConcept>();
+    //
+    //		for (Long guid :GUIDs){
+    //			ConceptODR con = new ConceptODR();
+    //			con = con.readConceptGlobalID(guid);
+    //			iconcepts.add(con);
+    //		}
+    //		return iconcepts;
+    //	}
 
+    public IConcept getConcept(String URL) {
 
+        Long conceptId;
 
+        String s;
+        try {
+            s = URL.substring(URL.indexOf("ts/") + 3);
+        }
+        catch (Exception e) {
+            return null;
 
-	public IConcept getConcept(String URL) {
+            //throw new DisiClientException("Wrong Concept URL!");
+        }
 
-		Long conceptId;
+        try {
+            conceptId = Long.parseLong(s);
+        }
+        catch (Exception e) {
+            return null;
 
-		String s;
-		try {
-			s = URL.substring(URL.indexOf("ts/") + 3);
-		} catch (Exception e) {
-			return null;
+            //throw new DisiClientException("Wrong concept ID!");
+        }
 
-			//throw new DisiClientException("Wrong Concept URL!");
-		}
+        ConceptODR concept = new ConceptODR();
+        concept = concept.readConcept(conceptId);
 
-		try {
-			conceptId = Long.parseLong(s);
-		} catch (Exception e) {
-			return null;
+        return concept;
+    }
 
-			//throw new DisiClientException("Wrong concept ID!");
-		} 
+    public List<IConcept> getConcepts(List<String> URLs) {
+        List<IConcept> concepts = new ArrayList<IConcept>();
 
+        for (String url : URLs) {
+            IConcept c = getConcept(url);
+            concepts.add(c);
+        }
+        return concepts;
+    }
 
-		ConceptODR concept = new ConceptODR();
-		concept = concept.readConcept(conceptId);
+    public IConcept getRootConcept() {
+        ConceptODR concept = new ConceptODR();
+        concept = concept.readConcept(ROOT_CONCEPT_ID);
+        return concept;
+    }
 
-		return concept;
-	}
+    public List<IConcept> readConcepts(List<String> URLs) {
+        return getConcepts(URLs);
+    }
 
+    public IConcept readConcept(String URL) {
+        return getConcept(URL);
+    }
 
+    public IConcept readRootConcept() {
+        return getRootConcept();
+    }
 
-	public List<IConcept> getConcepts(List<String> URLs) {
-		List<IConcept> concepts= new ArrayList<IConcept>();
+    public List<ISearchResult> searchConcepts(String partialName) {
 
-		for (String url: URLs){
-			IConcept c = getConcept(url);
-			concepts.add(c);
-		}
-		return concepts;
-	}
+        List<ISearchResult> concepts = new ArrayList<ISearchResult>();
 
-
-
-	public IConcept getRootConcept() {
-		ConceptODR concept = new ConceptODR();
-		concept = concept.readConcept(ROOT_CONCEPT_ID);
-		return concept;
-	}
-
-	public List<IConcept> readConcepts(List<String> URLs) {
-		return getConcepts(URLs);
-	}
-
-	public IConcept readConcept(String URL) {
-		return getConcept(URL);
-	}
-
-	public IConcept readRootConcept() {
-		return getRootConcept();
-	}
-
-	public List<ISearchResult> searchConcepts(String partialName) {
-
-		List<ISearchResult> concepts = new ArrayList<ISearchResult>();
-		
-		
-		logger.warn("TRYING TO SEARCH CONCEPTS - RETURNING NOTHING. TODO IMPLEMENT THIS");
-		return concepts;
-	}
+        logger.warn("TRYING TO SEARCH CONCEPTS - RETURNING NOTHING. TODO IMPLEMENT THIS");
+        return concepts;
+    }
 
 }

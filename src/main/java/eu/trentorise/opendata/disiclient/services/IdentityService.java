@@ -26,141 +26,130 @@ import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
 import eu.trentorise.opendata.semantics.services.IIdentityService;
 import eu.trentorise.opendata.semantics.services.model.IIDResult;
 
+public class IdentityService implements IIdentityService {
 
-public class IdentityService implements IIdentityService {	
+    Logger logger = LoggerFactory.getLogger(IdentityService.class);
 
-	Logger logger = LoggerFactory.getLogger(IdentityService.class);
+    private EntityODR convertNameAttr(EntityODR ent) {
+        List<Attribute> attrs = ent.getAttributes();
+        EntityService enServ = new EntityService();
 
-	
-	private EntityODR convertNameAttr(EntityODR ent) {
-		List<Attribute> attrs = ent.getAttributes();
-		EntityService enServ= new EntityService();
+        for (Attribute atr : attrs) {
 
+            if (atr.getDefinitionId() == 64) {
+                List<Value> vals = atr.getValues();
+                Object val = vals.iterator().next().getValue();
+                String nameSt = null;
+                // david: quick hack... so it accepts String in values  todo review 
+                if (val instanceof Name) {
+                    Name nm = (Name) val;
+                    nameSt = (String) nm.getAttributes().iterator().next().getValues().iterator().next().getValue();
+                } else if (val instanceof String) {
+                    nameSt = (String) val;
+                } else if (val instanceof ISemanticText) {
+                    nameSt = ((ISemanticText) val).getText();
+                } else {
+                    throw new IllegalArgumentException("Found unhandled class! Value class is " + val.getClass().getSimpleName());
+                }
 
+                Search search = new Search(WebServiceURLs.getClientProtocol());
+                List<Name> foundNames;
+                if (nameSt.equals("")) {
+                    foundNames = new ArrayList<Name>();
+                } else {
+                    foundNames = search.nameSearch(nameSt);
+                }
+                if (foundNames.size() > 0) {
+                    IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
+                    AttributeODR attr = enServ.createNameAttribute(atDef, foundNames.iterator().next());
+                    Attribute a = attr.convertToAttribute();
+                    attrs.remove(atr);
 
-		for (Attribute atr : attrs){
+                    attrs.add(a);
+                    break;
+                } else {
+                    break;
+                }
 
+            }
+        }
 
-			if (atr.getDefinitionId()==64){
-				List<Value> vals = atr.getValues();
-				Object val = vals.iterator().next().getValue();
-				String nameSt = null;
-				// david: quick hack... so it accepts String in values  todo review 
-				if (val instanceof Name) {                                     
-					Name nm =(Name) val;
-					nameSt = (String) nm.getAttributes().iterator().next().getValues().iterator().next().getValue();
-				} else if (val instanceof String){
-					nameSt = (String) val;
-				} else if (val instanceof ISemanticText){
-					nameSt = ((ISemanticText) val).getText();
-				} else {
-					throw new IllegalArgumentException("Found unhandled class! Value class is " + val.getClass().getSimpleName());
-				}
+        return ent;
+    }
 
-				Search search = new Search(WebServiceURLs.getClientProtocol());
-				List<Name> foundNames;
-				if(nameSt.equals("")){
-					foundNames = new ArrayList<Name>();
-				}
-				else{
-					foundNames = search.nameSearch(nameSt);
-				}
-				if(foundNames.size()>0)
-				{
-					IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
-					AttributeODR attr =enServ.createNameAttribute(atDef, foundNames.iterator().next());
-					Attribute a=attr.convertToAttribute();
-					attrs.remove(atr);
+    public List<IIDResult> assignURL(List<IEntity> iEntities, int numCandidates) {
 
-					attrs.add(a);
-					break;}
-				else {
-					break;
-				}
+        if (iEntities == null) {
+            List<IIDResult> idResults = new ArrayList<IIDResult>();
+            return idResults;
+        }
+        if (iEntities.size() == 0) {
+            List<IIDResult> idResults = new ArrayList<IIDResult>();
+            return idResults;
+        } else {
 
-			}
-		}
+            List<EntityODR> entities = new ArrayList<EntityODR>();
 
+            for (IEntity ie : iEntities) {
+                if (ie instanceof EntityODR) {
+                    entities.add((EntityODR) ie);
+                } else {
+                    entities.add(disify(ie, true));
+                }
+            }
 
-		return ent;
-	}
+            IDManagementClient idManCl = new IDManagementClient(WebServiceURLs.getClientProtocol());
+            List<Entity> resEntities = new ArrayList<Entity>();
+            for (IEntity en : entities) {
+                EntityODR ent = (EntityODR) en;
+                EntityODR enODRwClass = checkClassAttr(ent);
 
-	public List<IIDResult> assignURL(List<IEntity> iEntities, int numCandidates) {            
+                EntityODR entODR = convertNameAttr(enODRwClass);
+                Entity entity = entODR.convertToEntity();
+                resEntities.add(entity);
+            }
+            List<IDResult> results = idManCl.assignIdentifier(resEntities, 0);
+            List<IIDResult> idResults = new ArrayList<IIDResult>();
+            for (IDResult res : results) {
+                IDRes idRes = new IDRes(res);
+                idResults.add(idRes);
+            }
+            return idResults;
+        }
+    }
 
-		if (iEntities == null) {
-			List<IIDResult> idResults = new ArrayList<IIDResult>();
-			return idResults;
-		}
-		if (iEntities.size() == 0) {
-			List<IIDResult> idResults = new ArrayList<IIDResult>();
-			return idResults;
-		} else {
+    private EntityODR checkClassAttr(EntityODR ent) {
+        EntityTypeService es = new EntityTypeService();
+        EntityService enServ = new EntityService();
 
-			List<EntityODR> entities = new ArrayList<EntityODR>();
+        EntityType etype = es.getEntityType(ent.getTypeId());
 
-			for (IEntity ie : iEntities){				
-				if (ie instanceof EntityODR){
-					entities.add((EntityODR) ie);
-				} else {
-					entities.add(disify(ie, true));
-				}
-			}
+        List<IAttributeDef> attrDefs = etype.getAttributeDefs();
+        Long attrDefClassAtrID = null;
+        for (IAttributeDef adef : attrDefs) {
 
+            if (adef.getName().getString(Locale.ENGLISH).equalsIgnoreCase("class")) {
+                attrDefClassAtrID = adef.getGUID();
+                break;
+            }
+        }
 
-			IDManagementClient idManCl = new IDManagementClient(WebServiceURLs.getClientProtocol());
-			List<Entity> resEntities = new ArrayList<Entity>();
-			for (IEntity en : entities) {
-				EntityODR ent = (EntityODR) en;
-				EntityODR enODRwClass = checkClassAttr(ent);
+        boolean isExistAttrClass = false;
 
-				EntityODR entODR = convertNameAttr(enODRwClass);
-				Entity entity = entODR.convertToEntity();				
-				resEntities.add(entity);
-			}
-			List<IDResult> results = idManCl.assignIdentifier(resEntities, 0);
-			List<IIDResult> idResults = new ArrayList<IIDResult>();
-			for (IDResult res : results) {
-				IDRes idRes = new IDRes(res);
-				idResults.add(idRes);
-			}
-			return idResults;
-		}
-	}
+        for (Attribute a : ent.getAttributes()) {
 
-	private EntityODR checkClassAttr(EntityODR ent) {
-		EntityTypeService es = new EntityTypeService();
-		EntityService enServ = new EntityService();
-		
-		EntityType etype= es.getEntityType(ent.getTypeId());
+            if (a.getDefinitionId() == attrDefClassAtrID) {
+                isExistAttrClass = true;
+                break;
+            }
+        }
 
-		List<IAttributeDef> attrDefs=etype.getAttributeDefs();
-		Long attrDefClassAtrID = null;
-		for(IAttributeDef adef: attrDefs){
-
-			if (adef.getName().getString(Locale.ENGLISH).equalsIgnoreCase("class")){
-				attrDefClassAtrID=adef.getGUID();
-				break;
-			}
-		}
-
-		boolean isExistAttrClass=false;
-
-		for (Attribute a : ent.getAttributes()){
-
-			if (a.getDefinitionId()==attrDefClassAtrID){
-				isExistAttrClass=true;
-				break;
-			}
-		}
-
-		if (!isExistAttrClass){
-			Attribute a =enServ.createClassAttribute(attrDefClassAtrID, etype.getConceptID());
-			ent.getAttributes().add(a);
-			logger.warn("No class attribute is assigned for the entity. Default class attribute is assigned");
-		}
-		return ent;
-	}
-
-
+        if (!isExistAttrClass) {
+            Attribute a = enServ.createClassAttribute(attrDefClassAtrID, etype.getConceptID());
+            ent.getAttributes().add(a);
+            logger.warn("No class attribute is assigned for the entity. Default class attribute is assigned");
+        }
+        return ent;
+    }
 
 }
