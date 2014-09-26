@@ -2,6 +2,7 @@ package eu.trentorise.opendata.disiclient.test.services;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,19 +79,19 @@ public class TestKnowledgeService {
 
         conceptURLs.add("non-existing-url");
         conceptURLs.add(rootConceptURL);
-    //    thrown.expect(DisiClientException.class);
         List<IConcept> concepts = ets.readConcepts(conceptURLs);
         assertEquals(concepts.get(0), null);
         assertEquals(concepts.get(1).getURL(), rootConceptURL);
     }
 
-   // @Test
+    @Test
     public void testSearchConcept(){
         KnowledgeService ks = new KnowledgeService();
-        List<ISearchResult>res = ks.searchConcepts("Trento");
-        logger.info( res.get(0).toString());
-       
-
+        List<ISearchResult>res = ks.searchConcepts("cat");
+        for (ISearchResult r: res){ 
+        	assertNotNull(r.getName());
+        	assertNotNull(r.getURL());
+        }
     }
     
 }

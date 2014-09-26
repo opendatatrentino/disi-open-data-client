@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.disiclient.services.NLPService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
@@ -27,10 +28,19 @@ public class SearchResult implements ISearchResult {
 	private Long id;
 	private Map<String, String> name;
 	private IDict dict;
+	private String url;
+
 
 	public SearchResult(ComplexType cType) {
 		this.id = cType.getId();
 		this.name = cType.getName();
+		this.url=WebServiceURLs.etypeIDToURL(cType.getId());
+	}
+	public SearchResult(ConceptODR codr) {
+		this.id = codr.getId(); 
+		this.dict = codr.getName();
+		this.url=WebServiceURLs.conceptIDToURL(codr.getId());
+
 	}
 
 	public SearchResult(Entity instance) {
@@ -46,7 +56,7 @@ public class SearchResult implements ISearchResult {
 			}
 		}
 		this.dict=dict;
-
+		this.url = WebServiceURLs.entityIDToURL(instance.getId());
 	}
 
 
@@ -54,7 +64,7 @@ public class SearchResult implements ISearchResult {
 	}
 
 	public String getURL() {
-		return WebServiceURLs.etypeIDToURL(this.id);
+		return this.url;
 	}
 
 	public IDict getName() {
