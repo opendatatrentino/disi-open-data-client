@@ -554,7 +554,7 @@ public class EntityODR extends StructureODR implements IEntity {
 							SemanticText st = (SemanticText) val.getValue();
 							SemanticString sstring = convertSemTextToSemString(st);
 							Locale l = st.getLocale();
-							Long vocabularyID = vocabularyMap.get(l.toLanguageTag());
+							Long vocabularyID = vocabularyMap.get(TraceProvUtils.localeToLanguageTag(l));
 
 							Value fixedVal = new Value();
 							fixedVal.setSemanticValue(sstring);
