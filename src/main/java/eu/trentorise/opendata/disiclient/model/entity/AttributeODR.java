@@ -162,6 +162,7 @@ public class AttributeODR implements IAttribute {
         for (Value val : vals) {
             ValueODR value = new ValueODR(val);
             values.add(value);
+            value.setVocabularyId(val.getVocabularyId());
         }
         return values;
     }

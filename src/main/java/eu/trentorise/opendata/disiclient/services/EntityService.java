@@ -368,11 +368,15 @@ public class EntityService implements IEntityService {
                 ValueODR valODR = new ValueODR();
                 valODR.setValue(descrToSemText(obj));
                 valsODR.add(valODR);
+                logger.warn("Vocabulary id is set to default '1'.");
+                valODR.setVocabularyId(1L);
             }
             return new AttributeODR(attrDef, valsODR);
         } else {
             ValueODR val = new ValueODR();
             val.setValue(descrToSemText(descr));
+            logger.warn("Vocabulary id is set to default '1'.");
+            val.setVocabularyId(1L);
             return new AttributeODR(attrDef, val);
         }
     }

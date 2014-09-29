@@ -96,7 +96,13 @@ public class ValueODR extends Value implements IValue {
         } else {
             value.setValue(this.value);
         }
+        if (super.getVocabularyId() != null) {
+            value.setVocabularyId(super.getVocabularyId());
+        } else {
+        	 value.setVocabularyId(1L);
+        }
 
+        
         value.setAttributeId(super.getAttributeId());
         return value;
     }

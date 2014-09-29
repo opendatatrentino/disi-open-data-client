@@ -710,6 +710,7 @@ public class EntityODR extends StructureODR implements IEntity {
 			List<SemanticText> SStringList = (List<SemanticText>) pairs.getValue();
 			for (SemanticText stext : SStringList) {
 				SemanticString sstring = (SemanticString) SemanticTextFactory.semanticString(stext);
+
 				sStringList.add(sstring);
 			}
 			epDescriptionMap.put((String) pairs.getKey(), sStringList);
