@@ -11,6 +11,7 @@ import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -22,7 +23,9 @@ import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,6 +124,7 @@ public class EntityExportServiceTest {
      * NOTE: USES ENTITY CREATED WITH ODR, WILL DISAPPEAR FROM SERVER ONCE IT IS
      * REGENERATED
      */
+@Ignore
     @Test
     public void testExportMelaValDiNon() {
 

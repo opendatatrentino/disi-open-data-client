@@ -7,14 +7,10 @@ import static org.junit.Assert.assertNotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.trentorise.opendata.disiclient.DisiClientException;
-import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.KnowledgeService;
 import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
@@ -26,7 +22,7 @@ public class TestKnowledgeService {
 	
     List<Object> guids = new ArrayList<Object>() {
         {
-            add(132L);
+            add(132L); // TODO PUT NAMES
             add(46263L);
             add(46270L);
         }

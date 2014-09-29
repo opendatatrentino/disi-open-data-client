@@ -54,9 +54,8 @@ import eu.trentorise.opendata.semantics.model.knowledge.impl.Word;
  * @date 11 Apr 2014
  */
 public class SemanticTextFactory {
-        
-    private final static Logger logger = LoggerFactory.getLogger(SemanticTextFactory.class);
 
+    private final static Logger logger = LoggerFactory.getLogger(SemanticTextFactory.class);
 
     /**
      * TODO - it always return the lemma in English!!!
@@ -65,14 +64,12 @@ public class SemanticTextFactory {
         return new Dict(meaning.getLemma());
     }
 
-
     /**
      * We support NLMultiWord and NLNamedEntity
      */
     private static boolean isUsedInComplexToken(NLToken token) {
         return token.isUsedInMultiWord() || token.isUsedInNamedEntity();
     }
-
 
     /**
      * We support NLMultiWord and NLNamedEntity
@@ -88,15 +85,17 @@ public class SemanticTextFactory {
         return ret;
     }
 
-    private static MeaningKind getKind(NLComplexToken tok){
-        if (tok instanceof NLNamedEntity){
-            return MeaningKind.ENTITY;            
-        } else if (tok instanceof NLMultiWord){
+    private static MeaningKind getKind(NLComplexToken tok) {
+        if (tok instanceof NLNamedEntity) {
+            return MeaningKind.ENTITY;
+        } else if (tok instanceof NLMultiWord) {
             return MeaningKind.CONCEPT;
         } else {
             throw new UnsupportedOperationException("NLComplexToken of class " + tok.getClass().getSimpleName() + " is not supported!");
         }
-    };
+    }
+
+    ;
     
     /**
      * Transforms multiwords and named entities into tokens and only includes
@@ -129,7 +128,7 @@ public class SemanticTextFactory {
                 if (getMultiTokens(t).isEmpty()) {
                     throw new DisiClientException("I should get back at least one complex token!");
                 }
-                
+
                 NLComplexToken multiThing = getMultiTokens(t).get(0); // t.getMultiWords().get(0);
 
                 int tokensSize = 1;
@@ -150,35 +149,35 @@ public class SemanticTextFactory {
                     continue;
                 } else {
                     Set<NLMeaning> ms = new HashSet(multiThing.getMeanings());
-                    
-                    if (multiThing.getMeanings().isEmpty() && multiThing.getSelectedMeaning() != null){
+
+                    if (multiThing.getMeanings().isEmpty() && multiThing.getSelectedMeaning() != null) {
                         ms.add(multiThing.getSelectedMeaning());
                     }
-                    
+
                     TreeSet<IMeaning> sortedMeanings;
                     MeaningStatus meaningStatus;
                     IMeaning selectedMeaning;
-                    
+
                     if (ms.size() > 0) {
-                        sortedMeanings = makeSortedMeanings(ms);                        
-                                                
-                        if (sortedMeanings.first().getURL() != null){
+                        sortedMeanings = makeSortedMeanings(ms);
+
+                        if (sortedMeanings.first().getURL() != null) {
                             meaningStatus = MeaningStatus.SELECTED;
-                            selectedMeaning = sortedMeanings.first(); 
-                        }  else {
+                            selectedMeaning = sortedMeanings.first();
+                        } else {
                             meaningStatus = MeaningStatus.TO_DISAMBIGUATE;
                             selectedMeaning = null;
                         }
-                        
+
                     } else { // no meanings, but we know the kind                        
                         sortedMeanings = new TreeSet<IMeaning>();
                         sortedMeanings.add(new Meaning(null, 1.0, getKind(multiThing)));
                         meaningStatus = MeaningStatus.TO_DISAMBIGUATE;
                         selectedMeaning = null;
                     }
-                    words.add(new Word( startOffset + mtso,
-                    startOffset + mteo,
-                    meaningStatus, selectedMeaning, sortedMeanings));
+                    words.add(new Word(startOffset + mtso,
+                            startOffset + mteo,
+                            meaningStatus, selectedMeaning, sortedMeanings));
 
                     i += tokensSize;
                 }
@@ -225,9 +224,9 @@ public class SemanticTextFactory {
 
     /**
      * Converts input semantic text into a semantic string. For each Word copyOf
- input semantic text a ComplexConcept holding one semantic term is
- 
- eated.
+     * input semantic text a ComplexConcept holding one semantic term is
+     *
+     * eated.
      *
      * @param st the semantic string to convert
      * @return a semantic string representation copyOf inputcopyOfemantic text
@@ -306,9 +305,9 @@ public class SemanticTextFactory {
 
                         // overlapping terms are ignored
                         if (st.getOffset() != null && st.getOffset() >= pos) {
-                            
+
                             List<IMeaning> meanings = new ArrayList();
-                            
+
                             if (st.getConceptTerms() != null) {
                                 for (ConceptTerm ct : st.getConceptTerms()) {
                                     if (ct.getValue() != null) {
@@ -318,12 +317,12 @@ public class SemanticTextFactory {
                                         } else {
                                             weight = ct.getWeight();
                                         }
-                                        Long id = ct.getValue();                                        
-                                        if (id != null){
+                                        Long id = ct.getValue();
+                                        if (id != null) {
                                             meanings.add(new Meaning(conceptIDToURL(id),
-                                                                                    weight, MeaningKind.CONCEPT));                                            
+                                                    weight, MeaningKind.CONCEPT));
                                         }
-                                        
+
                                     }
                                 }
                             }
@@ -336,16 +335,16 @@ public class SemanticTextFactory {
                                         } else {
                                             weight = it.getWeight();
                                         }
-                                        Long id = it.getValue();                                        
-                                        if (id != null){                                        
+                                        Long id = it.getValue();
+                                        if (id != null) {
                                             meanings.add(new Meaning(entityIDToURL(it.getValue()), weight, MeaningKind.ENTITY));
                                         }
                                     }
 
                                 }
                             }
-                            if (meanings.size() > 0) {                                
-                                
+                            if (meanings.size() > 0) {
+
                                 IMeaning selectedMeaning = Meaning.disambiguate(meanings);
                                 MeaningStatus meaningStatus;
                                 if (selectedMeaning == null) {
@@ -374,27 +373,27 @@ public class SemanticTextFactory {
 
     /**
      * Returns a sorted set according to the probabilcopyOfy copyOf pcopyOfvided
- meanings. First element has the highest probability.
-
+     * meanings. First element has the highest probability.
+     *
      */
     private static TreeSet<IMeaning> makeSortedMeanings(Set<? extends NLMeaning> meanings) {
         TreeSet<IMeaning> ts = new TreeSet<IMeaning>(Collections.reverseOrder());
-        for (NLMeaning m : meanings) {    
+        for (NLMeaning m : meanings) {
             MeaningKind kind = null;
             String url = null;
             Long id = null;
-            if (m instanceof NLSenseMeaning){
+            if (m instanceof NLSenseMeaning) {
                 kind = MeaningKind.CONCEPT;
                 id = ((NLSenseMeaning) m).getConceptId();
-                if (id != null){
+                if (id != null) {
                     url = conceptIDToURL(id);
-                }                
-            } else if (m instanceof NLEntityMeaning){
+                }
+            } else if (m instanceof NLEntityMeaning) {
                 kind = MeaningKind.ENTITY;
                 id = ((NLEntityMeaning) m).getObjectID();
-                if (id != null){
+                if (id != null) {
                     url = entityIDToURL(id);
-                }                
+                }
             } else {
                 throw new IllegalArgumentException("Found an unsupported meaning type: " + m.getClass().getName());
             }
@@ -403,10 +402,9 @@ public class SemanticTextFactory {
         return ts;
     }
 
-
     /**
-     * @param nlToken must have startOffset and endOffset a
-     * throws RuntimeException
+     * @param nlToken must have startOffset and endOffset a throws
+     * RuntimeException
      */
     private static Word stWord(NLToken nlToken, int sentenceStartOffset) {
 

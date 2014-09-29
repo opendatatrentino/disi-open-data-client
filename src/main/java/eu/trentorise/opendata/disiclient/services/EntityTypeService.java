@@ -38,19 +38,20 @@ import eu.trentorise.opendata.semantics.services.model.ISearchResult;
  *
  */
 public class EntityTypeService implements IEntityTypeService {
-	Logger logger = LoggerFactory.getLogger(EntityService.class);
+
+    Logger logger = LoggerFactory.getLogger(EntityService.class);
 
     public static final double MAX_SCORE_FOR_NO_FIRST_LETTER_MATCH = 0.3;
     private static final Comparator SINGLE = new ValueComparator();
 
     public List<IEntityType> getAllEntityTypes() {
         KbClient kbClient = new KbClient(getClientProtocol());
-        
+
         //TODO decide what to do with knowledge base id which knowldege base id to take the first one? 
         List<KnowledgeBase> kbList = kbClient.readKnowledgeBases(null);
         logger.warn("The Knowledge base is set to default (the first KB from the returned list of KB).");
         long kbId = kbList.get(0).getId();
-        
+
         ComplexTypeClient ctc = new ComplexTypeClient(getClientProtocol());
         ComplexTypeFilter ctFilter = new ComplexTypeFilter();
         ctFilter.setIncludeRestrictions(true);
@@ -89,14 +90,14 @@ public class EntityTypeService implements IEntityTypeService {
         ctFilter.setIncludeRestrictions(true);
         ctFilter.setIncludeAttributes(true);
         ctFilter.setIncludeAttributesAsProperties(true);
-        
+
         logger.warn("The Knowledge base is set to default: '1'.");
 
         List<ComplexType> complexTypes = ctc.readComplexTypes(1L, conceptId, null, ctFilter);
-      
+
         ComplexType complexType = complexTypes.get(0);
-        if(complexTypes.size()>1){
-        logger.warn("There are "+complexTypes.size()+" Entity types for a given concept. The first one will be returned!.");
+        if (complexTypes.size() > 1) {
+            logger.warn("There are " + complexTypes.size() + " Entity types for a given concept. The first one will be returned!.");
         }
         EntityType eType = new EntityType(complexType);
         AttributeDefinitionClient attrDefs = new AttributeDefinitionClient(getClientProtocol());
@@ -174,7 +175,8 @@ public class EntityTypeService implements IEntityTypeService {
         String s;
         try {
             s = URL.substring(URL.indexOf("es/") + 3);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
             return null;
         }
@@ -182,7 +184,8 @@ public class EntityTypeService implements IEntityTypeService {
         Long typeID;
         try {
             typeID = Long.parseLong(s);
-        } catch (NumberFormatException e) {
+        }
+        catch (NumberFormatException e) {
             e.printStackTrace();
             return null;
         }
@@ -193,21 +196,22 @@ public class EntityTypeService implements IEntityTypeService {
         ComplexTypeClient ctc = new ComplexTypeClient(getClientProtocol());
         List<ISearchResult> etypesSortedSearch = new ArrayList();
         List<ComplexType> complexTypeList = ctc.readComplexTypes(1L, null, null, null);
-        HashMap<ComplexType, Double> ctypeMap= new HashMap<ComplexType, Double>();
+        HashMap<ComplexType, Double> ctypeMap = new HashMap<ComplexType, Double>();
 
         for (ComplexType cType : complexTypeList) {
 
-           // System.out.println(cType.getName().get("it"));
+            // System.out.println(cType.getName().get("it"));
             double score = scoreName(partialName, cType.getName().get("en"));
             double scoreIT = scoreName(partialName, cType.getName().get("it"));
-            if (score>=scoreIT){
-            ctypeMap.put(cType, score);
-            } else ctypeMap.put(cType, scoreIT);
+            if (score >= scoreIT) {
+                ctypeMap.put(cType, score);
+            } else {
+                ctypeMap.put(cType, scoreIT);
+            }
 
         }
 
         List<ComplexType> ctypeSortedEN = getKeysSortedByValue(ctypeMap);
-
 
         for (ComplexType cType : ctypeSortedEN) {
             System.out.println(cType.getName().get("it"));

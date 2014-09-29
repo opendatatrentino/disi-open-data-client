@@ -34,15 +34,17 @@ public class WebServiceURLs {
 
     public static final String ETYPE_PREFIX = "/types/";
 
-
     /**
-     * Parses an URL having a numeric ID after the provided prefix, i.e. http://entitypedia.org/concepts/14324
+     * Parses an URL having a numeric ID after the provided prefix, i.e.
+     * http://entitypedia.org/concepts/14324
+     *
      * @throws IllegalArgumentException on unparseable URL
-     */    
+     */
     private static long parseID(String prefix, String URL) {
         try {
             IntegrityChecker.checkURL(URL);
-        } catch (IntegrityException ex){
+        }
+        catch (IntegrityException ex) {
             throw new IllegalArgumentException(ex);
         }
         int pos = URL.indexOf(prefix) + prefix.length();
@@ -52,7 +54,8 @@ public class WebServiceURLs {
         String s = URL.substring(pos);
         try {
             return Long.parseLong(s);
-        } catch (NumberFormatException ex) {
+        }
+        catch (NumberFormatException ex) {
             throw new IllegalArgumentException("Invalid URL for object of type " + prefix + ": " + URL, ex);
         }
 
@@ -63,7 +66,7 @@ public class WebServiceURLs {
         String url = fullUrl + CONCEPT_PREFIX + ID;
         return url;
     }
-    
+
     /**
      * @throws IllegalArgumentException on unparseable URL
      */
@@ -77,16 +80,16 @@ public class WebServiceURLs {
         return url;
     }
 
-    public static String etypeIDToURL(long ID) {        
+    public static String etypeIDToURL(long ID) {
         String fullUrl = WebServiceURLs.getURL();
         String url = fullUrl + ETYPE_PREFIX + ID;
         return url;
     }
-    
+
     /**
      * @throws IllegalArgumentException on unparseable URL
      */
-    public static long urlToEtypeID(String URL) {        
+    public static long urlToEtypeID(String URL) {
         return parseID(ETYPE_PREFIX, URL);
     }
 
@@ -101,12 +104,12 @@ public class WebServiceURLs {
     public static String attrDefIDToURL(long id) {
         return WebServiceURLs.getURL() + ATTR_DEF_PREFIX + id;
     }
-    
+
     /**
-     * 
+     *
      * @throws IllegalArgumentException on unparseable URL
      */
-    public static long urlToAttrDefToID(String URL){
+    public static long urlToAttrDefToID(String URL) {
         return parseID(ATTR_DEF_PREFIX, URL);
     }
 
@@ -168,13 +171,16 @@ public class WebServiceURLs {
             port = Integer.parseInt(prop.getProperty("sweb.webapi.port"));
             root = prop.getProperty("sweb.webapi.root");
 
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
             throw new RuntimeException("Couldn't read properties file: " + PROPERTIES_FILE_NAME, ex);
-        } finally {
+        }
+        finally {
             if (input != null) {
                 try {
                     input.close();
-                } catch (IOException ex) {
+                }
+                catch (IOException ex) {
                     logger.error("Couldn't close input", ex);
                 }
             }

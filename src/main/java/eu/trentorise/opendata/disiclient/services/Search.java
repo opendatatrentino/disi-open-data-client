@@ -24,92 +24,86 @@ import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
 
+public class Search {
 
-public class Search   {
+    Logger logger = LoggerFactory.getLogger(Search.class);
 
-	Logger logger = LoggerFactory.getLogger(Search.class);
+    IProtocolClient api;
+    InstanceClient client;
 
-	IProtocolClient api;
-	InstanceClient client;
+    public Search(IProtocolClient api) {
+        this.api = api;
+        client = new InstanceClient(api);
+    }
 
-	public Search(IProtocolClient api) {
-		this.api = api;
-		client = new InstanceClient(api);
-	}
+    public String[][] searchEQL(String eqlQuery) {
+        throw new UnsupportedOperationException("todo to implement");
+    }
 
-	public String[][] searchEQL(String eqlQuery) {
-		throw new UnsupportedOperationException("todo to implement");
-	}
+    //	public List<List<IEntity>> search(IEntityType entityType,
+    //			int numCandidates, List<List<IAttribute>> attributes) {
+    //
+    //		InstanceClient client = new InstanceClient(api);
+    //		Query query = new Query();
+    //		AttributeQuery aQuery = new AttributeQuery();
+    //		aQuery.setConceptId(conceptId);
+    //		QueryNode queryNode = new QueryNode();
+    //		queryNode.setAttributeQueries(attributeQueries);
+    //		query.setQueryNode(queryNode);
+    //		InstanceSearchResult result = client.searchInstances(query, 1L, entityType.getGUID(), null, null, null);
+    //
+    //		return null;
+    //	}
+    public List<Name> nameSearch(String conceptSearchQuery) {
+        InstanceClient client = new InstanceClient(api);
+        SearchResultFilter srf = new SearchResultFilter();
+        srf.setLocale(Locale.ITALIAN);
+        InstanceSearchResult result = client.searchInstances(conceptSearchQuery, 1, null, null, srf, null);
+        List<Instance> resInstances = result.getResults();
+        List<Name> names = getNames(resInstances);
+        return names;
+    }
 
-	//	public List<List<IEntity>> search(IEntityType entityType,
-	//			int numCandidates, List<List<IAttribute>> attributes) {
-	//
-	//		InstanceClient client = new InstanceClient(api);
-	//		Query query = new Query();
-	//		AttributeQuery aQuery = new AttributeQuery();
-	//		aQuery.setConceptId(conceptId);
-	//		QueryNode queryNode = new QueryNode();
-	//		queryNode.setAttributeQueries(attributeQueries);
-	//		query.setQueryNode(queryNode);
-	//		InstanceSearchResult result = client.searchInstances(query, 1L, entityType.getGUID(), null, null, null);
-	//
-	//		return null;
-	//	}
+    private List<Name> getNames(List<Instance> instances) {
+        List<Name> names = new ArrayList<Name>();
+        EntityTypeService ets = new EntityTypeService();
 
-	public List<Name> nameSearch(String conceptSearchQuery) {
-		InstanceClient client = new InstanceClient(api);
-		SearchResultFilter srf = new SearchResultFilter();
-		srf.setLocale(Locale.ITALIAN);
-		InstanceSearchResult result = client.searchInstances(conceptSearchQuery, 1, null, null, srf, null);
-		List<Instance> resInstances = result.getResults();
-		List<Name> names = getNames(resInstances);
-		return names;
-	}
+        for (Instance instance : instances) {
+            EntityType etype = ets.getEntityType(instance.getTypeId());
+            if (etype.getName().getString(TraceProvUtils.languageTagToLocale("en")).equals("Name")) {
+                Name name = (Name) instance;
+                names.add(name);
+            }
+        }
 
+        return names;
+    }
 
-	private List<Name> getNames(List<Instance> instances) {
-		List<Name> names = new ArrayList<Name>();
-		EntityTypeService ets = new EntityTypeService();
+    private List<Entity> getEntities(List<Instance> instances) {
+        List<Entity> entities = new ArrayList<Entity>();
+        EntityTypeService ets = new EntityTypeService();
 
-		for(Instance instance: instances ){
-			EntityType etype =ets.getEntityType(instance.getTypeId());
-			if(etype.getName().getString(TraceProvUtils.languageTagToLocale("en")).equals("Name"))
-			{		
-				Name name =  (Name) instance;
-				names.add(name);
-			}
-		}
+        for (Instance instance : instances) {
+            if (instance instanceof Entity) {
+                Entity name = (Entity) instance;
+                entities.add(name);
+            }
+        }
 
-		return names;
-	}
-	
-	private List<Entity> getEntities(List<Instance> instances) {
-		List<Entity> entities = new ArrayList<Entity>();
-		EntityTypeService ets = new EntityTypeService();
+        return entities;
+    }
 
-		for(Instance instance: instances ){
-			if(instance instanceof Entity)
-			{		
-				Entity name =  (Entity) instance;
-				entities.add(name);
-			}
-		}
-
-		return entities;
-	}
-	
-
-	public List<IEntity> conceptSearch(String conceptSearchQuery) {
-		InstanceClient client = new InstanceClient(api);
-		SearchResultFilter srf = new SearchResultFilter();
-		srf.setLocale(Locale.ITALIAN);
-		//srf.setIncludeAttributesAsProperties(true);
-		srf.setIncludeAttributes(true);
-		InstanceSearchResult result = client.searchInstances(conceptSearchQuery, 1, null, null, srf, null);
-		List<Instance> resInstances = result.getResults();
-		List<IEntity> resEntities  = convertInstancesToEntities(resInstances);
-		return resEntities;
-	}
+    public List<IEntity> conceptSearch(String conceptSearchQuery) {
+        InstanceClient client = new InstanceClient(api);
+        SearchResultFilter srf = new SearchResultFilter();
+        srf.setLocale(Locale.ITALIAN);
+        //srf.setIncludeAttributesAsProperties(true);
+        srf.setIncludeAttributes(true);
+        InstanceSearchResult result = client.searchInstances(conceptSearchQuery, 1, null, null, srf, null);
+        List<Instance> resInstances = result.getResults();
+        List<IEntity> resEntities = convertInstancesToEntities(resInstances);
+        return resEntities;
+    }
 
 //	public void conceptEntitySearch(String searchQuery) {
 //		InstanceClient client = new InstanceClient(api);
@@ -125,53 +119,52 @@ public class Search   {
 //		//			List<IEntity> resEntities  = convertInstancesToEntities(resInstances);
 //
 //	}
+    /**
+     * Method converts list of SWEB instances to ODR entities
+     *
+     * @param instances list of instances from the server
+     * @return list of entities
+     */
+    private List<IEntity> convertInstancesToEntities(List<Instance> instances) {
+        List<IEntity> entities = new ArrayList<IEntity>();
+        EntityTypeService ets = new EntityTypeService();
+        for (Instance instance : instances) {
+            EntityType etype = ets.getEntityType(instance.getTypeId());
+            if (instance instanceof Entity) {
+                System.out.println(instance.getTypeId());
+                Entity entity = (Entity) instance;
+                EntityODR entityODR = new EntityODR(api, entity);
+                entities.add(entityODR);
+            } else {
+                Name name = (Name) instance;
+                System.out.println(name.getId());
+                name.getId();
+            }
+        }
+        return entities;
+    }
 
-	/** Method converts list of SWEB instances to ODR entities 
-	 * @param instances list of instances from the server
-	 * @return list of entities 
-	 */
-	private List<IEntity> convertInstancesToEntities( List<Instance> instances){
-		List<IEntity> entities = new ArrayList<IEntity>();
-		EntityTypeService ets = new EntityTypeService();
-		for(Instance instance: instances ){
-			EntityType etype =ets.getEntityType(instance.getTypeId());
-			if(instance instanceof Entity){
-				System.out.println(instance.getTypeId());
-				Entity entity =  (Entity) instance;
-				EntityODR entityODR = new EntityODR(api, entity);
-				entities.add(entityODR);}
-			else 
-			{Name name =  (Name) instance;
-			System.out.println(name.getId());
-			name.getId();
-			}
-		}
-		return entities;
-	}
+    public void getClientProtocol() {
+        this.api = WebServiceURLs.getClientProtocol();
+    }
 
-	public void getClientProtocol(){
-		this.api =  WebServiceURLs.getClientProtocol();
-	}
+    public List<ISearchResult> searchEntities(String partialName, String etypeURL) {
+        List<ISearchResult> entities = new ArrayList<ISearchResult>();
+        SearchResultFilter srf = new SearchResultFilter();
+        srf.setLocale(Locale.ITALIAN);
+        srf.setIncludeAttributesAsProperties(true);
+        Long etype = WebServiceURLs.urlToEtypeID(etypeURL);
 
+        InstanceSearchResult result = client.searchInstances(partialName, 1, etype, null, srf, null);
+        List<Instance> resInstances = result.getResults();
 
-	public List<ISearchResult> searchEntities(String partialName, String etypeURL) {
-		List<ISearchResult> entities = new ArrayList<ISearchResult>();
-		SearchResultFilter srf = new SearchResultFilter();
-		srf.setLocale(Locale.ITALIAN);
-		srf.setIncludeAttributesAsProperties(true);
-		Long etype = WebServiceURLs.urlToEtypeID(etypeURL);
-		
-		InstanceSearchResult result = client.searchInstances(partialName, 1, etype, null, srf, null);
-		List<Instance> resInstances = result.getResults();
-		
-		List<Entity> ents = getEntities(resInstances);
-		for (Entity e :ents){
-			SearchResult res = new SearchResult(e);
-			entities.add(res);
-		}
+        List<Entity> ents = getEntities(resInstances);
+        for (Entity e : ents) {
+            SearchResult res = new SearchResult(e);
+            entities.add(res);
+        }
 
-		return entities;
-	}
-
+        return entities;
+    }
 
 }

@@ -1,7 +1,4 @@
-
 // TODO REVIEW THIS COMMENTED STUFF!
-
-
 //
 //import static org.junit.Assert.*;
 //
@@ -462,21 +459,19 @@ public class TestNLPService {
         assertEquals(MeaningKind.ENTITY, word.getSelectedMeaning().getKind());
 
         String url = word.getSelectedMeaning().getURL();
-        
+
         assertNotNull(url);
-        
+
         EntityService es = new EntityService();
-        
-        
-        
+
         IEntity ent = es.readEntity(url);
         assertTrue(ent != null);
         assertEquals(word.getSelectedMeaning().getURL(), ent.getURL());
     }
 
     /**
-     * Note: Tested when "provincia of Trento" was recognized as a named entity but
-     * had no corresponding entity in the entity base
+     * Note: Tested when "provincia of Trento" was recognized as a named entity
+     * but had no corresponding entity in the entity base
      */
     @Test
     public void testLongNamedEntity_2() {

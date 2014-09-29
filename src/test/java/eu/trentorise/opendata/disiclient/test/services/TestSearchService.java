@@ -16,53 +16,47 @@ import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 
-
 public class TestSearchService {
 
-	private IProtocolClient api;
+    private IProtocolClient api;
 
-	@Before
-	public void getClientProtocol(){
-		this.api = WebServiceURLs.getClientProtocol();
-	}
+    @Before
+    public void getClientProtocol() {
+        this.api = WebServiceURLs.getClientProtocol();
+    }
 
-	@Test
-	public void conceptSearchTest(){
-		Search searchService = new Search(api);
-		List<IEntity>  entities = searchService.conceptSearch("PALAZZETTO DELLO SPORT");
-		for (IEntity entity : entities){
+    @Test
+    public void conceptSearchTest() {
+        Search searchService = new Search(api);
+        List<IEntity> entities = searchService.conceptSearch("PALAZZETTO DELLO SPORT");
+        for (IEntity entity : entities) {
 
-			//			System.out.println(entity.getGUID());
-			//			System.out.println("URL:"+entity.getURL());
+            //			System.out.println(entity.getGUID());
+            //			System.out.println("URL:"+entity.getURL());
+            assertNotNull(entity);
+            //assertEquals("Location",entity.getEtype().getName(Locale.ENGLISH));
+        }
+    }
 
-			assertNotNull(entity);
-			//assertEquals("Location",entity.getEtype().getName(Locale.ENGLISH));
-		}
-	}
+    @Test
+    public void nameSearchTest() {
+        Search searchService = new Search(api);
+        List<Name> names = searchService.nameSearch("PALAZZETTO DELLO SPORT");
 
-	@Test
-	public void nameSearchTest(){
-		Search searchService = new Search(api);
-		List<Name> names =  searchService.nameSearch("PALAZZETTO DELLO SPORT");
+        assertNotNull(names);
+    }
 
-		assertNotNull(names);
-	}
+    @Test
+    public void testsearchEntities() {
 
-	@Test 
-	public void testsearchEntities(){
+        Search searchService = new Search(api);
+        String etypeURL = WebServiceURLs.etypeIDToURL(18L);
+        List<ISearchResult> sResults = searchService.searchEntities("Povo", etypeURL);
+        for (ISearchResult sr : sResults) {
+            assertNotNull(sr.getURL());
+            assertNotNull(sr.getName());
 
-		Search searchService = new Search(api);
-		String etypeURL = WebServiceURLs.etypeIDToURL(18L);
-		List<ISearchResult> sResults = searchService.searchEntities("Povo", etypeURL);
-		for (ISearchResult sr :sResults){
-			assertNotNull(sr.getURL());
-			assertNotNull(sr.getName());
-
-		}
-	}
-
+        }
+    }
 
 }
-
-
-

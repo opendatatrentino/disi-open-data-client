@@ -122,7 +122,7 @@ public class SemanticTextFactoryTest {
 
         ISemanticText st = SemanticTextFactory.semanticText(nltext);
         IntegrityChecker.checkSemanticText(st);
-        
+
         assertEquals(st.getText(), text);
         assertEquals(st.getSentences().size(), 1);
         assertEquals(st.getSentences().get(0).getWords().size(), 1);
@@ -132,9 +132,8 @@ public class SemanticTextFactoryTest {
 
     }
 
-    
     /**
-     * one token in sentence with null id for concept 
+     * one token in sentence with null id for concept
      */
     @Test
     public void testNLTextToSemanticTextNoMeaning() {
@@ -149,14 +148,14 @@ public class SemanticTextFactoryTest {
         String dearWord = "dear";
 
         Set<NLMeaning> meanings = new HashSet<NLMeaning>();
-        
+
         NLSenseMeaning sm1 = new NLSenseMeaning("testLemma1", null, "NOUN", null, 4, 1, "test description");
         // score must be set manually here, although on server will be computed from senseRank and senseFrequency
         sm1.setScore(1);
         sm1.setProbability((float) (1.0 / 6.0));
         meanings.add(sm1);
-        
-        NLToken firstToken = new NLToken(dearWord, meanings);        
+
+        NLToken firstToken = new NLToken(dearWord, meanings);
         firstToken.setProp(NLTextUnit.PFX, "sentenceStartOffset", 6);
         firstToken.setProp(NLTextUnit.PFX, "sentenceEndOffset", 10);
 
@@ -165,19 +164,18 @@ public class SemanticTextFactoryTest {
 
         ISemanticText st = SemanticTextFactory.semanticText(nltext);
         IntegrityChecker.checkSemanticText(st);
-        
+
         assertEquals(st.getText(), text);
         assertEquals(st.getSentences().size(), 1);
         assertEquals(st.getSentences().get(0).getWords().size(), 1);
         IWord word = st.getSentences().get(0).getWords().get(0);
-        assertEquals(1, word.getMeanings().size());        
+        assertEquals(1, word.getMeanings().size());
         assertNull(word.getSelectedMeaning());
         IMeaning m = word.getMeanings().get(0);
         assertNull(m.getURL());
         assertEquals(m.getKind(), MeaningKind.CONCEPT);
     }
-    
-    
+
     /**
      * tests two overlapping tokens
      */
@@ -213,7 +211,7 @@ public class SemanticTextFactoryTest {
 
         sentence.addToken(firstToken);
 
-        NLToken secondToken = new NLToken(text_2,  meanings);
+        NLToken secondToken = new NLToken(text_2, meanings);
         firstToken.setProp(NLTextUnit.PFX, "sentenceStartOffset", 1);
         firstToken.setProp(NLTextUnit.PFX, "sentenceEndOffset", 3);
         sentence.addToken(secondToken);
@@ -222,7 +220,7 @@ public class SemanticTextFactoryTest {
 
         ISemanticText st = SemanticTextFactory.semanticText(nltext);
         checkSemanticText(st);
-        
+
         assertEquals(st.getText(), text);
         assertEquals(st.getSentences().size(), 1);
         assertEquals(st.getSentences().get(0).getWords().size(), 1);
@@ -246,8 +244,8 @@ public class SemanticTextFactoryTest {
 
         // mw 1 = "abc"
         // mw 2 = "bcd"
-        String text_1 = "ab"; 
-        String text_2 = "bc"; 
+        String text_1 = "ab";
+        String text_2 = "bc";
         String text_3 = "cd";
 
         Set<NLMeaning> meanings = new HashSet<NLMeaning>();
@@ -273,45 +271,45 @@ public class SemanticTextFactoryTest {
         firstToken.setProp(NLTextUnit.PFX, "sentenceStartOffset", 1);
         firstToken.setProp(NLTextUnit.PFX, "sentenceEndOffset", 3);
         sentence.addToken(secondToken);
-        
+
         List<NLToken> toksMw_1 = new ArrayList();
         toksMw_1.add(firstToken);
         toksMw_1.add(secondToken);
-        
+
         List<String> toksMwString_1 = new ArrayList();
         toksMwString_1.add(text_1);
         toksMwString_1.add(text_2);
-                
+
         sentence.addMultiWord(new NLMultiWord("abc", toksMw_1, toksMwString_1));
-        
+
         NLToken thirdToken = new NLToken(text_3, meanings);
         firstToken.setProp(NLTextUnit.PFX, "sentenceStartOffset", 2);
         firstToken.setProp(NLTextUnit.PFX, "sentenceEndOffset", 4);
-        
+
         List<NLToken> toksMw_2 = new ArrayList();
         toksMw_1.add(secondToken);
         toksMw_1.add(thirdToken);
-        
+
         List<String> toksMwString_2 = new ArrayList();
         toksMwString_1.add(text_2);
         toksMwString_1.add(text_3);
-                
+
         sentence.addMultiWord(new NLMultiWord("bcd", toksMw_2, toksMwString_2));
         // todo use NLNamedEntity, discuss with Gabor, Simon why NLNamedEntity 
         // constructor is different than ones for NLMultiWord
-        
+
         sentence.addToken(thirdToken);
-        
+
         nltext.addSentence(sentence);
 
         ISemanticText st = SemanticTextFactory.semanticText(nltext);
         checkSemanticText(st);
-        
+
         assertEquals(st.getText(), text);
         assertEquals(st.getSentences().size(), 1);
         assertEquals(st.getSentences().get(0).getWords().size(), 1);
         IWord word = st.getSentences().get(0).getWords().get(0);
-        
+
         assertEquals(word.getMeanings().size(), 2);
         assertEquals(WebServiceURLs.conceptIDToURL(TEST_CONCEPT_2_ID), word.getSelectedMeaning().getURL());
     }
@@ -470,7 +468,7 @@ public class SemanticTextFactoryTest {
         assertEquals(w.getStartOffset(), 6);
         assertEquals(w.getEndOffset(), 10);
         assertEquals(w.getMeanings().size(), 2);
-       // assertNotEquals(w.getSelectedMeaning(), null);
+        // assertNotEquals(w.getSelectedMeaning(), null);
 
     }
 

@@ -16,105 +16,101 @@ import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.services.model.AssignmentResult;
 import eu.trentorise.opendata.semantics.services.model.IIDResult;
 
-public class IDRes  extends IDResult implements IIDResult {
+public class IDRes extends IDResult implements IIDResult {
 
-	IProtocolClient api;
-	IEntity entity;
-	AssignmentResult asResult;
-        
-        private Logger logger = LoggerFactory.getLogger(this.getClass());
+    IProtocolClient api;
+    IEntity entity;
+    AssignmentResult asResult;
 
-	public IDRes(IDResult result ){
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-		super.setResult(result.getResult());
-		super.setEntitiesWithSameSwebID(result.getEntitiesWithSameSwebID());
-		super.setSwebID(result.getSwebID());
+    public IDRes(IDResult result) {
 
+        super.setResult(result.getResult());
+        super.setEntitiesWithSameSwebID(result.getEntitiesWithSameSwebID());
+        super.setSwebID(result.getSwebID());
 
+    }
 
-	}
+    public IEntity getResultEntity() {
+        if (this.api == null) {
+            this.api = WebServiceURLs.getClientProtocol();
+        }
 
-	public IEntity getResultEntity() {
-		if (this.api==null){
-			this.api = WebServiceURLs.getClientProtocol();
-		}
+        if (getAssignmentResult() == AssignmentResult.REUSE) {
+            if (this.entity == null) {
+                EntityService es = new EntityService(this.api);
+                IEntity en = es.readEntityByGUID(getGUID());
 
-		if(getAssignmentResult()==AssignmentResult.REUSE)
-		{
-			if(this.entity==null){
-			EntityService es = new EntityService(this.api);
-			IEntity en = es.readEntityByGUID(getGUID());
-			
-			this.entity=en;
-			
-			return en;}
-			else return this.entity;
-		}
+                this.entity = en;
 
-		if(getAssignmentResult()==AssignmentResult.NEW)
-		{
+                return en;
+            } else {
+                return this.entity;
+            }
+        }
+
+        if (getAssignmentResult() == AssignmentResult.NEW) {
 			//	EntityService es = new EntityService(this.api);
 
+            //IEntity ent = 	entityForNewResults();
+            //this.entity = ent;
+            return this.entity;
+        } else {
 
-			//IEntity ent = 	entityForNewResults();
-			//this.entity = ent;
-			return this.entity;
-		}else{
+            EntityODR e = new EntityODR();
+            return e;
+        }
+    }
 
-			EntityODR e = new EntityODR();
-			return e;
-		}
-	}
+    public Set<IEntity> getEntities() {
+        if (this.api == null) {
+            this.api = WebServiceURLs.getClientProtocol();
+        }
 
-	public Set<IEntity> getEntities() { 
-		if (this.api==null){
-			this.api=WebServiceURLs.getClientProtocol();
-		}
+        Set<IEntity> entities = new HashSet<IEntity>();
+        if (getAssignmentResult() == AssignmentResult.REUSE) {
+            entities.add(getResultEntity());
 
-		Set<IEntity> entities = new HashSet<IEntity>();
-		if(getAssignmentResult()==AssignmentResult.REUSE){
-			entities.add(getResultEntity());
+        }
+        //		if (super.getEntitiesWithSameSwebID()==null)
+        //		{entities.add(getResultEntity());
+        //		return entities; }
+        //		Set<Entity> ients =super.getEntitiesWithSameSwebID();
+        //		for (Entity en:ients){
+        //			EntityODR e = new EntityODR( this.api, en);
+        //			entities.add(e);
+        //		}
+        return entities;
+    }
 
-		}
-		//		if (super.getEntitiesWithSameSwebID()==null)
-		//		{entities.add(getResultEntity());
-		//		return entities; }
-		//		Set<Entity> ients =super.getEntitiesWithSameSwebID();
-		//		for (Entity en:ients){
-		//			EntityODR e = new EntityODR( this.api, en);
-		//			entities.add(e);
-		//		}
-		return entities;
-	}
+    public AssignmentResult getAssignmentResult() {
+        switch (super.getResult()) {
+            case ID_NEW:
+                return AssignmentResult.NEW;
+            case ID_REUSE:
+                return AssignmentResult.REUSE;
+            case ID_KEEP:
+                return AssignmentResult.REUSE;
+            default:
+                return AssignmentResult.INVALID;
+        }
+    }
 
-	public AssignmentResult getAssignmentResult() {
-		switch (super.getResult()) {
-		case ID_NEW:
-			return AssignmentResult.NEW;
-		case ID_REUSE:
-			return AssignmentResult.REUSE;
-		case ID_KEEP:
-			return AssignmentResult.REUSE;
-		default:
-			return AssignmentResult.INVALID;
-		}
-	}
+    public Long getGUID() {
+        return super.getSwebID();
+    }
 
-	public Long getGUID() {
-		return super.getSwebID();
-	}
+    public void setEntity(IEntity entity) {
 
-	public void setEntity(IEntity entity){
+        this.entity = entity;
+    }
 
-		this.entity= entity;
-	}
-
-	public String getURL() {
-		String fullUrl = WebServiceURLs.getURL();
-		String url  = fullUrl+"/instances/new/"+super.getSwebID();
-		return url;	}
-
-
+    public String getURL() {
+        String fullUrl = WebServiceURLs.getURL();
+        String url = fullUrl + "/instances/new/" + super.getSwebID();
+        return url;
+    }
 
 //	private IEntity entityForNewResults(){
 //		EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
@@ -170,4 +166,3 @@ public class IDRes  extends IDResult implements IIDResult {
 //		return finalX;
 //	}
 }
-
