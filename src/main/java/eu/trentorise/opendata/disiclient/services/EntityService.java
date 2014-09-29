@@ -69,19 +69,19 @@ public class EntityService implements IEntityService {
 	}
 
 	public Long createEntity(IEntity entity) {
-                
-                EntityODR ent;
-                if (entity instanceof EntityODR){
-                    ent = (EntityODR) entity;
-                } else {
-                    ent = EntityODR.disify(entity, true);   
-                }
-		 
+
+		EntityODR ent;
+		if (entity instanceof EntityODR){
+			ent = (EntityODR) entity;
+		} else {
+			ent = EntityODR.disify(entity, true);
+		}
+
 		Entity e = ent.convertToEntity();
 		InstanceClient instanceCl = new InstanceClient(this.api);
 		logger.info(e.toString());
 		EntityTypeService es = new EntityTypeService();
-		EntityType etype= es.getEntityType(e.getTypeId());
+		EntityType etype=es.getEntityType(e.getTypeId());
 
 		List<IAttributeDef> attrDefs=etype.getAttributeDefs();
 		Long attrDefClassAtrID = null;
@@ -104,7 +104,8 @@ public class EntityService implements IEntityService {
 		}
 
 		if (!isExistAttrClass){
-			Attribute a =createClassAttribute(attrDefClassAtrID, etype.getConceptID());
+			Attribute a = 
+			createClassAttribute(attrDefClassAtrID, etype.getConceptID());
 			e.getAttributes().add(a);
 			logger.warn("Default class attribute is assigned");
 		}
@@ -188,9 +189,9 @@ public class EntityService implements IEntityService {
 		List<Long> entityIDs = new ArrayList<Long>();
 
 		for (String entityURL : entityURLs) {                    
-                    entityIDs.add(WebServiceURLs.urlToEntityID(entityURL));
-                }		
-        
+			entityIDs.add(WebServiceURLs.urlToEntityID(entityURL));
+		}		
+
 		InstanceClient instanceCl = new InstanceClient(this.api);
 
 		InstanceFilter instFilter = new InstanceFilter();
@@ -292,13 +293,13 @@ public class EntityService implements IEntityService {
 
 	}
 
-        /**
-         * @param value Note: can be a Collection
-         */
+	/**
+	 * @param value Note: can be a Collection
+	 */
 	public AttributeODR createAttribute(IAttributeDef attrDef, Object value) {                                    
 		AttributeDef ad = (AttributeDef) attrDef;
-                                
-                
+
+
 		if (ad.getName(Locale.ENGLISH).equals("Name")) {
 			return createNameAttributeODR(attrDef,  value);
 
@@ -307,43 +308,43 @@ public class EntityService implements IEntityService {
 				return createDescriptionAttributeODR(attrDef,  value);
 
 			} else if (attrDef.getDataType().equals(DataTypes.STRUCTURE)) {
-                                if (value instanceof Collection){ // notice in Java a Map is *NOT* an instance of Collection
-                                    return createStructureAttribute(attrDef, (Collection) value);
-                                } else {
-                                    List<HashMap<IAttributeDef, Object>> hashMaps = new ArrayList();
-                                    hashMaps.add((HashMap<IAttributeDef, Object>) value);
-                                    return createStructureAttribute(attrDef, hashMaps);
-                                }
-				
+				if (value instanceof Collection){ // notice in Java a Map is *NOT* an instance of Collection
+					return createStructureAttribute(attrDef, (Collection) value);
+				} else {
+					List<HashMap<IAttributeDef, Object>> hashMaps = new ArrayList();
+					hashMaps.add((HashMap<IAttributeDef, Object>) value);
+					return createStructureAttribute(attrDef, hashMaps);
+				}
+
 			} 
 		//			else if (ad.getName(Locale.ENGLISH).equals("Part copyOf")){
 		//				return createRelationalAttribute(attrDef,  value);
 		//			}
 
 			else {
-                            if (value instanceof Collection){
-                                List<ValueODR> valsODR = new ArrayList<ValueODR>();
-                                for (Object obj : (Collection) value) {
-                                        ValueODR valODR = new ValueODR();
-                                        valODR.setValue(obj);
-                                        valsODR.add(valODR);
-                                }
-                                return new AttributeODR(attrDef, valsODR);   
-                            } else {
-				ValueODR val = new ValueODR();
-				val.setValue(value);
-				return new AttributeODR(attrDef, val);
-                            }                            
-                
+				if (value instanceof Collection){
+					List<ValueODR> valsODR = new ArrayList<ValueODR>();
+					for (Object obj : (Collection) value) {
+						ValueODR valODR = new ValueODR();
+						valODR.setValue(obj);
+						valsODR.add(valODR);
+					}
+					return new AttributeODR(attrDef, valsODR);   
+				} else {
+					ValueODR val = new ValueODR();
+					val.setValue(value);
+					return new AttributeODR(attrDef, val);
+				}                            
+
 			}
 	}
 
-        /**
-         * @param descr either a String or a SemanticText instance
-         * @return the description as SemanticText
-         * @throws IllegalArgumentException if descr is not of the proper type
-         */
-        private SemanticText descrToSemText(Object descr){
+	/**
+	 * @param descr either a String or a SemanticText instance
+	 * @return the description as SemanticText
+	 * @throws IllegalArgumentException if descr is not of the proper type
+	 */
+	private SemanticText descrToSemText(Object descr){
 		if(descr instanceof String){
 			/* david there should be only SemanticText 
                         descr= new SemanticString();
@@ -360,31 +361,31 @@ public class EntityService implements IEntityService {
 		} else {
 			throw new IllegalArgumentException("Wrong value for the attribute is given! Accepted values are String and SemanticText."); 
 		}                        
-        }
-        
-        /**
-         * 
-         * @param descr either a String, a SemanticText, or a Collection of String or SemanticText
-         * @throws IllegalArgumentException if descr is not of the proper type
-         */
+	}
+
+	/**
+	 * 
+	 * @param descr either a String, a SemanticText, or a Collection of String or SemanticText
+	 * @throws IllegalArgumentException if descr is not of the proper type
+	 */
 	private AttributeODR createDescriptionAttributeODR(IAttributeDef attrDef,
 			Object descr) {                
-                if (descr instanceof Collection){
-                    List<ValueODR> valsODR = new ArrayList<ValueODR>();
-                    for (Object obj : (Collection) descr) {
-                            ValueODR valODR = new ValueODR();
-                            valODR.setValue(descrToSemText(obj));
-                            valsODR.add(valODR);
-                    }
-                    return new AttributeODR(attrDef, valsODR);   
-                } else {
-                    ValueODR val = new ValueODR();
-                    val.setValue(descrToSemText(descr));
-                    return new AttributeODR(attrDef, val);
-                }                 
-        }
+		if (descr instanceof Collection){
+			List<ValueODR> valsODR = new ArrayList<ValueODR>();
+			for (Object obj : (Collection) descr) {
+				ValueODR valODR = new ValueODR();
+				valODR.setValue(descrToSemText(obj));
+				valsODR.add(valODR);
+			}
+			return new AttributeODR(attrDef, valsODR);   
+		} else {
+			ValueODR val = new ValueODR();
+			val.setValue(descrToSemText(descr));
+			return new AttributeODR(attrDef, val);
+		}                 
+	}
 
-        private it.unitn.disi.sweb.webapi.model.eb.Structure createStructure(IAttributeDef attrDef,
+	private it.unitn.disi.sweb.webapi.model.eb.Structure createStructure(IAttributeDef attrDef,
 			HashMap<IAttributeDef, Object> atributes) {
 		List<Attribute> attrs = new ArrayList<Attribute>();
 		it.unitn.disi.sweb.webapi.model.eb.Structure attributeStructure = new it.unitn.disi.sweb.webapi.model.eb.Structure();
@@ -402,20 +403,20 @@ public class EntityService implements IEntityService {
 			it.remove();
 		}
 		attributeStructure.setAttributes(attrs);
-                return attributeStructure;
-        }
-        
+		return attributeStructure;
+	}
+
 	private AttributeODR createStructureAttribute(IAttributeDef attrDef,
 			Collection<HashMap<IAttributeDef, Object>> structs) {
 
 		Attribute nAtr = new Attribute();
 		nAtr.setDefinitionId(attrDef.getGUID());
 		List<Value> values = new ArrayList<Value>();            
-                
-                for (HashMap<IAttributeDef, Object> structMap : structs){
-                    values.add(new Value(createStructure(attrDef, structMap)));
-                }
-		
+
+		for (HashMap<IAttributeDef, Object> structMap : structs){
+			values.add(new Value(createStructure(attrDef, structMap)));
+		}
+
 		nAtr.setValues(values);
 
 		AttributeODR a = new AttributeODR(api, nAtr);
@@ -423,7 +424,7 @@ public class EntityService implements IEntityService {
 		return a;
 	}
 
-	private HashMap<String, Long> getVocabularies(){
+	public HashMap<String, Long> getVocabularies(){
 		HashMap<String, Long> mapVocabs = new HashMap<String, Long> ();
 		VocabularyClient vc = new VocabularyClient(api);
 		List<Vocabulary> vocabs =vc.readVocabularies(1L, null, null);
@@ -450,20 +451,19 @@ public class EntityService implements IEntityService {
 
 	}
 
-        /**
-         * 
-         * @param name a String or an IDict
-         * @return a Value representing the name
-         * @throws IllegalArgumentException if name is not of the proper class
-         */
-        private List<Value> nameToValue(Object name){
-            List<Value> nameValues = new ArrayList();
+	/**
+	 * 
+	 * @param name a String or an IDict
+	 * @return a Value representing the name
+	 * @throws IllegalArgumentException if name is not of the proper class
+	 */
+	private List<Value> nameToValue(Object name){
+		List<Value> nameValues = new ArrayList();
 		if (name instanceof String)
 		{
 			String nameInput = (String) name; 
-			logger.warn("No Locale is provided for name"+name+"The vocabulary is set to '1'");
 			nameValues.add(new Value(nameInput, 1L)); 
-                        return nameValues;
+			return nameValues;
 		} else if (name instanceof IDict){
 			Dict nameDict=(Dict) name;
 			HashMap<String,Long> vocabs = getVocabularies();
@@ -471,20 +471,20 @@ public class EntityService implements IEntityService {
 			for (Locale l:locs){
 				nameValues.add(new Value(nameDict.getString(l), vocabs.get( TraceProvUtils.localeToLanguageTag(l))));//dav so Java 6 doesn't bother us l.toLanguageTag())));
 			}                     
-                        return nameValues;
-                } else {
-                        throw new IllegalArgumentException("Wrong Name object is given. "
+			return nameValues;
+		} else {
+			throw new IllegalArgumentException("Wrong Name object is given. "
 					+ "Name object should be an instance of String or IDict classes. Found instead instance of class " + name.getClass().getSimpleName());
-                        }
-            
-            
-        }
-        
-        /**
-         * 
-         * @param attrDef
-         * @param name can be a String, an IDict or a Collection of String or IDict.
-         */
+		}
+
+
+	}
+
+	/**
+	 * 
+	 * @param attrDef
+	 * @param name can be a String, an IDict or a Collection of String or IDict.
+	 */
 	public AttributeODR createNameAttributeODR(IAttributeDef attrDef, Object name) {
 
 		Attribute entityNameAttribute = new Attribute();
@@ -494,10 +494,10 @@ public class EntityService implements IEntityService {
 		nameStructure.setEntityBaseId(1L); 
 		logger.warn("TODO HARDCODED ENTITY BASE ID TO 1.");
 		long etypeID;
-//		if(attrDef.getRangeEtypeURL()==null){
-//			etypeID=10L;
-//		}else 
-		 etypeID = WebServiceURLs.urlToEtypeID(attrDef.getRangeEtypeURL());
+		//		if(attrDef.getRangeEtypeURL()==null){
+		//			etypeID=10L;
+		//		}else 
+		etypeID = WebServiceURLs.urlToEtypeID(attrDef.getRangeEtypeURL());
 		nameStructure.setTypeId(etypeID);
 
 		EntityTypeService ets = new EntityTypeService();
@@ -520,14 +520,14 @@ public class EntityService implements IEntityService {
 
 		List<Value> nameValues = new ArrayList<Value>();
 		//Vocabularies 
-                
-                if (name instanceof Collection){
-                    for (Object n : (Collection) name){
-                        nameValues.addAll(nameToValue(n));                        
-                    }
-                } else {
-                     nameValues.addAll(nameToValue(name));
-                } 
+
+		if (name instanceof Collection){
+			for (Object n : (Collection) name){
+				nameValues.addAll(nameToValue(n));                        
+			}
+		} else {
+			nameValues.addAll(nameToValue(name));
+		} 
 
 		nameAttribute.setValues(nameValues);
 		nameAttributes.add(nameAttribute);
@@ -549,15 +549,15 @@ public class EntityService implements IEntityService {
 
 	}
 
-        
-        
+
+
 	public void updateEntity(IEntity entity) {
-                EntityODR ent;
-                if (entity instanceof EntityODR){
-                    ent = (EntityODR) entity;
-                } else {
-                    ent = EntityODR.disify(entity, true);   
-                }		
+		EntityODR ent;
+		if (entity instanceof EntityODR){
+			ent = (EntityODR) entity;
+		} else {
+			ent = EntityODR.disify(entity, true);   
+		}		
 		Entity e = ent.convertToEntity();
 		InstanceClient instanceCl = new InstanceClient(this.api);
 		try {
@@ -571,7 +571,7 @@ public class EntityService implements IEntityService {
 
 		Long typeID;
 		try {			
-                        typeID = WebServiceURLs.urlToEntityID(URL);
+			typeID = WebServiceURLs.urlToEntityID(URL);
 		} catch (Exception e) {
 			return null;
 		}
@@ -581,7 +581,7 @@ public class EntityService implements IEntityService {
 
 	public String createEntityURL(IEntity entity) {
 		Long id = createEntity(entity);				
-                return WebServiceURLs.entityIDToURL(id);
+		return WebServiceURLs.entityIDToURL(id);
 	}
 
 	public void exportToRdf(List<String> entityURLs, Writer writer) {
@@ -597,11 +597,11 @@ public class EntityService implements IEntityService {
 		List<Long> entitiesID = new ArrayList<Long>();
 
 		for (String entityURL : entityURLs) {
-			
+
 			Long eID = WebServiceURLs.urlToEntityID(entityURL);
 			entitiesID.add(eID);
 		}
-		
+
 		Long fileId = null;
 		try {
 			fileId = ees.methodPost(entitiesID, filename);
@@ -610,7 +610,7 @@ public class EntityService implements IEntityService {
 		} catch (IOException e) {
 			throw new DisiClientException("Error while getting fileId", e);
 		}
-		
+
 		InputStream is = null;
 		try {
 			is = ees.methodGet(fileId, "sem" + filename);
@@ -619,19 +619,19 @@ public class EntityService implements IEntityService {
 		} catch (IOException e) {
 			throw new DisiClientException("Error while getting input stream", e);
 		}
-		
+
 		BufferedWriter bw = new BufferedWriter(writer);
-	    int letter;  
-	    try {
+		int letter;  
+		try {
 			while ((letter = is.read()) != -1) {  
-			  bw.write((char) letter);  
-			  bw.flush();  
+				bw.write((char) letter);  
+				bw.flush();  
 			}
 		} catch (IOException e) {
-		
+
 			e.printStackTrace();
 		}  
-		
+
 	}
 
 	public void exportToJsonLd(List<String> entityURLs, Writer writer) throws DisiClientException  {
@@ -641,7 +641,7 @@ public class EntityService implements IEntityService {
 			throw new IllegalArgumentException("The list of entities to export is empty");
 		}
 
-                String filename = "test" + System.currentTimeMillis();
+		String filename = "test" + System.currentTimeMillis();
 		EntityExportService ees = new EntityExportService();
 		List<Long> entitiesID = new ArrayList<Long>();
 
@@ -697,8 +697,8 @@ public class EntityService implements IEntityService {
 
 		Search search = new Search(api);
 		entities = search.searchEntities(partialName, etypeURL);
-		
-		
+
+
 		return entities;
 	}
 

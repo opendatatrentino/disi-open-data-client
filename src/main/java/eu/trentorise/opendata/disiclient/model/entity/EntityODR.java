@@ -541,17 +541,28 @@ public class EntityODR extends StructureODR implements IEntity {
 				if ((at.getConceptId() != null)&&(at.getConceptId() == KnowledgeService.DESCRIPTION_CONCEPT_ID)) {
 					List<Value> vals = at.getValues();
 					List<Value> fixedVals = new ArrayList<Value>();
-
+//
 					for (Value val : vals) {
 						if (val.getValue() instanceof String) {
 							fixedVals.add(val);
+							logger.warn("No vocabulary is provided. Vocabulary is set to default - '1");
+							val.setVocabularyId(1L);
 						} else {
-							SemanticString sstring = convertSemTextToSemString((SemanticText) val.getValue());
+							EntityService es = new EntityService();
+							HashMap<String, Long> vocabularyMap =  es.getVocabularies();
+									
+							SemanticText st = (SemanticText) val.getValue();
+							SemanticString sstring = convertSemTextToSemString(st);
+							Locale l = st.getLocale();
+							Long vocabularyID = vocabularyMap.get(l.toLanguageTag());
+							
 							Value fixedVal = new Value();
 							fixedVal.setSemanticValue(sstring);
 							fixedVal.setValue(sstring.getText());
 							fixedVal.setId(val.getId());
 							fixedVals.add(fixedVal);
+							
+							fixedVal.setVocabularyId(vocabularyID);
 						}
 					}
 					atFixed.setValues(fixedVals);
