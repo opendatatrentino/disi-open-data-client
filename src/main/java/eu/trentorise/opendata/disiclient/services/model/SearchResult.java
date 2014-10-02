@@ -1,20 +1,17 @@
 package eu.trentorise.opendata.disiclient.services.model;
 
+import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
+import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
+import eu.trentorise.opendata.semantics.model.knowledge.IDict;
+import eu.trentorise.opendata.semantics.model.knowledge.impl.Dict;
+import eu.trentorise.opendata.semantics.services.model.ISearchResult;
+import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
-import eu.trentorise.opendata.disiclient.services.NLPService;
-import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
-import eu.trentorise.opendata.semantics.model.entity.IEntity;
-import eu.trentorise.opendata.semantics.model.knowledge.IDict;
-import eu.trentorise.opendata.semantics.model.knowledge.impl.Dict;
-import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 
 /**
  * Todo this currently makes sense only for etypes. According to openentity API 0.21.0
@@ -50,7 +47,7 @@ public class SearchResult implements ISearchResult {
 		Iterator<?> it = names.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry pairs = (Map.Entry) it.next();
-			Locale l = NLPService.languageTagToLocale((String) pairs.getKey());
+			Locale l = TraceProvUtils.languageTagToLocale((String) pairs.getKey());
 			for (String s: (List<String>)pairs.getValue()){
 				dict = dict.putTranslation(l, s);
 			}
@@ -76,7 +73,7 @@ public class SearchResult implements ISearchResult {
 			Iterator<?> it = this.name.entrySet().iterator();
 			while (it.hasNext()) {
 				Map.Entry pairs = (Map.Entry) it.next();
-				Locale l = NLPService.languageTagToLocale((String) pairs.getKey());
+				Locale l = TraceProvUtils.languageTagToLocale((String) pairs.getKey());
 				dict = dict.putTranslation(l, (String) pairs.getValue());
 			}
 			return dict;}
