@@ -6,10 +6,8 @@ import it.unitn.disi.sweb.webapi.client.nlp.PipelineClient;
 import it.unitn.disi.sweb.webapi.model.NLPInput;
 import it.unitn.disi.sweb.webapi.model.PipelineDescription;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
 import eu.trentorise.opendata.semantics.model.knowledge.IResourceContext;
@@ -18,36 +16,11 @@ import eu.trentorise.opendata.semantics.model.knowledge.ITableResource;
 import eu.trentorise.opendata.semantics.services.INLPService;
 
 /**
- * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
- * @date 6 May 2014
+ * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>ì
  *
  */
 public class NLPService implements INLPService {
 
-    /**
-     * Java 7 has Locale.toLanguageTag(format), but we target Java 6 so we use
-     * this substitute
-     */
-    static public String localeToLanguageTag(Locale locale) {
-        return MessageFormat.format("{0}-{1}",
-                locale.getLanguage(),
-                locale.getCountry());
-    }
-
-    /**
-     * Java 7 has Locale.forLanguageTag(format), but we target Java 6 so we use
-     * this substitute
-     */
-    static public Locale languageTagToLocale(String languageTag) {
-
-        int c = languageTag.indexOf('_');
-        if (c > 0) {
-            return new Locale(languageTag.substring(0, c), languageTag.substring(c + 1));
-        } else {
-            return new Locale(languageTag);
-        }
-
-    }
 
     public List<ISemanticText> disambiguateColumns(ITableResource table,
             IResourceContext context) {

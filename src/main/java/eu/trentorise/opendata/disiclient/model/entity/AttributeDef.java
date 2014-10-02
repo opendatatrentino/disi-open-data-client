@@ -20,6 +20,7 @@ import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
 import eu.trentorise.opendata.semantics.model.knowledge.IDict;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.Dict;
 import eu.trentorise.opendata.semantics.services.model.DataTypes;
+import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
@@ -257,7 +258,7 @@ public class AttributeDef implements IAttributeDef {
         Iterator<?> it = this.name.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pairs = (Map.Entry) it.next();
-            Locale l = NLPService.languageTagToLocale((String) pairs.getKey());
+            Locale l = TraceProvUtils.languageTagToLocale((String) pairs.getKey());            
             dict = dict.putTranslation(l, (String) pairs.getValue());
 
         }
@@ -269,7 +270,7 @@ public class AttributeDef implements IAttributeDef {
         Iterator<?> it = this.description.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pairs = (Map.Entry) it.next();
-            Locale l = NLPService.languageTagToLocale((String) pairs.getKey());
+            Locale l = TraceProvUtils.languageTagToLocale((String) pairs.getKey());
             dict = dict.putTranslation(l, (String) pairs.getValue());
         }
         return dict;

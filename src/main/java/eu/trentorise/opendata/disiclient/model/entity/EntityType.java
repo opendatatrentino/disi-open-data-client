@@ -1,20 +1,7 @@
 package eu.trentorise.opendata.disiclient.model.entity;
 
-import static eu.trentorise.opendata.disiclient.services.NLPService.localeToLanguageTag;
-import it.unitn.disi.sweb.webapi.client.kb.AttributeDefinitionClient;
-import it.unitn.disi.sweb.webapi.client.kb.ComplexTypeClient;
-import it.unitn.disi.sweb.webapi.model.kb.types.AttributeDefinition;
-import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
-import eu.trentorise.opendata.disiclient.services.NLPService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
@@ -22,6 +9,16 @@ import eu.trentorise.opendata.semantics.model.entity.IUniqueIndex;
 import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
 import eu.trentorise.opendata.semantics.model.knowledge.IDict;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.Dict;
+import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
+import it.unitn.disi.sweb.webapi.client.kb.AttributeDefinitionClient;
+import it.unitn.disi.sweb.webapi.client.kb.ComplexTypeClient;
+import it.unitn.disi.sweb.webapi.model.kb.types.AttributeDefinition;
+import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
@@ -55,7 +52,7 @@ public class EntityType implements IEntityType {
     }
 
     public String getName(Locale locale) {
-        return name.get(localeToLanguageTag(locale));
+        return name.get(TraceProvUtils.localeToLanguageTag(locale));
     }
 
     public Map<String, String> getName1() {
@@ -183,7 +180,7 @@ public class EntityType implements IEntityType {
         Iterator<?> it = this.name.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pairs = (Map.Entry) it.next();
-            Locale l = NLPService.languageTagToLocale((String) pairs.getKey());
+            Locale l = TraceProvUtils.languageTagToLocale((String) pairs.getKey());
             dict = dict.putTranslation(l, (String) pairs.getValue());
 
         }
@@ -195,7 +192,7 @@ public class EntityType implements IEntityType {
         Iterator<?> it = this.description.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pairs = (Map.Entry) it.next();
-            Locale l = NLPService.languageTagToLocale((String) pairs.getKey());
+            Locale l = TraceProvUtils.languageTagToLocale((String) pairs.getKey());
             dict = dict.putTranslation(l, (String) pairs.getValue());
         }
         return dict;

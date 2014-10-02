@@ -338,7 +338,7 @@ public class EntityODR extends StructureODR implements IEntity {
 				Iterator<?> it = nameMap.entrySet().iterator();
 				while (it.hasNext()) {
 					Map.Entry pairs = (Map.Entry) it.next();
-					Locale l = NLPService.languageTagToLocale((String) pairs.getKey());
+					Locale l = TraceProvUtils.languageTagToLocale((String) pairs.getKey());
 
 					ArrayList<String> vals = (ArrayList<String>) pairs.getValue();
 					for (String s:vals){
@@ -554,7 +554,7 @@ public class EntityODR extends StructureODR implements IEntity {
 							SemanticText st = (SemanticText) val.getValue();
 							SemanticString sstring = convertSemTextToSemString(st);
 							Locale l = st.getLocale();
-							Long vocabularyID = vocabularyMap.get(l.toLanguageTag());
+							Long vocabularyID = vocabularyMap.get(TraceProvUtils.localeToLanguageTag(l));
 
 							Value fixedVal = new Value();
 							fixedVal.setSemanticValue(sstring);
@@ -612,10 +612,9 @@ public class EntityODR extends StructureODR implements IEntity {
 	}
 
 	public String getName(Locale locale) {
-		logger.info("Returned only the first value of the name. Hovewer, the number of values is: "+this.names.size());
+		logger.info("Returing the first value of the name. Hovewer, the number of values is: "+this.names.size());
 		Map<String, List<String>> name = this.names.get(0).getNames();
-		List<String> stName = name.get(NLPService.localeToLanguageTag(locale));
-		logger.info("Returned only the first value of the name for a given locale. Hovewer, the number of values is: "+stName.size());
+		List<String> stName = name.get(TraceProvUtils.localeToLanguageTag(locale));
 		return stName.get(0);
 	}
 
@@ -638,7 +637,7 @@ public class EntityODR extends StructureODR implements IEntity {
 		Iterator<?> it = descriptionMap.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry pairs = (Map.Entry) it.next();
-			Locale l = NLPService.languageTagToLocale((String) pairs.getKey());
+			Locale l = TraceProvUtils.languageTagToLocale((String) pairs.getKey());
 			ArrayList<SemanticText> vals = (ArrayList<SemanticText>) pairs.getValue();
 			for (SemanticText stexts : vals){
 				dict = dict.putTranslation(l, stexts.getText());
