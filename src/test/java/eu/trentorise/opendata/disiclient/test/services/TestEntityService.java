@@ -27,6 +27,7 @@ import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.IEntityService;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
+import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
 import it.unitn.disi.sweb.webapi.client.eb.EbClient;
@@ -638,7 +639,8 @@ public class TestEntityService {
         EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
 
         String etypeURL = WebServiceURLs.etypeIDToURL(18L);
-        List<ISearchResult> sResults = enServ.searchEntities("Povo", etypeURL);
+        Locale locale = TraceProvUtils.languageTagToLocale("it");
+        List<ISearchResult> sResults = enServ.searchEntities("Povo", etypeURL, locale);
         for (ISearchResult sr : sResults) {
             assertNotNull(sr.getURL());
             assertNotNull(sr.getName());

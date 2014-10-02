@@ -56,8 +56,10 @@ public class EntityService implements IEntityService {
     Logger logger = LoggerFactory.getLogger(EntityService.class);
 
     private IProtocolClient api;
+    private DisiEkb disiEkb; 
 
     public EntityService(IProtocolClient api) {
+    	this.disiEkb=disiEkb;
 
         this.api = api;
     }
@@ -691,11 +693,11 @@ public class EntityService implements IEntityService {
         return en;
     }
 
-    public List<ISearchResult> searchEntities(String partialName, String etypeURL) {
+    public List<ISearchResult> searchEntities(String partialName, String etypeURL, Locale locale) {
         List<ISearchResult> entities = new ArrayList<ISearchResult>();
 
-        Search search = new Search(api);
-        entities = search.searchEntities(partialName, etypeURL);
+        Search search = new Search(disiEkb);
+        entities = search.searchEntities(partialName, etypeURL, locale);
 
         return entities;
     }

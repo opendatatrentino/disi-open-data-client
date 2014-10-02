@@ -35,6 +35,11 @@ public class Search {
         this.api = api;
         client = new InstanceClient(api);
     }
+    
+    public Search(DisiEkb disiEkb) {
+        this.api = WebServiceURLs.getClientProtocol();
+        client = new InstanceClient(api);
+    }
 
     public String[][] searchEQL(String eqlQuery) {
         throw new UnsupportedOperationException("todo to implement");
@@ -148,10 +153,10 @@ public class Search {
         this.api = WebServiceURLs.getClientProtocol();
     }
 
-    public List<ISearchResult> searchEntities(String partialName, String etypeURL) {
+    public List<ISearchResult> searchEntities(String partialName, String etypeURL, Locale locale) {
         List<ISearchResult> entities = new ArrayList<ISearchResult>();
         SearchResultFilter srf = new SearchResultFilter();
-        srf.setLocale(Locale.ITALIAN);
+        srf.setLocale(locale);
         srf.setIncludeAttributesAsProperties(true);
         Long etype = WebServiceURLs.urlToEtypeID(etypeURL);
 

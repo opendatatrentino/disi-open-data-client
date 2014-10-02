@@ -15,6 +15,7 @@ import eu.trentorise.opendata.disiclient.services.Search;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
+import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
 
 public class TestSearchService {
 
@@ -51,7 +52,9 @@ public class TestSearchService {
 
         Search searchService = new Search(api);
         String etypeURL = WebServiceURLs.etypeIDToURL(18L);
-        List<ISearchResult> sResults = searchService.searchEntities("Povo", etypeURL);
+        Locale locale = TraceProvUtils.languageTagToLocale("en");
+
+        List<ISearchResult> sResults = searchService.searchEntities("Povo", etypeURL, locale);
         for (ISearchResult sr : sResults) {
             assertNotNull(sr.getURL());
             assertNotNull(sr.getName());

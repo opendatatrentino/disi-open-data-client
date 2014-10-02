@@ -136,6 +136,19 @@ public class WebServiceURLs {
         }
 
     }
+    
+    public static IProtocolClient getClientProtocol(Locale locale) {
+
+        if (api == null) {
+            readProperties();
+            api = ProtocolFactory.getHttpClient(locale, url, port);
+            //System.out.println(api.getLocale());
+            return api;
+        } else {
+            return api;
+        }
+
+    }
 
     public static String getURL() {
         if (fullURL == null) {

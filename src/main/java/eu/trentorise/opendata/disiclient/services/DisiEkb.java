@@ -8,10 +8,12 @@ import eu.trentorise.opendata.semantics.services.IIdentityService;
 import eu.trentorise.opendata.semantics.services.IKnowledgeService;
 import eu.trentorise.opendata.semantics.services.INLPService;
 import eu.trentorise.opendata.semantics.services.ISemanticMatchingService;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +40,7 @@ public class DisiEkb implements IEkb {
         this.knowledgeService = new KnowledgeService();
         this.identityService = new IdentityService();
         this.semanticMatchingService = new MatchingService();
-        this.entityService = (IEntityService) new EntityService(WebServiceURLs.getClientProtocol());
+        this.entityService = (IEntityService) new EntityService();
         List<Locale> locs = new ArrayList<Locale>();
         locs.add(Locale.ENGLISH);
         this.defaultLocales = Collections.unmodifiableList(locs);

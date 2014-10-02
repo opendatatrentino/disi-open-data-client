@@ -1,10 +1,12 @@
 package eu.trentorise.opendata.disiclient.services;
 
+import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.kb.ConceptClient;
 import it.unitn.disi.sweb.webapi.model.kb.concepts.Concept;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,10 +97,11 @@ public class KnowledgeService implements IKnowledgeService {
         return getRootConcept();
     }
 
-    public List<ISearchResult> searchConcepts(String partialName) {
+    public List<ISearchResult> searchConcepts(String partialName, Locale locale) {
 
         List<ISearchResult> conceptRes = new ArrayList<ISearchResult>();
-        ConceptClient client = new ConceptClient(WebServiceURLs.getClientProtocol());
+        
+        ConceptClient client = new ConceptClient(WebServiceURLs.getClientProtocol(locale));
         logger.warn("Knowledge base is set to default (1)");
         List<Concept> concepts = client.readConcepts(1L, null, null, partialName, null, null);
 
