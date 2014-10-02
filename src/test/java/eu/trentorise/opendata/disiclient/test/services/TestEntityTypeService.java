@@ -16,6 +16,7 @@ import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
+import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
@@ -115,7 +116,8 @@ public class TestEntityTypeService {
     @Test
     public void testFuzzySearchEtype() {
         EntityTypeService ets = new EntityTypeService();
-        List<ISearchResult> searchEtypes = ets.searchEntityTypes("Product");
+        Locale locale = TraceProvUtils.languageTagToLocale("en");
+        List<ISearchResult> searchEtypes = ets.searchEntityTypes("Product", locale);
         assertEquals("Product", searchEtypes.get(0).getName().getString(Locale.ENGLISH));
 
     }
