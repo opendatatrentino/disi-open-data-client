@@ -72,13 +72,8 @@ public class EntityService implements IEntityService {
 
     public Long createEntity(IEntity entity) {
 
-        EntityODR ent;
-        if (entity instanceof EntityODR) {
-            ent = (EntityODR) entity;
-        } else {
-            ent = EntityODR.disify(entity, true);
-        }
-
+        EntityODR ent = EntityODR.disify(entity, true);
+        
         Entity e = ent.convertToEntity();
         InstanceClient instanceCl = new InstanceClient(this.api);
         logger.info(e.toString());
@@ -546,11 +541,9 @@ public class EntityService implements IEntityService {
 
     public void updateEntity(IEntity entity) {
         EntityODR ent;
-        if (entity instanceof EntityODR) {
-            ent = (EntityODR) entity;
-        } else {
-            ent = EntityODR.disify(entity, true);
-        }
+        
+        ent = EntityODR.disify(entity, true);
+        
         Entity e = ent.convertToEntity();
         InstanceClient instanceCl = new InstanceClient(this.api);
         try {

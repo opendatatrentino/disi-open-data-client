@@ -20,6 +20,7 @@ import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityType;
 import eu.trentorise.opendata.disiclient.services.model.IDRes;
+import eu.trentorise.opendata.semantics.IntegrityChecker;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
@@ -91,11 +92,7 @@ public class IdentityService implements IIdentityService {
             List<EntityODR> entities = new ArrayList<EntityODR>();
 
             for (IEntity ie : iEntities) {
-                if (ie instanceof EntityODR) {
-                    entities.add((EntityODR) ie);
-                } else {
-                    entities.add(disify(ie, true));
-                }
+                entities.add(disify(ie, true));
             }
 
             IDManagementClient idManCl = new IDManagementClient(WebServiceURLs.getClientProtocol());

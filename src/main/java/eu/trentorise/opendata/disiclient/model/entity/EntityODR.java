@@ -8,6 +8,7 @@ import eu.trentorise.opendata.disiclient.services.NLPService;
 import eu.trentorise.opendata.disiclient.services.SemanticTextFactory;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.urlToEntityID;
+import eu.trentorise.opendata.semantics.IntegrityChecker;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
@@ -763,10 +764,17 @@ public class EntityODR extends StructureODR implements IEntity {
 	 *
 	 * @param root When true, all first level attributes are copied to output
 	 * entity. Eventual subentities in IValue are copied as non-root. When
-	 * false, only URL and etype are copied to output entity.
-	 *
+	 * false, only URL and etype are copied to output entity.	 
+         * @throws eu.trentorise.opendata.semantics.IntegrityException if provided entity is not valid
 	 */
-	public static EntityODR disify(IEntity entity, boolean root) {
+	public static EntityODR disify(IEntity entity, boolean root) {            
+
+                if (entity instanceof EntityODR) {
+                    return (EntityODR) entity;
+                } 
+                
+                IntegrityChecker.checkEntity(entity, true);                    
+                            
 		EntityODR enodr = new EntityODR();
 
 		EntityService es = new EntityService();

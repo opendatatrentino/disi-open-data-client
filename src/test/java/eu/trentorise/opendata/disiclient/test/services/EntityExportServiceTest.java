@@ -11,8 +11,8 @@ import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
-
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -20,8 +20,10 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+import static org.junit.Assert.assertNotNull;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
@@ -56,26 +58,35 @@ public class EntityExportServiceTest {
         entities.add(ENTITY3_URL);
     }
 
-  
+    private File makeTempFile(){        
+        String dirFilePath = "target/test-output/";
+        File dirFile = new File(dirFilePath);
+        
+        if (dirFile.exists() || dirFile.mkdirs()){
+            return new File(dirFilePath + "my-first-test-"+System.currentTimeMillis()+ ".txt");
+        } else {
+            throw new RuntimeException("Couldn't completely create directory " + dirFilePath);
+        }
+    }
 
     @Test
     public void testExportToJsonLd() throws IOException {
-        String filename = System.currentTimeMillis() + "myFirstTest.txt";
-        Writer writer = new FileWriter(filename);
+        File file = makeTempFile();
+        Writer writer = new FileWriter(file);
         es.exportToJsonLd(entities, writer);
         assertNotNull(writer);
-        BufferedReader br = new BufferedReader(new FileReader(filename));
+        BufferedReader br = new BufferedReader(new FileReader(file));
         assertNotNull(br.readLine());
         br.close();
     }
 
     @Test
     public void testExportToRDF() throws IOException {
-        String filename = System.currentTimeMillis() + "myFirstTest.txt";
-        Writer writer = new FileWriter(filename);
+        File file = makeTempFile();
+        Writer writer = new FileWriter(file);
         es.exportToRdf(entities, writer);
         assertNotNull(writer);
-        BufferedReader br = new BufferedReader(new FileReader(filename));
+        BufferedReader br = new BufferedReader(new FileReader(file));
         assertNotNull(br.readLine());
         br.close();
     }

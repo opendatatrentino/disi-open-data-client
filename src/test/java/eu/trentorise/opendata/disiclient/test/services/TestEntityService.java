@@ -10,7 +10,6 @@ import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.disiclient.services.DisiEkb;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
-import eu.trentorise.opendata.disiclient.services.Search;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.attrDefIDToURL;
 import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.conceptIDToURL;
@@ -325,6 +324,16 @@ public class TestEntityService {
         int instanceNumAfterDel = ebafterDel.getInstancesNumber();
         assertEquals(instanceNumAfterDel, instanceNumAfterDel);
 
+    }
+
+    /**
+     * Null values are not admitted by OpenEntity API and should always be
+     * rejected wth an exception TODO IMPLEMNT IT
+     */
+    @Test
+    @Ignore
+    public void testNullValues() {
+        throw new UnsupportedOperationException("TODO IMPLEMENT ME");
     }
 
     @Test

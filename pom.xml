@@ -23,43 +23,13 @@
         <version>7</version>
     </parent>
 
-    <!-- <licenses> <license> <name>GNU Lesser General Public License, Version 
-    2.1</name> <url>http://www.gnu.org/licenses/lgpl-2.1.txt</url> <distribution>repo</distribution> 
-    </license> </licenses> -->
-
-    <repositories>
-        <repository>
-            <id>sweb-internal</id>
-            <layout>default</layout>
-            <name>Archiva Managed Internal Repository</name>
-            <url>https://sweb.science.unitn.it/archiva/repository/internal</url>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>sweb-snapshots</id>
-            <name>Archiva Managed Snapshot Repository</name>
-            <url>https://sweb.science.unitn.it/archiva/repository/snapshots</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>sonatype-nexus-snapshots</id>
-            <name>project</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-        </repository>
-
-    </repositories>
+    <licenses> 
+        <license> 
+            <name>GNU Lesser General Public License, Version 2.1</name> 
+            <url>http://www.gnu.org/licenses/lgpl-2.1.txt</url> 
+            <distribution>repo</distribution> 
+        </license> 
+    </licenses> 
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -97,6 +67,39 @@
         </profile>
     </profiles>
 
+    <repositories>
+        <repository>
+            <id>sweb-internal</id>
+            <layout>default</layout>
+            <name>Archiva Managed Internal Repository</name>
+            <url>https://sweb.science.unitn.it/archiva/repository/internal</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>sweb-snapshots</id>
+            <name>Archiva Managed Snapshot Repository</name>
+            <url>https://sweb.science.unitn.it/archiva/repository/snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>sonatype-nexus-snapshots</id>
+            <name>project</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
+
+    </repositories>
 
     <build>
 
@@ -246,7 +249,7 @@
 
     </developers>
 
-
+  
     <dependencies>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
