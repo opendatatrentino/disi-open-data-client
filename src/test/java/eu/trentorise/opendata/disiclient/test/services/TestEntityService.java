@@ -611,8 +611,8 @@ public class TestEntityService {
     public void testDisify() {
         EntityService es = new EntityService();
         IEntity en = es.readEntity(POVO_URL);
-        EntityODR e = (EntityODR) en;
-
+        EntityODR e = (EntityODR) en;       
+        
         AttributeODR a = (AttributeODR) en.getStructureAttributes().get(2);
         IValue val = new ValueODR();
         val.setValue(15.2f);

@@ -67,6 +67,23 @@ public class WebServiceURLs {
         return url;
     }
 
+    public static boolean isEntityURL(String entityURL){
+        return entityURL != null && entityURL.contains(ENTITY_PREFIX);
+    }
+    
+    
+    public static boolean isConceptURL(String conceptURL){
+        return conceptURL != null && conceptURL.contains(CONCEPT_PREFIX);
+    }
+    
+    public static boolean isEtypeURL(String etypeURL){
+        return etypeURL != null && etypeURL.contains(ETYPE_PREFIX);
+    }
+    
+    public static boolean isAttrDefURL(String attrDefURL){
+        return attrDefURL != null && attrDefURL.contains(ATTR_DEF_PREFIX);
+    }
+    
     /**
      * @throws IllegalArgumentException on unparseable URL
      */
