@@ -656,4 +656,18 @@ public class TestEntityService {
 
         }
     }
+    
+    @Test
+    public void testEntitySearchAndalo() {
+        EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
+
+        String etypeURL = WebServiceURLs.etypeIDToURL(18L);
+        Locale locale = TraceProvUtils.languageTagToLocale("it");
+        List<ISearchResult> sResults = enServ.searchEntities("Andalo", etypeURL, locale);
+        assertTrue(sResults.size() > 0);
+        
+        assertEquals("Andalo", sResults.get(0).getName().getString(Locale.ITALIAN));
+
+        
+    }
 }
