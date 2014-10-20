@@ -4,6 +4,7 @@ import eu.trentorise.opendata.semantics.model.knowledge.IResourceContext;
 import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
 import eu.trentorise.opendata.semantics.model.knowledge.ITableResource;
 import eu.trentorise.opendata.semantics.services.INLPService;
+import eu.trentorise.opendata.semantics.services.model.IWordSearchResult;
 import it.unitn.disi.sweb.core.nlp.model.NLText;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.nlp.PipelineClient;
@@ -12,6 +13,7 @@ import it.unitn.disi.sweb.webapi.model.PipelineDescription;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,5 +97,10 @@ public class NLPService implements INLPService {
 
 		throw new UnsupportedOperationException("domain " + domainURL  + " is not supported yet."); 
 	}
+
+    public List<IWordSearchResult> freeSearch(String partialName, Locale locale) {
+        logger.warn("TODO FREESEARCH NOT IMPLEMENTED, RETURNING EMPTY ARRAY!");
+        return new ArrayList();
+    }
 
 }

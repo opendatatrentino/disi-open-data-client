@@ -13,6 +13,7 @@ import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
 import eu.trentorise.opendata.semantics.model.knowledge.IWord;
 import eu.trentorise.opendata.semantics.model.knowledge.MeaningKind;
 import eu.trentorise.opendata.semantics.model.knowledge.MeaningStatus;
+import eu.trentorise.opendata.semantics.services.model.IWordSearchResult;
 import it.unitn.disi.sweb.core.nlp.model.NLEntityMeaning;
 import it.unitn.disi.sweb.core.nlp.model.NLText;
 import it.unitn.disi.sweb.core.nlp.model.NLToken;
@@ -23,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
@@ -389,6 +392,13 @@ public class TestNLPService {
         ISemanticText semText = nlpService.runNLP(MIXED_ENTITIES_AND_CONCEPTS, TestEntityService.DETACHABLE_CHAIRLIFT_CONCEPT_URL);          
         testFiltering(semText, MeaningKind.CONCEPT);
     }
-    
+
+    @Test
+    public void testFreeSearch(){
+        DisiEkb disiEkb = new DisiEkb();
+        NLPService nlpService = (NLPService) disiEkb.getNLPService();
+        List<IWordSearchResult> res = nlpService.freeSearch("Trent", Locale.ITALIAN);
+        assertTrue(res.size() > 0);
+    }
     
 }
