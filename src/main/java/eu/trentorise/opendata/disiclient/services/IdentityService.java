@@ -20,7 +20,6 @@ import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityType;
 import eu.trentorise.opendata.disiclient.services.model.IDRes;
-import eu.trentorise.opendata.semantics.IntegrityChecker;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
@@ -78,7 +77,7 @@ public class IdentityService implements IIdentityService {
         return ent;
     }
 
-    public List<IIDResult> assignURL(List<IEntity> iEntities, int numCandidates) {
+    public List<IIDResult> assignURL(List<? extends IEntity> iEntities, int numCandidates) {
 
         if (iEntities == null) {
             List<IIDResult> idResults = new ArrayList<IIDResult>();
