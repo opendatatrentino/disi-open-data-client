@@ -118,6 +118,16 @@ public class TestMatchingService {
         }
 
     }
+    
+	@Test
+	public void testConceptFromText(){
+		
+	    String resourceName = "impianti risalita";
+	    
+	    Long conceptID = ColumnRecognizer.conceptFromText(resourceName);
+	    assertNotNull(conceptID);
+	    
+	}
 
     @Test
     public void testGetConceptDistance() {
