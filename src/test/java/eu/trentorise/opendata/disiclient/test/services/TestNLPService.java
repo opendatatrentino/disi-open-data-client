@@ -24,8 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
@@ -397,7 +395,7 @@ public class TestNLPService {
     public void testFreeSearch(){
         DisiEkb disiEkb = new DisiEkb();
         NLPService nlpService = (NLPService) disiEkb.getNLPService();
-        List<IWordSearchResult> res = nlpService.freeSearch("Trent", Locale.ITALIAN);
+        List<IWordSearchResult> res = nlpService.freeSearch("Cat", Locale.ITALIAN);
         assertTrue(res.size() > 0);
     }
     

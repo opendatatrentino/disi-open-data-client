@@ -692,6 +692,9 @@ public class EntityService implements IEntityService {
         Search search = new Search(disiEkb);
         entities = search.searchEntities(partialName, etypeURL, locale);
 
+        
+        
+        
         return entities;
     }
 
