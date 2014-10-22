@@ -93,24 +93,21 @@ public class NLPService implements INLPService {
 	}
 
 	public List<ISemanticText> runNLP(List<String> texts, String domainURL) {
+                List<ISemanticText> ret = new ArrayList();            
 		if (WebServiceURLs.isConceptURL(domainURL)){
-
+                    
 		}
 		if (WebServiceURLs.isEtypeURL(domainURL)){
 			List<NLText> nlTexts = runNlpIt(texts);
-			List<ISemanticText> ret = new ArrayList();
 			for (NLText nlText : nlTexts){
 				ISemanticText semText = SemanticTextFactory.semanticText(nlText);
 				//extractEntities(semText, domainURL);
 				ret.add(extractEntities(semText, domainURL));
 			}
 			return ret;
-			
-			
 		}
 		if (domainURL == null){
-			List<NLText> nlTexts = runNlpIt(texts);
-			List<ISemanticText> ret = new ArrayList();
+			List<NLText> nlTexts = runNlpIt(texts);			
 			for (NLText nlText : nlTexts){
 				ret.add(SemanticTextFactory.semanticText(nlText));
 			}
@@ -120,7 +117,7 @@ public class NLPService implements INLPService {
 		throw new UnsupportedOperationException("domain " + domainURL  + " is not supported yet."); 
 	}
 
-
+        
 	private ISemanticText extractEntities(ISemanticText semText, String etypeURL) {
 		ISemanticText textEntities = new SemanticText();
 		List<String> entVocab = collectEntitiesFromMeanings(semText);

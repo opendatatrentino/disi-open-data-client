@@ -121,8 +121,14 @@ public class TestEntityService {
     public static final long ROOT_ENTITY_ID = 21L;
     public static final String ROOT_ENTITY_URL = etypeIDToURL(ROOT_ENTITY_ID);
 
+    public static final Long LOCATION_ID = 18L;
+    public static final String LOCATION_URL = etypeIDToURL(LOCATION_ID);
+    
+    
     public static final long FACILITY_ID = 12L;
     public static final String FACILITY_URL = etypeIDToURL(FACILITY_ID);
+    public static final long SHOPPING_FACILITY_ID = 1L;
+    public static final String SHOPPING_FACILITY_URL = etypeIDToURL(SHOPPING_FACILITY_ID);
 
     public static final long ATTR_DEF_LATITUDE_ID = 69L;
     public static final String ATTR_DEF_LATITUDE_URL = attrDefIDToURL(ATTR_DEF_LATITUDE_ID);
