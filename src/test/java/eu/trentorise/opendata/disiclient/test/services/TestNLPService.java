@@ -415,6 +415,10 @@ public class TestNLPService {
 
         ISemanticText semTextLocationType = nlpService.runNLP(MIXED_ENTITIES_AND_CONCEPTS, LOCATION_URL);
         testFiltering(semTextLocationType, MeaningKind.ENTITY, LOCATION_URL);
+        
+        ISemanticText semTextShoppingFacilityType = nlpService.runNLP(MIXED_ENTITIES_AND_CONCEPTS, SHOPPING_FACILITY_URL);
+        testFiltering(semTextShoppingFacilityType, MeaningKind.ENTITY, SHOPPING_FACILITY_URL);
+        
     }
 
     private void testFiltering(ISemanticText semText, MeaningKind kind, String domainURL) {                
