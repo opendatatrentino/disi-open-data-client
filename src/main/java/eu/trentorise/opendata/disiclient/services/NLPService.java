@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,7 +80,7 @@ public class NLPService implements INLPService {
         return runNLP(Arrays.asList(text), domainURL).get(0);
     }
     
-    public List<ISemanticText> runNLP(List<String> texts, String domainURL) {
+    public List<ISemanticText> runNLP(List<String> texts, @Nullable String domainURL) {
         if (WebServiceURLs.isConceptURL(domainURL)){
             
         }

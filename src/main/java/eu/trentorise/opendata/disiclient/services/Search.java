@@ -6,13 +6,11 @@ import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
 import it.unitn.disi.sweb.webapi.model.eb.Name;
 import it.unitn.disi.sweb.webapi.model.eb.search.InstanceSearchResult;
-import it.unitn.disi.sweb.webapi.model.eb.search.ResultExplanation;
 import it.unitn.disi.sweb.webapi.model.filters.SearchResultFilter;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

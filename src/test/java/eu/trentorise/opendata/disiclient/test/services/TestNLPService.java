@@ -24,8 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
@@ -370,7 +368,7 @@ public class TestNLPService {
         DisiEkb disiEkb = new DisiEkb();
         NLPService nlpService = (NLPService) disiEkb.getNLPService();        
         
-        ISemanticText semText = nlpService.runNLP(MIXED_ENTITIES_AND_CONCEPTS, disiEkb.getEntityTypeService().getRootEtype().getURL()); 
+        ISemanticText semText = nlpService.runNLP(MIXED_ENTITIES_AND_CONCEPTS, disiEkb.getEntityTypeService().readRootEtype().getURL()); 
         testFiltering(semText, MeaningKind.ENTITY);
     }
 
@@ -389,7 +387,7 @@ public class TestNLPService {
     public void testNLPWithConceptRestriction(){
         DisiEkb disiEkb = new DisiEkb();
         NLPService nlpService = (NLPService) disiEkb.getNLPService();
-        ISemanticText semText = nlpService.runNLP(MIXED_ENTITIES_AND_CONCEPTS, TestEntityService.DETACHABLE_CHAIRLIFT_CONCEPT_URL);          
+        ISemanticText semText = nlpService.runNLP(MIXED_ENTITIES_AND_CONCEPTS, disiEkb.getKnowledgeService().readRootConcept().getURL());          
         testFiltering(semText, MeaningKind.CONCEPT);
     }
 
