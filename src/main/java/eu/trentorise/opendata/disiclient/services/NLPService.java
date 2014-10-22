@@ -1,10 +1,17 @@
 package eu.trentorise.opendata.disiclient.services;
 
 import eu.trentorise.opendata.semantics.impl.model.WordSearchResult;
+import eu.trentorise.opendata.semantics.model.entity.IEntity;
+import eu.trentorise.opendata.semantics.model.knowledge.IMeaning;
 import eu.trentorise.opendata.semantics.model.knowledge.IResourceContext;
 import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
 import eu.trentorise.opendata.semantics.model.knowledge.ITableResource;
+import eu.trentorise.opendata.semantics.model.knowledge.IWord;
 import eu.trentorise.opendata.semantics.model.knowledge.MeaningKind;
+import eu.trentorise.opendata.semantics.model.knowledge.MeaningStatus;
+import eu.trentorise.opendata.semantics.model.knowledge.impl.Meaning;
+import eu.trentorise.opendata.semantics.model.knowledge.impl.SemanticText;
+import eu.trentorise.opendata.semantics.model.knowledge.impl.Word;
 import eu.trentorise.opendata.semantics.services.INLPService;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 import eu.trentorise.opendata.semantics.services.model.IWordSearchResult;
@@ -16,6 +23,7 @@ import it.unitn.disi.sweb.webapi.model.PipelineDescription;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -89,7 +97,16 @@ public class NLPService implements INLPService {
 
 		}
 		if (WebServiceURLs.isEtypeURL(domainURL)){
-
+			List<NLText> nlTexts = runNlpIt(texts);
+			List<ISemanticText> ret = new ArrayList();
+			for (NLText nlText : nlTexts){
+				ISemanticText semText = SemanticTextFactory.semanticText(nlText);
+				//extractEntities(semText, domainURL);
+				ret.add(extractEntities(semText, domainURL));
+			}
+			return ret;
+			
+			
 		}
 		if (domainURL == null){
 			List<NLText> nlTexts = runNlpIt(texts);
@@ -101,6 +118,88 @@ public class NLPService implements INLPService {
 		}
 
 		throw new UnsupportedOperationException("domain " + domainURL  + " is not supported yet."); 
+	}
+
+
+	private ISemanticText extractEntities(ISemanticText semText, String etypeURL) {
+		ISemanticText textEntities = new SemanticText();
+		List<String> entVocab = collectEntitiesFromMeanings(semText);
+		List<String> filteredEntities = filterEntitiesByType(entVocab, etypeURL);
+
+		List<Word> words = new ArrayList<Word>();
+		for (IWord w : semText.getWords()) {
+
+			IMeaning wsm = w.getSelectedMeaning();
+			IMeaning selectedMeaning;
+			MeaningStatus meaningStatus;
+
+
+			if ((wsm != null && MeaningKind.ENTITY.equals(wsm.getKind()))&&(filteredEntities.contains(wsm.getURL()))) {
+				selectedMeaning = wsm;
+				
+			} else {
+				selectedMeaning = null;
+			}
+
+			List<IMeaning> filteredMeanings = new ArrayList<IMeaning>();
+			for (IMeaning m : w.getMeanings()) {
+				if (MeaningKind.ENTITY.equals(m.getKind())&&(m.getURL()!=null)) {
+					if(filteredEntities.contains(m.getURL())){
+						filteredMeanings.add(m);
+					}
+				}
+			}
+			if (selectedMeaning == null) {
+				if (filteredMeanings.size() > 0) {
+					meaningStatus = MeaningStatus.TO_DISAMBIGUATE;
+				} else {
+					meaningStatus = null;
+				}
+			} else {
+				meaningStatus = w.getMeaningStatus();
+			}
+
+			if (meaningStatus != null) {
+
+				words.add(new Word(w.getStartOffset(), w.getEndOffset(),  meaningStatus, selectedMeaning, filteredMeanings));
+
+
+			}
+		}
+		textEntities=SemanticText.copyOf(semText).with(words);
+		return textEntities;
+	} 
+
+	/** Get all the entities from semantic text and returns only entities that corresponds to a given etype
+	 * @param semText
+	 * @return
+	 */
+	private List<String> collectEntitiesFromMeanings(ISemanticText semText){
+		List<String> entitiesId = new ArrayList<String>();
+		for (IWord w : semText.getWords()) {
+			for(IMeaning mean: w.getMeanings()){
+				if (MeaningKind.ENTITY.equals(mean.getKind())&&(mean.getURL()!=null)) {
+				entitiesId.add(mean.getURL());
+				}
+			}
+
+		}
+		return entitiesId;
+	}
+
+	private List<String> filterEntitiesByType(List<String> entitiesIds, String etypeURL){
+		List<String> filteredEntities = new ArrayList<String>();
+
+		EntityService es = new EntityService();
+		List<IEntity> entities = es.readEntities(entitiesIds);
+
+		for(IEntity e:entities ){
+			if(e.getEtypeURL().equals(etypeURL)){
+				filteredEntities.add(e.getURL());
+			}
+
+		}
+		return filteredEntities;
 	}
 
 	public List<IWordSearchResult> freeSearch(String partialName, Locale locale) {
