@@ -14,7 +14,7 @@ public class TestStructure {
     @Test
     public void testGetAttributeByURL() {
 
-        EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
+        EntityService es = new EntityService();
         Long entityID = 64008L;
         StructureODR structure = es.readStructure(entityID);
         IAttribute attribute = structure.getAttribute("http://opendata.disi.unitn.it:8080/odr/attributedefinitions/177");

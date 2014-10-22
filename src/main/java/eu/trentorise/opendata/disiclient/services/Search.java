@@ -156,8 +156,10 @@ public class Search {
         SearchResultFilter srf = new SearchResultFilter();
         srf.setLocale(locale);
         srf.setIncludeAttributesAsProperties(true);
-        Long etype = WebServiceURLs.urlToEtypeID(etypeURL);
-
+        Long etype=null;
+        if(etypeURL!=null){
+         etype = WebServiceURLs.urlToEtypeID(etypeURL);
+        }
         InstanceSearchResult result = client.searchInstances(partialName, 1, etype, null, srf, null);
         List<Instance> resInstances = result.getResults();
 

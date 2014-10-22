@@ -567,7 +567,6 @@ public class EntityService implements IEntityService {
         return readEntity(typeID);
     }
 
-    @Override
     public String createEntityURL(IEntity entity) {
         Long id = createEntity(entity);
         return WebServiceURLs.entityIDToURL(id);
@@ -693,6 +692,9 @@ public class EntityService implements IEntityService {
         Search search = new Search(disiEkb);
         entities = search.searchEntities(partialName, etypeURL, locale);
 
+        
+        
+        
         return entities;
     }
 
