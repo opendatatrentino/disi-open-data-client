@@ -92,6 +92,9 @@ public class TestEntityService {
     public static final long ADMINISTRATIVE_DISTRICT_CONCEPT_ID = 10001L;
     public static final String ADMIN_DISTRICT_CONCEPT_URL = conceptIDToURL(ADMINISTRATIVE_DISTRICT_CONCEPT_ID);
 
+    public static final long RESIDENCE_DES_ALPES_ID = 66207L;
+    public static final String RESIDENCE_DES_ALPES_URL = entityIDToURL(RESIDENCE_DES_ALPES_ID);
+    
     /**
      * Rovereto URl
      */
@@ -674,6 +677,13 @@ public class TestEntityService {
         
         assertEquals("Andalo", sResults.get(0).getName().getString(Locale.ITALIAN));
 
+        
+    }
+    
+    @Test
+    public void TestResidenceDesAlpes(){
+        EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
+        enServ.readEntity(RESIDENCE_DES_ALPES_URL);
         
     }
 }
