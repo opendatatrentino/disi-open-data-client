@@ -640,17 +640,6 @@ public class TestEntityService {
         }
     }
 
-    /**
-     * NOTE: USES ENTITY CREATED WITH ODR, WILL DISAPPEAR FROM SERVER ONCE IT IS
-     * REGENERATED
-     */
-    @Ignore
-    @Test
-    public void testReadMelaValDiNon() {
-        EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
-        IEntity mela = enServ.readEntity(MELA_VAL_DI_NON_URL);
-        IntegrityChecker.checkEntity(mela);
-    }
 
     @Test
     public void testEntitySearch() {

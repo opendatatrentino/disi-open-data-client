@@ -129,26 +129,5 @@ public class EntityExportServiceTest {
             }
         }
 
-    }
-
-    /**
-     * NOTE: USES ENTITY CREATED WITH ODR, WILL DISAPPEAR FROM SERVER ONCE IT IS
-     * REGENERATED
-     */
-@Ignore
-    @Test
-    public void testExportMelaValDiNon() {
-
-        EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
-
-        StringWriter sw = new StringWriter();
-        List<String> entityURLs = new ArrayList<String>();
-        entityURLs.add(MELA_VAL_DI_NON_URL);
-        enServ.exportToJsonLd(entityURLs, sw);
-        logger.info("JSONLD = " + sw.toString());
-        assertTrue(sw.toString().length() > 0);
-    }
-
-   
-    
+    }    
 }

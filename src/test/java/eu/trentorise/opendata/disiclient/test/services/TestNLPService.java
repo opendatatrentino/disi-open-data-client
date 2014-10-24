@@ -452,6 +452,7 @@ public class TestNLPService {
         
     }
 
+    /** Ignored because we don't support concept restriction for now */
     @Test
     @Ignore
     public void testNLPWithConceptRestriction() {
