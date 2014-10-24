@@ -772,8 +772,7 @@ public class EntityODR extends StructureODR implements IEntity {
                 if (entity instanceof EntityODR) {
                     return (EntityODR) entity;
                 } 
-                
-                IntegrityChecker.checkEntity(entity, true);                    
+                                                
                             
 		EntityODR enodr = new EntityODR();
 
@@ -781,57 +780,59 @@ public class EntityODR extends StructureODR implements IEntity {
 		List<IAttribute> newAttrs = new ArrayList<IAttribute>();
 
 		if (root) {
-			Object nameAttrDefURL = entity.getEtype().getNameAttrDef().getURL();
-			for (IAttribute attr : entity.getStructureAttributes()) {
-				if (attr.getValuesCount() > 0) {
-					IAttributeDef attrDef = attr.getAttrDef();
-					AttributeODR attrODR;
+                    IntegrityChecker.checkEntity(entity, true);
+                    Object nameAttrDefURL = entity.getEtype().getNameAttrDef().getURL();
+                    for (IAttribute attr : entity.getStructureAttributes()) {
+                            if (attr.getValuesCount() > 0) {
+                                    IAttributeDef attrDef = attr.getAttrDef();
+                                    AttributeODR attrODR;
 
-					List<Object> objects = new ArrayList<Object>();
+                                    List<Object> objects = new ArrayList<Object>();
 
-					if (DataTypes.ENTITY.equals(attrDef.getDataType())) {
-						List<EntityODR> ensODR = new ArrayList();
-						for (IValue v :  attr.getValues()){
-							ensODR.add(disify((IEntity) v.getValue(), false));
-						}					
-						attrODR = es.createAttribute(attrDef, ensODR);
-						newAttrs.add(attrODR);
-					} else {
+                                    if (DataTypes.ENTITY.equals(attrDef.getDataType())) {
+                                            List<EntityODR> ensODR = new ArrayList();
+                                            for (IValue v :  attr.getValues()){                       
+                                                ensODR.add(disify((IEntity) v.getValue(), false));
+                                            }					
+                                            attrODR = es.createAttribute(attrDef, ensODR);
+                                            newAttrs.add(attrODR);
+                                    } else {
 
-						if (attrDef.getURL().equals(nameAttrDefURL)) {
-							objects.add(Dict.copyOf(entity.getName()).prettyString(new DisiEkb().getDefaultLocales())); // todo find way to link entity service to DisiEkb
-						} else {
-							for (IValue val : attr.getValues()) {
-								objects.add(disifyObject(val.getValue()));
-							}
-						}
+                                            if (attrDef.getURL().equals(nameAttrDefURL)) {
+                                                    objects.add(Dict.copyOf(entity.getName()).prettyString(new DisiEkb().getDefaultLocales())); // todo find way to link entity service to DisiEkb
+                                            } else {
+                                                    for (IValue val : attr.getValues()) {
+                                                            objects.add(disifyObject(val.getValue()));
+                                                    }
+                                            }
 
 
-						attrODR = es.createAttribute(attrDef, objects);
-						newAttrs.add(attrODR);												
-					}
+                                            attrODR = es.createAttribute(attrDef, objects);
+                                            newAttrs.add(attrODR);												
+                                    }
 
-				}
+                            }
 
-			}
+                    }
 
-			enodr.setEntityAttributes(newAttrs);
+                    enodr.setEntityAttributes(newAttrs);
+                    enodr.setEtype(entity.getEtype());
 		}
 
+                /*
 		if (entity.getEtype() == null) {
 			throw new IllegalArgumentException("Provided entity must have etype! Entity URL is " + entity.getURL());
 		}
+                */
+		
+                logger.warn("SETTING HARD CODED ENTITY BASE ID = 1 IN DISIFY METHOD.");		
+                enodr.setEntityBaseId(1L); 
 
-		enodr.setEtype(entity.getEtype());
-		enodr.setEntityBaseId(
-				1L); // todo fixed ID !
-
-		logger.info(
-				"disifying entity.getURL = " + entity.getURL());
+		logger.info("disifying entity.getURL = " + entity.getURL());
 
 		if (entity.getURL() != null && entity.getURL().length() > 0 && !(es.isTemporaryURL(entity.getURL()))) {
-			enodr.setId(urlToEntityID(entity.getURL()));
-			enodr.setURL(entity.getURL());
+                    enodr.setId(urlToEntityID(entity.getURL()));
+                    enodr.setURL(entity.getURL());
 		}
 
 		return enodr;
