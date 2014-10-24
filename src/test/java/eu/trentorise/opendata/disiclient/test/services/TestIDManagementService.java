@@ -5,6 +5,7 @@ import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityType;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
+import eu.trentorise.opendata.disiclient.services.DisiEkb;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import eu.trentorise.opendata.disiclient.services.IdentityService;
@@ -16,10 +17,12 @@ import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.PALAZZETTO_ID;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.PALAZZETTO_NAME_IT;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.PALAZZETTO_URL;
+import eu.trentorise.opendata.semantics.IntegrityChecker;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
+import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.model.AssignmentResult;
 import eu.trentorise.opendata.semantics.services.model.IIDResult;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
@@ -284,7 +287,7 @@ public class TestIDManagementService {
             }
         }, 3);
     }
-
+       
     @Test
     public void idServiceEntityMissing() {
 
@@ -325,6 +328,7 @@ public class TestIDManagementService {
         entities.add(ent);
 
         List<IIDResult> results = idServ.assignURL(entities, 3);
+        
         for (IIDResult res : results) {
             EntityODR entityODR = (EntityODR) res.getResultEntity();
             //	System.out.println("result "+res.getAssignmentResult());

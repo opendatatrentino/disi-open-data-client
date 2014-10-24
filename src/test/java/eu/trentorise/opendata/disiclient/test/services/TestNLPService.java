@@ -471,5 +471,29 @@ public class TestNLPService {
         assertTrue(res.size() > 0);
     }
 
+    
+    @Test
+    public void testMeaningNamesSwebNlp(){
 
+        DisiEkb disiEkb = new DisiEkb();
+        NLPService nlpService = (NLPService) disiEkb.getNLPService();
+                List<String> texts = new ArrayList();
+        texts.add(PRODOTTI_CERTIFICATI_DESCRIPTIONS.get(0));  
+        NLText nlText = nlpService.runNlpIt(texts).get(0);
+        
+        List<NLToken> list = nlText.getSentences().get(0).getTokens();
+        
+        list.get(0);
+    }
+    
+    
+    @Test
+    public void testMeaningNames(){
+        DisiEkb disiEkb = new DisiEkb();
+        NLPService nlpService = (NLPService) disiEkb.getNLPService();
+        ISemanticText semText = nlpService.runNLP(PRODOTTI_CERTIFICATI_DESCRIPTIONS.get(0), null);
+        IWord word = semText.getWords().get(0);
+        word.getMeanings();
+    }
 }
+
