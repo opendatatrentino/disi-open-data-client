@@ -162,7 +162,7 @@ public class EntityService implements IEntityService {
         instanceCl.delete(instance);
     }
 
-    public IEntity readEntity(long entityID) {
+    public EntityODR readEntity(long entityID) {
         InstanceClient instanceCl = new InstanceClient(this.api);
 
         InstanceFilter instFilter = new InstanceFilter();
@@ -539,6 +539,7 @@ public class EntityService implements IEntityService {
 
     }
 
+    @Override
     public void updateEntity(IEntity entity) {
         EntityODR ent;
         
@@ -554,7 +555,8 @@ public class EntityService implements IEntityService {
         }
     }
 
-    public IEntity readEntity(String URL) {
+    @Override
+    public EntityODR readEntity(String URL) {
 
         Long typeID;
         try {

@@ -73,10 +73,11 @@ public class TestEntityService {
     public static final long ATTR_DEF_HOURS_CLOSING_HOUR = 30L;
     public static final String ATTR_DEF_HOURS_CLOSING_HOUR_URL = attrDefIDToURL(ATTR_DEF_HOURS_CLOSING_HOUR);
 
-    /**
-     * Palazzetto doesn't have description. Its concept is gymnasium.
-     */
     public static final long PALAZZETTO_ID = 64000L;
+    /**
+     * Palazzetto is a Facility. It doesn't have description. Its concept is gymnasium.
+     */
+    
     public static final String PALAZZETTO_URL = entityIDToURL(PALAZZETTO_ID);
     public static final String PALAZZETTO_NAME_IT = "PALAZZETTO DELLO SPORT";
     public static final long GYMNASIUM_CONCEPT_ID = 18565L;
@@ -128,10 +129,9 @@ public class TestEntityService {
     public static final String LOCATION_URL = etypeIDToURL(LOCATION_ID);
     
     
+    // Facility
     public static final long FACILITY_ID = 12L;
     public static final String FACILITY_URL = etypeIDToURL(FACILITY_ID);
-    public static final long SHOPPING_FACILITY_ID = 1L;
-    public static final String SHOPPING_FACILITY_URL = etypeIDToURL(SHOPPING_FACILITY_ID);
 
     public static final long ATTR_DEF_LATITUDE_ID = 69L;
     public static final String ATTR_DEF_LATITUDE_URL = attrDefIDToURL(ATTR_DEF_LATITUDE_ID);
@@ -141,12 +141,18 @@ public class TestEntityService {
     public static final String ATTR_DEF_CLASS_URL = attrDefIDToURL(ATTR_DEF_CLASS);
     public static final long ATTR_DEF_DESCRIPTION = 62L;
     public static final String ATTR_DEF_DESCRIPTION_URL = attrDefIDToURL(ATTR_DEF_DESCRIPTION);
+    
     public static final long ATTR_DEF_PART_OF = 60L;
+    /** Part-of has {@link #ROOT_ENTITY_URL} as range */
     public static final String ATTR_DEF_PART_OF_URL = attrDefIDToURL(ATTR_DEF_PART_OF);
 
     public static final long NAME_ID = 10L;
     public static final String NAME_URL = etypeIDToURL(NAME_ID);
 
+    // Shopping facility
+    public static final long SHOPPING_FACILITY_ID = 1L;
+    public static final String SHOPPING_FACILITY_URL = etypeIDToURL(SHOPPING_FACILITY_ID);    
+    
     // Certified product stuff 
     public static final long CERTIFIED_PRODUCT_ID = 17L;
     public static final String CERTIFIED_PRODUCT_URL = etypeIDToURL(CERTIFIED_PRODUCT_ID);

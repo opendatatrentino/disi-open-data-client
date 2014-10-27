@@ -10,18 +10,23 @@ import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import eu.trentorise.opendata.disiclient.services.IdentityService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
+import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.ATTR_DEF_PART_OF_URL;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.CERTIFIED_PRODUCT_ID;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.CERTIFIED_PRODUCT_URL;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.FACILITY_ID;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.FACILITY_URL;
+import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.LOCATION_URL;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.PALAZZETTO_ID;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.PALAZZETTO_NAME_IT;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.PALAZZETTO_URL;
+import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.RAVAZZONE_URL;
 import eu.trentorise.opendata.semantics.IntegrityChecker;
+import eu.trentorise.opendata.semantics.impl.model.entity.MinimalEntity;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
+import eu.trentorise.opendata.semantics.model.knowledge.impl.Dict;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.model.AssignmentResult;
 import eu.trentorise.opendata.semantics.services.model.IIDResult;
@@ -30,6 +35,7 @@ import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.Value;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import static org.junit.Assert.assertEquals;
@@ -77,9 +83,7 @@ public class TestIDManagementService {
         return str + "]";
     }
 
-    @Test
-    public void idServiceEntityNew() {
-
+    public static IEntity assignNewURL(){
         IdentityService idServ = new IdentityService();
         EntityService enServ = new EntityService(getClientProtocol());
         EntityODR entity = (EntityODR) enServ.readEntity(PALAZZETTO_ID);
@@ -106,10 +110,16 @@ public class TestIDManagementService {
         entities.add(ent);
 
         List<IIDResult> results = idServ.assignURL(entities, 3);
-        for (IIDResult res : results) {
-            assertEquals(AssignmentResult.NEW, res.getAssignmentResult());
-        }
-
+        assertEquals(1, results.size());
+        assertEquals(AssignmentResult.NEW, results.get(0).getAssignmentResult());
+        assertNotNull(results.get(0).getResultEntity());
+                
+        return results.get(0).getResultEntity();
+    }
+    
+    @Test
+    public void idServiceEntityNew() {       
+        assignNewURL();
     }
 
     /**
@@ -287,6 +297,34 @@ public class TestIDManagementService {
             }
         }, 3);
     }
+    
+ @Test
+    public void testNewEntityWithPartOfNewEntity() {
+
+        
+        EntityService enServ = new EntityService();        
+        
+        // IEntity entityPartOf = new MinimalEntity(RAVAZZONE_URL, new Dict(), new Dict(), null);
+        
+        // assertNotNull(entityPartOf.getEtypeURL());
+                                
+        IEntity newEntity = assignNewURL();
+      
+        
+        
+        List<IAttribute> structureAttributes = newEntity.getStructureAttributes();
+        for (int i = 0; i < structureAttributes.size(); i++){
+            IAttribute attr = structureAttributes.get(i);
+            if (attr.getAttrDef().getURL().equals(ATTR_DEF_PART_OF_URL)){
+                AttributeODR newAttr = enServ.createAttribute(attr.getAttrDef(), 
+                        new MinimalEntity("http://trial/instances/new/1234567", new Dict(),new Dict(), LOCATION_URL));
+                structureAttributes.set(i, newAttr);
+            }
+        }
+        
+        List<IIDResult> idRes = new IdentityService().assignURL(Arrays.asList(newEntity), 3);
+                        
+    }    
        
     @Test
     public void idServiceEntityMissing() {
@@ -338,7 +376,7 @@ public class TestIDManagementService {
         }
     }
 
-    private IProtocolClient getClientProtocol() {
+    private static IProtocolClient getClientProtocol() {
         return WebServiceURLs.getClientProtocol();
     }
 

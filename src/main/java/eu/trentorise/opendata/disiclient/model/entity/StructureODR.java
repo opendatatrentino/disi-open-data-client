@@ -4,7 +4,6 @@ import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
-import it.unitn.disi.sweb.webapi.model.eb.Name;
 import it.unitn.disi.sweb.webapi.model.eb.Value;
 
 import java.util.ArrayList;
@@ -16,23 +15,20 @@ import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.model.entity.IStructure;
+import eu.trentorise.opendata.semantics.model.entity.IValue;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
-public class StructureODR extends Instance implements IStructure {
-
-    private IProtocolClient api;
+public class StructureODR extends Instance implements IStructure {    
 
     public Long getLocalID() {
         return super.getId();
     }
 
     public StructureODR() {
-        this.api = getClientProtocol();
-
     }
 
-    public StructureODR(Name name) {
-        this.api = getClientProtocol();
-    }
 
     public List<IAttribute> getStructureAttributes() {
         if (super.getAttributes() != null) {
