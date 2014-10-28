@@ -8,6 +8,7 @@ import eu.trentorise.opendata.disiclient.model.entity.EntityType;
 import eu.trentorise.opendata.disiclient.model.entity.StructureODR;
 import eu.trentorise.opendata.disiclient.model.entity.ValueODR;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
+import eu.trentorise.opendata.semantics.IntegrityChecker;
 import eu.trentorise.opendata.semantics.NotFoundException;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
@@ -172,6 +173,7 @@ public class EntityService implements IEntityService {
         Instance instance = instanceCl.readInstance(entityID, instFilter);
         Entity entity = (Entity) instance;
         EntityODR en = new EntityODR(this.api, entity);
+        IntegrityChecker.checkEntity(en);
         return en;
     }
 
@@ -198,7 +200,9 @@ public class EntityService implements IEntityService {
         List<Entity> entities = (List<Entity>) instances;
         List<IEntity> ret = new ArrayList<IEntity>();
         for (Entity epEnt : entities) {
-            ret.add(new EntityODR(this.api, epEnt));
+            EntityODR en = new EntityODR(this.api, epEnt);
+            IntegrityChecker.checkEntity(en);            
+            ret.add(en);            
         }
         return ret;
     }
