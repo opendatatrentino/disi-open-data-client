@@ -539,7 +539,6 @@ public class EntityService implements IEntityService {
 
     }
 
-    @Override
     public void updateEntity(IEntity entity) {
         EntityODR ent;
         
@@ -555,7 +554,6 @@ public class EntityService implements IEntityService {
         }
     }
 
-    @Override
     public EntityODR readEntity(String URL) {
 
         Long typeID;
