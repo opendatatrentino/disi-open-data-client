@@ -171,10 +171,19 @@ public class EntityService implements IEntityService {
         instFilter.setIncludeAttributesAsProperties(true);
         instFilter.setIncludeSemantics(true);
         Instance instance = instanceCl.readInstance(entityID, instFilter);
+      
         Entity entity = (Entity) instance;
         EntityODR en = new EntityODR(this.api, entity);
-        IntegrityChecker.checkEntity(en);
+     //   IntegrityChecker.checkEntity(en);
         return en;
+    }
+    
+    public Long readEntityGlobalID(long globalID) {
+    	  InstanceClient instanceCl = new InstanceClient(this.api);
+          Instance instance =   instanceCl.readEntityByGloabalId(1L, globalID, null);
+        
+          Entity entity = (Entity) instance;
+          return entity.getId();
     }
 
     public List<IEntity> readEntities(List<String> entityURLs) {

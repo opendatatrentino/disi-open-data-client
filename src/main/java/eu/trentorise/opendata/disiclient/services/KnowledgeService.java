@@ -103,7 +103,7 @@ public class KnowledgeService implements IKnowledgeService {
         
         ConceptClient client = new ConceptClient(WebServiceURLs.getClientProtocol(locale));
         logger.warn("Knowledge base is set to default (1)");
-        List<Concept> concepts = client.readConcepts(1L, null, null, partialName, null, null);
+        List<Concept> concepts = client.readConcepts(1L, null, partialName, null, null, null);
 
         for (Concept c : concepts) {
             ConceptODR codr = new ConceptODR(c);

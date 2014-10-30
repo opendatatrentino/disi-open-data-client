@@ -28,177 +28,192 @@ import eu.trentorise.opendata.semantics.services.model.DataTypes;
 
 public class EntityExportService {
 
-    private static final String regexInput = "@type";
+	private static final String regexInput = "@type";
 
-    /**
-     * The method generates JSON-LD @context
-     *
-     * @param id
-     * @return
-     */
-    public String generateJSONLDContext(Long id) {
-        EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
+	/**
+	 * The method generates JSON-LD @context
+	 *
+	 * @param id
+	 * @return
+	 */
+	public String generateJSONLDContext(Long id) {
+		EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
 
-        IEntity entity = es.readEntity(id);
-        EntityTypeService ets = new EntityTypeService();
+		IEntity entity = es.readEntity(id);
+		EntityTypeService ets = new EntityTypeService();
 
-        IEntityType etype = ets.getEntityType(entity.getEtype().getURL());
-        List<IAttributeDef> attributeDefs = etype.getAttributeDefs();
+		IEntityType etype = ets.getEntityType(entity.getEtype().getURL());
+		List<IAttributeDef> attributeDefs = etype.getAttributeDefs();
 
-        for (IAttributeDef attrDef : attributeDefs) {
-            System.out.println(attrDef.getName().getString(Locale.ENGLISH));
-            System.out.println(attrDef.getURL());
-        }
-        return null;
-    }
+		for (IAttributeDef attrDef : attributeDefs) {
+			System.out.println(attrDef.getName().getString(Locale.ENGLISH));
+			System.out.println(attrDef.getURL());
+		}
+		return null;
+	}
 
-    public JsonObject generateEtypeContext(IEntityType etype) {
-        List<IAttributeDef> attrDefs = etype.getAttributeDefs();
-        JsonObject finJsonObject = new JsonObject();
+	public JsonObject generateEtypeContext(IEntityType etype) {
+		List<IAttributeDef> attrDefs = etype.getAttributeDefs();
+		JsonObject finJsonObject = new JsonObject();
 
-        for (IAttributeDef attrDef : attrDefs) {
+		for (IAttributeDef attrDef : attrDefs) {
 
-            JsonObject jsonObjectAttr = new JsonObject();
-            jsonObjectAttr.addProperty("@id", attrDef.getURL());
-            if (attrDef.getDataType().equals(DataTypes.STRUCTURE)) {
-                jsonObjectAttr.addProperty(regexInput, attrDef.getRangeEtypeURL());
-            } else {
-                jsonObjectAttr.addProperty(regexInput, attrDef.getDataType());
+			JsonObject jsonObjectAttr = new JsonObject();
+			jsonObjectAttr.addProperty("@id", attrDef.getURL());
+			if (attrDef.getDataType().equals(DataTypes.STRUCTURE)) {
+				jsonObjectAttr.addProperty(regexInput, attrDef.getRangeEtypeURL());
+			} else {
+				jsonObjectAttr.addProperty(regexInput, attrDef.getDataType());
 
-            }
-            finJsonObject.add(attrDef.getName().getString(Locale.ENGLISH), jsonObjectAttr);
-        }
+			}
+			finJsonObject.add(attrDef.getName().getString(Locale.ENGLISH), jsonObjectAttr);
+		}
 
-        finJsonObject.addProperty("xsd", "http://www.w3.org/2001/XMLSchema#");
-        finJsonObject.addProperty("oe", WebServiceURLs.getURL() + "/datatypes");
+		finJsonObject.addProperty("xsd", "http://www.w3.org/2001/XMLSchema#");
+		finJsonObject.addProperty("oe", WebServiceURLs.getURL() + "/datatypes");
 
-        return finJsonObject;
-    }
+		return finJsonObject;
+	}
 
-    public void convertToJsonLd(InputStream inputStream, Writer writer) throws IOException {
+	public void convertToJsonLd(InputStream inputStream, Writer writer) throws IOException {
 
-        BufferedWriter bw = new BufferedWriter(writer);
+		BufferedWriter bw = new BufferedWriter(writer);
 
-        JsonStreamParser parser = new JsonStreamParser(new InputStreamReader(inputStream));
-        while (parser.hasNext()) {
-            JsonObject obj = semantifyJsonObject(parser.next());
-            bw.write(obj.toString());
-            bw.newLine();
-            System.out.println(obj.toString());
-        }
-        bw.close();
-    }
+		JsonStreamParser parser = new JsonStreamParser(new InputStreamReader(inputStream));
+		while (parser.hasNext()) {
+			JsonObject obj = semantifyJsonObject(parser.next());
+			bw.write(obj.toString());
+			bw.newLine();
+			System.out.println(obj.toString());
+		}
+		bw.close();
+	}
 
-    /**
-     * Add attribute name instead of "values"
-     *
-     * @param jsonInput
-     * @return
-     * @throws IOException
-     */
-    public JsonObject semantifyJsonObject(JsonElement jsonInput) throws IOException {
+	/**
+	 * Add attribute name instead of "values"
+	 *
+	 * @param jsonInput
+	 * @return
+	 * @throws IOException
+	 */
+	public JsonObject semantifyJsonObject(JsonElement jsonInput) throws IOException {
 
-        JsonObject o = (JsonObject) jsonInput;
-        JsonObject obj = (JsonObject) o.get("entity");
-        Long typeId = obj.get("typeId").getAsLong();
-        obj.remove("creationDate");
-        obj.remove("modificationDate");
-        obj.remove("dataType");
-        obj.remove(regexInput);
-        obj.remove("typeId");
-        obj.remove("globalId");
+		JsonObject o = (JsonObject) jsonInput;
+		JsonObject obj = (JsonObject) o.get("entity");
+		Long typeId = obj.get("typeId").getAsLong();
+		obj.remove("creationDate");
+		obj.remove("modificationDate");
+		obj.remove("dataType");
+		obj.remove(regexInput);
+		obj.remove("typeId");
+		Long globalID=null;
+		try {
+		 globalID = obj.get("globalId").getAsLong();
+		 EntityService es = new EntityService();
+	        Long locid = es.readEntityGlobalID(globalID);
+			
+			obj.remove("globalId");
+			String globalIdURL =WebServiceURLs.getURL()+"/instances/"+locid.toString(); 
 
-        //convert from global concept to local one
-        ConceptODR codr = new ConceptODR();
-        Long conceptTypeID = codr.readConceptGUID(typeId);
+			obj.addProperty("globalId", globalIdURL);
+		} catch(NullPointerException e) {
+			
+		}
+		
+	
 
-        EntityTypeService ets = new EntityTypeService();
-        /////////////////!!!!!!!!!!!!!IMPORTANT CHANGE THE ETYPE ID!!!!!!!!!!!!!!///////////
-        EntityType etype = ets.getEntityTypeByConcept(conceptTypeID);
 
-        List<IAttributeDef> attrDefs = etype.getAttributeDefs();
+		//convert from global concept to local one
+		ConceptODR codr = new ConceptODR();
+		Long conceptTypeID = codr.readConceptGUID(typeId);
 
-        JsonArray attrArray = (JsonArray) obj.get("attributes");
-        JsonArray attrArrayUpdated = new JsonArray();
-        obj.remove("attributes");
-        for (JsonElement attr : attrArray) {
+		EntityTypeService ets = new EntityTypeService();
+		/////////////////!!!!!!!!!!!!!IMPORTANT CHANGE THE ETYPE ID!!!!!!!!!!!!!!///////////
+		EntityType etype = ets.getEntityTypeByConcept(conceptTypeID);
 
-            JsonObject attrObj = (JsonObject) attr;
+		List<IAttributeDef> attrDefs = etype.getAttributeDefs();
 
-            Long attrGlobalConceptID = attrObj.get("conceptId").getAsLong();
-            obj.remove("conceptId");
-            Long attrConceptID = codr.readConceptGUID(attrGlobalConceptID);
+		JsonArray attrArray = (JsonArray) obj.get("attributes");
+		JsonArray attrArrayUpdated = new JsonArray();
+		obj.remove("attributes");
+		for (JsonElement attr : attrArray) {
 
-            //	System.out.println(attrConceptID);
-            for (IAttributeDef atDef : attrDefs) {
-                AttributeDef ad = (AttributeDef) atDef;
-                //System.out.println(ad.getConceptId());
-                //System.out.println(attrConceptID);
-                if (ad.getConceptId() == attrConceptID) {
+			JsonObject attrObj = (JsonObject) attr;
 
-                    String name = atDef.getName().getString(Locale.ENGLISH);
-                    //	System.out.println(name);
-                    attrObj.remove("creationDate");
-                    attrObj.remove("modificationDate");
-                    attrObj.remove("dataType");
-                    attrObj.remove("conceptId");
+			Long attrGlobalConceptID = attrObj.get("conceptId").getAsLong();
+			obj.remove("conceptId");
+			Long attrConceptID = codr.readConceptGUID(attrGlobalConceptID);
 
-                    JsonElement valueElement = attrObj.get("values");
-                    attrObj.remove("values");
-                    attrObj.add(name, valueElement);
-                    attrArrayUpdated.add(attrObj);
-                    break;
-                }
+			//	System.out.println(attrConceptID);
+			for (IAttributeDef atDef : attrDefs) {
+				AttributeDef ad = (AttributeDef) atDef;
+				//System.out.println(ad.getConceptId());
+				//System.out.println(attrConceptID);
+				if (ad.getConceptId() == attrConceptID) {
 
-            }
-            obj.add("attributes", attrArrayUpdated);
-        }
-        /////////////////!!!!!!!!!!!!!IMPORTANT CHANGE THE ETYPE ID!!!!!!!!!!!!!!///////////
+					String name = atDef.getName().getString(Locale.ENGLISH);
+					//	System.out.println(name);
+					attrObj.remove("creationDate");
+					attrObj.remove("modificationDate");
+					attrObj.remove("dataType");
+					//  attrObj.remove("conceptId");
 
-        JsonObject contextJson = generateEtypeContext(etype);
-        obj.add("@context", contextJson);
-        //System.out.println(obj);
-        return obj;
-    }
+					JsonElement valueElement = attrObj.get("values");
+					attrObj.remove("values");
+					attrObj.add(name, valueElement);
+					attrArrayUpdated.add(attrObj);
+					break;
+				}
 
-    public Long methodPost(List<Long> entitiesId, String fileName) throws ClientProtocolException, IOException {
+			}
+			obj.add("attributes", attrArrayUpdated);
+		}
+		/////////////////!!!!!!!!!!!!!IMPORTANT CHANGE THE ETYPE ID!!!!!!!!!!!!!!///////////
 
-        String formatedEntities = entitiesId.toString().replace("[", "").replace("]", "").replace(" ", "");
-        //System.out.println(WebServiceURLs.getURL());
-        Response response = Request.Post(WebServiceURLs.getURL() + "/data/export")
-                .bodyForm(Form.form().add("entityBase", "1").add("fileName", fileName).add("id", formatedEntities).add("maxDepth", "1").build())
-                .execute();
-        String content = response.returnContent().asString();
-        System.out.print("File: " + content);
-        return Long.parseLong(content);
-    }
+		JsonObject contextJson = generateEtypeContext(etype);
+		obj.add("@context", contextJson);
+		//System.out.println(obj);
+		return obj;
+	}
 
-    public Long methodPostRDF(List<Long> entitiesId, String fileName) throws ClientProtocolException, IOException {
+	public Long methodPost(List<Long> entitiesId, String fileName) throws ClientProtocolException, IOException {
 
-        String formatedEntities = entitiesId.toString().replace("[", "").replace("]", "").replace(" ", "");
-        System.out.println(WebServiceURLs.getURL());
-        Response response = Request.Post(WebServiceURLs.getURL() + "/data/exportRDF")
-                .bodyForm(Form.form().add("entityBase", "1").add("fileName", fileName).add("id", formatedEntities).add("maxDepth", "1").add("namespace", "http://www.w3.org/1999/02/22-rdf-syntax-ns").build())
-                .execute();
-        String content = response.returnContent().asString();
-        System.out.print("File: " + content);
-        return Long.parseLong(content);
-    }
+		String formatedEntities = entitiesId.toString().replace("[", "").replace("]", "").replace(" ", "");
+		//System.out.println(WebServiceURLs.getURL());
+		Response response = Request.Post(WebServiceURLs.getURL() + "/data/export")
+				.bodyForm(Form.form().add("entityBase", "1").add("fileName", fileName).add("id", formatedEntities).add("maxDepth", "1").build())
+				.execute();
+		String content = response.returnContent().asString();
+		System.out.print("File: " + content);
+		return Long.parseLong(content);
+	}
 
-    public InputStream methodGet(Long id, String fileName) throws ClientProtocolException, IOException {
-        InputStream is = Request.Get(WebServiceURLs.getURL() + "/files/" + id)
-                .execute().returnContent().asStream();
-        //		File file = new File(fileName);
-        //		outputStream = new FileOutputStream(file);
-        //
-        //		int read = 0;
-        //		byte[] bytes = new byte[1024];
-        //
-        //		while ((read = is.read(bytes)) != -1) {
-        //			outputStream.write(bytes, 0, read);
-        //		}
-        //
-        //		System.out.println("Done!");
-        return is;
-    }
+	public Long methodPostRDF(List<Long> entitiesId, String fileName) throws ClientProtocolException, IOException {
+
+		String formatedEntities = entitiesId.toString().replace("[", "").replace("]", "").replace(" ", "");
+		System.out.println(WebServiceURLs.getURL());
+		Response response = Request.Post(WebServiceURLs.getURL() + "/data/exportRDF")
+				.bodyForm(Form.form().add("entityBase", "1").add("fileName", fileName).add("id", formatedEntities).add("maxDepth", "1").add("namespace", "http://www.w3.org/1999/02/22-rdf-syntax-ns").build())
+				.execute();
+		String content = response.returnContent().asString();
+		System.out.print("File: " + content);
+		return Long.parseLong(content);
+	}
+
+	public InputStream methodGet(Long id, String fileName) throws ClientProtocolException, IOException {
+		InputStream is = Request.Get(WebServiceURLs.getURL() + "/files/" + id)
+				.execute().returnContent().asStream();
+		//		File file = new File(fileName);
+		//		outputStream = new FileOutputStream(file);
+		//
+		//		int read = 0;
+		//		byte[] bytes = new byte[1024];
+		//
+		//		while ((read = is.read(bytes)) != -1) {
+		//			outputStream.write(bytes, 0, read);
+		//		}
+		//
+		//		System.out.println("Done!");
+		return is;
+	}
 }

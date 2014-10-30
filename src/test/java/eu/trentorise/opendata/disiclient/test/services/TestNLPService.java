@@ -468,7 +468,7 @@ public class TestNLPService {
     public void testFreeSearch() {
         DisiEkb disiEkb = new DisiEkb();
         NLPService nlpService = (NLPService) disiEkb.getNLPService();
-        List<IWordSearchResult> res = nlpService.freeSearch("Cat", Locale.ITALIAN);
+        List<IWordSearchResult> res = nlpService.freeSearch("restau", Locale.ENGLISH);
         assertTrue(res.size() > 0);
     }
 
