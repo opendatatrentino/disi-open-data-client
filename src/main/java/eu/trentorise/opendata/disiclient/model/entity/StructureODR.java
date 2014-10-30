@@ -15,10 +15,7 @@ import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.model.entity.IStructure;
-import eu.trentorise.opendata.semantics.model.entity.IValue;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+
 
 public class StructureODR extends Instance implements IStructure {    
 
@@ -139,7 +136,7 @@ public class StructureODR extends Instance implements IStructure {
 
             if ((a.getValues().get(0).getValue() instanceof EntityODR)) {
                 List<Value> vals = a.getValues();
-                List<Value> valsF = new ArrayList<Value>();
+                List<Value> valsF = new ArrayList();
                 for (Value v : vals) {
                     EntityODR e = (EntityODR) v.getValue();
                     Value vf = new Value();
@@ -150,7 +147,7 @@ public class StructureODR extends Instance implements IStructure {
 
             } else if (((a.getValues().get(0).getValue() instanceof StructureODR))) {
                 List<Value> vals = a.getValues();
-                List<Value> valsF = new ArrayList<Value>();
+                List<Value> valsF = new ArrayList();
 
                 for (Value v : vals) {
                     StructureODR strODR = (StructureODR) v.getValue();
@@ -161,10 +158,20 @@ public class StructureODR extends Instance implements IStructure {
                     valsF.add(vf);
                 }
                 atFixed.setValues(valsF);
+            } else {
+                List<Value> vals = a.getValues();
+                List<Value> valsF = new ArrayList();
+
+                for (Value v : vals) {
+                    Value vf = new Value();                    
+                    vf.setValue(v.getValue());
+                    valsF.add(vf);
+                }
+                atFixed.setValues(valsF);
             }
             attrsFixed.add(atFixed);
         }
-        strSweb.setAttributes(s.getAttributes());
+        strSweb.setAttributes(attrsFixed);
 
         strSweb.setEntityBaseId(s.getEntityBaseId());
         strSweb.setId(s.getId());
