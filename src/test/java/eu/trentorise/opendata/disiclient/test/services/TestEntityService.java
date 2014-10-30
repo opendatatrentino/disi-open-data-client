@@ -678,7 +678,7 @@ public class TestEntityService {
     @Test
     public void TestResidenceDesAlpes(){
         EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
-        enServ.readEntity(RESIDENCE_DES_ALPES_URL);
-        
+        IEntity en = enServ.readEntity(RESIDENCE_DES_ALPES_URL);
+        IntegrityChecker.checkEntity(en);
     }
 }
