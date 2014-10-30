@@ -311,22 +311,28 @@ public class EntityService implements IEntityService {
                 return createStructureAttribute(attrDef, hashMaps);
             }
 
-        } //			else if (ad.getName(Locale.ENGLISH).equals("Part copyOf")){
-        //				return createRelationalAttribute(attrDef,  value);
-        //			}
-        else {
+        }  else {
             if (value instanceof Collection) {
                 List<ValueODR> valsODR = new ArrayList<ValueODR>();
                 for (Object obj : (Collection) value) {
                     ValueODR valODR = new ValueODR();
-                    valODR.setValue(obj);
+                    if (obj instanceof IEntity){
+                        valODR.setValue(EntityODR.disify((IEntity) obj, false));
+                    } else {
+                        valODR.setValue(obj);
+                    }
+                    
                     valsODR.add(valODR);
                 }
                 return new AttributeODR(attrDef, valsODR);
             } else {
-                ValueODR val = new ValueODR();
-                val.setValue(value);
-                return new AttributeODR(attrDef, val);
+                    ValueODR valODR = new ValueODR();
+                    if (value instanceof IEntity){
+                        valODR.setValue(EntityODR.disify((IEntity) value, false));
+                    } else {
+                        valODR.setValue(value);
+                    }
+                return new AttributeODR(attrDef, valODR);
             }
 
         }
@@ -382,22 +388,21 @@ public class EntityService implements IEntityService {
         }
     }
 
-    private it.unitn.disi.sweb.webapi.model.eb.Structure createStructure(IAttributeDef attrDef,
+    private StructureODR createStructure(IAttributeDef attrDef,
             HashMap<IAttributeDef, Object> atributes) {
         List<Attribute> attrs = new ArrayList<Attribute>();
-        it.unitn.disi.sweb.webapi.model.eb.Structure attributeStructure = new it.unitn.disi.sweb.webapi.model.eb.Structure();
+        StructureODR attributeStructure = new StructureODR();
         logger.warn("Hardcoded entity base id 1");
         attributeStructure.setEntityBaseId(1L);
 
         AttributeDef adef = (AttributeDef) attrDef;
         attributeStructure.setTypeId(adef.getRangeEntityTypeID());
-
-        Iterator<?> it = atributes.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pairs = (Map.Entry) it.next();
-            AttributeODR aodr = createAttribute((IAttributeDef) pairs.getKey(), pairs.getValue());
-            attrs.add(aodr.convertToAttribute());
-            it.remove();
+        
+        
+        for (Iterator<IAttributeDef> it = atributes.keySet().iterator(); it.hasNext();) {            
+            IAttributeDef ad = it.next();
+            AttributeODR aodr = createAttribute(ad, atributes.get(ad));
+            attrs.add(aodr.convertToAttribute());            
         }
         attributeStructure.setAttributes(attrs);
         return attributeStructure;

@@ -5,7 +5,6 @@ import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityType;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
-import eu.trentorise.opendata.disiclient.services.DisiEkb;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import eu.trentorise.opendata.disiclient.services.IdentityService;
@@ -19,15 +18,12 @@ import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.PALAZZETTO_ID;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.PALAZZETTO_NAME_IT;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.PALAZZETTO_URL;
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.RAVAZZONE_URL;
-import eu.trentorise.opendata.semantics.IntegrityChecker;
 import eu.trentorise.opendata.semantics.impl.model.entity.MinimalEntity;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.Dict;
-import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.model.AssignmentResult;
 import eu.trentorise.opendata.semantics.services.model.IIDResult;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
@@ -39,15 +35,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertTrue;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
@@ -57,6 +49,8 @@ import org.junit.Test;
 public class TestIDManagementService {
 
     public static final long GYMNASIUM_CONCEPT_ID = 18565L;
+    
+    private static final Logger logger = LoggerFactory.getLogger(TestIDManagementService.class);
 
     private String entityToString(Entity e) {
         String str = "id:" + e.getId()
@@ -274,23 +268,23 @@ public class TestIDManagementService {
         IdentityService idServ = new IdentityService();
 
         final EntityODR enodr = new EntityODR();
-
+        
         IEntityType facility = etypeServ.readEntityType(FACILITY_URL);
         enodr.setEtype(facility);
-        enodr.setEntityBaseId(1L); // todo fixed ID !            
-
-        IEntity palazzetto = enServ.readEntity(PALAZZETTO_URL);
+        enodr.setEntityBaseId(1L); 
+        logger.warn("USING FIXED ID FOR ENTITY BASE! TODO FIXME!");
+                
 
         List<IAttribute> attrs = new ArrayList();
         attrs.add(enServ.createAttribute(facility.getAttrDef(facility.getNameAttrDef().getURL()),
                 "test entity")); // so doesn't complain about missing name...
-        EntityODR palazzetto1 = (EntityODR) palazzetto;
+        
 
-        attrs.add(enServ.createAttribute(facility.getAttrDef(TestEntityService.ATTR_DEF_PART_OF_URL), palazzetto1));
-
+        attrs.add(enServ.createAttribute(facility.getAttrDef(TestEntityService.ATTR_DEF_PART_OF_URL),
+            new MinimalEntity(PALAZZETTO_URL,new Dict(), new Dict(), null)));
+        
         enodr.setStructureAttributes(attrs);
-
-        // todo this call fails because tries to serialize the whole palazzetto as EntityODR
+        
         idServ.assignURL(new ArrayList() {
             {
                 add(enodr);
