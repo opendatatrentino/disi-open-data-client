@@ -158,6 +158,7 @@ public class AttributeODR implements IAttribute {
     }
 
     private List<IValue> convertToValueODR(List<Value> vals) {
+    	
         List<IValue> values = new ArrayList<IValue>();
         for (Value val : vals) {
             ValueODR value = new ValueODR(val);
