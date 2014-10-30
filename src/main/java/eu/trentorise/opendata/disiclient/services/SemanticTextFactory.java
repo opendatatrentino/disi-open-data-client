@@ -195,7 +195,7 @@ public class SemanticTextFactory {
         return new Sentence(startOffset, endOffset, words);
     }
 
-    public static ISemanticText semanticText(@Nullable NLText nltext) {
+    public static SemanticText semanticText(@Nullable NLText nltext) {
 
         if (nltext == null) {
             return new SemanticText();
@@ -281,7 +281,7 @@ public class SemanticTextFactory {
         return new SemanticString(st.getText(), complexConcepts);
     }
 
-    public static ISemanticText semanticText(@Nullable SemanticString ss) {
+    public static SemanticText semanticText(@Nullable SemanticString ss) {
         if (ss == null) {
             return new SemanticText();
         }

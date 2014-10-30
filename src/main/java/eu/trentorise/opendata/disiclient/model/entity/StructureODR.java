@@ -85,7 +85,7 @@ public class StructureODR extends Instance implements IStructure {
                     if (val.getValue() instanceof SemanticText) {
                         fixedVals.add(val);
                     } else {
-                        SemanticText semtext = convertSemanticStringToText((SemanticString) val.getSemanticValue());
+                        SemanticText semtext = SemanticTextFactory.semanticText((SemanticString) val.getSemanticValue());
                         Locale loc = TraceProvUtils.languageTagToLocale(val.getLanguageCode()); // dav so java 6 doesn't bother us Locale.forLanguageTag(val.getLanguageCode());
                         SemanticText stext = semtext.with(loc);
                         Value fixedVal = new Value();
@@ -306,11 +306,6 @@ public class StructureODR extends Instance implements IStructure {
 
         return strSweb;
     }
-    private SemanticText convertSemanticStringToText(SemanticString sstring) {
 
-        SemanticText stext = (SemanticText) SemanticTextFactory.semanticText(sstring);
-
-        return stext;
-    }
     
 }
