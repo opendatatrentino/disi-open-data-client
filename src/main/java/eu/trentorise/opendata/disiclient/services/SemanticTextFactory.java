@@ -104,6 +104,11 @@ public class SemanticTextFactory {
      * @param sentence
      */
     private static Sentence stSentence(NLSentence sentence) {
+
+        if (sentence == null) {
+            throw new IllegalArgumentException("Cannot convert a null sentence!");
+        }
+
         int startOffset = -1;
         int endOffset = -1;
         List<IWord> words = new ArrayList<IWord>();
@@ -112,84 +117,113 @@ public class SemanticTextFactory {
         Integer eo = (Integer) sentence.getProp(NLTextUnit.PFX, "endOffset");
 
         if (so == null || eo == null) {
-            throw new RuntimeException("Offsets are null! startOffset = " + so + " endOffset = " + eo);
+            throw new IllegalArgumentException("Offsets are null! startOffset = " + so + " endOffset = " + eo);
         }
         startOffset = so;
         endOffset = eo;
 
         int i = 0;
+
+        List<NLToken> tokens = sentence.getTokens();
+        if (tokens == null) {
+            logger.warn("Found NLSentence with null tokens, returning Sentence with no tokens");
+            return new Sentence(startOffset, endOffset);
+        }
+
         while (i < sentence.getTokens().size()) {
-            NLToken t = sentence.getTokens().get(i);
-
-            if (isUsedInComplexToken(t)) {
-                if (getMultiTokens(t).size() > 1) {
-                    logger.warn("Found a token belonging to multiple words and/or named entities. Taking only the first one.");
+            NLToken t = null;
+            try {
+                 t = tokens.get(i);
+            } catch (Exception ex){
+            }
+            
+            if (t == null){
+                logger.warn("Couldn't find token at position " + i + ", skipping it.");
+                i += 1;
+                continue;                
+            }
+            
+            try {
+                
+                if (t == null) {
+                    throw new IllegalArgumentException("Found null NLToken, skipping it");
                 }
-                if (getMultiTokens(t).isEmpty()) {
-                    throw new DisiClientException("I should get back at least one complex token!");
-                }
 
-                NLComplexToken multiThing = getMultiTokens(t).get(0); // t.getMultiWords().get(0);
-
-                int tokensSize = 1;
-                for (int j = i + 1; j < sentence.getTokens().size(); j++) {
-                    NLToken q = sentence.getTokens().get(j);
-                    if (!(isUsedInComplexToken(q) && getMultiTokens(q).get(0).getId() == multiThing.getId())) {
-                        break;
-                    } else {
-                        tokensSize += 1;
+                if (isUsedInComplexToken(t)) {
+                    if (getMultiTokens(t).size() > 1) {
+                        logger.warn("Found a token belonging to multiple words and/or named entities. Taking only the first one.");
                     }
-                }
-
-                Integer mtso = (Integer) t.getProp(NLTextUnit.PFX, "sentenceStartOffset");
-                Integer mteo = (Integer) sentence.getTokens().get(i + tokensSize - 1).getProp(NLTextUnit.PFX, "sentenceEndOffset");
-
-                if (mtso == null || mteo == null) {
-                    i += tokensSize;
-                    continue;
-                } else {
-                    Set<NLMeaning> ms = new HashSet(multiThing.getMeanings());
-
-                    if (multiThing.getMeanings().isEmpty() && multiThing.getSelectedMeaning() != null) {
-                        ms.add(multiThing.getSelectedMeaning());
+                    if (getMultiTokens(t).isEmpty()) {
+                        throw new IllegalArgumentException("Token should be used in multitokens, but none found. Skipping token.");
                     }
 
-                    TreeSet<IMeaning> sortedMeanings;
-                    MeaningStatus meaningStatus;
-                    IMeaning selectedMeaning;
+                    NLComplexToken multiThing = getMultiTokens(t).get(0); // t.getMultiWords().get(0);
 
-                    if (ms.size() > 0) {
-                        sortedMeanings = makeSortedMeanings(ms);
-
-                        if (sortedMeanings.first().getURL() != null) {
-                            meaningStatus = MeaningStatus.SELECTED;
-                            selectedMeaning = sortedMeanings.first();
+                    int tokensSize = 1;
+                    for (int j = i + 1; j < sentence.getTokens().size(); j++) {
+                        NLToken q = sentence.getTokens().get(j);
+                        if (!(isUsedInComplexToken(q) && getMultiTokens(q).get(0).getId() == multiThing.getId())) {
+                            break;
                         } else {
+                            tokensSize += 1;
+                        }
+                    }
+
+                    Integer mtso = (Integer) t.getProp(NLTextUnit.PFX, "sentenceStartOffset");
+                    Integer mteo = (Integer) sentence.getTokens().get(i + tokensSize - 1).getProp(NLTextUnit.PFX, "sentenceEndOffset");
+
+                    if (mtso == null || mteo == null) {
+                        i += tokensSize;
+                        continue;
+                    } else {
+                        Set<NLMeaning> ms = new HashSet(multiThing.getMeanings());
+
+                        if (multiThing.getMeanings().isEmpty() && multiThing.getSelectedMeaning() != null) {
+                            ms.add(multiThing.getSelectedMeaning());
+                        }
+
+                        TreeSet<IMeaning> sortedMeanings;
+                        MeaningStatus meaningStatus;
+                        IMeaning selectedMeaning;
+
+                        if (ms.size() > 0) {
+                            sortedMeanings = makeSortedMeanings(ms);
+
+                            if (sortedMeanings.first().getURL() != null) {
+                                meaningStatus = MeaningStatus.SELECTED;
+                                selectedMeaning = sortedMeanings.first();
+                            } else {
+                                meaningStatus = MeaningStatus.TO_DISAMBIGUATE;
+                                selectedMeaning = null;
+                            }
+
+                        } else { // no meanings, but we know the kind                        
+                            sortedMeanings = new TreeSet<IMeaning>();
+                            sortedMeanings.add(new Meaning(null, 1.0, getKind(multiThing)));
                             meaningStatus = MeaningStatus.TO_DISAMBIGUATE;
                             selectedMeaning = null;
                         }
+                        words.add(new Word(startOffset + mtso,
+                                startOffset + mteo,
+                                meaningStatus, selectedMeaning, sortedMeanings));
 
-                    } else { // no meanings, but we know the kind                        
-                        sortedMeanings = new TreeSet<IMeaning>();
-                        sortedMeanings.add(new Meaning(null, 1.0, getKind(multiThing)));
-                        meaningStatus = MeaningStatus.TO_DISAMBIGUATE;
-                        selectedMeaning = null;
+                        i += tokensSize;
                     }
-                    words.add(new Word(startOffset + mtso,
-                            startOffset + mteo,
-                            meaningStatus, selectedMeaning, sortedMeanings));
 
-                    i += tokensSize;
+                } else {
+                    if (t.getProp(NLTextUnit.PFX, "sentenceStartOffset") != null
+                            && t.getProp(NLTextUnit.PFX, "sentenceEndOffset") != null
+                            && t.getMeanings().size() > 0) {
+                        words.add(stWord(t, startOffset));
+                    }
+                    i += 1;
                 }
-
-            } else {
-                if (t.getProp(NLTextUnit.PFX, "sentenceStartOffset") != null
-                        && t.getProp(NLTextUnit.PFX, "sentenceEndOffset") != null
-                        && t.getMeanings().size() > 0) {
-                    words.add(stWord(t, startOffset));
-                }
+            }
+            catch (Exception ex) {
+                logger.warn("Error while processing token at position " + i + " with text " + t.getText() + ", skipping it.", ex);
                 i += 1;
             }
+
         }
 
         return new Sentence(startOffset, endOffset, words);
@@ -202,19 +236,28 @@ public class SemanticTextFactory {
         }
 
         List<ISentence> sentences = new ArrayList<ISentence>();
+        
+        List<NLSentence> nlSentences = nltext.getSentences();
+        if (nlSentences != null){
+            for (NLSentence nls : nlSentences) {
+                Integer so = (Integer) nls.getProp(NLTextUnit.PFX, "startOffset");
+                Integer eo = (Integer) nls.getProp(NLTextUnit.PFX, "endOffset");
 
-        for (NLSentence nls : nltext.getSentences()) {
-            Integer so = (Integer) nls.getProp(NLTextUnit.PFX, "startOffset");
-            Integer eo = (Integer) nls.getProp(NLTextUnit.PFX, "endOffset");
-
-            if (so != null && eo != null) {
-                sentences.add(stSentence(nls));
+                if (so != null && eo != null) {
+                    try {
+                        Sentence s = stSentence(nls);
+                        sentences.add(s);
+                    } catch (Exception ex){
+                        logger.warn("Error while converting NLSentence, skipping it.", ex);
+                    }                
+                }
             }
         }
         Locale locale;
         String lang = nltext.getLanguage();
         if (lang == null) {
             locale = null;
+            logger.warn("Found null language in nltext " + nltext.getText());
         } else {
             locale = new Locale(lang);
         }
