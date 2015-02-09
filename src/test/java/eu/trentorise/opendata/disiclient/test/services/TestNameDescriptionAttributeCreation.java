@@ -20,22 +20,25 @@ import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import eu.trentorise.opendata.disiclient.services.IdentityService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
-import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
-import eu.trentorise.opendata.semantics.model.knowledge.impl.Dict;
+import eu.trentorise.opendata.commons.Dict;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TestNameDescriptionAttributeCreation {
 
+    private static final Logger logger = LoggerFactory.getLogger(TestNameDescriptionAttributeCreation.class);
+    
     @Test
     public void testCreateDescription() {
         EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
         IdentityService idServ = new IdentityService();
         //String name = PALAZZETTO_NAME_IT;
-        Dict names = new Dict();
-        Dict newNames = names.putTranslation(Locale.ITALIAN, "Buon Giorno")
-                .putTranslation(Locale.ENGLISH, "Hello")
-                .putTranslation(Locale.FRENCH, "Bonjour");
-        System.out.println(newNames.toString());
+        Dict.Builder namesBuilder = Dict.builder();
+        Dict newNames = namesBuilder.putAll(Locale.ITALIAN, "Buon Giorno")
+                .putAll(Locale.ENGLISH, "Hello")
+                .putAll(Locale.FRENCH, "Bonjour").build();
+        logger.info(newNames.toString());
 		//String name = "my entity name";
         //		Search search = new Search(WebServiceURLs.getClientProtocol());
         //		List<Name> names = search.nameSearch(name);
@@ -93,7 +96,7 @@ public class TestNameDescriptionAttributeCreation {
 
         Attribute a = null;
         for (IAttributeDef atd : attrDefList) {
-            if (atd.getName().getString(Locale.ENGLISH).equals("Name")) {
+            if (atd.getName().string(Locale.ENGLISH).equals("Name")) {
                 //	System.out.println(atd.getName());
                 AttributeODR attr = es.createNameAttributeODR(atd, value);
                 a = attr.convertToAttribute();

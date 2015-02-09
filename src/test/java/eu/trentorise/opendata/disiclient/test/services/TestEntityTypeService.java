@@ -16,12 +16,12 @@ import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
-import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
+import eu.trentorise.opendata.commons.OdtUtils;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
  * @author David Leoni <david.leoni@unitn.it>
- * @date 28 July 2014
+ * 
  *
  */
 public class TestEntityTypeService {
@@ -58,7 +58,7 @@ public class TestEntityTypeService {
         for (IEntityType etype : etypes) {
 
             List<IAttributeDef> atdefs = etype.getAttributeDefs();
-            //System.out.println("AttributeDef ETYPE Name:"+etype.getName().getString(Locale.ENGLISH));
+            //System.out.println("AttributeDef ETYPE Name:"+etype.getName().string(Locale.ENGLISH));
             //	System.out.println("AttributeDefs:"+etype.getAttributeDefs());
             //	System.out.println("AttributeDef Name:"+etype.getNameAttrDef());
             //	System.out.println("AttributeDef Description:"+etype.getDescriptionAttrDef());
@@ -76,8 +76,8 @@ public class TestEntityTypeService {
     @Test
     public void testGetRootsTypes() {
         EntityTypeService ets = new EntityTypeService();
-        assertEquals("Entity", ets.getRootEtype().getName().getString(Locale.ENGLISH));
-        assertEquals("Structure", ets.getRootStructure().getName().getString(Locale.ENGLISH));
+        assertEquals("Entity", ets.getRootEtype().getName().string(Locale.ENGLISH));
+        assertEquals("Structure", ets.getRootStructure().getName().string(Locale.ENGLISH));
 
     }
 
@@ -116,9 +116,9 @@ public class TestEntityTypeService {
     @Test
     public void testFuzzySearchEtype() {
         EntityTypeService ets = new EntityTypeService();
-        Locale locale = TraceProvUtils.languageTagToLocale("en");
+        Locale locale = OdtUtils.languageTagToLocale("en");
         List<ISearchResult> searchEtypes = ets.searchEntityTypes("Product", locale);
-        assertEquals("Product", searchEtypes.get(0).getName().getString(Locale.ENGLISH));
+        assertEquals("Product", searchEtypes.get(0).getName().string(Locale.ENGLISH));
 
     }
 }

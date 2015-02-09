@@ -1,6 +1,5 @@
 package eu.trentorise.opendata.disiclient.services;
 
-import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.kb.ConceptClient;
 import it.unitn.disi.sweb.webapi.model.kb.concepts.Concept;
 

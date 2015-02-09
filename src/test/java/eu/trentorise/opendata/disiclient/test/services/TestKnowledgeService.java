@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import eu.trentorise.opendata.disiclient.services.KnowledgeService;
 import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
-import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
+import eu.trentorise.opendata.commons.OdtUtils;
 
 public class TestKnowledgeService {
 
@@ -85,7 +85,7 @@ public class TestKnowledgeService {
     @Test
     public void testSearchConcept(){
         KnowledgeService ks = new KnowledgeService();
-        Locale locale = TraceProvUtils.languageTagToLocale("en");
+        Locale locale = OdtUtils.languageTagToLocale("en");
         List<ISearchResult>res = ks.searchConcepts("cat", locale);
         for (ISearchResult r: res){ 
 

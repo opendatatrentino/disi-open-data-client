@@ -1,5 +1,6 @@
 package eu.trentorise.opendata.disiclient.test;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static org.junit.Assert.assertNotNull;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
@@ -12,6 +13,7 @@ import org.junit.Test;
 
 import eu.trentorise.opendata.columnrecognizers.ColumnConceptCandidate;
 import eu.trentorise.opendata.columnrecognizers.ColumnRecognizer;
+import static eu.trentorise.opendata.commons.OdtUtils.checkNotDirtyUrl;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
@@ -23,7 +25,7 @@ import eu.trentorise.opendata.disiclient.services.IdentityService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.disiclient.services.model.SchemaCorrespondence;
 import eu.trentorise.opendata.disiclient.services.shematching.MatchingService;
-import eu.trentorise.opendata.semantics.IntegrityChecker;
+import eu.trentorise.opendata.semantics.Checker;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
@@ -34,7 +36,6 @@ import eu.trentorise.opendata.semantics.services.model.IIDResult;
 public class IntegrityCheckerTest {
 
     String resourceName = "IMPIANTI RISALITA";
-    private IntegrityChecker iChecker;
 
     String col1 = "nr";
     String col2 = "Comune";
@@ -125,15 +126,15 @@ public class IntegrityCheckerTest {
 
             EntityType eType = (EntityType) etype;
 
-            if (etype.getName().getString(Locale.ENGLISH).equals("Name")) {
+            if (etype.getName().string(Locale.ENGLISH).equals("Name")) {
                 //System.out.println(etype.getName().getString(Locale.ENGLISH));
             }
             long conid = 2923L;
             SchemaCorrespondence scCorr = (SchemaCorrespondence) mService.schemaMatch(eType, odrHeaders, conid);
-            iChecker.checkSchemaCorrespondence(scCorr);
-            iChecker.checkDict(etype.getName());
-            iChecker.checkDict(etype.getConcept().getDescription());
-            iChecker.checkDict(etype.getConcept().getName());
+            Checker.checkSchemaCorrespondence(scCorr);
+            checkNotNull(etype.getName(), "etype name is null!");
+            checkNotNull(etype.getConcept().getDescription(), "etype concept description is null!");
+            checkNotNull(etype.getConcept().getName(), "etype concept name is null!");
             assertNotNull(scCorr.getScore());
             assertNotNull(scCorr.getAttributeCorrespondence());
             assertNotNull(scCorr.getEtype());
@@ -148,18 +149,18 @@ public class IntegrityCheckerTest {
         EntityTypeService ets = new EntityTypeService();
         List<IEntityType> etypes = ets.getAllEntityTypes();
         for (IEntityType etype : etypes) {
-            iChecker.checkEntityType(etype);
-            iChecker.checkURL(etype.getURL());
+            Checker.checkEntityType(etype);
+            checkNotDirtyUrl(etype.getURL(), "etype url is dirty!");
             List<IAttributeDef> atdefs = etype.getAttributeDefs();
             for (IAttributeDef ad : atdefs) {
-                iChecker.checkAttributeDef(ad);
-                iChecker.checkDict(ad.getName());
-                iChecker.checkDict(ad.getConcept().getDescription());
-                iChecker.checkDict(ad.getConcept().getName());
-                iChecker.checkURL(ad.getURL());
-                iChecker.checkURL(ad.getEtypeURL());
+                Checker.checkAttributeDef(ad);
+                checkNotNull(ad.getName(), "attribute def name is null!");
+                checkNotNull(ad.getConcept().getDescription(), "attribute def concept description is null!");
+                checkNotNull(ad.getConcept().getName(), "attribute def concept name is null!");
+                checkNotDirtyUrl(ad.getURL(), "attr def url is dirty!");
+                checkNotDirtyUrl(ad.getEtypeURL(), "attr def etype url is dirty!");
                 if (ad.getDataType().equals(DataTypes.STRUCTURE)) {
-                    iChecker.checkURL(ad.getRangeEtypeURL());
+                    checkNotDirtyUrl(ad.getRangeEtypeURL(), "attr def range etype url is dirty!");
                 }
             }
         }
@@ -171,18 +172,17 @@ public class IntegrityCheckerTest {
     public void testCheckEntity() {
         EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
         IEntity entity = es.readEntity(15001L);
-        iChecker.checkEntity(entity);
+        Checker.checkEntity(entity);
         List<IAttribute> attributes = entity.getStructureAttributes();
 
         for (IAttribute attr : attributes) {
-            iChecker.checkValue(attr.getFirstValue(), attr.getAttributeDefinition());
+            Checker.checkValue(attr.getFirstValue(), attr.getAttributeDefinition());
         }
 
     }
 
     @Test
     public void testCheckIDResults() {
-        EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
         IdentityService idServ = new IdentityService();
 
         IEntity entity1 = entityForReuseResults();
@@ -198,10 +198,8 @@ public class IntegrityCheckerTest {
         for (IIDResult res : results) {
             System.out.println(res.getAssignmentResult().toString());
 
-            iChecker.checkIDResult(res);
-			//IEntity ent = res.getResultEntity();
+            Checker.checkIDResult(res);
 
-            //System.out.println(ent.getURL());
         }
     }
 
@@ -298,7 +296,7 @@ public class IntegrityCheckerTest {
 
         Attribute a = null;
         for (IAttributeDef atd : attrDefList) {
-            if (atd.getName().getString(Locale.ENGLISH).equals("Foursquare ID")) {
+            if (atd.getName().string(Locale.ENGLISH).equals("Foursquare ID")) {
                 AttributeODR attr = es.createAttribute(atd, (String) value);
                 a = attr.convertToAttribute();
                 attrs.add(a);
@@ -313,7 +311,7 @@ public class IntegrityCheckerTest {
 
         ConceptODR concept = new ConceptODR();
         concept = concept.readConcept(1L);
-        iChecker.checkConcept(concept);
+        Checker.checkConcept(concept);
 
     }
 
@@ -321,6 +319,6 @@ public class IntegrityCheckerTest {
     //	@Test
     //	public void testCheckEKB(){
     //		IEkb ekb = new Ekb(); 
-    //	iChecker.checkEkbQuick(ekb);
+    //	Checker.checkEkbQuick(ekb);
     //	}
 }

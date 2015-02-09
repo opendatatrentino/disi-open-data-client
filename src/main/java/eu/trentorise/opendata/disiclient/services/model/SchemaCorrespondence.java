@@ -9,7 +9,7 @@ import eu.trentorise.opendata.semantics.services.model.ISchemaCorrespondence;
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
  * @author David Leoni <david.leoni@unitn.it>
- * @date 24 July 2014
+ * 
  *
  */
 public class SchemaCorrespondence implements ISchemaCorrespondence {

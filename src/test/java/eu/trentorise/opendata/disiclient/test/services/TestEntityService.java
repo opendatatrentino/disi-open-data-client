@@ -15,18 +15,18 @@ import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.attrDefI
 import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.conceptIDToURL;
 import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.entityIDToURL;
 import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.etypeIDToURL;
-import eu.trentorise.opendata.semantics.IntegrityChecker;
-import eu.trentorise.opendata.semantics.NotFoundException;
+import eu.trentorise.opendata.semantics.Checker;
+import eu.trentorise.opendata.commons.NotFoundException;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IStructure;
 import eu.trentorise.opendata.semantics.model.entity.IValue;
-import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
+import eu.trentorise.opendata.semtext.SemText;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.IEntityService;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
-import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
+import eu.trentorise.opendata.commons.OdtUtils;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
 import it.unitn.disi.sweb.webapi.client.eb.EbClient;
@@ -191,7 +191,7 @@ public class TestEntityService {
 
         assertTrue(nameValue.getEtypeURL() != null);
 
-        assertTrue(entity.getName().getString(Locale.ITALIAN).length() > 0);
+        assertTrue(entity.getName().string(Locale.ITALIAN).length() > 0);
         // assertTrue(entity.getDescription().getString(Locale.ITALIAN).length() > 0);
 
     }
@@ -207,9 +207,9 @@ public class TestEntityService {
          IStructure nameValue = (IStructure) entity.getAttribute(nameAttrDef.getURL()).getValues().get(0).getValue();
          assertTrue(nameValue.getEtype() != null);
          */
-        IntegrityChecker.checkEntity(entity);
+        Checker.checkEntity(entity);
 
-        assertTrue(entity.getName().getString(Locale.ITALIAN).length() > 0);
+        assertTrue(entity.getName().string(Locale.ITALIAN).length() > 0);
         // assertTrue(entity.getDescription().getString(Locale.ITALIAN).length() > 0);
 
     }
@@ -234,8 +234,8 @@ public class TestEntityService {
         thrown.expect(IllegalArgumentException.class);
         List<IEntity> entities = es.readEntities(entitieURLs);
         assertEquals(entities.get(0), null);
-        logger.info(entities.get(1).getEtype().getName().getStrings(Locale.ITALIAN).get(0));
-        assertEquals(entities.get(1).getName().getStrings(Locale.ITALIAN).get(0), "Ravazzone");
+        logger.info(entities.get(1).getEtype().getName().strings(Locale.ITALIAN).get(0));
+        assertEquals(entities.get(1).getName().strings(Locale.ITALIAN).get(0), "Ravazzone");
     }
 
     @Test
@@ -260,9 +260,9 @@ public class TestEntityService {
     public void testEntityReadByGlobalID() {
         EntityService es = new EntityService(api);
         EntityODR entity = (EntityODR) es.readEntityByGUID(10000466L);
-        IntegrityChecker.checkEntity(entity);
-        logger.info(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0));
-        assertEquals(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0), "Infrastruttura");
+        Checker.checkEntity(entity);
+        logger.info(entity.getEtype().getName().strings(Locale.ITALIAN).get(0));
+        assertEquals(entity.getEtype().getName().strings(Locale.ITALIAN).get(0), "Infrastruttura");
     }
 
     @Test
@@ -279,52 +279,44 @@ public class TestEntityService {
         EntityODR entityToCreate = new EntityODR();
         List<Attribute> attributes = new ArrayList<Attribute>();
         ComplexType cType = ctypecl.readComplexType(inst.getTypeId(), null);
-        EntityType etype = new EntityType(cType);
-		//List<Name> names = new ArrayList<Name>();
+        EntityType etype = new EntityType(cType);		
 
         //instantiation of variables
         attributes = attrClient.readAttributes(15007L, null, null);
-        //EntityTypeService es = new EntityTypeService();
-        //	EntityType etype= es.getEntityType(e.getTypeId());
 
         List<IAttributeDef> attrDefs = etype.getAttributeDefs();
         Long attrDefClassAtrID = null;
         for (IAttributeDef adef : attrDefs) {
 
-            if (adef.getName().getString(Locale.ENGLISH).equalsIgnoreCase("class")) {
+            if (adef.getName().string(Locale.ENGLISH).equalsIgnoreCase("class")) {
                 attrDefClassAtrID = adef.getGUID();
                 break;
             }
         }
 
-        //	boolean isExistAttrClass=false;
+
         ArrayList<Attribute> attrsEntityToCreate = new ArrayList<Attribute>();
 
         for (Attribute a : attributes) {
 
-            if (a.getDefinitionId() != attrDefClassAtrID) {
-                //  System.out.println(a.getName().get("en"));
+            if (a.getDefinitionId() != attrDefClassAtrID) {                
                 attrsEntityToCreate.add(a);
             }
         }
-        //logger.info("Etype id: "+inst.getTypeId());
+        
         //assigning variables
         entityToCreate.setAttributes(attrsEntityToCreate);
         entityToCreate.setEtype(etype);
         entityToCreate.setEntityBaseId(1L);
-        //  logger.info("entity: " + entity.toString());
-        //es.createEntity(entity);
+
 
         EbClient ebc = new EbClient(api);
         EntityBase eb = ebc.readEntityBase(1L, null);
         int instanceNum = eb.getInstancesNumber();
         String entityURL = null;
-//        entityURL = es.createEntityURL(entityToCreate);
-//        es.deleteEntity(entityURL);
+
         try {
             entityURL = es.createEntityURL(entityToCreate);
-            //        es.ge
-            //        inst = instanceClient.readInstance(id, null);
 
             EntityBase ebafter = ebc.readEntityBase(1L, null);
             int instanceNumAfter = ebafter.getInstancesNumber();
@@ -355,31 +347,31 @@ public class TestEntityService {
     public void testReadEntityRavazzone() {
         EntityService es = new EntityService(api);
         IEntity entity = es.readEntity(RAVAZZONE_URL);
-        IntegrityChecker.checkEntity(entity);
-        logger.info(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0));
-        assertEquals(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0), "Località");
+        Checker.checkEntity(entity);
+        logger.info(entity.getEtype().getName().strings(Locale.ITALIAN).get(0));
+        assertEquals(entity.getEtype().getName().strings(Locale.ITALIAN).get(0), "Località");
     }
 
     @Test
     public void testReadCampanilPartenza() {
         EntityService es = new EntityService(api);
         EntityODR entity = (EntityODR) es.readEntity(CAMPANIL_PARTENZA_URL);
-        IntegrityChecker.checkEntity(entity);
-        logger.info(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0));
+        Checker.checkEntity(entity);
+        logger.info(entity.getEtype().getName().strings(Locale.ITALIAN).get(0));
 
-        assertTrue(entity.getName().getStrings(Locale.ITALIAN).get(0).length() > 0);
-        assertTrue(entity.getDescription().getStrings(Locale.ITALIAN).get(0).length() > 0);
-        assertTrue(entity.getDescription().getStrings(Locale.ENGLISH).get(0).length() > 0);
-        assertNotNull(((ISemanticText) entity.getAttribute(ATTR_DEF_DESCRIPTION_URL).getValues().get(0).getValue()).getLocale());
+        assertTrue(entity.getName().strings(Locale.ITALIAN).get(0).length() > 0);
+        assertTrue(entity.getDescription().strings(Locale.ITALIAN).get(0).length() > 0);
+        assertTrue(entity.getDescription().strings(Locale.ENGLISH).get(0).length() > 0);
+        assertNotNull(((SemText) entity.getAttribute(ATTR_DEF_DESCRIPTION_URL).getValues().get(0).getValue()).getLocale());
     }
 
     @Test
     public void testReadStructure() {
         EntityService es = new EntityService(api);
         StructureODR structure = (StructureODR) es.readStructure(64001L);
-        IntegrityChecker.checkStructure(structure);
-        logger.info(structure.getEtype().getName().getStrings(Locale.ITALIAN).get(0));
-        assertEquals(structure.getEtype().getName().getStrings(Locale.ITALIAN).get(0), "Nome");
+        Checker.checkStructure(structure);
+        logger.info(structure.getEtype().getName().strings(Locale.ITALIAN).get(0));
+        assertEquals(structure.getEtype().getName().strings(Locale.ITALIAN).get(0), "Nome");
     }
 
     @Test
@@ -392,13 +384,13 @@ public class TestEntityService {
         // entitieURLs.add(POVO_URL);
         List<IEntity> entities = es.readEntities(entitieURLs);
         for (IEntity entity : entities) {
-//            IntegrityChecker.checkEntity(entity);
+//            Checker.checkEntity(entity);
         }
 
-        logger.info(entities.get(0).getName().getStrings(Locale.ITALIAN).get(0));
-        assertEquals(entities.get(1).getName().getStrings(Locale.ITALIAN).get(0), "PALAZZETTO DELLO SPORT");
-        logger.info(entities.get(1).getEtype().getName().getStrings(Locale.ITALIAN).get(0));
-        assertEquals(entities.get(0).getName().getStrings(Locale.ITALIAN).get(0), "Ravazzone");
+        logger.info(entities.get(0).getName().strings(Locale.ITALIAN).get(0));
+        assertEquals(entities.get(1).getName().strings(Locale.ITALIAN).get(0), "PALAZZETTO DELLO SPORT");
+        logger.info(entities.get(1).getEtype().getName().strings(Locale.ITALIAN).get(0));
+        assertEquals(entities.get(0).getName().strings(Locale.ITALIAN).get(0), "Ravazzone");
     }
 
     @Test
@@ -509,7 +501,7 @@ public class TestEntityService {
         List<Attribute> attrs = new ArrayList<Attribute>();
 
         for (IAttributeDef atd : attrDefList) {
-            //			if (atd.getName().getString(Locale.ENGLISH).equals("Name")){
+            //			if (atd.getName().string(Locale.ENGLISH).equals("Name")){
             //				logger.info(atd.getName());
             //				logger.info(atd.getGUID());
             //				logger.info(atd.getDataType());
@@ -523,27 +515,27 @@ public class TestEntityService {
             //
             //				}
 
-            if (atd.getName().getString(Locale.ENGLISH).equals("Name")) {
+            if (atd.getName().string(Locale.ENGLISH).equals("Name")) {
                 //  logger.info(atd.getName());
                 AttributeODR attr = es.createAttribute(atd, "TestName");
                 Attribute a = attr.convertToAttribute();
                 attrs.add(a);
-            } else if (atd.getName().getString(Locale.ENGLISH).equals("Class")) {
+            } else if (atd.getName().string(Locale.ENGLISH).equals("Class")) {
                 //  logger.info(atd.getName());
                 AttributeODR attr = es.createAttribute(atd, 123L);
                 Attribute a = attr.convertToAttribute();
                 attrs.add(a);
-            } else if (atd.getName().getString(Locale.ENGLISH).equals("Latitude")) {
+            } else if (atd.getName().string(Locale.ENGLISH).equals("Latitude")) {
                 //       logger.info(atd.getName());
                 AttributeODR attr = es.createAttribute(atd, 12.123F);
                 Attribute a = attr.convertToAttribute();
                 attrs.add(a);
-            } else if (atd.getName().getString(Locale.ENGLISH).equals("Longitude")) {
+            } else if (atd.getName().string(Locale.ENGLISH).equals("Longitude")) {
                 //     logger.info(atd.getName());
                 AttributeODR attr = es.createAttribute(atd, 56.567F);
                 Attribute a = attr.convertToAttribute();
                 attrs.add(a);
-            } else if (atd.getName().getString(Locale.ENGLISH).equals("Opening hours")) {
+            } else if (atd.getName().string(Locale.ENGLISH).equals("Opening hours")) {
                 //     logger.info(atd.getName());
                 //      logger.info(atd.getURL());
 
@@ -583,7 +575,7 @@ public class TestEntityService {
 
         for (IAttribute a : ((IStructure) en).getStructureAttributes()) {
 
-            //    		System.out.println(a.getAttrDef().getName().getString(Locale.ENGLISH));
+            //    		System.out.println(a.getAttrDef().getName().string(Locale.ENGLISH));
             //    		//System.out.println(a.getAttrDef().getRangeEtypeURL());
             //    		//System.out.println(a.getAttrDef().getEType());
             //    		System.out.println(a.getAttrDef().getGUID());
@@ -606,7 +598,7 @@ public class TestEntityService {
         EntityService es = new EntityService();
         IEntity en = es.readEntity(ANDALO_URL);
 
-        IntegrityChecker.checkEntity(en);
+        Checker.checkEntity(en);
 
         IAttributeDef nameAttrDef = en.getEtype().getNameAttrDef();
         String nameAttrDefURL = nameAttrDef.getURL();
@@ -625,16 +617,15 @@ public class TestEntityService {
     @Test
     public void testDisify() {
         EntityService es = new EntityService();
-        IEntity en = es.readEntity(POVO_URL);
-        EntityODR e = (EntityODR) en;       
+        EntityODR en = (EntityODR) es.readEntity(POVO_URL);        
         
         AttributeODR a = (AttributeODR) en.getStructureAttributes().get(2);
         IValue val = new ValueODR();
         val.setValue(15.2f);
         a.addValue(val);
 
-        IEntity ent = EntityODR.disify(e, true);
-        assertNotNull(ent);
+        IEntity ent = EntityODR.disify(en, true);
+        assertNotNull(ent);        
         String URL = null;
         try {
             URL = es.createEntityURL(ent);
@@ -652,7 +643,7 @@ public class TestEntityService {
         EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
 
         String etypeURL = WebServiceURLs.etypeIDToURL(18L);
-        Locale locale = TraceProvUtils.languageTagToLocale("it");
+        Locale locale = OdtUtils.languageTagToLocale("it");
         List<ISearchResult> sResults = enServ.searchEntities("Povo", etypeURL, locale);
         for (ISearchResult sr : sResults) {
             assertNotNull(sr.getURL());
@@ -666,11 +657,11 @@ public class TestEntityService {
         EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
 
         String etypeURL = WebServiceURLs.etypeIDToURL(18L);
-        Locale locale = TraceProvUtils.languageTagToLocale("it");
+        Locale locale = OdtUtils.languageTagToLocale("it");
         List<ISearchResult> sResults = enServ.searchEntities("Andalo", etypeURL, locale);
         assertTrue(sResults.size() > 0);
         
-        assertEquals("Andalo", sResults.get(0).getName().getString(Locale.ITALIAN));
+        assertEquals("Andalo", sResults.get(0).getName().string(Locale.ITALIAN));
 
         
     }
@@ -679,6 +670,6 @@ public class TestEntityService {
     public void TestResidenceDesAlpes(){
         EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
         IEntity en = enServ.readEntity(RESIDENCE_DES_ALPES_URL);
-        IntegrityChecker.checkEntity(en);
+        Checker.checkEntity(en);
     }
 }

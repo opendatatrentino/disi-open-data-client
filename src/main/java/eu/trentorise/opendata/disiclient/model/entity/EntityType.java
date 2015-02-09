@@ -1,5 +1,8 @@
 package eu.trentorise.opendata.disiclient.model.entity;
 
+import eu.trentorise.opendata.commons.Dict;
+import eu.trentorise.opendata.commons.OdtUtils;
+import eu.trentorise.opendata.disiclient.DictFactory;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
@@ -7,9 +10,6 @@ import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.model.entity.IUniqueIndex;
 import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
-import eu.trentorise.opendata.semantics.model.knowledge.IDict;
-import eu.trentorise.opendata.semantics.model.knowledge.impl.Dict;
-import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
 import it.unitn.disi.sweb.webapi.client.kb.AttributeDefinitionClient;
 import it.unitn.disi.sweb.webapi.client.kb.ComplexTypeClient;
 import it.unitn.disi.sweb.webapi.model.kb.types.AttributeDefinition;
@@ -22,7 +22,7 @@ import java.util.Map;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
- * @date 26 Feb 2014
+ * 
  *
  */
 public class EntityType implements IEntityType {
@@ -52,7 +52,7 @@ public class EntityType implements IEntityType {
     }
 
     public String getName(Locale locale) {
-        return name.get(TraceProvUtils.localeToLanguageTag(locale));
+        return name.get(OdtUtils.localeToLanguageTag(locale));
     }
 
     public Map<String, String> getName1() {
@@ -175,27 +175,12 @@ public class EntityType implements IEntityType {
 
     }
 
-    public IDict getName() {
-        Dict dict = new Dict();
-        Iterator<?> it = this.name.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pairs = (Map.Entry) it.next();
-            Locale l = TraceProvUtils.languageTagToLocale((String) pairs.getKey());
-            dict = dict.putTranslation(l, (String) pairs.getValue());
-
-        }
-        return dict;
+    public Dict getName() {
+        return DictFactory.mapToDict(this.name);
     }
 
-    public IDict getDescription() {
-        Dict dict = new Dict();
-        Iterator<?> it = this.description.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pairs = (Map.Entry) it.next();
-            Locale l = TraceProvUtils.languageTagToLocale((String) pairs.getKey());
-            dict = dict.putTranslation(l, (String) pairs.getValue());
-        }
-        return dict;
+    public Dict getDescription() {
+        return DictFactory.mapToDict(this.description);
     }
 
     public void removeAttributeDef(String attrDefURL) {

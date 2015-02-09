@@ -46,7 +46,7 @@ public class EntityExportService {
 		List<IAttributeDef> attributeDefs = etype.getAttributeDefs();
 
 		for (IAttributeDef attrDef : attributeDefs) {
-			System.out.println(attrDef.getName().getString(Locale.ENGLISH));
+			System.out.println(attrDef.getName().string(Locale.ENGLISH));
 			System.out.println(attrDef.getURL());
 		}
 		return null;
@@ -66,7 +66,7 @@ public class EntityExportService {
 				jsonObjectAttr.addProperty(regexInput, attrDef.getDataType());
 
 			}
-			finJsonObject.add(attrDef.getName().getString(Locale.ENGLISH), jsonObjectAttr);
+			finJsonObject.add(attrDef.getName().string(Locale.ENGLISH), jsonObjectAttr);
 		}
 
 		finJsonObject.addProperty("xsd", "http://www.w3.org/2001/XMLSchema#");
@@ -151,7 +151,7 @@ public class EntityExportService {
 				//System.out.println(attrConceptID);
 				if (ad.getConceptId() == attrConceptID) {
 
-					String name = atDef.getName().getString(Locale.ENGLISH);
+					String name = atDef.getName().string(Locale.ENGLISH);
 					//	System.out.println(name);
 					attrObj.remove("creationDate");
 					attrObj.remove("modificationDate");

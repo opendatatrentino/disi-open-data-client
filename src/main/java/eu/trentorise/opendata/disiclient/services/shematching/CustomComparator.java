@@ -6,7 +6,7 @@ import eu.trentorise.opendata.semantics.services.model.ISchemaCorrespondence;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
- * @date 4 Mar 2014
+ * 
  *
  */
 public class CustomComparator implements Comparator<ISchemaCorrespondence> {

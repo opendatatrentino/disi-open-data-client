@@ -1,5 +1,6 @@
 package eu.trentorise.opendata.disiclient.test.services;
 
+import eu.trentorise.opendata.commons.Dict;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
@@ -23,7 +24,6 @@ import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
-import eu.trentorise.opendata.semantics.model.knowledge.impl.Dict;
 import eu.trentorise.opendata.semantics.services.model.AssignmentResult;
 import eu.trentorise.opendata.semantics.services.model.IIDResult;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
- * @date 26 Mar 2014
+ * 
  *
  */
 public class TestIDManagementService {
@@ -281,7 +281,7 @@ public class TestIDManagementService {
         
 
         attrs.add(enServ.createAttribute(facility.getAttrDef(TestEntityService.ATTR_DEF_PART_OF_URL),
-            new MinimalEntity(PALAZZETTO_URL,new Dict(), new Dict(), null)));
+            new MinimalEntity(PALAZZETTO_URL,Dict.of(), Dict.of(), "")));
         
         enodr.setStructureAttributes(attrs);
         
@@ -311,7 +311,7 @@ public class TestIDManagementService {
             IAttribute attr = structureAttributes.get(i);
             if (attr.getAttrDef().getURL().equals(ATTR_DEF_PART_OF_URL)){
                 AttributeODR newAttr = enServ.createAttribute(attr.getAttrDef(), 
-                        new MinimalEntity("http://trial/instances/new/1234567", new Dict(),new Dict(), LOCATION_URL));
+                        new MinimalEntity("http://trial/instances/new/1234567", Dict.of(), Dict.of(), LOCATION_URL));
                 structureAttributes.set(i, newAttr);
             }
         }
@@ -384,7 +384,7 @@ public class TestIDManagementService {
 
         Attribute a = null;
         for (IAttributeDef atd : attrDefList) {
-            if (atd.getName().getString(Locale.ENGLISH).equals("Name")) {
+            if (atd.getName().string(Locale.ENGLISH).equals("Name")) {
                 System.out.println(atd.getName());
                 AttributeODR attr = es.createNameAttributeODR(atd, value);
                 a = attr.convertToAttribute();

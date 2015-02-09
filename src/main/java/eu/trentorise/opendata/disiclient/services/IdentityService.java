@@ -22,7 +22,7 @@ import eu.trentorise.opendata.disiclient.model.entity.EntityType;
 import eu.trentorise.opendata.disiclient.services.model.IDRes;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
-import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
+import eu.trentorise.opendata.semtext.SemText;
 import eu.trentorise.opendata.semantics.services.IIdentityService;
 import eu.trentorise.opendata.semantics.services.model.IIDResult;
 
@@ -46,8 +46,8 @@ public class IdentityService implements IIdentityService {
                     nameSt = (String) nm.getAttributes().iterator().next().getValues().iterator().next().getValue();
                 } else if (val instanceof String) {
                     nameSt = (String) val;
-                } else if (val instanceof ISemanticText) {
-                    nameSt = ((ISemanticText) val).getText();
+                } else if (val instanceof SemText) {
+                    nameSt = ((SemText) val).getText();
                 } else {
                     throw new IllegalArgumentException("Found unhandled class! Value class is " + val.getClass().getSimpleName());
                 }
@@ -124,7 +124,7 @@ public class IdentityService implements IIdentityService {
         Long attrDefClassAtrID = null;
         for (IAttributeDef adef : attrDefs) {
 
-            if (adef.getName().getString(Locale.ENGLISH).equalsIgnoreCase("class")) {
+            if (adef.getName().string(Locale.ENGLISH).equalsIgnoreCase("class")) {
                 attrDefClassAtrID = adef.getGUID();
                 break;
             }
