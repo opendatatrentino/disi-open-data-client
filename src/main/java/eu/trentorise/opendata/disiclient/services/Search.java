@@ -20,7 +20,7 @@ import eu.trentorise.opendata.disiclient.model.entity.EntityType;
 import eu.trentorise.opendata.disiclient.services.model.SearchResult;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
-import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
+import eu.trentorise.opendata.commons.OdtUtils;
 
 public class Search {
 
@@ -73,7 +73,7 @@ public class Search {
 
         for (Instance instance : instances) {
             EntityType etype = ets.getEntityType(instance.getTypeId());
-            if (etype.getName().getString(TraceProvUtils.languageTagToLocale("en")).equals("Name")) {
+            if (etype.getName().string(OdtUtils.languageTagToLocale("en")).equals("Name")) {
                 Name name = (Name) instance;
                 names.add(name);
             }
@@ -131,8 +131,7 @@ public class Search {
     private List<IEntity> convertInstancesToEntities(List<Instance> instances) {
         List<IEntity> entities = new ArrayList<IEntity>();
         EntityTypeService ets = new EntityTypeService();
-        for (Instance instance : instances) {
-            EntityType etype = ets.getEntityType(instance.getTypeId());
+        for (Instance instance : instances) {            
             if (instance instanceof Entity) {
                 System.out.println(instance.getTypeId());
                 Entity entity = (Entity) instance;

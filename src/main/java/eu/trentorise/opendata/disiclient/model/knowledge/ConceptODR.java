@@ -1,10 +1,10 @@
 package eu.trentorise.opendata.disiclient.model.knowledge;
 
+import eu.trentorise.opendata.commons.Dict;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
-import eu.trentorise.opendata.semantics.model.knowledge.IDict;
-import eu.trentorise.opendata.semantics.model.knowledge.impl.Dict;
-import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
+import eu.trentorise.opendata.commons.OdtUtils;
+import eu.trentorise.opendata.disiclient.DictFactory;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.kb.ConceptClient;
 import it.unitn.disi.sweb.webapi.model.kb.concepts.Concept;
@@ -98,28 +98,13 @@ public class ConceptODR implements IConcept {
         return globalID;
     }
 
-    public IDict getDescription() {
-        Dict dict = new Dict();
-        Iterator<?> it = this.description.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pairs = (Map.Entry) it.next();
-            Locale l = TraceProvUtils.languageTagToLocale((String) pairs.getKey());
-            dict = dict.putTranslation(l, (String) pairs.getValue());
-
-        }
-        return dict;
+    public Dict getName() {
+        return DictFactory.mapToDict(this.name);
+    }
+    
+    public Dict getDescription() {
+        return DictFactory.mapToDict(this.description);
     }
 
-    public IDict getName() {
-        Dict dict = new Dict();
-        Iterator<?> it = this.name.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pairs = (Map.Entry) it.next();
-            Locale l = TraceProvUtils.languageTagToLocale((String) pairs.getKey());
-            dict = dict.putTranslation(l, (String) pairs.getValue());
-
-        }
-        return dict;
-    }
 
 }

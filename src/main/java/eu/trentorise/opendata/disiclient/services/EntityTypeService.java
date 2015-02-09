@@ -30,12 +30,12 @@ import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.model.entity.IUniqueIndex;
 import eu.trentorise.opendata.semantics.services.IEntityTypeService;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
-import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
+import eu.trentorise.opendata.commons.OdtUtils;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
  * @author David Leoni <david.leoni@unitn.it>
- * @date 23 July 2014
+ * 
  *
  */
 public class EntityTypeService implements IEntityTypeService {
@@ -201,7 +201,7 @@ public class EntityTypeService implements IEntityTypeService {
 
 		for (ComplexType cType : complexTypeList) {
 
-			double score = scoreName(partialName, cType.getName().get(TraceProvUtils.localeToLanguageTag(locale)));
+			double score = scoreName(partialName, cType.getName().get(OdtUtils.localeToLanguageTag(locale)));
 			ctypeMap.put(cType, score);
 
 		}
@@ -284,7 +284,7 @@ public class EntityTypeService implements IEntityTypeService {
 		List<IEntityType> etypes = getAllEntityTypes();
 		for (IEntityType etype : etypes) {
 
-			if (etype.getName().getString(Locale.ENGLISH).equals("Structure")) {
+			if (etype.getName().string(Locale.ENGLISH).equals("Structure")) {
 				return etype;
 			}
 		}
@@ -295,7 +295,7 @@ public class EntityTypeService implements IEntityTypeService {
 		List<IEntityType> etypes = getAllEntityTypes();
 		for (IEntityType etype : etypes) {
 
-			if (etype.getName().getString(Locale.ENGLISH).equals("Entity")) {
+			if (etype.getName().string(Locale.ENGLISH).equals("Entity")) {
 				return etype;
 			}
 		}

@@ -25,8 +25,8 @@ import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.model.entity.IStructure;
-import eu.trentorise.opendata.semantics.model.knowledge.impl.SemanticText;
-import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
+import eu.trentorise.opendata.semantics.nlp.model.SemanticText;
+import eu.trentorise.opendata.commons.OdtUtils;
 
 
 public class StructureODR extends Instance implements IStructure {    
@@ -86,7 +86,7 @@ public class StructureODR extends Instance implements IStructure {
                         fixedVals.add(val);
                     } else {
                         SemanticText semtext = SemanticTextFactory.semanticText((SemanticString) val.getSemanticValue());
-                        Locale loc = TraceProvUtils.languageTagToLocale(val.getLanguageCode()); // dav so java 6 doesn't bother us Locale.forLanguageTag(val.getLanguageCode());
+                        Locale loc = OdtUtils.languageTagToLocale(val.getLanguageCode()); // dav so java 6 doesn't bother us Locale.forLanguageTag(val.getLanguageCode());
                         SemanticText stext = semtext.with(loc);
                         Value fixedVal = new Value();
                         fixedVal.setValue(stext);

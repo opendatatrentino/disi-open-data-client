@@ -5,13 +5,13 @@ import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.KnowledgeService;
 import eu.trentorise.opendata.disiclient.services.NLPService;
 import eu.trentorise.opendata.disiclient.services.SemanticTextFactory;
-import eu.trentorise.opendata.semantics.IntegrityChecker;
+import eu.trentorise.opendata.semantics.Checker;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
-import eu.trentorise.opendata.semantics.model.knowledge.IMeaning;
-import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
-import eu.trentorise.opendata.semantics.model.knowledge.IWord;
-import eu.trentorise.opendata.semantics.model.knowledge.MeaningKind;
+import eu.trentorise.opendata.semantics.nlp.model.Meaning;
+import eu.trentorise.opendata.semantics.nlp.model.SemanticText;
+import eu.trentorise.opendata.semantics.nlp.model.Word;
+import eu.trentorise.opendata.semantics.nlp.model.MeaningKind;
 import eu.trentorise.opendata.semantics.model.knowledge.MeaningStatus;
 import eu.trentorise.opendata.semantics.services.model.IWordSearchResult;
 import it.unitn.disi.sweb.core.nlp.model.NLEntityMeaning;
@@ -25,8 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.etypeIDToURL;
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.FACILITY_URL;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.LOCATION_URL;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.SHOPPING_FACILITY_URL;
 import java.util.HashSet;
@@ -44,14 +42,14 @@ import org.slf4j.LoggerFactory;
  * Testing the client implementaion of NLP services.
  *
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
- * @date 21 Mar 2014
+ * 
  *
  */
 public class TestNLPService {
 
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public static String MIXED_ENTITIES_AND_CONCEPTS = "Comuni di: Andalo, Amblar, Bresimo. Ci sono le seguenti infrastrutture: Agrifer, Athenas, Hairstudio. Il mondo è bello quando l'NLP funziona";    
+    public static String MIXED_ENTITIES_AND_CONCEPTS = "Comuni di: Andalo, Amblar, Bresimo. Ci sono le seguenti infrastrutture: Agrifer, Athenas, Hairstudio. Il mondo è bello quando l'NLP funziona";
 
     public static List<String> PRODOTTI_CERTIFICATI_DESCRIPTIONS = new ArrayList<String>() {
         {
@@ -116,7 +114,7 @@ public class TestNLPService {
         DisiEkb disiEkb = new DisiEkb();
         NLPService nlpService = (NLPService) disiEkb.getNLPService();
 
-        List<ISemanticText> output = nlpService.runNLP(PRODOTTI_CERTIFICATI_DESCRIPTIONS, null);
+        List<SemanticText> output = nlpService.runNLP(PRODOTTI_CERTIFICATI_DESCRIPTIONS, null);
         //		System.out.println(output.get(0).getSentences().get(0).getWords().get(0).getMeanings().get(0).getURL());
         //		System.out.println(output.get(0).getSentences().get(0).getWords().get(0).getMeanings().get(0).getProbability());
         //		System.out.println(output.get(0).getSentences().get(0).getStartOffset());
@@ -135,10 +133,10 @@ public class TestNLPService {
 
         String inputStr = "Hello World";
 
-        ISemanticText output = nlpService.runNLP(inputStr);
+        SemanticText output = nlpService.runNLP(inputStr);
         System.out.println(output.getLocale());
         System.out.println(output.getText());
-        assertEquals("en", output.getLocale().toLanguageTag().toString());
+        assertEquals("en", output.getLocale().toLanguageTag());
         assertEquals(inputStr, output.getText());
         assertEquals(0, output.getSentences().get(0).getStartOffset());
         assertEquals(11, output.getSentences().get(0).getEndOffset());
@@ -158,7 +156,7 @@ public class TestNLPService {
 
         NLPService nlpService = new NLPService();
         //from NLText to SemanticText
-        ISemanticText sText = nlpService.runNLP(testText);
+        SemanticText sText = nlpService.runNLP(testText);
         System.out.println("Sentences1:" + sText.getSentences().size());
         System.out.println("Words1:" + sText.getSentences().get(0).getWords().size());
         System.out.println("Words1:" + sText.getSentences().get(0).getWords().get(0).getMeanings().get(0).getURL());
@@ -171,7 +169,7 @@ public class TestNLPService {
 
         List<ComplexConcept> ccList = sstring.getComplexConcepts();
         //from SemanticString to SemanticText
-        ISemanticText semText = SemanticTextFactory.semanticText(sstring);
+        SemanticText semText = SemanticTextFactory.semanticText(sstring);
         System.out.println("Sentences2:" + semText.getSentences().size());
         System.out.println("Words2:" + semText.getSentences().get(0).getWords().get(0).getMeanings().get(0).getURL());
 
@@ -182,16 +180,16 @@ public class TestNLPService {
 
         NLPService nlpService = new NLPService();
 
-        ISemanticText singleText = nlpService.runNLP("Trento");
+        SemanticText singleText = nlpService.runNLP("Trento");
 
         assertEquals(1, singleText.getSentences().get(0).getWords().size());
 
-        IWord odrToken = singleText.getSentences().get(0).getWords().get(0);
+        Word odrToken = singleText.getSentences().get(0).getWords().get(0);
 
         assertEquals(MeaningStatus.SELECTED, odrToken.getMeaningStatus());
-        IMeaning m = odrToken.getSelectedMeaning();
+        Meaning m = odrToken.getSelectedMeaning();
         assertEquals(MeaningKind.ENTITY, m.getKind());
-        assertTrue(m.getName().getString(Locale.ENGLISH).length() > 0);
+        assertTrue(m.getName().string(Locale.ENGLISH).length() > 0);
 
     }
 
@@ -230,13 +228,13 @@ public class TestNLPService {
     public void testSingleConcept() {
         NLPService nlpService = new NLPService();
 
-        ISemanticText singleSemText = nlpService.runNLP("Cabinovia");
+        SemanticText singleSemText = nlpService.runNLP("Cabinovia");
         assertEquals(1, singleSemText.getSentences().get(0).getWords().size());
 
-        IWord word = singleSemText.getSentences().get(0).getWords().get(0);
+        Word word = singleSemText.getSentences().get(0).getWords().get(0);
 
         assertEquals(MeaningStatus.SELECTED, word.getMeaningStatus());
-        IMeaning m = word.getSelectedMeaning();
+        Meaning m = word.getSelectedMeaning();
         KnowledgeService ks = new KnowledgeService();
 
         IConcept concept = ks.getConcept(word.getSelectedMeaning().getURL());
@@ -244,7 +242,7 @@ public class TestNLPService {
         assertEquals(word.getSelectedMeaning().getURL(), concept.getURL());
 
         assertEquals(MeaningKind.CONCEPT, m.getKind());
-        assertTrue(m.getName().getString(Locale.ENGLISH).length() > 0);
+        assertTrue(m.getName().string(Locale.ENGLISH).length() > 0);
 
     }
 
@@ -252,11 +250,11 @@ public class TestNLPService {
     public void testMultiWord() {
         NLPService nlpService = new NLPService();
 
-        ISemanticText semText = nlpService.runNLP("Seggiovia ad agganciamento automatico");
+        SemanticText semText = nlpService.runNLP("Seggiovia ad agganciamento automatico");
 
         assertEquals(1, semText.getSentences().get(0).getWords().size());
 
-        IWord odrToken = semText.getSentences().get(0).getWords().get(0);
+        Word odrToken = semText.getSentences().get(0).getWords().get(0);
 
         assertEquals(MeaningStatus.SELECTED, odrToken.getMeaningStatus());
     }
@@ -265,11 +263,11 @@ public class TestNLPService {
     public void testNamedEntity() {
         NLPService nlpService = new NLPService();
 
-        ISemanticText semText = nlpService.runNLP("Trento");
+        SemanticText semText = nlpService.runNLP("Trento");
 
         assertEquals(1, semText.getSentences().get(0).getWords().size());
 
-        IWord word = semText.getSentences().get(0).getWords().get(0);
+        Word word = semText.getSentences().get(0).getWords().get(0);
 
         assertEquals(MeaningStatus.SELECTED, word.getMeaningStatus());
         assertNotNull(word.getSelectedMeaning());
@@ -301,13 +299,13 @@ public class TestNLPService {
         assertEquals(0, nltxt.getSentences().get(0).getMultiWords().size());
         // assertEquals(1, nltxt.getSentences().get(0).getNamedEntities().size()); // fails, finds 0
 
-        ISemanticText semText = nlpService.runNLP(inputText);
+        SemanticText semText = nlpService.runNLP(inputText);
 
         assertEquals(1, semText.getSentences().size());
 
         assertEquals(1, semText.getSentences().get(0).getWords().size());
 
-        IWord word = semText.getSentences().get(0).getWords().get(0);
+        Word word = semText.getSentences().get(0).getWords().get(0);
 
         assertEquals(MeaningStatus.SELECTED, word.getMeaningStatus());
 
@@ -349,15 +347,15 @@ public class TestNLPService {
         assertEquals(0, nltxt.getSentences().get(0).getMultiWords().size());
         // assertEquals(1, nltxt.getSentences().get(0).getNamedEntities().size()); // fails, finds 0
 
-        ISemanticText semText = nlpService.runNLP(inputText);
+        SemanticText semText = nlpService.runNLP(inputText);
 
-        IntegrityChecker.checkSemanticText(semText);
+        Checker.checkSemanticText(semText);
 
         assertEquals(1, semText.getSentences().size());
 
         assertEquals(1, semText.getSentences().get(0).getWords().size());
 
-        IWord word = semText.getSentences().get(0).getWords().get(0);
+        Word word = semText.getSentences().get(0).getWords().get(0);
 
         assertTrue(word.getMeanings().size() > 0);
         assertEquals(MeaningKind.ENTITY, word.getMeanings().get(0).getKind());
@@ -371,21 +369,21 @@ public class TestNLPService {
          assertEquals(word.getSelectedMeaning().getURL(), ent.getURL());
          */
     }
-    
+
     @Test
-    public void testNlpWithMixedEntities(){
+    public void testNlpWithMixedEntities() {
         DisiEkb disiEkb = new DisiEkb();
         NLPService nlpService = (NLPService) disiEkb.getNLPService();
-        ISemanticText semText = nlpService.runNLP(MIXED_ENTITIES_AND_CONCEPTS, null);
+        SemanticText semText = nlpService.runNLP(MIXED_ENTITIES_AND_CONCEPTS, null);
         List<String> entitiesToRead = new ArrayList();
         List<IEntity> entities = new ArrayList();
         List<String> conceptsToRead = new ArrayList();
         List<IConcept> concepts = new ArrayList();
-        
-        for (IWord word : semText.getWords()){
-            IMeaning m = word.getSelectedMeaning();
-            if (m != null){
-                if (MeaningKind.ENTITY.equals(m.getKind())){
+
+        for (Word word : semText.getWords()) {
+            Meaning m = word.getSelectedMeaning();
+            if (m != null) {
+                if (MeaningKind.ENTITY.equals(m.getKind())) {
                     entitiesToRead.add(m.getURL());
                 } else {
                     conceptsToRead.add(m.getURL());
@@ -395,10 +393,10 @@ public class TestNLPService {
         entities = disiEkb.getEntityService().readEntities(entitiesToRead);
         concepts = disiEkb.getKnowledgeService().readConcepts(conceptsToRead);
         assertTrue(entities.size() > 1);
-        
+
         Set<String> etypeURLs = new HashSet();
-        for (IEntity en : entities){
-            logger.info("entity name: " + en.getName().getString(Locale.ENGLISH));
+        for (IEntity en : entities) {
+            logger.info("entity name: " + en.getName().string(Locale.ENGLISH));
             logger.info("entityEtype: " + en.getEtypeURL());
             etypeURLs.add(en.getEtypeURL());
         }
@@ -406,61 +404,63 @@ public class TestNLPService {
         assertEquals(2, etypeURLs.size());
         assertTrue(etypeURLs.contains(LOCATION_URL));
         assertTrue(etypeURLs.contains(SHOPPING_FACILITY_URL));
-    }    
+    }
 
     @Test
     public void testNLPWithEntityRestriction() {
         DisiEkb disiEkb = new DisiEkb();
         NLPService nlpService = (NLPService) disiEkb.getNLPService();
 
-        ISemanticText semTextLocationType = nlpService.runNLP(MIXED_ENTITIES_AND_CONCEPTS, LOCATION_URL);
+        SemanticText semTextLocationType = nlpService.runNLP(MIXED_ENTITIES_AND_CONCEPTS, LOCATION_URL);
         testFiltering(semTextLocationType, MeaningKind.ENTITY, LOCATION_URL);
-        
-        ISemanticText semTextShoppingFacilityType = nlpService.runNLP(MIXED_ENTITIES_AND_CONCEPTS, SHOPPING_FACILITY_URL);
+
+        SemanticText semTextShoppingFacilityType = nlpService.runNLP(MIXED_ENTITIES_AND_CONCEPTS, SHOPPING_FACILITY_URL);
         testFiltering(semTextShoppingFacilityType, MeaningKind.ENTITY, SHOPPING_FACILITY_URL);
-        
+
     }
 
-    private void testFiltering(ISemanticText semText, MeaningKind kind, String domainURL) {                
+    private void testFiltering(SemanticText semText, MeaningKind kind, String domainURL) {
         int meaningCount = 0;
         logger.warn("ONLY CHECKING FOR DIRECT PARENTSHIP TO " + domainURL + "  , SHOULD CHECK ALSO FOR ANCESTORS!");
         List<String> urlsToRead = new ArrayList();
-        
-        for (IWord w : semText.getWords()) {
-            for (IMeaning m : w.getMeanings()) {
-                assertEquals(kind, m.getKind());                
+
+        for (Word w : semText.getWords()) {
+            for (Meaning m : w.getMeanings()) {
+                assertEquals(kind, m.getKind());
                 urlsToRead.add(m.getURL());
                 meaningCount++;
-            }            
+            }
         }
-        
+
         assertTrue(meaningCount > 0);
-        
+
         DisiEkb disiEkb = new DisiEkb();
-        
-        if (MeaningKind.ENTITY.equals(kind)){
+
+        if (MeaningKind.ENTITY.equals(kind)) {
             EntityService entityService = (EntityService) disiEkb.getEntityService();
-            List<IEntity> entities =  entityService.readEntities(urlsToRead);
-            for (IEntity en : entities){
-                assertEquals("Failed for entity " + en.getURL() + " with name " + en.getName().toSemText(disiEkb.getDefaultLocales()).getText(),
-                        en.getEtypeURL(), 
+            List<IEntity> entities = entityService.readEntities(urlsToRead);
+            for (IEntity en : entities) {
+                assertEquals("Failed for entity " + en.getURL() + " with name " + SemanticText.of(en.getName(), disiEkb.getDefaultLocales()).getText(),
+                        en.getEtypeURL(),
                         domainURL);
             }
         } else {
             logger.warn("NOT CHECKING ANYTHING FOR CONCEPTS!");
         }
-        
+
     }
 
-    /** Ignored because we don't support concept restriction for now */
+    /**
+     * Ignored because we don't support concept restriction for now
+     */
     @Test
     @Ignore
     public void testNLPWithConceptRestriction() {
         logger.warn("ONLY TESTING WITH ROOT CONCEPT!");
-        DisiEkb disiEkb = new DisiEkb();       
+        DisiEkb disiEkb = new DisiEkb();
         String rootConceptURL = disiEkb.getKnowledgeService().getRootConcept().getURL();
         NLPService nlpService = (NLPService) disiEkb.getNLPService();
-        ISemanticText semText = nlpService.runNLP(MIXED_ENTITIES_AND_CONCEPTS, rootConceptURL);
+        SemanticText semText = nlpService.runNLP(MIXED_ENTITIES_AND_CONCEPTS, rootConceptURL);
         testFiltering(semText, MeaningKind.CONCEPT, rootConceptURL);
     }
 
@@ -468,33 +468,30 @@ public class TestNLPService {
     public void testFreeSearch() {
         DisiEkb disiEkb = new DisiEkb();
         NLPService nlpService = (NLPService) disiEkb.getNLPService();
-        List<IWordSearchResult> res = nlpService.freeSearch("restau", Locale.ENGLISH);
+        List<? extends IWordSearchResult> res = nlpService.freeSearch("restau", Locale.ENGLISH);
         assertTrue(res.size() > 0);
     }
 
-    
     @Test
-    public void testMeaningNamesSwebNlp(){
+    public void testMeaningNamesSwebNlp() {
 
         DisiEkb disiEkb = new DisiEkb();
         NLPService nlpService = (NLPService) disiEkb.getNLPService();
-                List<String> texts = new ArrayList();
-        texts.add(PRODOTTI_CERTIFICATI_DESCRIPTIONS.get(0));  
+        List<String> texts = new ArrayList();
+        texts.add(PRODOTTI_CERTIFICATI_DESCRIPTIONS.get(0));
         NLText nlText = nlpService.runNlpIt(texts).get(0);
-        
+
         List<NLToken> list = nlText.getSentences().get(0).getTokens();
-        
+
         list.get(0);
     }
-    
-    
+
     @Test
-    public void testMeaningNames(){
+    public void testMeaningNames() {
         DisiEkb disiEkb = new DisiEkb();
         NLPService nlpService = (NLPService) disiEkb.getNLPService();
-        ISemanticText semText = nlpService.runNLP(PRODOTTI_CERTIFICATI_DESCRIPTIONS.get(0), null);
-        IWord word = semText.getWords().get(0);
+        SemanticText semText = nlpService.runNLP(PRODOTTI_CERTIFICATI_DESCRIPTIONS.get(0), null);
+        Word word = semText.getWords().get(0);
         word.getMeanings();
     }
 }
-

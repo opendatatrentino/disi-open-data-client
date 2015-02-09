@@ -1,7 +1,6 @@
 package eu.trentorise.opendata.disiclient.services;
 
-import eu.trentorise.opendata.semantics.IntegrityChecker;
-import eu.trentorise.opendata.semantics.IntegrityException;
+import eu.trentorise.opendata.commons.OdtUtils;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
 import java.io.File;
@@ -34,89 +33,59 @@ public class WebServiceURLs {
 
     public static final String ETYPE_PREFIX = "/types/";
 
-    /**
-     * Parses an URL having a numeric ID after the provided prefix, i.e.
-     * http://entitypedia.org/concepts/14324
-     *
-     * @throws IllegalArgumentException on unparseable URL
-     */
-    private static long parseID(String prefix, String URL) {
-        try {
-            IntegrityChecker.checkURL(URL);
-        }
-        catch (IntegrityException ex) {
-            throw new IllegalArgumentException(ex);
-        }
-        int pos = URL.indexOf(prefix) + prefix.length();
-        if (pos == -1) {
-            throw new IllegalArgumentException("Invalid URL for object of type " + prefix + ": " + URL);
-        }
-        String s = URL.substring(pos);
-        try {
-            return Long.parseLong(s);
-        }
-        catch (NumberFormatException ex) {
-            throw new IllegalArgumentException("Invalid URL for object of type " + prefix + ": " + URL, ex);
-        }
+    private static final UrlMapper urlMapper = UrlMapper.of(WebServiceURLs.getURL() + ENTITY_PREFIX, 
+                                                            WebServiceURLs.getURL() + CONCEPT_PREFIX);
 
-    }
-
-    public static String conceptIDToURL(long ID) {
-        String fullUrl = WebServiceURLs.getURL();
-        String url = fullUrl + CONCEPT_PREFIX + ID;
-        return url;
-    }
-
-    public static boolean isEntityURL(String entityURL){
+    public static boolean isEntityURL(String entityURL) {
         return entityURL != null && entityURL.contains(ENTITY_PREFIX);
     }
-    
-    
-    public static boolean isConceptURL(String conceptURL){
+
+    public static boolean isConceptURL(String conceptURL) {
         return conceptURL != null && conceptURL.contains(CONCEPT_PREFIX);
     }
-    
-    public static boolean isEtypeURL(String etypeURL){
+
+    public static boolean isEtypeURL(String etypeURL) {
         return etypeURL != null && etypeURL.contains(ETYPE_PREFIX);
     }
-    
-    public static boolean isAttrDefURL(String attrDefURL){
+
+    public static boolean isAttrDefURL(String attrDefURL) {
         return attrDefURL != null && attrDefURL.contains(ATTR_DEF_PREFIX);
     }
-    
+
     /**
      * @throws IllegalArgumentException on unparseable URL
      */
     public static long urlToConceptID(String URL) {
-        return parseID(CONCEPT_PREFIX, URL);
+        return urlMapper.urlToConceptId(URL);
+    }
+
+    public static String conceptIDToURL(long ID) {
+        return urlMapper.conceptIdToUrl(ID);        
     }
 
     public static String entityIDToURL(long ID) {
-        String fullUrl = WebServiceURLs.getURL();
-        String url = fullUrl + ENTITY_PREFIX + ID;
-        return url;
+        return urlMapper.entityIdToUrl(ID);        
     }
 
+    /**
+     * @throws IllegalArgumentException on unparseable URL
+     */    
+    public static Long urlToEntityID(String URL) {
+        return urlMapper.urlToEntityId(URL);
+    }    
+    
     public static String etypeIDToURL(long ID) {
-        String fullUrl = WebServiceURLs.getURL();
-        String url = fullUrl + ETYPE_PREFIX + ID;
-        return url;
+         return WebServiceURLs.getURL() + ETYPE_PREFIX + ID;
     }
 
     /**
      * @throws IllegalArgumentException on unparseable URL
      */
     public static long urlToEtypeID(String URL) {
-        return parseID(ETYPE_PREFIX, URL);
+        return OdtUtils.parseNumericalId(ETYPE_PREFIX, URL);
     }
 
-    /**
-     * @throws IllegalArgumentException on unparseable URL
-     */
-    @Nullable
-    public static Long urlToEntityID(String URL) {
-        return parseID(ENTITY_PREFIX, URL);
-    }
+
 
     public static String attrDefIDToURL(long id) {
         return WebServiceURLs.getURL() + ATTR_DEF_PREFIX + id;
@@ -127,7 +96,7 @@ public class WebServiceURLs {
      * @throws IllegalArgumentException on unparseable URL
      */
     public static long urlToAttrDefToID(String URL) {
-        return parseID(ATTR_DEF_PREFIX, URL);
+        return OdtUtils.parseNumericalId(ATTR_DEF_PREFIX, URL);
     }
 
     public static final String PROPERTIES_FILE_NAME = "sweb-webapi-model.properties";
@@ -153,7 +122,7 @@ public class WebServiceURLs {
         }
 
     }
-    
+
     public static IProtocolClient getClientProtocol(Locale locale) {
 
         if (api == null) {

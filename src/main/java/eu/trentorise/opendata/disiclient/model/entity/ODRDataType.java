@@ -4,7 +4,7 @@ import it.unitn.disi.sweb.webapi.model.kb.types.DataType;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
- * @date 26 Feb 2014
+ * 
  *
  */
 public class ODRDataType {

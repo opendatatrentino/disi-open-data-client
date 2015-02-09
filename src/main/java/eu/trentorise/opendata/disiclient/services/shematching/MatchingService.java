@@ -32,7 +32,7 @@ import eu.trentorise.opendata.semantics.services.model.ISchemaCorrespondence;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
- * @date 25 Feb 2014
+ * 
  *
  */
 public class MatchingService implements ISemanticMatchingService {

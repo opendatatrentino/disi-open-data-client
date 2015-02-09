@@ -2,16 +2,13 @@ package eu.trentorise.opendata.disiclient.services;
 
 import eu.trentorise.opendata.semantics.impl.model.WordSearchResult;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
-import eu.trentorise.opendata.semantics.model.knowledge.IMeaning;
 import eu.trentorise.opendata.semantics.model.knowledge.IResourceContext;
-import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
 import eu.trentorise.opendata.semantics.model.knowledge.ITableResource;
-import eu.trentorise.opendata.semantics.model.knowledge.IWord;
-import eu.trentorise.opendata.semantics.model.knowledge.MeaningKind;
+import eu.trentorise.opendata.semantics.nlp.model.MeaningKind;
 import eu.trentorise.opendata.semantics.model.knowledge.MeaningStatus;
-import eu.trentorise.opendata.semantics.model.knowledge.impl.Meaning;
-import eu.trentorise.opendata.semantics.model.knowledge.impl.SemanticText;
-import eu.trentorise.opendata.semantics.model.knowledge.impl.Word;
+import eu.trentorise.opendata.semantics.nlp.model.Meaning;
+import eu.trentorise.opendata.semantics.nlp.model.SemanticText;
+import eu.trentorise.opendata.semantics.nlp.model.Word;
 import eu.trentorise.opendata.semantics.services.INLPService;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 import eu.trentorise.opendata.semantics.services.model.IWordSearchResult;
@@ -23,10 +20,8 @@ import it.unitn.disi.sweb.webapi.model.PipelineDescription;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +33,7 @@ public class NLPService implements INLPService {
 
 	Logger logger = LoggerFactory.getLogger(NLPService.class);
 
-	public List<ISemanticText> disambiguateColumns(ITableResource table,
+	public List<SemanticText> disambiguateColumns(ITableResource table,
 			IResourceContext context) {
 		throw new UnsupportedOperationException("Service is not supported yet.");
 		// TODO implementation is required
@@ -83,24 +78,24 @@ public class NLPService implements INLPService {
 		return WebServiceURLs.getClientProtocol();
 	}
 
-	public ISemanticText runNLP(String text) {
+	public SemanticText runNLP(String text) {
 		return runNLP(Arrays.asList(text), null).get(0);
 	}
 
 
-	public ISemanticText runNLP(String text, String domainURL) {
+	public SemanticText runNLP(String text, String domainURL) {
 		return runNLP(Arrays.asList(text), domainURL).get(0);
 	}
 
-	public List<ISemanticText> runNLP(List<String> texts, String domainURL) {
-                List<ISemanticText> ret = new ArrayList();            
+	public List<SemanticText> runNLP(List<String> texts, String domainURL) {
+                List<SemanticText> ret = new ArrayList();            
 		if (WebServiceURLs.isConceptURL(domainURL)){
                     
 		}
 		if (WebServiceURLs.isEtypeURL(domainURL)){
 			List<NLText> nlTexts = runNlpIt(texts);
 			for (NLText nlText : nlTexts){
-				ISemanticText semText = SemanticTextFactory.semanticText(nlText);
+				SemanticText semText = SemanticTextFactory.semanticText(nlText);
 				//extractEntities(semText, domainURL);
 				ret.add(extractEntities(semText, domainURL));
 			}
@@ -118,16 +113,16 @@ public class NLPService implements INLPService {
 	}
 
         
-	private ISemanticText extractEntities(ISemanticText semText, String etypeURL) {
-		ISemanticText textEntities = new SemanticText();
+	private SemanticText extractEntities(SemanticText semText, String etypeURL) {
+		SemanticText textEntities = SemanticText.of();
 		List<String> entVocab = collectEntitiesFromMeanings(semText);
 		List<String> filteredEntities = filterEntitiesByType(entVocab, etypeURL);
 
 		List<Word> words = new ArrayList<Word>();
-		for (IWord w : semText.getWords()) {
+		for (Word w : semText.getWords()) {
 
-			IMeaning wsm = w.getSelectedMeaning();
-			IMeaning selectedMeaning;
+			Meaning wsm = w.getSelectedMeaning();
+			Meaning selectedMeaning;
 			MeaningStatus meaningStatus;
 
 
@@ -138,8 +133,8 @@ public class NLPService implements INLPService {
 				selectedMeaning = null;
 			}
 
-			List<IMeaning> filteredMeanings = new ArrayList<IMeaning>();
-			for (IMeaning m : w.getMeanings()) {
+			List<Meaning> filteredMeanings = new ArrayList<Meaning>();
+			for (Meaning m : w.getMeanings()) {
 				if (MeaningKind.ENTITY.equals(m.getKind())&&(m.getURL()!=null)) {
 					if(filteredEntities.contains(m.getURL())){
 						filteredMeanings.add(m);
@@ -158,12 +153,12 @@ public class NLPService implements INLPService {
 
 			if (meaningStatus != null) {
 
-				words.add(new Word(w.getStartOffset(), w.getEndOffset(),  meaningStatus, selectedMeaning, filteredMeanings));
+				words.add(Word.of(w.getStartOffset(), w.getEndOffset(),  meaningStatus, selectedMeaning, filteredMeanings));
 
 
 			}
 		}
-		textEntities=SemanticText.copyOf(semText).with(words);
+		textEntities=semText.with(words);
 		return textEntities;
 	} 
 
@@ -171,10 +166,10 @@ public class NLPService implements INLPService {
 	 * @param semText
 	 * @return
 	 */
-	private List<String> collectEntitiesFromMeanings(ISemanticText semText){
+	private List<String> collectEntitiesFromMeanings(SemanticText semText){
 		List<String> entitiesId = new ArrayList<String>();
-		for (IWord w : semText.getWords()) {
-			for(IMeaning mean: w.getMeanings()){
+		for (Word w : semText.getWords()) {
+			for(Meaning mean: w.getMeanings()){
 				if (MeaningKind.ENTITY.equals(mean.getKind())&&(mean.getURL()!=null)) {
 				entitiesId.add(mean.getURL());
 				}
@@ -199,7 +194,7 @@ public class NLPService implements INLPService {
 		return filteredEntities;
 	}
 
-	public List<IWordSearchResult> freeSearch(String partialName, Locale locale) {
+	public List<? extends IWordSearchResult> freeSearch(String partialName, Locale locale) {
 		//logger.warn("TODO FREESEARCH NOT IMPLEMENTED, RETURNING EMPTY ARRAY!");
 		List<ISearchResult> entities = new ArrayList<ISearchResult>();
 
@@ -209,7 +204,7 @@ public class NLPService implements INLPService {
 		KnowledgeService ks = new KnowledgeService();
 		List<ISearchResult> concepts  = ks.searchConcepts(partialName, locale);
 
-		List<IWordSearchResult> allSearchResult = new ArrayList<IWordSearchResult>();
+		List<WordSearchResult> allSearchResult = new ArrayList<WordSearchResult>();
 
 		if (entities.size()>0)
 		{

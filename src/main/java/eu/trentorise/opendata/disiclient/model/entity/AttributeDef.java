@@ -1,5 +1,7 @@
 package eu.trentorise.opendata.disiclient.model.entity;
 
+import eu.trentorise.opendata.commons.Dict;
+import eu.trentorise.opendata.disiclient.DictFactory;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.kb.AttributeDefinitionClient;
 import it.unitn.disi.sweb.webapi.client.kb.ComplexTypeClient;
@@ -8,24 +10,17 @@ import it.unitn.disi.sweb.webapi.model.kb.types.AttributeDefinition;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
 import it.unitn.disi.sweb.webapi.model.kb.types.Presence;
 
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
-import eu.trentorise.opendata.disiclient.services.NLPService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
-import eu.trentorise.opendata.semantics.model.knowledge.IDict;
-import eu.trentorise.opendata.semantics.model.knowledge.impl.Dict;
 import eu.trentorise.opendata.semantics.services.model.DataTypes;
-import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
- * @date 25 Feb 2014
- *
  */
 public class AttributeDef implements IAttributeDef {
 
@@ -253,27 +248,12 @@ public class AttributeDef implements IAttributeDef {
         }
     }
 
-    public IDict getName() {
-        Dict dict = new Dict();
-        Iterator<?> it = this.name.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pairs = (Map.Entry) it.next();
-            Locale l = TraceProvUtils.languageTagToLocale((String) pairs.getKey());            
-            dict = dict.putTranslation(l, (String) pairs.getValue());
-
-        }
-        return dict;
+    public Dict getName() {
+        return DictFactory.mapToDict(this.name);
     }
 
-    public IDict getDescription() {
-        Dict dict = new Dict();
-        Iterator<?> it = this.description.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pairs = (Map.Entry) it.next();
-            Locale l = TraceProvUtils.languageTagToLocale((String) pairs.getKey());
-            dict = dict.putTranslation(l, (String) pairs.getValue());
-        }
-        return dict;
+    public Dict getDescription() {
+        return DictFactory.mapToDict(this.description);
     }
 
     public String getConceptURL() {

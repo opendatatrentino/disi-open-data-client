@@ -11,7 +11,7 @@ import eu.trentorise.opendata.semantics.model.entity.IValue;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
- * @date 13 Mar 2014
+ * 
  *
  */
 public class ValueODR extends Value implements IValue {

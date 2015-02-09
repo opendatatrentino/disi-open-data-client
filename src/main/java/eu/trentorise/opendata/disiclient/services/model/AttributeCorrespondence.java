@@ -11,7 +11,7 @@ import eu.trentorise.opendata.semantics.services.model.IAttributeCorrespondence;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
- * @date 24 Feb 2014
+ * 
  *
  */
 public class AttributeCorrespondence implements IAttributeCorrespondence {

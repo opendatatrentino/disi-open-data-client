@@ -1,5 +1,6 @@
 package eu.trentorise.opendata.disiclient.services;
 
+import eu.trentorise.opendata.commons.Dict;
 import eu.trentorise.opendata.disiclient.DisiClientException;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
@@ -8,19 +9,17 @@ import eu.trentorise.opendata.disiclient.model.entity.EntityType;
 import eu.trentorise.opendata.disiclient.model.entity.StructureODR;
 import eu.trentorise.opendata.disiclient.model.entity.ValueODR;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
-import eu.trentorise.opendata.semantics.IntegrityChecker;
-import eu.trentorise.opendata.semantics.NotFoundException;
+import eu.trentorise.opendata.semantics.Checker;
+import eu.trentorise.opendata.commons.NotFoundException;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IValue;
-import eu.trentorise.opendata.semantics.model.knowledge.IDict;
-import eu.trentorise.opendata.semantics.model.knowledge.impl.Dict;
-import eu.trentorise.opendata.semantics.model.knowledge.impl.SemanticText;
+import eu.trentorise.opendata.semantics.nlp.model.SemanticText;
 import eu.trentorise.opendata.semantics.services.IEntityService;
 import eu.trentorise.opendata.semantics.services.model.DataTypes;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
-import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
+import eu.trentorise.opendata.commons.OdtUtils;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
 import it.unitn.disi.sweb.webapi.client.kb.VocabularyClient;
@@ -44,7 +43,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.LocaleUtils;
@@ -85,7 +83,7 @@ public class EntityService implements IEntityService {
         Long attrDefClassAtrID = null;
         for (IAttributeDef adef : attrDefs) {
 
-            if (adef.getName().getString(Locale.ENGLISH).equalsIgnoreCase("class")) {
+            if (adef.getName().string(Locale.ENGLISH).equalsIgnoreCase("class")) {
                 attrDefClassAtrID = adef.getGUID();
                 break;
             }
@@ -174,7 +172,7 @@ public class EntityService implements IEntityService {
       
         Entity entity = (Entity) instance;
         EntityODR en = new EntityODR(this.api, entity);
-     //   IntegrityChecker.checkEntity(en);
+     //   Checker.checkEntity(en);
         return en;
     }
     
@@ -210,7 +208,7 @@ public class EntityService implements IEntityService {
         List<IEntity> ret = new ArrayList<IEntity>();
         for (Entity epEnt : entities) {
             EntityODR en = new EntityODR(this.api, epEnt);
-            IntegrityChecker.checkEntity(en);            
+            Checker.checkEntity(en);            
             ret.add(en);            
         }
         return ret;
@@ -358,7 +356,7 @@ public class EntityService implements IEntityService {
              descr= new SemanticString();
              String s = (String) value;
              descr.setText(s); */
-            return new SemanticText((String) descr);
+            return SemanticText.of((String) descr);
         } else if (descr instanceof SemanticText) {
             /* david  there should be only SemanticText 
              SemanticText st= (SemanticText) value;
@@ -475,12 +473,12 @@ public class EntityService implements IEntityService {
             logger.warn("No Locale is provided for name" + name + "The vocabulary is set to '1'");
             nameValues.add(new Value(nameInput, 1L));
             return nameValues;
-        } else if (name instanceof IDict) {
+        } else if (name instanceof Dict) {
             Dict nameDict = (Dict) name;
             HashMap<String, Long> vocabs = getVocabularies();
-            Set<Locale> locs = nameDict.getLocales();
+            Set<Locale> locs = nameDict.locales();
             for (Locale l : locs) {
-                nameValues.add(new Value(nameDict.getString(l), vocabs.get(TraceProvUtils.localeToLanguageTag(l))));//dav so Java 6 doesn't bother us l.toLanguageTag())));
+                nameValues.add(new Value(nameDict.string(l), vocabs.get(OdtUtils.localeToLanguageTag(l))));//dav so Java 6 doesn't bother us l.toLanguageTag())));
             }
             return nameValues;
         } else {
@@ -515,7 +513,7 @@ public class EntityService implements IEntityService {
         List<IAttributeDef> etypeAtrDefs = etype.getAttributeDefs();
         Long atrDefId = null;
         for (IAttributeDef atrdef : etypeAtrDefs) {
-            if (atrdef.getName().getString(LocaleUtils.toLocale("en")).equalsIgnoreCase("Name")) {
+            if (atrdef.getName().string(LocaleUtils.toLocale("en")).equalsIgnoreCase("Name")) {
                 atrDefId = atrdef.getGUID();
             }
         }

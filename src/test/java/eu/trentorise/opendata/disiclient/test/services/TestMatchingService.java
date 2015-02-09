@@ -110,7 +110,7 @@ public class TestMatchingService {
             //List<IAttributeDef> attrs = eType.getAttributeDefs();
             long conid = 2923L;
             SchemaCorrespondence scCorr = (SchemaCorrespondence) mService.schemaMatch(eType, odrHeaders, conid);
-//			System.out.print(eType.getName().getString(Locale.ENGLISH)+ "  ");
+//			System.out.print(eType.getName().string(Locale.ENGLISH)+ "  ");
 //			System.out.print(scCorr.getScore());
             assertNotNull(scCorr.getScore());
             //	assertNotNull(scCorr.getAttributeCorrespondence());
