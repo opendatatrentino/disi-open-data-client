@@ -2,6 +2,7 @@ package eu.trentorise.opendata.disiclient.test.services;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
+import static eu.trentorise.opendata.commons.OdtUtils.checkNotEmpty;
 import eu.trentorise.opendata.disiclient.services.DisiEkb;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.KnowledgeService;
@@ -34,6 +35,7 @@ import java.util.HashSet;
 import java.util.Set;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Ignore;
 
@@ -45,24 +47,28 @@ import org.slf4j.LoggerFactory;
  * Testing the client implementaion of NLP services.
  *
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
- * 
+ *
  *
  */
 public class TestNLPService {
 
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    /** A concept we will be sure it will be recognized as multiword*/
+    /**
+     * A concept we will be sure it will be recognized as multiword
+     */
     public static final String MULTI_WORD = "hot dog";
-    
-    
-    /** A single word concept we will be sure it will be recognized */
-    public static final String SINGLE_CONCEPT = "formaggio";
-    
-    /** A single word entity we will be sure it will be recognized */
+
+    /**
+     * A single word concept we will be sure it will be recognized
+     */
+    public static final String SINGLE_CONCEPT = "gusto";
+
+    /**
+     * A single word entity we will be sure it will be recognized
+     */
     public static final String SINGLE_ENTITY = "Trento";
-    
-    
+
     public static String MIXED_ENTITIES_AND_CONCEPTS = "Comuni di: Andalo, Amblar, Bresimo. Ci sono le seguenti infrastrutture: Agrifer, Athenas, Hairstudio. Il mondo è bello quando l'NLP funziona";
 
     public static List<String> PRODOTTI_CERTIFICATI_DESCRIPTIONS = new ArrayList<String>() {
@@ -149,7 +155,7 @@ public class TestNLPService {
 
         SemText output = nlpService.runNLP(inputStr);
         assertNotNull(output);
-        
+
         logger.debug("locale = " + output.getLocale());
         logger.debug("text = " + output.getText());
         assertEquals("en", output.getLocale().toLanguageTag());
@@ -217,28 +223,35 @@ public class TestNLPService {
 
         NLToken tok = nlText.getSentences().get(0).getTokens().get(0);
 
+        Set<String> lemmas = tok.getDerivedLemmas();
+
         NLMeaning m = Iterables.get(tok.getMeanings(), 0);
-        
+
         // 'Lemma' is the name of the concept
-        logger.debug("Concept lemma = " + m.getLemma());       
-        
+        logger.debug("Concept lemma = " + m.getLemma());
+
         assertTrue(m.getLemma().length() > 0);
         assertTrue(m.getDescription().length() > 0);
     }
 
-    @Test(expected = NullPointerException.class)
+    /**
+     * Demontrates tokens with named entities have no selected meaning nor
+     * meanings. To find named entities, use NLToken.getNamedEntities
+     */
+    @Test
     public void testNLTokenEntity() {
 
         NLPService nlpService = new NLPService();
 
-        NLText nlText = nlpService.runNlpIt("Trento");
-        // expected
+        NLText nlText = nlpService.runNlpIt(SINGLE_ENTITY);
 
         NLToken tok = null;
         tok = nlText.getSentences().get(0).getTokens().get(0);
+
         // 'Lemma' should be the name of the  entity
-        assertTrue(tok.getSelectedMeaning().getLemma().length() > 0);
-        assertTrue(tok.getSelectedMeaning().getDescription().length() > 0);
+        assertNull(tok.getSelectedMeaning());
+        assertEquals(0, tok.getMeanings().size());
+        assertEquals(1, tok.getNamedEntities().size());        
     }
 
     @Test
@@ -271,29 +284,29 @@ public class TestNLPService {
 
         assertEquals(1, semText.getSentences().get(0).getTerms().size());
 
-        Term odrToken = semText.getSentences().get(0).getTerms().get(0);
+        Term term = semText.getSentences().get(0).getTerms().get(0);
 
-        assertEquals(MeaningStatus.SELECTED, odrToken.getMeaningStatus());
+        assertEquals(MeaningStatus.SELECTED, term.getMeaningStatus());
     }
 
     @Test
     public void testNamedEntity() {
         NLPService nlpService = new NLPService();
 
-        SemText semText = nlpService.runNLP("Trento");
+        SemText semText = nlpService.runNLP(SINGLE_ENTITY);
 
-        assertEquals(1, semText.getSentences().get(0).getTerms().size());
+        assertEquals(1, Iterators.size(semText.terms()));
 
-        Term word = semText.getSentences().get(0).getTerms().get(0);
+        Term term = Iterators.get(semText.terms(), 0);
 
-        assertEquals(MeaningStatus.SELECTED, word.getMeaningStatus());
-        assertNotNull(word.getSelectedMeaning());
-        assertNotNull(word.getSelectedMeaning().getId());
+        assertEquals(MeaningStatus.SELECTED, term.getMeaningStatus());
+        assertNotNull(term.getSelectedMeaning());
+        checkNotEmpty(term.getSelectedMeaning().getId(), "Invalid id for selected meaning!");
 
         EntityService es = new EntityService();
-        IEntity ent = es.readEntity(word.getSelectedMeaning().getId());
+        IEntity ent = es.readEntity(term.getSelectedMeaning().getId());
         assertTrue(ent != null);
-        assertEquals(word.getSelectedMeaning().getId(), ent.getURL());
+        assertEquals(term.getSelectedMeaning().getId(), ent.getURL());
     }
 
     @Test
@@ -364,7 +377,7 @@ public class TestNLPService {
         assertEquals(0, nltxt.getSentences().get(0).getMultiWords().size());
         // assertEquals(1, nltxt.getSentences().get(0).getNamedEntities().size()); // fails, finds 0
 
-        SemText semText = nlpService.runNLP(inputText);      
+        SemText semText = nlpService.runNLP(inputText);
 
         assertEquals(1, semText.getSentences().size());
 
