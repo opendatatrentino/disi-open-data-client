@@ -31,6 +31,7 @@ import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.
 import eu.trentorise.opendata.semtext.MeaningStatus;
 import eu.trentorise.opendata.semtext.TermIterator;
 import it.unitn.disi.sweb.core.nlp.model.NLMeaning;
+import it.unitn.disi.sweb.core.nlp.model.NLTextUnit;
 import java.util.HashSet;
 import java.util.Set;
 import static org.junit.Assert.assertEquals;
@@ -223,13 +224,14 @@ public class TestNLPService {
 
         NLToken tok = nlText.getSentences().get(0).getTokens().get(0);
 
-        Set<String> lemmas = tok.getDerivedLemmas();
+        
 
-        NLMeaning m = Iterables.get(tok.getMeanings(), 0);
-
+        NLMeaning m = Iterables.get(tok.getMeanings(), 0);                        
         // 'Lemma' is the name of the concept
         logger.debug("Concept lemma = " + m.getLemma());
 
+        List<String> lemmas = (List<String>) m.getProp(NLTextUnit.PFX, "synonymousLemmas");        
+        assertTrue(lemmas.size() > 1);
         assertTrue(m.getLemma().length() > 0);
         assertTrue(m.getDescription().length() > 0);
     }
@@ -265,6 +267,8 @@ public class TestNLPService {
 
         assertEquals(MeaningStatus.SELECTED, word.getMeaningStatus());
         Meaning m = word.getSelectedMeaning();
+        
+        assertTrue(m.getName().strings(Locale.ROOT).size() > 1);
         KnowledgeService ks = new KnowledgeService();
 
         IConcept concept = ks.getConcept(word.getSelectedMeaning().getId());
