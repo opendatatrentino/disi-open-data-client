@@ -184,15 +184,15 @@ public class EntityService implements IEntityService {
           return entity.getId();
     }
 
-    public List<IEntity> readEntities(List<String> entityURLs) {
+    public List<IEntity> readEntities(List<String> entityUrls) {
 
-        if (entityURLs.size() == 0) {
+        if (entityUrls.size() == 0) {
             return new ArrayList<IEntity>();
         }
 
         List<Long> entityIDs = new ArrayList<Long>();
 
-        for (String entityURL : entityURLs) {
+        for (String entityURL : entityUrls) {
             entityIDs.add(WebServiceURLs.urlToEntityID(entityURL));
         }
 

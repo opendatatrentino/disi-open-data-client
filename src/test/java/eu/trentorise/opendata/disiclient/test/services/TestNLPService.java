@@ -52,6 +52,17 @@ public class TestNLPService {
 
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    /** A concept we will be sure it will be recognized as multiword*/
+    public static final String MULTI_WORD = "hot dog";
+    
+    
+    /** A single word concept we will be sure it will be recognized */
+    public static final String SINGLE_CONCEPT = "formaggio";
+    
+    /** A single word entity we will be sure it will be recognized */
+    public static final String SINGLE_ENTITY = "Trento";
+    
+    
     public static String MIXED_ENTITIES_AND_CONCEPTS = "Comuni di: Andalo, Amblar, Bresimo. Ci sono le seguenti infrastrutture: Agrifer, Athenas, Hairstudio. Il mondo è bello quando l'NLP funziona";
 
     public static List<String> PRODOTTI_CERTIFICATI_DESCRIPTIONS = new ArrayList<String>() {
@@ -137,6 +148,8 @@ public class TestNLPService {
         String inputStr = "Hello World";
 
         SemText output = nlpService.runNLP(inputStr);
+        assertNotNull(output);
+        
         logger.debug("locale = " + output.getLocale());
         logger.debug("text = " + output.getText());
         assertEquals("en", output.getLocale().toLanguageTag());
@@ -144,7 +157,6 @@ public class TestNLPService {
         assertEquals(0, output.getSentences().get(0).getStart());
         assertEquals(11, output.getSentences().get(0).getEnd());
 
-        assertNotNull(output);
     }
 
     @Test
@@ -183,7 +195,7 @@ public class TestNLPService {
 
         NLPService nlpService = new NLPService();
 
-        SemText singleText = nlpService.runNLP("Trento");
+        SemText singleText = nlpService.runNLP(SINGLE_ENTITY);
 
         assertEquals(1, singleText.getSentences().get(0).getTerms().size());
 
@@ -201,7 +213,7 @@ public class TestNLPService {
 
         NLPService nlpService = new NLPService();
 
-        NLText nlText = nlpService.runNlpIt("Cabinovia");
+        NLText nlText = nlpService.runNlpIt(SINGLE_CONCEPT);
 
         NLToken tok = nlText.getSentences().get(0).getTokens().get(0);
 
@@ -233,7 +245,7 @@ public class TestNLPService {
     public void testSingleConcept() {
         NLPService nlpService = new NLPService();
 
-        SemText singleSemText = nlpService.runNLP("Cabinovia");
+        SemText singleSemText = nlpService.runNLP(SINGLE_CONCEPT);
         assertEquals(1, singleSemText.getSentences().get(0).getTerms().size());
 
         Term word = singleSemText.getSentences().get(0).getTerms().get(0);
@@ -247,7 +259,7 @@ public class TestNLPService {
         assertEquals(word.getSelectedMeaning().getId(), concept.getURL());
 
         assertEquals(MeaningKind.CONCEPT, m.getKind());
-        assertTrue(m.getName().string(Locale.ENGLISH).length() > 0);
+        assertTrue(m.getName().string(Locale.ROOT).length() > 0);
 
     }
 
@@ -255,7 +267,7 @@ public class TestNLPService {
     public void testMultiWord() {
         NLPService nlpService = new NLPService();
 
-        SemText semText = nlpService.runNLP("Seggiovia ad agganciamento automatico");
+        SemText semText = nlpService.runNLP(MULTI_WORD);
 
         assertEquals(1, semText.getSentences().get(0).getTerms().size());
 
