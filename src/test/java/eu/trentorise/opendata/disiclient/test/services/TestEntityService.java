@@ -22,7 +22,7 @@ import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IStructure;
 import eu.trentorise.opendata.semantics.model.entity.IValue;
-import eu.trentorise.opendata.semantics.nlp.model.SemanticText;
+import eu.trentorise.opendata.semtext.SemText;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.IEntityService;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
@@ -279,13 +279,10 @@ public class TestEntityService {
         EntityODR entityToCreate = new EntityODR();
         List<Attribute> attributes = new ArrayList<Attribute>();
         ComplexType cType = ctypecl.readComplexType(inst.getTypeId(), null);
-        EntityType etype = new EntityType(cType);
-		//List<Name> names = new ArrayList<Name>();
+        EntityType etype = new EntityType(cType);		
 
         //instantiation of variables
         attributes = attrClient.readAttributes(15007L, null, null);
-        //EntityTypeService es = new EntityTypeService();
-        //	EntityType etype= es.getEntityType(e.getTypeId());
 
         List<IAttributeDef> attrDefs = etype.getAttributeDefs();
         Long attrDefClassAtrID = null;
@@ -297,34 +294,29 @@ public class TestEntityService {
             }
         }
 
-        //	boolean isExistAttrClass=false;
+
         ArrayList<Attribute> attrsEntityToCreate = new ArrayList<Attribute>();
 
         for (Attribute a : attributes) {
 
-            if (a.getDefinitionId() != attrDefClassAtrID) {
-                //  System.out.println(a.getName().get("en"));
+            if (a.getDefinitionId() != attrDefClassAtrID) {                
                 attrsEntityToCreate.add(a);
             }
         }
-        //logger.info("Etype id: "+inst.getTypeId());
+        
         //assigning variables
         entityToCreate.setAttributes(attrsEntityToCreate);
         entityToCreate.setEtype(etype);
         entityToCreate.setEntityBaseId(1L);
-        //  logger.info("entity: " + entity.toString());
-        //es.createEntity(entity);
+
 
         EbClient ebc = new EbClient(api);
         EntityBase eb = ebc.readEntityBase(1L, null);
         int instanceNum = eb.getInstancesNumber();
         String entityURL = null;
-//        entityURL = es.createEntityURL(entityToCreate);
-//        es.deleteEntity(entityURL);
+
         try {
             entityURL = es.createEntityURL(entityToCreate);
-            //        es.ge
-            //        inst = instanceClient.readInstance(id, null);
 
             EntityBase ebafter = ebc.readEntityBase(1L, null);
             int instanceNumAfter = ebafter.getInstancesNumber();
@@ -370,7 +362,7 @@ public class TestEntityService {
         assertTrue(entity.getName().strings(Locale.ITALIAN).get(0).length() > 0);
         assertTrue(entity.getDescription().strings(Locale.ITALIAN).get(0).length() > 0);
         assertTrue(entity.getDescription().strings(Locale.ENGLISH).get(0).length() > 0);
-        assertNotNull(((SemanticText) entity.getAttribute(ATTR_DEF_DESCRIPTION_URL).getValues().get(0).getValue()).getLocale());
+        assertNotNull(((SemText) entity.getAttribute(ATTR_DEF_DESCRIPTION_URL).getValues().get(0).getValue()).getLocale());
     }
 
     @Test
@@ -625,16 +617,15 @@ public class TestEntityService {
     @Test
     public void testDisify() {
         EntityService es = new EntityService();
-        IEntity en = es.readEntity(POVO_URL);
-        EntityODR e = (EntityODR) en;       
+        EntityODR en = (EntityODR) es.readEntity(POVO_URL);        
         
         AttributeODR a = (AttributeODR) en.getStructureAttributes().get(2);
         IValue val = new ValueODR();
         val.setValue(15.2f);
         a.addValue(val);
 
-        IEntity ent = EntityODR.disify(e, true);
-        assertNotNull(ent);
+        IEntity ent = EntityODR.disify(en, true);
+        assertNotNull(ent);        
         String URL = null;
         try {
             URL = es.createEntityURL(ent);

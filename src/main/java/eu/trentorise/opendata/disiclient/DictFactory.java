@@ -2,7 +2,7 @@ package eu.trentorise.opendata.disiclient;
 
 import eu.trentorise.opendata.commons.Dict;
 import eu.trentorise.opendata.commons.OdtUtils;
-import eu.trentorise.opendata.semantics.nlp.model.SemanticText;
+import eu.trentorise.opendata.semtext.SemText;
 import it.unitn.disi.sweb.webapi.model.eb.Name;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -50,7 +50,7 @@ public class DictFactory {
         return dictBuilder.build();
     }
        
-    public static Dict semtextsToDict(Map<String, List<SemanticText>> semtextsMap){
+    public static Dict semtextsToDict(Map<String, List<SemText>> semtextsMap){
     
         if (semtextsMap.isEmpty()) {
             return Dict.of();
@@ -62,9 +62,9 @@ public class DictFactory {
         while (it.hasNext()) {
             Map.Entry pairs = (Map.Entry) it.next();
             Locale l = OdtUtils.languageTagToLocale((String) pairs.getKey());
-            List<SemanticText> vals = (List<SemanticText>) pairs.getValue();
+            List<SemText> vals = (List<SemText>) pairs.getValue();
             List<String> strings = new ArrayList();
-            for (SemanticText stexts : vals) {
+            for (SemText stexts : vals) {
                 strings.add(stexts.getText());
             }
             dict = dict.putAll(l, strings);

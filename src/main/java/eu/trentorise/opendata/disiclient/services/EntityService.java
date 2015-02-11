@@ -15,7 +15,7 @@ import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IValue;
-import eu.trentorise.opendata.semantics.nlp.model.SemanticText;
+import eu.trentorise.opendata.semtext.SemText;
 import eu.trentorise.opendata.semantics.services.IEntityService;
 import eu.trentorise.opendata.semantics.services.model.DataTypes;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
@@ -184,15 +184,15 @@ public class EntityService implements IEntityService {
           return entity.getId();
     }
 
-    public List<IEntity> readEntities(List<String> entityURLs) {
+    public List<IEntity> readEntities(List<String> entityUrls) {
 
-        if (entityURLs.size() == 0) {
+        if (entityUrls.size() == 0) {
             return new ArrayList<IEntity>();
         }
 
         List<Long> entityIDs = new ArrayList<Long>();
 
-        for (String entityURL : entityURLs) {
+        for (String entityURL : entityUrls) {
             entityIDs.add(WebServiceURLs.urlToEntityID(entityURL));
         }
 
@@ -346,32 +346,32 @@ public class EntityService implements IEntityService {
     }
 
     /**
-     * @param descr either a String or a SemanticText instance
-     * @return the description as SemanticText
+     * @param descr either a String or a SemText instance
+     * @return the description as SemText
      * @throws IllegalArgumentException if descr is not of the proper type
      */
-    private SemanticText descrToSemText(Object descr) {
+    private SemText descrToSemText(Object descr) {
         if (descr instanceof String) {
-            /* david there should be only SemanticText 
+            /* david there should be only SemText 
              descr= new SemanticString();
              String s = (String) value;
              descr.setText(s); */
-            return SemanticText.of((String) descr);
-        } else if (descr instanceof SemanticText) {
-            /* david  there should be only SemanticText 
-             SemanticText st= (SemanticText) value;
-             descr = SemanticTextFactory.semanticString(st);
+            return SemText.of((String) descr);
+        } else if (descr instanceof SemText) {
+            /* david  there should be only SemText 
+             SemText st= (SemText) value;
+             descr = SemTextFactory.semanticString(st);
              */
-            return (SemanticText) descr;
+            return (SemText) descr;
         } else {
-            throw new IllegalArgumentException("Wrong value for the attribute is given! Accepted values are String and SemanticText.");
+            throw new IllegalArgumentException("Wrong value for the attribute is given! Accepted values are String and SemText.");
         }
     }
 
     /**
      *
-     * @param descr either a String, a SemanticText, or a Collection of String
-     * or SemanticText
+     * @param descr either a String, a SemText, or a Collection of String
+     * or SemText
      * @throws IllegalArgumentException if descr is not of the proper type
      */
     private AttributeODR createDescriptionAttributeODR(IAttributeDef attrDef,

@@ -150,17 +150,17 @@ public class IntegrityCheckerTest {
         List<IEntityType> etypes = ets.getAllEntityTypes();
         for (IEntityType etype : etypes) {
             Checker.checkEntityType(etype);
-            checkNotDirtyUrl(etype.getURL());
+            checkNotDirtyUrl(etype.getURL(), "etype url is dirty!");
             List<IAttributeDef> atdefs = etype.getAttributeDefs();
             for (IAttributeDef ad : atdefs) {
                 Checker.checkAttributeDef(ad);
                 checkNotNull(ad.getName(), "attribute def name is null!");
                 checkNotNull(ad.getConcept().getDescription(), "attribute def concept description is null!");
                 checkNotNull(ad.getConcept().getName(), "attribute def concept name is null!");
-                checkNotDirtyUrl(ad.getURL());
-                checkNotDirtyUrl(ad.getEtypeURL());
+                checkNotDirtyUrl(ad.getURL(), "attr def url is dirty!");
+                checkNotDirtyUrl(ad.getEtypeURL(), "attr def etype url is dirty!");
                 if (ad.getDataType().equals(DataTypes.STRUCTURE)) {
-                    checkNotDirtyUrl(ad.getRangeEtypeURL());
+                    checkNotDirtyUrl(ad.getRangeEtypeURL(), "attr def range etype url is dirty!");
                 }
             }
         }

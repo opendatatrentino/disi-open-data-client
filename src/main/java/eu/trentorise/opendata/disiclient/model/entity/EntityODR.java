@@ -5,7 +5,6 @@ import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.disiclient.services.DisiEkb;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.KnowledgeService;
-import eu.trentorise.opendata.disiclient.services.SemanticTextFactory;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.urlToEntityID;
 import eu.trentorise.opendata.semantics.Checker;
@@ -15,14 +14,14 @@ import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.model.entity.IStructure;
 import eu.trentorise.opendata.semantics.model.entity.IValue;
-import eu.trentorise.opendata.semantics.nlp.model.SemanticText;
 import eu.trentorise.opendata.semantics.services.model.DataTypes;
 import eu.trentorise.opendata.commons.OdtUtils;
 import eu.trentorise.opendata.disiclient.DictFactory;
+import eu.trentorise.opendata.disiclient.services.NLPService;
+import eu.trentorise.opendata.semtext.SemText;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
 import it.unitn.disi.sweb.webapi.client.kb.ComplexTypeClient;
-import it.unitn.disi.sweb.webapi.model.Pagination;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Duration;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
@@ -58,7 +57,7 @@ public class EntityODR extends StructureODR implements IEntity {
 
     private List<Name> names;
 
-    private Map<String, List<SemanticText>> descriptions;
+    private Map<String, List<SemText>> descriptions;
 
     private Moment start;
 
@@ -100,12 +99,12 @@ public class EntityODR extends StructureODR implements IEntity {
                 List<Value> fixedVals = new ArrayList<Value>();
 
                 for (Value val : vals) {
-                    if (val.getValue() instanceof SemanticText) {
+                    if (val.getValue() instanceof SemText) {
                         fixedVals.add(val);
-                    } else {
-                        SemanticText semtext = convertSemanticStringToText((SemanticString) val.getSemanticValue());
+                    } else {                        
+                        SemText semtext = NLPService.getSemanticStringConverter().semText((SemanticString) val.getSemanticValue());
                         Locale loc = OdtUtils.languageTagToLocale(val.getLanguageCode()); // dav so java 6 doesn't bother us Locale.forLanguageTag(val.getLanguageCode());
-                        SemanticText stext = semtext.with(loc);
+                        SemText stext = semtext.with(loc);
                         Value fixedVal = new Value();
                         fixedVal.setValue(stext);
                         fixedVal.setId(val.getId());
@@ -329,11 +328,11 @@ public class EntityODR extends StructureODR implements IEntity {
         this.names = names;
     }
 
-    public Map<String, List<SemanticText>> getDescriptions() {
+    public Map<String, List<SemText>> getDescriptions() {
         return descriptions;
     }
 
-    public void setDescriptions(Map<String, List<SemanticText>> descriptions) {
+    public void setDescriptions(Map<String, List<SemText>> descriptions) {
         this.descriptions = descriptions;
     }
 
@@ -526,8 +525,8 @@ public class EntityODR extends StructureODR implements IEntity {
                             EntityService es = new EntityService();
                             HashMap<String, Long> vocabularyMap = es.getVocabularies();
 
-                            SemanticText st = (SemanticText) val.getValue();
-                            SemanticString sstring = convertSemTextToSemString(st);
+                            SemText st = (SemText) val.getValue();
+                            SemanticString sstring = NLPService.getSemanticStringConverter().semanticString(st);
                             Locale l = st.getLocale();
                             Long vocabularyID = vocabularyMap.get(OdtUtils.localeToLanguageTag(l));
 
@@ -609,22 +608,22 @@ public class EntityODR extends StructureODR implements IEntity {
     /**
      * Converts description attribute from EntityPedia datatype to ODR datatype.
      */
-    private Map<String, List<SemanticText>> convertDescriptionToODR(Map<String, List<SemanticString>> descriptionSString) {
+    private Map<String, List<SemText>> convertDescriptionToODR(Map<String, List<SemanticString>> descriptionSString) {
 
-        Map<String, List<SemanticText>> odrDescriptionMap = new HashMap<String, List<SemanticText>>();
+        Map<String, List<SemText>> odrDescriptionMap = new HashMap<String, List<SemText>>();
         if (descriptionSString == null) {
             return odrDescriptionMap;
-        }
-        SemanticTextFactory stf = new SemanticTextFactory();
+        }        
+        
 
         Iterator<?> it = descriptionSString.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pairs = (Map.Entry) it.next();
-            List<SemanticText> sTextList = new ArrayList<SemanticText>();
+            List<SemText> sTextList = new ArrayList<SemText>();
 
             List<SemanticString> SStringList = (List<SemanticString>) pairs.getValue();
             for (SemanticString sstring : SStringList) {
-                SemanticText stext = (SemanticText) SemanticTextFactory.semanticText(sstring);
+                SemText stext = NLPService.getSemanticStringConverter().semText(sstring);
                 sTextList.add(stext);
             }
             odrDescriptionMap.put((String) pairs.getKey(), sTextList);
@@ -635,21 +634,9 @@ public class EntityODR extends StructureODR implements IEntity {
 
     }
 
-    private SemanticText convertSemanticStringToText(SemanticString sstring) {
 
-        SemanticText stext = (SemanticText) SemanticTextFactory.semanticText(sstring);
 
-        return stext;
-    }
-
-    private SemanticString convertSemTextToSemString(SemanticText stext) {
-
-        SemanticString sstring = SemanticTextFactory.semanticString(stext);
-
-        return sstring;
-    }
-
-    public Map<String, List<SemanticString>> convertDescriptionToSWEB(Map<String, List<SemanticText>> descriptionSText) {
+    public Map<String, List<SemanticString>> convertDescriptionToSWEB(Map<String, List<SemText>> descriptionSText) {
 
         Map<String, List<SemanticString>> epDescriptionMap = new HashMap<String, List<SemanticString>>();
         if (descriptionSText == null) {
@@ -661,9 +648,9 @@ public class EntityODR extends StructureODR implements IEntity {
             Map.Entry pairs = (Map.Entry) it.next();
             List<SemanticString> sStringList = new ArrayList<SemanticString>();
 
-            List<SemanticText> SStringList = (List<SemanticText>) pairs.getValue();
-            for (SemanticText stext : SStringList) {
-                SemanticString sstring = (SemanticString) SemanticTextFactory.semanticString(stext);
+            List<SemText> SStringList = (List<SemText>) pairs.getValue();
+            for (SemText stext : SStringList) {
+                SemanticString sstring = NLPService.getSemanticStringConverter().semanticString(stext);
 
                 sStringList.add(sstring);
             }

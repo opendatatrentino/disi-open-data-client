@@ -19,14 +19,14 @@ import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import eu.trentorise.opendata.disiclient.services.KnowledgeService;
-import eu.trentorise.opendata.disiclient.services.SemanticTextFactory;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.model.entity.IStructure;
-import eu.trentorise.opendata.semantics.nlp.model.SemanticText;
 import eu.trentorise.opendata.commons.OdtUtils;
+import eu.trentorise.opendata.disiclient.services.NLPService;
+import eu.trentorise.opendata.semtext.SemText;
 
 
 public class StructureODR extends Instance implements IStructure {    
@@ -82,12 +82,12 @@ public class StructureODR extends Instance implements IStructure {
                 List<Value> fixedVals = new ArrayList<Value>();
 
                 for (Value val : vals) {
-                    if (val.getValue() instanceof SemanticText) {
+                    if (val.getValue() instanceof SemText) {
                         fixedVals.add(val);
                     } else {
-                        SemanticText semtext = SemanticTextFactory.semanticText((SemanticString) val.getSemanticValue());
+                        SemText semtext = NLPService.getSemanticStringConverter().semText((SemanticString) val.getSemanticValue());
                         Locale loc = OdtUtils.languageTagToLocale(val.getLanguageCode()); // dav so java 6 doesn't bother us Locale.forLanguageTag(val.getLanguageCode());
-                        SemanticText stext = semtext.with(loc);
+                        SemText stext = semtext.with(loc);
                         Value fixedVal = new Value();
                         fixedVal.setValue(stext);
                         fixedVal.setId(val.getId());

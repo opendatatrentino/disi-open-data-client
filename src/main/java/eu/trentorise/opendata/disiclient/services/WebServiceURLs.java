@@ -1,6 +1,7 @@
 package eu.trentorise.opendata.disiclient.services;
 
 import eu.trentorise.opendata.commons.OdtUtils;
+import eu.trentorise.opendata.semtext.nltext.UrlMapper;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
 import java.io.File;
@@ -9,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
 import java.util.Properties;
-import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -186,5 +186,9 @@ public class WebServiceURLs {
         }
 
     }
+    
 
+    public static UrlMapper getSemtextUrlMapper(){
+        return urlMapper;
+    }
 }
