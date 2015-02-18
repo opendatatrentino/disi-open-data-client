@@ -498,8 +498,8 @@ public class EntityService implements IEntityService {
     public AttributeODR createNameAttributeODR(IAttributeDef attrDef, Object name) {
 
         Attribute entityNameAttribute = new Attribute();
-        entityNameAttribute.setDefinitionId(attrDef.getGUID());
-
+        entityNameAttribute.setDefinitionId(attrDef.getGUID());        
+                
         Name nameStructure = new Name();
         nameStructure.setEntityBaseId(1L);
         logger.warn("TODO HARDCODED ENTITY BASE ID TO 1.");

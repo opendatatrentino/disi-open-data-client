@@ -107,7 +107,7 @@ public class IDRes extends IDResult implements IIDResult {
     }
 
     public String getURL() {
-        String fullUrl = WebServiceURLs.getURL();
+        String fullUrl = WebServiceURLs.getURL();        
         String url = fullUrl + "/instances/new/" + super.getSwebID();
         return url;
     }

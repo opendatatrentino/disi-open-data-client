@@ -1,5 +1,6 @@
 package eu.trentorise.opendata.disiclient.test.services;
 
+import com.google.common.collect.ImmutableList;
 import eu.trentorise.opendata.disiclient.services.DisiEkb;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.KnowledgeService;
@@ -25,10 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.etypeIDToURL;
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.FACILITY_URL;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.LOCATION_URL;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.SHOPPING_FACILITY_URL;
+import eu.trentorise.opendata.semantics.services.INLPService;
 import java.util.HashSet;
 import java.util.Set;
 import static org.junit.Assert.assertEquals;
@@ -131,11 +131,11 @@ public class TestNLPService {
     @Test
     public void testRunNLP() {
         DisiEkb disiEkb = new DisiEkb();
-        NLPService nlpService = (NLPService) disiEkb.getNLPService();
+        INLPService nlpService = disiEkb.getNLPService();
 
         String inputStr = "Hello World";
 
-        ISemanticText output = nlpService.runNLP(inputStr);
+        ISemanticText output = nlpService.runNLP(ImmutableList.<String>of(inputStr), null).get(0);
         System.out.println(output.getLocale());
         System.out.println(output.getText());
         assertEquals("en", output.getLocale().toLanguageTag().toString());
@@ -228,9 +228,9 @@ public class TestNLPService {
 
     @Test
     public void testSingleConcept() {
-        NLPService nlpService = new NLPService();
+        INLPService nlpService = new NLPService();
 
-        ISemanticText singleSemText = nlpService.runNLP("Cabinovia");
+        ISemanticText singleSemText = nlpService.runNLP(ImmutableList.<String>of("Cabinovia"), null).get(0);
         assertEquals(1, singleSemText.getSentences().get(0).getWords().size());
 
         IWord word = singleSemText.getSentences().get(0).getWords().get(0);
@@ -250,9 +250,9 @@ public class TestNLPService {
 
     @Test
     public void testMultiWord() {
-        NLPService nlpService = new NLPService();
+        INLPService nlpService = new NLPService();
 
-        ISemanticText semText = nlpService.runNLP("Seggiovia ad agganciamento automatico");
+        ISemanticText semText = nlpService.runNLP(ImmutableList.<String>of("Seggiovia ad agganciamento automatico"), null).get(0);
 
         assertEquals(1, semText.getSentences().get(0).getWords().size());
 
@@ -375,8 +375,8 @@ public class TestNLPService {
     @Test
     public void testNlpWithMixedEntities(){
         DisiEkb disiEkb = new DisiEkb();
-        NLPService nlpService = (NLPService) disiEkb.getNLPService();
-        ISemanticText semText = nlpService.runNLP(MIXED_ENTITIES_AND_CONCEPTS, null);
+        INLPService nlpService = disiEkb.getNLPService();
+        ISemanticText semText = nlpService.runNLP(ImmutableList.<String>of(MIXED_ENTITIES_AND_CONCEPTS), null).get(0);
         List<String> entitiesToRead = new ArrayList();
         List<IEntity> entities = new ArrayList();
         List<String> conceptsToRead = new ArrayList();
@@ -413,7 +413,7 @@ public class TestNLPService {
         DisiEkb disiEkb = new DisiEkb();
         NLPService nlpService = (NLPService) disiEkb.getNLPService();
 
-        ISemanticText semTextLocationType = nlpService.runNLP(MIXED_ENTITIES_AND_CONCEPTS, LOCATION_URL);
+        ISemanticText semTextLocationType = nlpService.runNLP(ImmutableList.<String>of(MIXED_ENTITIES_AND_CONCEPTS), LOCATION_URL).get(0);
         testFiltering(semTextLocationType, MeaningKind.ENTITY, LOCATION_URL);
         
         ISemanticText semTextShoppingFacilityType = nlpService.runNLP(MIXED_ENTITIES_AND_CONCEPTS, SHOPPING_FACILITY_URL);
@@ -459,16 +459,32 @@ public class TestNLPService {
         logger.warn("ONLY TESTING WITH ROOT CONCEPT!");
         DisiEkb disiEkb = new DisiEkb();       
         String rootConceptURL = disiEkb.getKnowledgeService().getRootConcept().getURL();
-        NLPService nlpService = (NLPService) disiEkb.getNLPService();
-        ISemanticText semText = nlpService.runNLP(MIXED_ENTITIES_AND_CONCEPTS, rootConceptURL);
-        testFiltering(semText, MeaningKind.CONCEPT, rootConceptURL);
+        INLPService nlpService = disiEkb.getNLPService();
+        List<ISemanticText> semTexts = nlpService.runNLP(ImmutableList.<String>of(MIXED_ENTITIES_AND_CONCEPTS), rootConceptURL);
+        testFiltering(semTexts.get(0), MeaningKind.CONCEPT, rootConceptURL);
     }
 
     @Test
     public void testFreeSearch() {
         DisiEkb disiEkb = new DisiEkb();
-        NLPService nlpService = (NLPService) disiEkb.getNLPService();
+        INLPService nlpService = disiEkb.getNLPService();
         List<IWordSearchResult> res = nlpService.freeSearch("restau", Locale.ENGLISH);
+        assertTrue(res.size() > 0);
+    }
+    
+    @Test
+    public void testFreeSearchCapitalized() {
+        DisiEkb disiEkb = new DisiEkb();
+        INLPService nlpService = disiEkb.getNLPService();
+        List<IWordSearchResult> res = nlpService.freeSearch("Restau", Locale.ENGLISH);
+        assertTrue(res.size() > 0);
+    }
+
+    @Test
+    public void testFreeSearchMultiWord() {
+        DisiEkb disiEkb = new DisiEkb();
+        INLPService nlpService = disiEkb.getNLPService();
+        List<IWordSearchResult> res = nlpService.freeSearch("carry out", Locale.ENGLISH);
         assertTrue(res.size() > 0);
     }
 
@@ -491,8 +507,8 @@ public class TestNLPService {
     @Test
     public void testMeaningNames(){
         DisiEkb disiEkb = new DisiEkb();
-        NLPService nlpService = (NLPService) disiEkb.getNLPService();
-        ISemanticText semText = nlpService.runNLP(PRODOTTI_CERTIFICATI_DESCRIPTIONS.get(0), null);
+        INLPService nlpService =  disiEkb.getNLPService();
+        ISemanticText semText = nlpService.runNLP(ImmutableList.<String>of(PRODOTTI_CERTIFICATI_DESCRIPTIONS.get(0)), null).get(0);
         IWord word = semText.getWords().get(0);
         word.getMeanings();
     }
