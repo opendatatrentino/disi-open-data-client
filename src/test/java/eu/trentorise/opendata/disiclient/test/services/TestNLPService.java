@@ -473,6 +473,14 @@ public class TestNLPService {
     }
     
     @Test
+    public void testFreeSearchWithSpaces() {
+        DisiEkb disiEkb = new DisiEkb();
+        INLPService nlpService = disiEkb.getNLPService();
+        List<IWordSearchResult> res = nlpService.freeSearch("  restau", Locale.ENGLISH);
+        assertTrue(res.size() > 0);
+    }    
+    
+    @Test
     public void testFreeSearchCapitalized() {
         DisiEkb disiEkb = new DisiEkb();
         INLPService nlpService = disiEkb.getNLPService();
