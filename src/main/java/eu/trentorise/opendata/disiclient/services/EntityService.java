@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.LocaleUtils;
 import org.apache.http.client.ClientProtocolException;
@@ -704,7 +705,8 @@ public class EntityService implements IEntityService {
         return en;
     }
 
-    public List<ISearchResult> searchEntities(String partialName, String etypeURL, Locale locale) {
+    @Override
+    public List<ISearchResult> searchEntities(String partialName, @Nullable String etypeURL, Locale locale) {
         List<ISearchResult> entities = new ArrayList<ISearchResult>();
 
         Search search = new Search(disiEkb);

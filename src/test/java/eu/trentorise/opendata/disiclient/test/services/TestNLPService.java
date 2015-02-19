@@ -51,6 +51,8 @@ public class TestNLPService {
 
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    
+    
     public static String MIXED_ENTITIES_AND_CONCEPTS = "Comuni di: Andalo, Amblar, Bresimo. Ci sono le seguenti infrastrutture: Agrifer, Athenas, Hairstudio. Il mondo è bello quando l'NLP funziona";    
 
     public static List<String> PRODOTTI_CERTIFICATI_DESCRIPTIONS = new ArrayList<String>() {
@@ -492,9 +494,26 @@ public class TestNLPService {
     public void testFreeSearchMultiWord() {
         DisiEkb disiEkb = new DisiEkb();
         INLPService nlpService = disiEkb.getNLPService();
-        List<IWordSearchResult> res = nlpService.freeSearch("carry out", Locale.ENGLISH);
+        List<IWordSearchResult> res = nlpService.freeSearch("programming language", Locale.ENGLISH);
         assertTrue(res.size() > 0);
     }
+
+    @Test
+    public void testFreeSearchIncompleteMultiWordConcept() {
+        DisiEkb disiEkb = new DisiEkb();
+        INLPService nlpService = disiEkb.getNLPService();
+        List<IWordSearchResult> res = nlpService.freeSearch("programming langu", Locale.ENGLISH);
+        assertTrue(res.size() > 0);
+    }    
+    
+    @Test
+    public void testFreeSearchIncompleteMultiWordEntity() {
+        DisiEkb disiEkb = new DisiEkb();
+        INLPService nlpService = disiEkb.getNLPService();
+        List<IWordSearchResult> res = nlpService.freeSearch("borgo valsu", Locale.ENGLISH);
+        assertTrue(res.size() > 0);
+    }
+    
 
     
     @Test
