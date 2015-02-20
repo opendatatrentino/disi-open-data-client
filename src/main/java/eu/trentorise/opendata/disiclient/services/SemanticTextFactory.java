@@ -61,7 +61,17 @@ public class SemanticTextFactory {
      * TODO - it always return the lemma in English!!!
      */
     public static IDict meaningToDict(NLMeaning meaning) {
-        return new Dict(meaning.getLemma());
+        logger.warn("TODO - RETURNING MEANING LEMMA(S) WITH ENGLISH LOCALE!");
+        
+        Object lemmasProp = meaning.getProp(NLTextUnit.PFX, "synonymousLemmas");
+        if (lemmasProp != null){
+            List<String> lemmas = (List<String>) meaning.getProp(NLTextUnit.PFX, "synonymousLemmas");            
+            if (lemmas.size() > 0){
+                return new Dict(lemmas, Locale.ENGLISH);
+            }
+        }
+        
+        return new Dict(meaning.getLemma(), Locale.ENGLISH);
     }
 
     /**
