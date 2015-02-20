@@ -7,6 +7,7 @@ import eu.trentorise.opendata.semantics.model.knowledge.impl.Dict;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
+import it.unitn.disi.sweb.webapi.model.eb.Name;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
 import java.util.Iterator;
 import java.util.List;
@@ -42,17 +43,22 @@ public class SearchResult implements ISearchResult {
 
 	public SearchResult(Entity instance) {
 		this.id = instance.getId();
-		Map<String,List<String>> names = instance.getNames().iterator().next().getNames();
-		Dict dict = new Dict();
-		Iterator<?> it = names.entrySet().iterator();
-		while (it.hasNext()) {
-			Map.Entry pairs = (Map.Entry) it.next();
-			Locale l = TraceProvUtils.languageTagToLocale((String) pairs.getKey());
+                Iterator<Name> iterator = instance.getNames().iterator();
+                Dict candidateDict = new Dict();
+                if (iterator.hasNext()){
+                    Map<String,List<String>> names = iterator.next().getNames();
+                    
+                    Iterator<?> it = names.entrySet().iterator();
+                    while (it.hasNext()) {
+                        Map.Entry pairs = (Map.Entry) it.next();
+                        Locale l = TraceProvUtils.languageTagToLocale((String) pairs.getKey());
 			for (String s: (List<String>)pairs.getValue()){
-				dict = dict.putTranslation(l, s);
+				candidateDict = candidateDict.putTranslation(l, s);
 			}
-		}
-		this.dict=dict;
+                    }
+                } 
+		
+		this.dict=candidateDict;
 		this.url = WebServiceURLs.entityIDToURL(instance.getId());
 	}
 
