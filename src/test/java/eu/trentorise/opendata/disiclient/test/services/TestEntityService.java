@@ -25,7 +25,9 @@ import eu.trentorise.opendata.semantics.model.entity.IValue;
 import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.IEntityService;
+import eu.trentorise.opendata.semantics.services.INLPService;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
+import eu.trentorise.opendata.semantics.services.model.IWordSearchResult;
 import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
@@ -74,6 +76,8 @@ public class TestEntityService {
     public static final String ATTR_DEF_HOURS_CLOSING_HOUR_URL = attrDefIDToURL(ATTR_DEF_HOURS_CLOSING_HOUR);
 
     public static final long PALAZZETTO_ID = 64000L;
+    
+    public static final long NORGO_VALSUGANA_ID = 64000L;
     /**
      * Palazzetto is a Facility. It doesn't have description. Its concept is gymnasium.
      */
@@ -681,4 +685,28 @@ public class TestEntityService {
         IEntity en = enServ.readEntity(RESIDENCE_DES_ALPES_URL);
         IntegrityChecker.checkEntity(en);
     }
+    
+
+    @Test
+    public void testSearchIncompleteEntity() {
+        EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
+        List<ISearchResult> res = enServ.searchEntities("roveret", null, Locale.ITALIAN);
+        assertTrue(res.size() > 0);
+    }
+    
+    
+    @Test
+    public void testSearchMultiWordEntity() {
+        EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
+        List<ISearchResult> res = enServ.searchEntities("borgo valsugana", null, Locale.ITALIAN);
+        assertTrue(res.size() > 0);
+    }
+    
+    @Test
+    public void testSearchIncompleteMultiWordEntity() {
+        EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
+        List<ISearchResult> res = enServ.searchEntities("borgo valsu", null, Locale.ITALIAN);
+        assertTrue(res.size() > 0);
+    }    
+    
 }

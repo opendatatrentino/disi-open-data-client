@@ -9,7 +9,6 @@ import eu.trentorise.opendata.semantics.model.knowledge.ITableResource;
 import eu.trentorise.opendata.semantics.model.knowledge.IWord;
 import eu.trentorise.opendata.semantics.model.knowledge.MeaningKind;
 import eu.trentorise.opendata.semantics.model.knowledge.MeaningStatus;
-import eu.trentorise.opendata.semantics.model.knowledge.impl.Meaning;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.SemanticText;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.Word;
 import eu.trentorise.opendata.semantics.services.INLPService;
@@ -23,10 +22,8 @@ import it.unitn.disi.sweb.webapi.model.PipelineDescription;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -240,8 +237,7 @@ public class NLPService implements INLPService {
 		return filteredEntities;
 	}
 
-	public List<IWordSearchResult> freeSearch(String partialName, Locale locale) {
-		//logger.warn("TODO FREESEARCH NOT IMPLEMENTED, RETURNING EMPTY ARRAY!");
+	public List<IWordSearchResult> freeSearch(String partialName, Locale locale) {		
 		List<ISearchResult> entities = new ArrayList<ISearchResult>();
 
 		Search search = new Search( WebServiceURLs.getClientProtocol());
