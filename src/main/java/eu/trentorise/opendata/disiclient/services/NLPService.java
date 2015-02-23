@@ -55,7 +55,7 @@ public class NLPService implements INLPService {
 	 * @param texts
 	 * @return
 	 */    
-	public List<NLText> runNlpIt(List<String> texts) { 
+	public List<NLText> runNlpItNEP(List<String> texts) { 
 
 		PipelineClient pipClient = new PipelineClient(getClientProtocol());
 		NLPInput input = new NLPInput();
@@ -68,9 +68,50 @@ public class NLPService implements INLPService {
 
 		return Arrays.asList(processedTexts);
 	}
+	
+	/**
+	 * For italian text and 1st knowledge base
+	 *
+	 * @param texts
+	 * @return
+	 */    
+	public List<NLText> runNlpItODH(List<String> texts) { 
+
+		PipelineClient pipClient = new PipelineClient(getClientProtocol());
+		NLPInput input = new NLPInput();
+		input.setText(texts);
+		logger.warn("USING HARDCODED VOCABULARY ID!");
+		NLText[] processedTexts = pipClient.run("ODHPipeline", input, 1l);
+		//		for (NLText nlext : processedText) {
+		//		   System.out.println(nlext.toString());
+		//		}
+
+		return Arrays.asList(processedTexts);
+	}
+	
+
+	/**
+	 * For italian text and 1st knowledge base
+	 *
+	 * @param texts
+	 * @return
+	 */    
+	public List<NLText> runNlpItNEDW(List<String> texts) { 
+
+		PipelineClient pipClient = new PipelineClient(getClientProtocol());
+		NLPInput input = new NLPInput();
+		input.setText(texts);
+		logger.warn("USING HARDCODED VOCABULARY ID!");
+		NLText[] processedTexts = pipClient.run("NEDWSDPipeline", input, 1l);
+		//		for (NLText nlext : processedText) {
+		//		   System.out.println(nlext.toString());
+		//		}
+
+		return Arrays.asList(processedTexts);
+	}
 
 	public NLText runNlpIt(String nlText) { 
-		return runNlpIt(Arrays.asList(nlText)).get(0);
+		return runNlpItNEDW(Arrays.asList(nlText)).get(0);
 	}
 
 	public List<PipelineDescription> readPipelinesDescription() {
@@ -95,10 +136,10 @@ public class NLPService implements INLPService {
 	public List<ISemanticText> runNLP(List<String> texts, String domainURL) {
                 List<ISemanticText> ret = new ArrayList();            
 		if (WebServiceURLs.isConceptURL(domainURL)){
-                    
+			List<NLText> nlTexts = runNlpItODH(texts);
 		}
 		if (WebServiceURLs.isEtypeURL(domainURL)){
-			List<NLText> nlTexts = runNlpIt(texts);
+			List<NLText> nlTexts = runNlpItNEP(texts);
 			for (NLText nlText : nlTexts){
 				ISemanticText semText = SemanticTextFactory.semanticText(nlText);
 				//extractEntities(semText, domainURL);
@@ -107,7 +148,7 @@ public class NLPService implements INLPService {
 			return ret;
 		}
 		if (domainURL == null){
-			List<NLText> nlTexts = runNlpIt(texts);			
+			List<NLText> nlTexts = runNlpItNEDW(texts);			
 			for (NLText nlText : nlTexts){
 				ret.add(SemanticTextFactory.semanticText(nlText));
 			}
