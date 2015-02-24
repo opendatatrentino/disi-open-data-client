@@ -331,7 +331,7 @@
         <dependency>
             <groupId>com.github.jsonld-java</groupId>
             <artifactId>jsonld-java</artifactId>
-            <version>0.5-SNAPSHOT</version>
+            <version>0.5.1</version>
         </dependency>                
         <dependency>
             <groupId>com.google.code.gson</groupId>
