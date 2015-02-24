@@ -479,6 +479,8 @@ public class TestNLPService {
         DisiEkb disiEkb = new DisiEkb();
         INLPService nlpService = disiEkb.getNLPService();
         List<IWordSearchResult> res = nlpService.freeSearch("  restau", Locale.ENGLISH);
+        System.out.println(res.size());
+
         assertTrue(res.size() > 0);
     }    
     
@@ -523,7 +525,7 @@ public class TestNLPService {
         NLPService nlpService = (NLPService) disiEkb.getNLPService();
                 List<String> texts = new ArrayList();
         texts.add(PRODOTTI_CERTIFICATI_DESCRIPTIONS.get(0));  
-        NLText nlText = nlpService.runNlpIt(texts).get(0);
+        NLText nlText = nlpService.runNlpItODH(texts).get(0);
         
         List<NLToken> list = nlText.getSentences().get(0).getTokens();
         
