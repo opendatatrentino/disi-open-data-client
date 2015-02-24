@@ -705,7 +705,6 @@ public class EntityService implements IEntityService {
         return en;
     }
 
-    @Override
     public List<ISearchResult> searchEntities(String partialName, @Nullable String etypeURL, Locale locale) {
         List<ISearchResult> entities = new ArrayList<ISearchResult>();
 
