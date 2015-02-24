@@ -60,18 +60,36 @@ public class SemanticTextFactory {
     /**
      * TODO - it always return the lemma in English!!!
      */
-    public static IDict meaningToDict(NLMeaning meaning) {
+    public static IDict meaningToDict(@Nullable NLMeaning meaning) {
+        
+        if (meaning == null){
+            return new Dict();
+        }
+        
         logger.warn("TODO - RETURNING MEANING LEMMA(S) WITH ENGLISH LOCALE!");
         
         Object lemmasProp = meaning.getProp(NLTextUnit.PFX, "synonymousLemmas");
         if (lemmasProp != null){
             List<String> lemmas = (List<String>) meaning.getProp(NLTextUnit.PFX, "synonymousLemmas");            
             if (lemmas.size() > 0){
-                return new Dict(lemmas, Locale.ENGLISH);
+                List<String> sanitizedLemmas = new ArrayList();
+            
+                for (String lemma : lemmas){
+                    if (lemma == null){
+                        logger.warn("Found null synonym in NLMeaing!");
+                    } else {
+                        sanitizedLemmas.add(lemma);
+                    }
+                }
+                return new Dict(sanitizedLemmas, Locale.ENGLISH);
             }
         }
-        
-        return new Dict(meaning.getLemma(), Locale.ENGLISH);
+        if (meaning.getLemma() == null){
+            logger.warn("Found NLMeaning.getLemma() = null !");            
+        } else {
+            return new Dict(meaning.getLemma(), Locale.ENGLISH);    
+        }
+        return new Dict();
     }
 
     /**
