@@ -1,6 +1,5 @@
 package eu.trentorise.opendata.disiclient.test.services;
 
-import com.google.common.collect.ImmutableList;
 import eu.trentorise.opendata.disiclient.services.DisiEkb;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.KnowledgeService;
@@ -29,6 +28,7 @@ import java.util.Locale;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.LOCATION_URL;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.SHOPPING_FACILITY_URL;
 import eu.trentorise.opendata.semantics.services.INLPService;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import static org.junit.Assert.assertEquals;
@@ -137,7 +137,7 @@ public class TestNLPService {
 
         String inputStr = "Hello World";
 
-        ISemanticText output = nlpService.runNLP(ImmutableList.<String>of(inputStr), null).get(0);
+        ISemanticText output = nlpService.runNLP(Arrays.asList(inputStr), null).get(0);
         System.out.println(output.getLocale());
         System.out.println(output.getText());
         assertEquals("en", output.getLocale().toLanguageTag().toString());
@@ -232,7 +232,7 @@ public class TestNLPService {
     public void testSingleConcept() {
         INLPService nlpService = new NLPService();
 
-        ISemanticText singleSemText = nlpService.runNLP(ImmutableList.<String>of("Cabinovia"), null).get(0);
+        ISemanticText singleSemText = nlpService.runNLP(Arrays.asList("Cabinovia"), null).get(0);
         assertEquals(1, singleSemText.getSentences().get(0).getWords().size());
 
         IWord word = singleSemText.getSentences().get(0).getWords().get(0);
@@ -254,7 +254,7 @@ public class TestNLPService {
     public void testMultiWord() {
         INLPService nlpService = new NLPService();
 
-        ISemanticText semText = nlpService.runNLP(ImmutableList.<String>of("Seggiovia ad agganciamento automatico"), null).get(0);
+        ISemanticText semText = nlpService.runNLP(Arrays.asList("Seggiovia ad agganciamento automatico"), null).get(0);
 
         assertEquals(1, semText.getSentences().get(0).getWords().size());
 
@@ -378,7 +378,7 @@ public class TestNLPService {
     public void testNlpWithMixedEntities(){
         DisiEkb disiEkb = new DisiEkb();
         INLPService nlpService = disiEkb.getNLPService();
-        ISemanticText semText = nlpService.runNLP(ImmutableList.<String>of(MIXED_ENTITIES_AND_CONCEPTS), null).get(0);
+        ISemanticText semText = nlpService.runNLP(Arrays.asList(MIXED_ENTITIES_AND_CONCEPTS), null).get(0);
         List<String> entitiesToRead = new ArrayList();
         List<IEntity> entities = new ArrayList();
         List<String> conceptsToRead = new ArrayList();
@@ -415,7 +415,7 @@ public class TestNLPService {
         DisiEkb disiEkb = new DisiEkb();
         NLPService nlpService = (NLPService) disiEkb.getNLPService();
 
-        ISemanticText semTextLocationType = nlpService.runNLP(ImmutableList.<String>of(MIXED_ENTITIES_AND_CONCEPTS), LOCATION_URL).get(0);
+        ISemanticText semTextLocationType = nlpService.runNLP(Arrays.asList(MIXED_ENTITIES_AND_CONCEPTS), LOCATION_URL).get(0);
         testFiltering(semTextLocationType, MeaningKind.ENTITY, LOCATION_URL);
         
         ISemanticText semTextShoppingFacilityType = nlpService.runNLP(MIXED_ENTITIES_AND_CONCEPTS, SHOPPING_FACILITY_URL);
@@ -462,7 +462,7 @@ public class TestNLPService {
         DisiEkb disiEkb = new DisiEkb();       
         String rootConceptURL = disiEkb.getKnowledgeService().getRootConcept().getURL();
         INLPService nlpService = disiEkb.getNLPService();
-        List<ISemanticText> semTexts = nlpService.runNLP(ImmutableList.<String>of(MIXED_ENTITIES_AND_CONCEPTS), rootConceptURL);
+        List<ISemanticText> semTexts = nlpService.runNLP(Arrays.asList(MIXED_ENTITIES_AND_CONCEPTS), rootConceptURL);
         testFiltering(semTexts.get(0), MeaningKind.CONCEPT, rootConceptURL);
     }
 
@@ -537,7 +537,7 @@ public class TestNLPService {
     public void testMeaningNames(){
         DisiEkb disiEkb = new DisiEkb();
         INLPService nlpService =  disiEkb.getNLPService();
-        ISemanticText semText = nlpService.runNLP(ImmutableList.<String>of(PRODOTTI_CERTIFICATI_DESCRIPTIONS.get(0)), null).get(0);
+        ISemanticText semText = nlpService.runNLP(Arrays.asList(PRODOTTI_CERTIFICATI_DESCRIPTIONS.get(0)), null).get(0);
         IWord word = semText.getWords().get(0);
         word.getMeanings();
     }
