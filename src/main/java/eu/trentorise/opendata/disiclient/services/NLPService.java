@@ -241,10 +241,10 @@ public class NLPService implements INLPService {
 		List<ISearchResult> entities = new ArrayList<ISearchResult>();
 
 		Search search = new Search( WebServiceURLs.getClientProtocol());
-		entities = search.searchEntities(partialName, null, locale);
+		entities = search.searchEntities(partialName.toLowerCase(), null, locale);
 
 		KnowledgeService ks = new KnowledgeService();
-		List<ISearchResult> concepts  = ks.searchConcepts(partialName, locale);
+		List<ISearchResult> concepts  = ks.searchConcepts(partialName.toLowerCase(), locale);
 
 		List<IWordSearchResult> allSearchResult = new ArrayList<IWordSearchResult>();
 
