@@ -22,7 +22,7 @@ public class DictFactory {
         while (it.hasNext()) {
             Map.Entry pairs = (Map.Entry) it.next();
             Locale l = OdtUtils.languageTagToLocale((String) pairs.getKey());
-            dictBuilder = dictBuilder.putAll(l, (String) pairs.getValue());
+            dictBuilder = dictBuilder.put(l, (String) pairs.getValue());
         }
         return dictBuilder.build();
     }
@@ -36,7 +36,7 @@ public class DictFactory {
 
             List<String> vals = (List<String>) pairs.getValue();
 
-            dictBuilder.putAll(l, vals);
+            dictBuilder.put(l, vals);
 
         }
         return dictBuilder.build();
@@ -45,7 +45,7 @@ public class DictFactory {
     public static Dict namesToDict(List<Name> names){
         Dict.Builder dictBuilder = Dict.builder();
         for (Name name : names) {
-            dictBuilder.putAll(DictFactory.multimapToDict(name.getNames()));
+            dictBuilder.put(DictFactory.multimapToDict(name.getNames()));
         }
         return dictBuilder.build();
     }
@@ -67,7 +67,7 @@ public class DictFactory {
             for (SemText stexts : vals) {
                 strings.add(stexts.getText());
             }
-            dict = dict.putAll(l, strings);
+            dict = dict.put(l, strings);
         }
         return dict.build();        
     }

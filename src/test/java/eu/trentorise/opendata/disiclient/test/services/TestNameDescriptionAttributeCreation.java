@@ -35,9 +35,9 @@ public class TestNameDescriptionAttributeCreation {
         IdentityService idServ = new IdentityService();
         //String name = PALAZZETTO_NAME_IT;
         Dict.Builder namesBuilder = Dict.builder();
-        Dict newNames = namesBuilder.putAll(Locale.ITALIAN, "Buon Giorno")
-                .putAll(Locale.ENGLISH, "Hello")
-                .putAll(Locale.FRENCH, "Bonjour").build();
+        Dict newNames = namesBuilder.put(Locale.ITALIAN, "Buon Giorno")
+                .put(Locale.ENGLISH, "Hello")
+                .put(Locale.FRENCH, "Bonjour").build();
         logger.info(newNames.toString());
 		//String name = "my entity name";
         //		Search search = new Search(WebServiceURLs.getClientProtocol());

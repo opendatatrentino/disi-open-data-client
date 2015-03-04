@@ -16,45 +16,28 @@ import eu.trentorise.opendata.disiclient.services.KnowledgeService;
 import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 import eu.trentorise.opendata.commons.OdtUtils;
+import static org.junit.Assert.assertTrue;
 
 public class TestKnowledgeService {
 
-	Logger logger = LoggerFactory.getLogger(TestKnowledgeService.class);
+    Logger logger = LoggerFactory.getLogger(TestKnowledgeService.class);
 
-	
-    List<Object> guids = new ArrayList<Object>() {
-        {
-            add(132L); // TODO PUT NAMES
-            add(46263L);
-            add(46270L);
-        }
-    };
-
-
-//	@Rule
-//	public ExpectedException thrown= ExpectedException.none(); 
-//	
-	
-    @Test    
+    @Test
     public void testReadConcept() {
         KnowledgeService kserv = new KnowledgeService();
         String url = "http://opendata.disi.unitn.it:8080/odr/concepts/120";
         IConcept con = kserv.readConcept(url);
         assertEquals(con.getURL(), url);
     }
-    
-    
+
     @Test
     public void testReadNonExistingConcept() {
         KnowledgeService kserv = new KnowledgeService();
         String url = "blabla";
-        IConcept con = kserv.readConcept(url);
-       // thrown.expect(DisiClientException.class);
+        IConcept con = kserv.readConcept(url);        
 
         assertEquals(con, null);
     }
-    
-    
 
     @Test
     public void testGetRootConcept() {
@@ -83,15 +66,52 @@ public class TestKnowledgeService {
     }
 
     @Test
-    public void testSearchConcept(){
+    public void testSearchConcept() {
         KnowledgeService ks = new KnowledgeService();
         Locale locale = OdtUtils.languageTagToLocale("en");
-        List<ISearchResult>res = ks.searchConcepts("cat", locale);
-        for (ISearchResult r: res){ 
+        List<ISearchResult> res = ks.searchConcepts("vacation", locale);
+        for (ISearchResult r : res) {
 
-        	assertNotNull(r.getName());
-        	assertNotNull(r.getURL());
+            assertNotNull(r.getName());
+            assertNotNull(r.getURL());
         }
     }
     
+
+    @Test
+    public void testCapitalizedConcept() {
+        KnowledgeService ks = new KnowledgeService();
+        List<ISearchResult> res = ks.searchConcepts("Vacation", Locale.ENGLISH);
+        assertTrue(res.size() > 0);
+    }
+
+    @Test
+    public void testSpacesConcept() {
+        KnowledgeService ks = new KnowledgeService();
+        List<ISearchResult> res = ks.searchConcepts("   vacation", Locale.ENGLISH);
+        assertTrue(res.size() > 0);
+    }
+
+    @Test
+    public void testSearchIncompleteConcept() {
+        KnowledgeService ks = new KnowledgeService();
+        List<ISearchResult> res = ks.searchConcepts("vacatio", Locale.ENGLISH);
+        assertTrue(res.size() > 0);
+    }
+
+   @Test
+    public void testSearchMultiWordConcept() {
+        KnowledgeService ks = new KnowledgeService();
+        List<ISearchResult> res = ks.searchConcepts("programming language", Locale.ENGLISH);
+       assertTrue(res.size() > 0);
+    }
+
+    @Test
+    public void testSearchIncompleteMultiWordConcept() {
+        KnowledgeService ks = new KnowledgeService();
+        List<ISearchResult> res = ks.searchConcepts("programming langu", Locale.ENGLISH);
+        assertTrue(res.size() > 0);
+    }
+    
+
 }

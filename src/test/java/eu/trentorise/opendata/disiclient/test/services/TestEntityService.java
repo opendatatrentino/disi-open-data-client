@@ -672,4 +672,26 @@ public class TestEntityService {
         IEntity en = enServ.readEntity(RESIDENCE_DES_ALPES_URL);
         Checker.checkEntity(en);
     }
+    
+  @Test
+    public void testSearchIncompleteEntity() {
+        EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
+        List<ISearchResult> res = enServ.searchEntities("roveret", null, Locale.ITALIAN);
+        assertTrue(res.size() > 0);
+    }
+    
+    
+    @Test
+    public void testSearchMultiWordEntity() {
+        EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
+        List<ISearchResult> res = enServ.searchEntities("borgo valsugana", null, Locale.ITALIAN);
+        assertTrue(res.size() > 0);
+    }
+    
+    @Test
+    public void testSearchIncompleteMultiWordEntity() {
+        EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
+        List<ISearchResult> res = enServ.searchEntities("borgo valsu", null, Locale.ITALIAN);
+        assertTrue(res.size() > 0);
+    }        
 }

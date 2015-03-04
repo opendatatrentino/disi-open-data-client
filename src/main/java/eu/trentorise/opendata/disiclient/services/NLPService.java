@@ -13,7 +13,6 @@ import eu.trentorise.opendata.semtext.Term;
 import eu.trentorise.opendata.semantics.services.INLPService;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 import eu.trentorise.opendata.semantics.services.model.ITermSearchResult;
-import eu.trentorise.opendata.semtext.TermIterator;
 import eu.trentorise.opendata.semtext.nltext.NLTextConverter;
 import eu.trentorise.opendata.semtext.nltext.SemanticStringConverter;
 import it.unitn.disi.sweb.core.nlp.model.NLText;
@@ -59,13 +58,33 @@ public class NLPService implements INLPService {
      * @param texts
      * @return
      */
-    public List<NLText> runNlpIt(Iterable<String> texts) {
+    public List<NLText> runNlpItNEP(Iterable<String> texts) {
 
         PipelineClient pipClient = new PipelineClient(getClientProtocol());
         NLPInput input = new NLPInput();
         input.setText(Lists.newArrayList(texts));
         logger.warn("USING HARDCODED VOCABULARY ID!");
         NLText[] processedTexts = pipClient.run("NamedEntityPipeline", input, 1l);
+        //		for (NLText nlext : processedText) {
+        //		   System.out.println(nlext.toString());
+        //		}
+
+        return Arrays.asList(processedTexts);
+    }
+
+    /**
+     * For italian text and 1st knowledge base
+     *
+     * @param texts
+     * @return
+     */
+    public List<NLText> runNlpItODH(Iterable<String> texts) {
+
+        PipelineClient pipClient = new PipelineClient(getClientProtocol());
+        NLPInput input = new NLPInput();
+        input.setText(Lists.newArrayList(texts));
+        logger.warn("USING HARDCODED VOCABULARY ID!");
+        NLText[] processedTexts = pipClient.run("ODHPipeline", input, 1l);
 		//		for (NLText nlext : processedText) {
         //		   System.out.println(nlext.toString());
         //		}
@@ -73,8 +92,28 @@ public class NLPService implements INLPService {
         return Arrays.asList(processedTexts);
     }
 
-    public NLText runNlpIt(String nlText) {
-        return runNlpIt(Arrays.asList(nlText)).get(0);
+    /**
+     * For italian text and 1st knowledge base
+     *
+     * @param texts
+     * @return
+     */
+    public List<NLText> runNlpItNEDW(Iterable<String> texts) {
+
+        PipelineClient pipClient = new PipelineClient(getClientProtocol());
+        NLPInput input = new NLPInput();
+        input.setText(Lists.newArrayList(texts));
+        logger.warn("USING HARDCODED VOCABULARY ID!");
+        NLText[] processedTexts = pipClient.run("NEDWSDPipeline", input, 1l);
+		//		for (NLText nlext : processedText) {
+        //		   System.out.println(nlext.toString());
+        //		}
+
+        return Arrays.asList(processedTexts);
+    }
+
+    public NLText runNlpIt(String nlText) {        
+        return runNlpItNEDW(Arrays.asList(nlText)).get(0);
     }
 
     public List<PipelineDescription> readPipelinesDescription() {
@@ -98,10 +137,15 @@ public class NLPService implements INLPService {
     public List<SemText> runNLP(Iterable<String> texts, @Nullable String domainURL) {
         List<SemText> ret = new ArrayList();
         if (WebServiceURLs.isConceptURL(domainURL)) {
-
+            List<NLText> nlTexts = runNlpItODH(texts);            
+            for (NLText nlText : nlTexts) {
+                SemText semText = nltextConverter.semText(nlText);                
+                ret.add(extractEntities(semText, domainURL));
+            }            
+            return ret;
         }
         if (WebServiceURLs.isEtypeURL(domainURL)) {
-            List<NLText> nlTexts = runNlpIt(texts);
+            List<NLText> nlTexts = runNlpItNEP(texts);
             for (NLText nlText : nlTexts) {
                 SemText semText = nltextConverter.semText(nlText);
                 //extractEntities(semText, domainURL);
@@ -110,26 +154,25 @@ public class NLPService implements INLPService {
             return ret;
         }
         if (domainURL == null) {
-            List<NLText> nlTexts = runNlpIt(texts);
+            List<NLText> nlTexts = runNlpItNEDW(texts);
             for (NLText nlText : nlTexts) {
                 ret.add(nltextConverter.semText(nlText));
             }
             return ret;
         }
 
-        throw new UnsupportedOperationException("domain " + domainURL + " is not supported yet.");
+        throw new UnsupportedOperationException("Domain " + domainURL + " is not supported yet.");
     }
 
     private SemText extractEntities(SemText semText, String etypeURL) {
-        SemText textEntities = SemText.of();
+        SemText textEntities;
         List<String> entVocab = collectEntitiesFromMeanings(semText);
         List<String> filteredEntities = filterEntitiesByType(entVocab, etypeURL);
 
         List<Term> words = new ArrayList<Term>();
-        for (TermIterator iter = semText.terms(); iter.hasNext();) {
-            Term w = iter.next();
+        for (Term term : semText.terms()) {            
 
-            Meaning wsm = w.getSelectedMeaning();
+            Meaning wsm = term.getSelectedMeaning();
             Meaning selectedMeaning;
             MeaningStatus meaningStatus;
 
@@ -141,7 +184,7 @@ public class NLPService implements INLPService {
             }
 
             List<Meaning> filteredMeanings = new ArrayList<Meaning>();
-            for (Meaning m : w.getMeanings()) {
+            for (Meaning m : term.getMeanings()) {
                 if (MeaningKind.ENTITY.equals(m.getKind()) && (m.getId().length() > 0)) {
                     if (filteredEntities.contains(m.getId())) {
                         filteredMeanings.add(m);
@@ -155,12 +198,12 @@ public class NLPService implements INLPService {
                     meaningStatus = null;
                 }
             } else {
-                meaningStatus = w.getMeaningStatus();
+                meaningStatus = term.getMeaningStatus();
             }
 
             if (meaningStatus != null) {
 
-                words.add(Term.of(w.getStart(), w.getEnd(), meaningStatus, selectedMeaning, filteredMeanings));
+                words.add(Term.of(term.getStart(), term.getEnd(), meaningStatus, selectedMeaning, filteredMeanings));
 
             }
         }
@@ -177,9 +220,8 @@ public class NLPService implements INLPService {
      */
     private List<String> collectEntitiesFromMeanings(SemText semText) {
         List<String> entitiesId = new ArrayList<String>();
-        for (TermIterator iter = semText.terms(); iter.hasNext();) {
-            Term w = iter.next();
-            for (Meaning meaning : w.getMeanings()) {
+        for (Term term : semText.terms()) {            
+            for (Meaning meaning : term.getMeanings()) {
                 if (MeaningKind.ENTITY.equals(meaning.getKind()) && (meaning.getId().length() > 0)) {
                     entitiesId.add(meaning.getId());
                 }
@@ -204,15 +246,18 @@ public class NLPService implements INLPService {
         return filteredEntities;
     }
 
+    @Override
     public List<? extends ITermSearchResult> freeSearch(String partialName, Locale locale) {
-        //logger.warn("TODO FREESEARCH NOT IMPLEMENTED, RETURNING EMPTY ARRAY!");
-        List<ISearchResult> entities = new ArrayList<ISearchResult>();
+        
+        String lowerCasePartialName = partialName.toLowerCase(locale);
+        
+        List<ISearchResult> entities;
 
         Search search = new Search(WebServiceURLs.getClientProtocol());
-        entities = search.searchEntities(partialName, null, locale);
+        entities = search.searchEntities(lowerCasePartialName, null, locale);
 
         KnowledgeService ks = new KnowledgeService();
-        List<ISearchResult> concepts = ks.searchConcepts(partialName, locale);
+        List<ISearchResult> concepts = ks.searchConcepts(lowerCasePartialName, locale);
 
         List<TermSearchResult> allSearchResult = new ArrayList<TermSearchResult>();
 
