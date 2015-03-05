@@ -1,13 +1,17 @@
 package eu.trentorise.opendata.disiclient.test.services;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
+import com.github.jsonldjava.core.JsonLdError;
+import com.github.jsonldjava.core.JsonLdProcessor;
+import com.github.jsonldjava.utils.JsonUtils;
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
 import eu.trentorise.opendata.disiclient.services.EntityExportService;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
-import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.CERTIFIED_PRODUCT_ID;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.CERTIFIED_PRODUCT_URL;
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.MELA_VAL_DI_NON_URL;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
@@ -20,14 +24,18 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
-import static org.junit.Assert.assertNotNull;
+import org.junit.After;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import org.apache.commons.io.FileUtils;
+import static org.junit.Assert.assertEquals;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,65 +45,101 @@ import org.slf4j.LoggerFactory;
 public class EntityExportServiceTest {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    public static final long ENTITY1 = 1L;
-    public static final String ENTITY1_URL = WebServiceURLs.entityIDToURL(ENTITY1);
-    public static final long ENTITY2 = 4L;
+/*
+    //public static final long ENTITY1 = 1L;
+    public static final String ENTITY1_URL = WebServiceURLs.entityIDToURL();
+    // public static final long ENTITY2 = 4L;
     public static final String ENTITY2_URL = WebServiceURLs.entityIDToURL(ENTITY2);
-    public static final long ENTITY3 = 7;
+    //public static final long ENTITY3 = 7;
     public static final String ENTITY3_URL = WebServiceURLs.entityIDToURL(ENTITY3);
+    
+    */
+    
+    
     List<String> entities;
-    EntityExportService ess = new EntityExportService();
-    EntityService es = new EntityService();
+    EntityExportService ess;
+    EntityService enServ;
 
 
     @Before
-    public void test() {
-
+    public void before() {
         entities = new ArrayList<String>();
-        entities.add(ENTITY1_URL);
-        entities.add(ENTITY2_URL);
-        entities.add(ENTITY3_URL);
+        entities.add(TestEntityService.ANDALO_URL);
+        entities.add(TestEntityService.RAVAZZONE_URL);
+        entities.add(TestEntityService.PALAZZETTO_URL);
+        
+        ess = new EntityExportService();       
+        enServ = new EntityService();        
     }
 
-    private File makeTempFile(){        
+    @After
+    public void after() {
+        entities = null;
+        ess = null;
+        enServ = null;
+    }
+    
+    /**
+     * 
+     * @param extension for example, "jsonld"
+     * @return 
+     */
+    private File makeTempFile(String extension){
         String dirFilePath = "target/test-output/";
         File dirFile = new File(dirFilePath);
         
         if (dirFile.exists() || dirFile.mkdirs()){
-            return new File(dirFilePath + "my-first-test-"+System.currentTimeMillis()+ ".txt");
+            File file = new File(dirFilePath + "my-first-test-"+System.currentTimeMillis()+ "." + extension);
+            logger.info("Creating file " + file.getAbsolutePath());
+            return file;
         } else {
             throw new RuntimeException("Couldn't completely create directory " + dirFilePath);
         }
     }
 
     @Test
-    public void testExportToJsonLd() throws IOException {
-        File file = makeTempFile();
+    public void testExportToJsonLd() throws IOException, JsonLdError {
+        File file = makeTempFile("jsonld");
         Writer writer = new FileWriter(file);
-        es.exportToJsonLd(entities, writer);
+        enServ.exportToJsonLd(entities, writer);
         assertNotNull(writer);
         BufferedReader br = new BufferedReader(new FileReader(file));
         assertNotNull(br.readLine());
         br.close();
+        
+        String jsonld = FileUtils.readFileToString(file);
+                
+        ObjectMapper om = new ObjectMapper();
+        JsonNode node = om.readTree(jsonld);
+        assertEquals(JsonNodeType.ARRAY, node.getNodeType());
+           
+        // this weird jsonld library happily parses the string - todo add more checks
+        InputStream inputStream = new FileInputStream(file.getAbsolutePath());
+        Object jsonObject = JsonUtils.fromString(jsonld);        
+        Object normalized = JsonLdProcessor.normalize(jsonObject);
+        
     }
+    
+    
 
     @Test
     public void testExportToRDF() throws IOException {
-        File file = makeTempFile();
+        File file = makeTempFile("rdf");
         Writer writer = new FileWriter(file);
-        es.exportToRdf(entities, writer);
+        enServ.exportToRdf(entities, writer);
+        writer.close();
         assertNotNull(writer);
         BufferedReader br = new BufferedReader(new FileReader(file));
         assertNotNull(br.readLine());
         br.close();
+        
+        Model model = ModelFactory.createDefaultModel(); 
+        model.read(file.getAbsolutePath());        
     }
 
     @Test
     public void testCreateAndExportCertifiedProduct() {
-
-        EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
-
+       
         EntityTypeService ets = new EntityTypeService();
         IEntityType et = ets.readEntityType(CERTIFIED_PRODUCT_URL);
 
