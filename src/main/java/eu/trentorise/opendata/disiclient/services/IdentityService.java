@@ -96,18 +96,18 @@ public class IdentityService implements IIdentityService {
 
             IDManagementClient idManCl = new IDManagementClient(WebServiceURLs.getClientProtocol());
             List<Entity> resEntities = new ArrayList<Entity>();
-            for (IEntity en : entities) {
-                EntityODR ent = (EntityODR) en;
-                EntityODR enODRwClass = checkClassAttr(ent);
-
-                EntityODR entODR = convertNameAttr(enODRwClass);
-                Entity entity = entODR.convertToEntity();
-                resEntities.add(entity);
-            }
-            List<IDResult> results = idManCl.assignIdentifier(resEntities, 0);
+//            for (IEntity en : entities) {
+//                EntityODR ent = (EntityODR) en;
+//                EntityODR enODRwClass = checkClassAttr(ent);
+//
+//                EntityODR entODR = convertNameAttr(enODRwClass);
+//                Entity entity = entODR.convertToEntity();
+//                resEntities.add(entity);
+//            }
+          //  List<IDResult> results = idManCl.assignIdentifier(resEntities, 0);
             List<IIDResult> idResults = new ArrayList<IIDResult>();
-            for (IDResult res : results) {
-                IDRes idRes = new IDRes(res);
+            for (IEntity en : entities) {
+                IDRes idRes = new IDRes(en);
                 idResults.add(idRes);
             }
             return idResults;

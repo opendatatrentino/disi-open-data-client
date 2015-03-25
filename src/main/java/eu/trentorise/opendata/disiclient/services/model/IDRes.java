@@ -32,6 +32,14 @@ public class IDRes extends IDResult implements IIDResult {
 
     }
 
+    public IDRes(IEntity en) {
+
+        super.setResult(ASSIGNMENT_RESULT.ID_NEW);
+        this.asResult=AssignmentResult.NEW;
+        this.entity = en;
+
+    }
+    
     public IEntity getResultEntity() {
         if (this.api == null) {
             this.api = WebServiceURLs.getClientProtocol();

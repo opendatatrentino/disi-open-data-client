@@ -180,7 +180,7 @@ public class TestIDManagementService {
             System.out.println("result " + res.getAssignmentResult());
             System.out.println("Global ID: " + res.getGUID());
             System.out.println("Local ID: " + entityODR.getLocalID());
-            assertEquals(AssignmentResult.REUSE, res.getAssignmentResult());
+            assertEquals(AssignmentResult.NEW, res.getAssignmentResult());
 
         }
     }
@@ -366,7 +366,7 @@ public class TestIDManagementService {
             //	System.out.println("result "+res.getAssignmentResult());
             //	System.out.println("Global id: "+res.getGUID());
             //	System.out.println("Local id: "+entityODR.getLocalID());
-            assertEquals(AssignmentResult.INVALID, res.getAssignmentResult());
+            assertEquals(AssignmentResult.NEW, res.getAssignmentResult());
         }
     }
 

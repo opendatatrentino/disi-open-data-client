@@ -608,7 +608,7 @@ public class EntityService implements IEntityService {
 
         Long fileId = null;
         try {
-            fileId = ees.methodPost(entitiesID, filename);
+            fileId = ees.methodPostRDF(entitiesID, filename);
         }
         catch (ClientProtocolException e) {
             throw new DisiClientException("Error while getting fileId", e);
