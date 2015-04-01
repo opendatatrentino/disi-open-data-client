@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import org.junit.After;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -73,20 +74,20 @@ public class TestEntityService {
     public static final long ATTR_DEF_HOURS_CLOSING_HOUR = 30L;
     public static final String ATTR_DEF_HOURS_CLOSING_HOUR_URL = attrDefIDToURL(ATTR_DEF_HOURS_CLOSING_HOUR);
 
-    public static final long PALAZZETTO_ID = 64000L;
+    static final long PALAZZETTO_ID = 64000L;
     /**
      * Palazzetto is a Facility. It doesn't have description. Its concept is gymnasium.
-     */
-    
+     */    
     public static final String PALAZZETTO_URL = entityIDToURL(PALAZZETTO_ID);
     public static final String PALAZZETTO_NAME_IT = "PALAZZETTO DELLO SPORT";
     public static final long GYMNASIUM_CONCEPT_ID = 18565L;
     public static final String GYMNASIUM_CONCEPT_URL = conceptIDToURL(GYMNASIUM_CONCEPT_ID);
 
+    
+    static final long RAVAZZONE_ID = 15001L;
     /**
      * Ravazzone is a cool district of Mori.
      */
-    public static final long RAVAZZONE_ID = 15001L;
     public static final String RAVAZZONE_URL = entityIDToURL(RAVAZZONE_ID);
     public static final String RAVAZZONE_NAME_IT = "Ravazzone";
     public static final String RAVAZZONE_NAME_EN = "Ravazzone";
@@ -102,21 +103,23 @@ public class TestEntityService {
     public static final long POVO_ID = 1024;
     public static final String POVO_URL = entityIDToURL(POVO_ID);
 
+    
+    static final long CAMPANIL_PARTENZA_ID = 64235L;
     /**
      * "Campanil partenza" is a Facility. Entity concept is Detachable
      * chairlift. Has attributes orari. Has descriptions both in Italian and
      * English. Name is only in Italian.
      */
-    public static final long CAMPANIL_PARTENZA_ID = 64235L;
     public static final String CAMPANIL_PARTENZA_URL = entityIDToURL(CAMPANIL_PARTENZA_ID);
     public static final long DETACHABLE_CHAIRLIFT_CONCEPT_ID = 111009L;
     public static final String DETACHABLE_CHAIRLIFT_CONCEPT_URL = conceptIDToURL(DETACHABLE_CHAIRLIFT_CONCEPT_ID);
     public static final String CAMPANIL_PARTENZA_NAME_IT = "Campanil partenza";
 
+    
+    static final long ANDALO_ID = 2089L;
     /**
      * Andalo is one of those nasty locations with "Place Name" as Name type
      */
-    public static final long ANDALO_ID = 2089L;
     public static final String ANDALO_URL = entityIDToURL(ANDALO_ID);
 
     public static final long CLASS_CONCEPT_ID = 21987L;
@@ -172,12 +175,20 @@ public class TestEntityService {
 
     private IProtocolClient api;
 
-    Logger logger = LoggerFactory.getLogger(this.getClass());
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    private IEntityService enServ;
+    
     @Before
-    public void getClientProtocol() {
-        this.api = WebServiceURLs.getClientProtocol();
-
+    public void before() {
+        api = WebServiceURLs.getClientProtocol();
+        enServ = new EntityService(api);        
+    }
+    
+    @After
+    public void after(){
+        api = null;
+        enServ = null;
     }
 
     @Test
@@ -639,9 +650,7 @@ public class TestEntityService {
 
 
     @Test
-    public void testEntitySearch() {
-        EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
-
+    public void testEntitySearch() {        
         String etypeURL = WebServiceURLs.etypeIDToURL(18L);
         Locale locale = OdtUtils.languageTagToLocale("it");
         List<ISearchResult> sResults = enServ.searchEntities("Povo", etypeURL, locale);
@@ -653,9 +662,7 @@ public class TestEntityService {
     }
     
     @Test
-    public void testEntitySearchAndalo() {
-        EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
-
+    public void testEntitySearchAndalo() {        
         String etypeURL = WebServiceURLs.etypeIDToURL(18L);
         Locale locale = OdtUtils.languageTagToLocale("it");
         List<ISearchResult> sResults = enServ.searchEntities("Andalo", etypeURL, locale);
@@ -667,31 +674,29 @@ public class TestEntityService {
     }
     
     @Test
-    public void TestResidenceDesAlpes(){
-        EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
+    public void TestResidenceDesAlpes(){        
         IEntity en = enServ.readEntity(RESIDENCE_DES_ALPES_URL);
         Checker.checkEntity(en);
     }
     
   @Test
-    public void testSearchIncompleteEntity() {
-        EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
+    public void testSearchIncompleteEntity() {        
         List<ISearchResult> res = enServ.searchEntities("roveret", null, Locale.ITALIAN);
         assertTrue(res.size() > 0);
     }
     
     
     @Test
-    public void testSearchMultiWordEntity() {
-        EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
+    public void testSearchMultiWordEntity() {        
         List<ISearchResult> res = enServ.searchEntities("borgo valsugana", null, Locale.ITALIAN);
         assertTrue(res.size() > 0);
     }
     
     @Test
-    public void testSearchIncompleteMultiWordEntity() {
-        EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
+    public void testSearchIncompleteMultiWordEntity() {        
+        
         List<ISearchResult> res = enServ.searchEntities("borgo valsu", null, Locale.ITALIAN);
         assertTrue(res.size() > 0);
     }        
+    
 }
