@@ -36,6 +36,7 @@ public class IDRes extends IDResult implements IIDResult {
     public IDRes(IEntity en) {
 
         super.setResult(ASSIGNMENT_RESULT.ID_NEW);
+        super.setSwebID((long) randInt(0, 10000000));
         this.asResult=AssignmentResult.NEW;
         this.entity = en;
 
@@ -117,7 +118,7 @@ public class IDRes extends IDResult implements IIDResult {
 
     public String getURL() {
         String fullUrl = WebServiceURLs.getURL();        
-        String url = fullUrl + "/instances/new/" + randInt(0, 10000000);
+        String url = fullUrl + "/instances/new/" + super.getSwebID();
         return url;
     }
     
