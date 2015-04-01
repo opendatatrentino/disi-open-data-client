@@ -4,6 +4,7 @@ import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.model.odt.IDResult;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -116,8 +117,16 @@ public class IDRes extends IDResult implements IIDResult {
 
     public String getURL() {
         String fullUrl = WebServiceURLs.getURL();        
-        String url = fullUrl + "/instances/new/" + super.getSwebID();
+        String url = fullUrl + "/instances/new/" + randInt(0, 10000000);
         return url;
+    }
+    
+    public static int randInt(int min, int max) {
+
+        Random rand = new Random();
+        int randomNum = rand.nextInt((max - min) + 1) + min;
+
+        return randomNum;
     }
 
 //	private IEntity entityForNewResults(){
