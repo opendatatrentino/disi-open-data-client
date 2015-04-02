@@ -308,15 +308,21 @@ public class TestEntityService {
 
             if (a.getDefinitionId() != attrDefClassAtrID) {
                 //  System.out.println(a.getName().get("en"));
+            	a.setInstanceId(null);
+            	a.setId(null);
+            	a.getValues().get(0).setId(null);
+            	a.getValues().get(0).setAttributeId(null);
+            	System.out.println(a.getValues());
+            //	a.setValues(null);
                 attrsEntityToCreate.add(a);
-            }
+            } break;
         }
         //logger.info("Etype id: "+inst.getTypeId());
         //assigning variables
         entityToCreate.setAttributes(attrsEntityToCreate);
         entityToCreate.setEtype(etype);
         entityToCreate.setEntityBaseId(1L);
-        //  logger.info("entity: " + entity.toString());
+       // logger.info("entity: " + entity.toString());
         //es.createEntity(entity);
 
         EbClient ebc = new EbClient(api);
@@ -329,7 +335,7 @@ public class TestEntityService {
             entityURL = es.createEntityURL(entityToCreate);
             //        es.ge
             //        inst = instanceClient.readInstance(id, null);
-
+System.out.println(entityURL);
             EntityBase ebafter = ebc.readEntityBase(1L, null);
             int instanceNumAfter = ebafter.getInstancesNumber();
             assertEquals(instanceNum + 1, instanceNumAfter);
