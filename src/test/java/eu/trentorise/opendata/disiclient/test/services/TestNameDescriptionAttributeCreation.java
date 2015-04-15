@@ -20,11 +20,17 @@ import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import eu.trentorise.opendata.disiclient.services.IdentityService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
-import eu.trentorise.opendata.semantics.model.entity.IAttribute;
+import eu.trentorise.opendata.disiclient.test.ConfigLoader;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.Dict;
+import org.junit.Before;
 
 public class TestNameDescriptionAttributeCreation {
+
+    @Before
+    public void beforeMethod() {
+        ConfigLoader.init();
+    }
 
     @Test
     public void testCreateDescription() {

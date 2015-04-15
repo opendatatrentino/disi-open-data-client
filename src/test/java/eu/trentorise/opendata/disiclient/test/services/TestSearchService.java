@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import eu.trentorise.opendata.disiclient.services.Search;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
+import eu.trentorise.opendata.disiclient.test.ConfigLoader;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
@@ -23,6 +24,8 @@ public class TestSearchService {
 
     @Before
     public void getClientProtocol() {
+     
+        ConfigLoader.init();    
         this.api = WebServiceURLs.getClientProtocol();
     }
 

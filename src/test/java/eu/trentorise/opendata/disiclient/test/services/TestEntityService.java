@@ -1,5 +1,6 @@
 package eu.trentorise.opendata.disiclient.test.services;
 
+import com.google.common.collect.ImmutableList;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
@@ -15,6 +16,7 @@ import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.attrDefI
 import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.conceptIDToURL;
 import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.entityIDToURL;
 import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.etypeIDToURL;
+import eu.trentorise.opendata.disiclient.test.ConfigLoader;
 import eu.trentorise.opendata.semantics.IntegrityChecker;
 import eu.trentorise.opendata.semantics.NotFoundException;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
@@ -25,9 +27,7 @@ import eu.trentorise.opendata.semantics.model.entity.IValue;
 import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.IEntityService;
-import eu.trentorise.opendata.semantics.services.INLPService;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
-import eu.trentorise.opendata.semantics.services.model.IWordSearchResult;
 import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
@@ -178,17 +178,19 @@ public class TestEntityService {
 
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    IEkb ekb;
+    
     @Before
     public void getClientProtocol() {
+        ConfigLoader.init();
         this.api = WebServiceURLs.getClientProtocol();
-
+        ekb = new DisiEkb();        
     }
 
     @Test
-    public void testPalazzettoReadNameEtype() {
-        IEkb disiEkb = new DisiEkb();
+    public void testPalazzettoReadNameEtype() {        
 
-        EntityODR entity = (EntityODR) disiEkb.getEntityService().readEntity(PALAZZETTO_URL);
+        EntityODR entity = (EntityODR) ekb.getEntityService().readEntity(PALAZZETTO_URL);
         logger.info("\n\n *************   entity Palazzetto (" + PALAZZETTO_URL + ") ***************** \n\n" + entity);
         IAttributeDef nameAttrDef = entity.getEtype().getNameAttrDef();
         IStructure nameValue = (IStructure) entity.getAttribute(nameAttrDef.getURL()).getValues().get(0).getValue();
@@ -201,10 +203,9 @@ public class TestEntityService {
     }
 
     @Test
-    public void testPalazzettoRead() {
-        IEkb disiEkb = new DisiEkb();
+    public void testPalazzettoRead() {        
 
-        EntityODR entity = (EntityODR) disiEkb.getEntityService().readEntity(PALAZZETTO_URL);
+        EntityODR entity = (EntityODR) ekb.getEntityService().readEntity(PALAZZETTO_URL);
         logger.info("\n\n *************   entity Palazzetto (" + PALAZZETTO_URL + ") ***************** \n\n" + entity);
         /*               This stuff should be caught by the integrity checker 
          IAttributeDef nameAttrDef = entity.getEtype().getNameAttrDef();
@@ -219,9 +220,8 @@ public class TestEntityService {
     }
 
     @Test
-    public void testReadNonExistingEntity() {
-        IEkb disiEkb = new DisiEkb();
-        assertEquals(disiEkb.getEntityService().readEntity("http://blabla.com"), null);
+    public void testReadNonExistingEntity() {        
+        assertEquals(ekb.getEntityService().readEntity("http://blabla.com"), null);
     }
 
     /**
@@ -244,8 +244,7 @@ public class TestEntityService {
 
     @Test
     public void testUpdateNonExistingEntity() {
-        EntityODR entity = new EntityODR();
-        IEkb ekb = new DisiEkb();
+        EntityODR entity = new EntityODR();        
         IEntityService es = ekb.getEntityService();
         entity.setEntityAttributes(new ArrayList<IAttribute>());
         entity.setEtype(ekb.getEntityTypeService().getEntityType(FACILITY_URL));

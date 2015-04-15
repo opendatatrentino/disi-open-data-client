@@ -27,6 +27,7 @@ import org.junit.Test;
 
 import eu.trentorise.opendata.disiclient.services.SemanticTextFactory;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
+import eu.trentorise.opendata.disiclient.test.ConfigLoader;
 import eu.trentorise.opendata.semantics.IntegrityChecker;
 import eu.trentorise.opendata.semantics.model.knowledge.IMeaning;
 import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
@@ -38,6 +39,7 @@ import eu.trentorise.opendata.semantics.model.knowledge.impl.Meaning;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.SemanticText;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.Sentence;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.Word;
+import org.junit.Before;
 
 /**
  *
@@ -48,6 +50,12 @@ public class SemanticTextFactoryTest {
     static final long TEST_CONCEPT_1_ID = 1L;
     static final long TEST_CONCEPT_2_ID = 2L;
 
+    @Before
+    public void beforeMethod() {
+        ConfigLoader.init();        
+    }    
+    
+    
     @Test
     public void testConceptURLConverter() {
         String conceptURL = WebServiceURLs.conceptIDToURL(1L);

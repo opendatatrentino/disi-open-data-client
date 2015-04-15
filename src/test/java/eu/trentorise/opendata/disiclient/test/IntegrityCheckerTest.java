@@ -23,6 +23,9 @@ import eu.trentorise.opendata.disiclient.services.IdentityService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.disiclient.services.model.SchemaCorrespondence;
 import eu.trentorise.opendata.disiclient.services.shematching.MatchingService;
+import static eu.trentorise.opendata.disiclient.test.services.EntityExportServiceTest.ENTITY1_URL;
+import static eu.trentorise.opendata.disiclient.test.services.EntityExportServiceTest.ENTITY2_URL;
+import static eu.trentorise.opendata.disiclient.test.services.EntityExportServiceTest.ENTITY3_URL;
 import eu.trentorise.opendata.semantics.IntegrityChecker;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
@@ -30,6 +33,7 @@ import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.services.model.DataTypes;
 import eu.trentorise.opendata.semantics.services.model.IIDResult;
+import org.junit.Before;
 
 public class IntegrityCheckerTest {
 
@@ -110,6 +114,11 @@ public class IntegrityCheckerTest {
         }
     };
 
+    @Before
+    public void beforeMethod() {
+        ConfigLoader.init();        
+    }    
+    
     /**
      * Check the integration TODO REVIEW COMMENTED TEST
      */

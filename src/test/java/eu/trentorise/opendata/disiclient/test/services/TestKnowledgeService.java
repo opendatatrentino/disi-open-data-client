@@ -14,14 +14,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.trentorise.opendata.disiclient.services.KnowledgeService;
+import eu.trentorise.opendata.disiclient.test.ConfigLoader;
 import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
 import static org.junit.Assert.assertTrue;
+import org.junit.Before;
 
 public class TestKnowledgeService {
 
     Logger logger = LoggerFactory.getLogger(TestKnowledgeService.class);
+
+    @Before
+    public void beforeMethod() {
+        ConfigLoader.init();
+    }
 
     @Test
     public void testReadConcept() {

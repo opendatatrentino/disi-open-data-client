@@ -1,5 +1,6 @@
 package eu.trentorise.opendata.disiclient.model.entity;
 
+import com.google.common.collect.ImmutableList;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.disiclient.services.DisiEkb;
 import eu.trentorise.opendata.disiclient.services.EntityService;
@@ -788,7 +789,8 @@ public class EntityODR extends StructureODR implements IEntity {
                     } else {
 
                         if (attrDef.getURL().equals(nameAttrDefURL)) {
-                            objects.add(Dict.copyOf(entity.getName()).prettyString(new DisiEkb().getDefaultLocales())); // todo find way to link entity service to DisiEkb
+                            logger.warn("TODO HARD CODING LOCALE ENGLISH IN ATTRIBUTE DEF NAME " + attrDef.getURL());
+                            objects.add(Dict.copyOf(entity.getName()).prettyString(ImmutableList.of(Locale.ENGLISH))); // todo find way to link entity service to DisiEkb
                         } else {
                             for (IValue val : attr.getValues()) {
                                 objects.add(disifyObject(val.getValue()));

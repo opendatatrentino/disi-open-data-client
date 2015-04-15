@@ -5,6 +5,7 @@ import eu.trentorise.opendata.disiclient.services.EntityExportService;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
+import eu.trentorise.opendata.disiclient.test.ConfigLoader;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.CERTIFIED_PRODUCT_ID;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.CERTIFIED_PRODUCT_URL;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.MELA_VAL_DI_NON_URL;
@@ -50,8 +51,8 @@ public class EntityExportServiceTest {
 
 
     @Before
-    public void test() {
-
+    public void beforeMethod() {
+        ConfigLoader.init();
         entities = new ArrayList<String>();
         entities.add(ENTITY1_URL);
         entities.add(ENTITY2_URL);

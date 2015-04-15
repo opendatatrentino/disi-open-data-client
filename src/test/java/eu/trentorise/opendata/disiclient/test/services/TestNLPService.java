@@ -1,10 +1,12 @@
 package eu.trentorise.opendata.disiclient.test.services;
 
+import com.google.common.collect.ImmutableList;
 import eu.trentorise.opendata.disiclient.services.DisiEkb;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.KnowledgeService;
 import eu.trentorise.opendata.disiclient.services.NLPService;
 import eu.trentorise.opendata.disiclient.services.SemanticTextFactory;
+import eu.trentorise.opendata.disiclient.test.ConfigLoader;
 import eu.trentorise.opendata.semantics.IntegrityChecker;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
@@ -34,6 +36,7 @@ import java.util.Set;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import org.junit.Before;
 import org.junit.Ignore;
 
 import org.junit.Test;
@@ -52,6 +55,7 @@ public class TestNLPService {
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
     
+    DisiEkb disiEkb;
     
     public static String MIXED_ENTITIES_AND_CONCEPTS = "Comuni di: Andalo, Amblar, Bresimo. Ci sono le seguenti infrastrutture: Agrifer, Athenas, Hairstudio. Il mondo è bello quando l'NLP funziona";    
 
@@ -101,6 +105,14 @@ public class TestNLPService {
         }
     };
 
+    @Before 
+    public void beforeMethod(){
+        
+        ConfigLoader.init();
+        
+        disiEkb = new DisiEkb();
+    }
+    
     @Test
     public void testGetAllPipelinesDescription() {
         NLPService nlpService = new NLPService();
@@ -115,7 +127,7 @@ public class TestNLPService {
     @Test
     public void testRunBatchNLP() {
 
-        DisiEkb disiEkb = new DisiEkb();
+        
         NLPService nlpService = (NLPService) disiEkb.getNLPService();
 
         List<ISemanticText> output = nlpService.runNLP(PRODOTTI_CERTIFICATI_DESCRIPTIONS, null);
@@ -132,7 +144,7 @@ public class TestNLPService {
 
     @Test
     public void testRunNLP() {
-        DisiEkb disiEkb = new DisiEkb();
+
         INLPService nlpService = disiEkb.getNLPService();
 
         String inputStr = "Hello World";
@@ -376,7 +388,7 @@ public class TestNLPService {
     
     @Test
     public void testNlpWithMixedEntities(){
-        DisiEkb disiEkb = new DisiEkb();
+
         INLPService nlpService = disiEkb.getNLPService();
         ISemanticText semText = nlpService.runNLP(Arrays.asList(MIXED_ENTITIES_AND_CONCEPTS), null).get(0);
         List<String> entitiesToRead = new ArrayList();
@@ -412,7 +424,7 @@ public class TestNLPService {
 
     @Test
     public void testNLPWithEntityRestriction() {
-        DisiEkb disiEkb = new DisiEkb();
+    
         NLPService nlpService = (NLPService) disiEkb.getNLPService();
 
         ISemanticText semTextLocationType = nlpService.runNLP(Arrays.asList(MIXED_ENTITIES_AND_CONCEPTS), LOCATION_URL).get(0);
@@ -438,7 +450,7 @@ public class TestNLPService {
         
         assertTrue(meaningCount > 0);
         
-        DisiEkb disiEkb = new DisiEkb();
+ 
         
         if (MeaningKind.ENTITY.equals(kind)){
             EntityService entityService = (EntityService) disiEkb.getEntityService();
@@ -459,7 +471,7 @@ public class TestNLPService {
     @Ignore
     public void testNLPWithConceptRestriction() {
         logger.warn("ONLY TESTING WITH ROOT CONCEPT!");
-        DisiEkb disiEkb = new DisiEkb();       
+     
         String rootConceptURL = disiEkb.getKnowledgeService().getRootConcept().getURL();
         INLPService nlpService = disiEkb.getNLPService();
         List<ISemanticText> semTexts = nlpService.runNLP(Arrays.asList(MIXED_ENTITIES_AND_CONCEPTS), rootConceptURL);
@@ -468,7 +480,7 @@ public class TestNLPService {
 
     @Test
     public void testFreeSearch() {
-        DisiEkb disiEkb = new DisiEkb();
+
         INLPService nlpService = disiEkb.getNLPService();
         List<IWordSearchResult> res = nlpService.freeSearch("restau", Locale.ENGLISH);
         assertTrue(res.size() > 0);
@@ -476,7 +488,7 @@ public class TestNLPService {
     
     @Test
     public void testFreeSearchWithSpaces() {
-        DisiEkb disiEkb = new DisiEkb();
+
         INLPService nlpService = disiEkb.getNLPService();
         List<IWordSearchResult> res = nlpService.freeSearch("  restau", Locale.ENGLISH);
         System.out.println(res.size());
@@ -486,7 +498,7 @@ public class TestNLPService {
     
     @Test
     public void testFreeSearchCapitalized() {
-        DisiEkb disiEkb = new DisiEkb();
+
         INLPService nlpService = disiEkb.getNLPService();
         List<IWordSearchResult> res = nlpService.freeSearch("Restau", Locale.ENGLISH);
         assertTrue(res.size() > 0);
@@ -494,7 +506,7 @@ public class TestNLPService {
 
     @Test
     public void testFreeSearchMultiWord() {
-        DisiEkb disiEkb = new DisiEkb();
+
         INLPService nlpService = disiEkb.getNLPService();
         List<IWordSearchResult> res = nlpService.freeSearch("programming language", Locale.ENGLISH);
         assertTrue(res.size() > 0);
@@ -502,7 +514,7 @@ public class TestNLPService {
 
     @Test
     public void testFreeSearchIncompleteMultiWordConcept() {
-        DisiEkb disiEkb = new DisiEkb();
+
         INLPService nlpService = disiEkb.getNLPService();
         List<IWordSearchResult> res = nlpService.freeSearch("programming langu", Locale.ENGLISH);
         assertTrue(res.size() > 0);
@@ -510,7 +522,7 @@ public class TestNLPService {
     
     @Test
     public void testFreeSearchIncompleteMultiWordEntity() {
-        DisiEkb disiEkb = new DisiEkb();
+
         INLPService nlpService = disiEkb.getNLPService();
         List<IWordSearchResult> res = nlpService.freeSearch("borgo valsu", Locale.ENGLISH);
         assertTrue(res.size() > 0);
@@ -521,7 +533,7 @@ public class TestNLPService {
     @Test
     public void testMeaningNamesSwebNlp(){
 
-        DisiEkb disiEkb = new DisiEkb();
+
         NLPService nlpService = (NLPService) disiEkb.getNLPService();
                 List<String> texts = new ArrayList();
         texts.add(PRODOTTI_CERTIFICATI_DESCRIPTIONS.get(0));  
@@ -535,7 +547,7 @@ public class TestNLPService {
     
     @Test
     public void testMeaningNames(){
-        DisiEkb disiEkb = new DisiEkb();
+
         INLPService nlpService =  disiEkb.getNLPService();
         ISemanticText semText = nlpService.runNLP(Arrays.asList(PRODOTTI_CERTIFICATI_DESCRIPTIONS.get(0)), null).get(0);
         IWord word = semText.getWords().get(0);
