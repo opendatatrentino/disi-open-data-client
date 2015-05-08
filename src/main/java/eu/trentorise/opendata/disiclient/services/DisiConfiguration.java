@@ -24,7 +24,14 @@ public class DisiConfiguration extends Configuration {
     public static final String SWEB_WEBAPI_TEST_USER = "sweb.webapi.test.user";
     public static final String SWEB_WEBAPI_KB_DEFAULT = "sweb.webapi.kb.default";
     public static final String SWEB_WEBAPI_URL = "sweb.webapi.url";
-
+    public static final String SWEB_WEBAPI_PORT = "sweb.webapi.port";
+    public static final String SWEB_WEBAPI_PROXY = "sweb.webapi.proxy";
+    public static final String SWEB_WEBAPI_PROXY_HOST = "sweb.webapi.proxy.host";
+    public static final String SWEB_WEBAPI_PROXY_PORT = "sweb.webapi.proxy.port";
+    public static final String SWEB_WEBAPI_IDLE_TIMEOUT = "sweb.webapi.idle.timeout";
+    public static final String SWEB_WEBAPI_READ_TIMEOUT = "sweb.webapi.read.timeout";
+    public static final String SWEB_WEBAPI_MAX_CONNECTIONS = "sweb.webapi.maxconnections";
+        
     private DisiConfiguration() {
         super(SWEB_PROPERTIES_FILENAME);
     }   
@@ -36,7 +43,7 @@ public class DisiConfiguration extends Configuration {
         TraceProvUtils.checkNonEmpty(getString(SWEB_WEBAPI_ROOT), SWEB_WEBAPI_ROOT);        
         TraceProvUtils.checkNonEmpty(getString(SWEB_WEBAPI_TEST_USER), SWEB_WEBAPI_TEST_USER);
         TraceProvUtils.checkNonEmpty(getString(SWEB_WEBAPI_KB_DEFAULT), SWEB_WEBAPI_KB_DEFAULT);
-        TraceProvUtils.checkNonEmpty(getString(SWEB_WEBAPI_URL), SWEB_WEBAPI_URL);
+        TraceProvUtils.checkNonEmpty(getString(SWEB_WEBAPI_URL), SWEB_WEBAPI_URL);        
     }
 
     /**

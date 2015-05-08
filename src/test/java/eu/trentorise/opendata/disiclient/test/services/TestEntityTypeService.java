@@ -80,7 +80,7 @@ public class TestEntityTypeService {
         System.out.println(finalTime);
         assertNotNull(etypes.get(0));
     }
-
+    
     @Test
     public void testGetRootsTypes() {
         EntityTypeService ets = new EntityTypeService();
