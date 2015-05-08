@@ -182,9 +182,8 @@ public class TestEntityService {
     
     @Before
     public void getClientProtocol() {
-        ConfigLoader.init();
-        this.api = WebServiceURLs.getClientProtocol();
-        ekb = new DisiEkb();        
+        ekb = ConfigLoader.init();
+        this.api = WebServiceURLs.getClientProtocol();        
     }
 
     @Test

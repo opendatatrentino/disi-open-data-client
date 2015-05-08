@@ -108,9 +108,8 @@ public class TestNLPService {
     @Before 
     public void beforeMethod(){
         
-        ConfigLoader.init();
+        disiEkb = ConfigLoader.init();                
         
-        disiEkb = new DisiEkb();
     }
     
     @Test

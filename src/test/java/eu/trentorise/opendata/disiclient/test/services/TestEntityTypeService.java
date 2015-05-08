@@ -29,9 +29,11 @@ import org.parboiled.common.ImmutableList;
  */
 public class TestEntityTypeService {
 
+    private IEkb disiEkb;
+    
     @Before
     public void beforeMethod(){
-        ConfigLoader.init();
+        disiEkb = ConfigLoader.init();
     }
     
     @Test
@@ -114,10 +116,8 @@ public class TestEntityTypeService {
     }
 
     @Test
-    public void testReadNonExistingEntityType() {
-        IEkb disiEkb = new DisiEkb();
-
-        assertEquals(disiEkb.getEntityTypeService().getEntityType("http://blabla.com"), null);
+    public void testReadNonExistingEntityType() {        
+        assertEquals(null, disiEkb.getEntityTypeService().getEntityType("http://blabla.com"));
 
     }
 

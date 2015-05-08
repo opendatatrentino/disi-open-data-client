@@ -172,6 +172,7 @@ public class WebServiceURLs {
             if (url == null) {
                 readProperties();
             }
+            logger.warn("TODO - ASSUMING HTTP AS PROTOCOL");
             fullURL = "http://" + url + ":" + port + root;
             return fullURL;
         } else {
@@ -180,8 +181,9 @@ public class WebServiceURLs {
     }
 
     private static void readProperties() {  
-            url = checkNotNull(DisiConfiguration.getString("sweb.webapi.url"));  
-            port = Integer.parseInt(DisiConfiguration.getString("sweb.webapi.port"));
+            // todo 'url' should actually be called 'host'
+            url = checkNotNull(DisiConfiguration.getString("sweb.webapi.host"));              
+            port = Integer.parseInt(DisiConfiguration.getString("sweb.webapi.port"));            
             root = checkNotNull(DisiConfiguration.getString("sweb.webapi.root"));
     }
 

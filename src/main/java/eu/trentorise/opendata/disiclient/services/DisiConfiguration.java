@@ -22,8 +22,8 @@ public class DisiConfiguration extends Configuration {
 
     public static final String SWEB_WEBAPI_ROOT = "sweb.webapi.root";
     public static final String SWEB_WEBAPI_TEST_USER = "sweb.webapi.test.user";
-    public static final String SWEB_WEBAPI_KB_DEFAULT = "sweb.webapi.kb.default";
-    public static final String SWEB_WEBAPI_URL = "sweb.webapi.url";
+    public static final String SWEB_WEBAPI_KB_DEFAULT = "sweb.webapi.kb.default";    
+    public static final String SWEB_WEBAPI_HOST = "sweb.webapi.host";
     public static final String SWEB_WEBAPI_PORT = "sweb.webapi.port";
     public static final String SWEB_WEBAPI_PROXY = "sweb.webapi.proxy";
     public static final String SWEB_WEBAPI_PROXY_HOST = "sweb.webapi.proxy.host";
@@ -43,7 +43,8 @@ public class DisiConfiguration extends Configuration {
         TraceProvUtils.checkNonEmpty(getString(SWEB_WEBAPI_ROOT), SWEB_WEBAPI_ROOT);        
         TraceProvUtils.checkNonEmpty(getString(SWEB_WEBAPI_TEST_USER), SWEB_WEBAPI_TEST_USER);
         TraceProvUtils.checkNonEmpty(getString(SWEB_WEBAPI_KB_DEFAULT), SWEB_WEBAPI_KB_DEFAULT);
-        TraceProvUtils.checkNonEmpty(getString(SWEB_WEBAPI_URL), SWEB_WEBAPI_URL);        
+        TraceProvUtils.checkNonEmpty(getString(SWEB_WEBAPI_HOST), SWEB_WEBAPI_HOST);
+        TraceProvUtils.checkNonEmpty(getString(SWEB_WEBAPI_PORT), SWEB_WEBAPI_PORT);
     }
 
     /**
@@ -53,13 +54,13 @@ public class DisiConfiguration extends Configuration {
         checkNotNull(properties);
         if (props.size() > 0) {
             LOG.info("Found " + props.size() + " sweb properties, updating " + properties.size() + " of them.");
-        }
-        for (Entry<String, String> entry : properties.entrySet()) {
-            if (entry.getKey().startsWith(DisiEkb.PROPERTIES_PREFIX)) {
-                props.put(entry.getKey(), entry.getValue());
+
+            for (Entry<String, String> entry : properties.entrySet()) {
+                if (entry.getKey().startsWith(DisiEkb.PROPERTIES_PREFIX)) {
+                    props.put(entry.getKey(), entry.getValue());
+                }
             }
         }
-        LOG.info("Initialized disi client properties.");
     }
 
 }
