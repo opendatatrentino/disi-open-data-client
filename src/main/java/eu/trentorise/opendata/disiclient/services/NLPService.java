@@ -1,5 +1,6 @@
 package eu.trentorise.opendata.disiclient.services;
 
+import eu.trentorise.opendata.commons.OdtUtils;
 import eu.trentorise.opendata.semantics.impl.model.WordSearchResult;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.knowledge.IMeaning;
@@ -16,6 +17,7 @@ import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 import eu.trentorise.opendata.semantics.services.model.IWordSearchResult;
 import it.unitn.disi.sweb.core.nlp.model.NLText;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
+import it.unitn.disi.sweb.webapi.client.nlp.ComponentClient;
 import it.unitn.disi.sweb.webapi.client.nlp.PipelineClient;
 import it.unitn.disi.sweb.webapi.model.NLPInput;
 import it.unitn.disi.sweb.webapi.model.PipelineDescription;
@@ -24,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +36,7 @@ import org.slf4j.LoggerFactory;
  */
 public class NLPService implements INLPService {
 
-	Logger logger = LoggerFactory.getLogger(NLPService.class);
+	static Logger logger = LoggerFactory.getLogger(NLPService.class);
 
 	public List<ISemanticText> disambiguateColumns(ITableResource table,
 			IResourceContext context) {
@@ -116,7 +119,7 @@ public class NLPService implements INLPService {
 		return pipClient.readPipelines();
 	}
 
-	private IProtocolClient getClientProtocol() {
+	private static IProtocolClient getClientProtocol() {
 
 		return WebServiceURLs.getClientProtocol();
 	}
@@ -264,6 +267,16 @@ public class NLPService implements INLPService {
 		}
 
 		return allSearchResult;
+	}
+	
+	public static Locale detectLanguage(List<String> inputStr){
+		ComponentClient component = new ComponentClient(getClientProtocol());
+		NLPInput input = new NLPInput();
+		input.setText(inputStr);
+		logger.warn("USING HARDCODED KB ID!");
+		NLText[] processedTexts = component.run("LanguageDetector", input, 1L);
+		
+		return OdtUtils.languageTagToLocale(processedTexts[0].getLanguage());
 	}
 
 }

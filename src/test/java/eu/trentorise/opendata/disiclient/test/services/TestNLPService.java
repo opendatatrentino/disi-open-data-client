@@ -541,5 +541,15 @@ public class TestNLPService {
         IWord word = semText.getWords().get(0);
         word.getMeanings();
     }
+    
+    @Test 
+    public void languageDetector(){
+    	 DisiEkb disiEkb = new DisiEkb();
+         NLPService nlpService =(NLPService)  disiEkb.getNLPService();
+         List<String> inputStr = new ArrayList<String>(){ {add("Hello World");
+        }
+         };
+         assertEquals(Locale.ENGLISH,nlpService.detectLanguage(inputStr));
+    }
 }
 

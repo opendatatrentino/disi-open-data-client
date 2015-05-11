@@ -56,7 +56,7 @@ public class TestEntityTypeService {
         EntityTypeService ets = new EntityTypeService();
         List<IEntityType> etypes = ets.getAllEntityTypes();
         for (IEntityType etype : etypes) {
-
+        //	etype.get
             List<IAttributeDef> atdefs = etype.getAttributeDefs();
             //System.out.println("AttributeDef ETYPE Name:"+etype.getName().getString(Locale.ENGLISH));
             //	System.out.println("AttributeDefs:"+etype.getAttributeDefs());

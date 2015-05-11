@@ -58,7 +58,7 @@ public class EntityTypeService implements IEntityTypeService {
 		ctFilter.setIncludeRestrictions(true);
 		ctFilter.setIncludeAttributes(true);
 		ctFilter.setIncludeAttributesAsProperties(true);
-
+		ctFilter.setIncludeTimestamps(true);
 		List<ComplexType> complexTypeList = ctc.readComplexTypes(kbId, null, null, ctFilter);
 
 		AttributeDefinitionClient attrDefs = new AttributeDefinitionClient(getClientProtocol());
