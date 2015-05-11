@@ -14,7 +14,9 @@ import eu.trentorise.opendata.disiclient.model.entity.EntityType;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import eu.trentorise.opendata.disiclient.services.model.SchemaCorrespondence;
 import eu.trentorise.opendata.disiclient.services.shematching.MatchingService;
+import eu.trentorise.opendata.disiclient.test.ConfigLoader;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
+import org.junit.Before;
 
 public class TestMatchingService {
 
@@ -94,6 +96,11 @@ public class TestMatchingService {
         }
     };
 
+    @Before
+    public void beforeMethod(){
+        ConfigLoader.init();
+    }
+    
     @Test
     public void testMatchingService() {
         MatchingService mService = new MatchingService();

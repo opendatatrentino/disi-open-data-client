@@ -44,7 +44,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
 
@@ -61,8 +60,6 @@ public class EntityService implements IEntityService {
     private DisiEkb disiEkb; 
 
     public EntityService(IProtocolClient api) {
-    	this.disiEkb=disiEkb;
-
         this.api = api;
     }
 

@@ -1,15 +1,11 @@
 package eu.trentorise.opendata.disiclient.services;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import eu.trentorise.opendata.semantics.IntegrityChecker;
 import eu.trentorise.opendata.semantics.IntegrityException;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Locale;
-import java.util.Properties;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -142,6 +138,8 @@ public class WebServiceURLs {
 
     public static IProtocolClient getClientProtocol() {
 
+        DisiConfiguration.checkInitialized();
+
         if (api == null) {
             locale = new Locale("all");
             readProperties();
@@ -156,6 +154,8 @@ public class WebServiceURLs {
     
     public static IProtocolClient getClientProtocol(Locale locale) {
 
+        DisiConfiguration.checkInitialized();
+        
         if (api == null) {
             readProperties();
             api = ProtocolFactory.getHttpClient(locale, url, port);
@@ -172,6 +172,7 @@ public class WebServiceURLs {
             if (url == null) {
                 readProperties();
             }
+            logger.warn("TODO - ASSUMING HTTP AS PROTOCOL");
             fullURL = "http://" + url + ":" + port + root;
             return fullURL;
         } else {
@@ -179,43 +180,11 @@ public class WebServiceURLs {
         }
     }
 
-    private static void readProperties() {
-        Properties prop = new Properties();
-        InputStream input = null;
-
-        try {
-
-            if (new File("conf/" + PROPERTIES_FILE_NAME).exists()) {
-                input = new FileInputStream("conf/" + PROPERTIES_FILE_NAME);
-            } else {
-                System.out.println("Couldn't find file conf/" + PROPERTIES_FILE_NAME + ", trying in WEB-INF/");
-                input = Thread.currentThread().getContextClassLoader().
-                        getResourceAsStream("META-INF/" + PROPERTIES_FILE_NAME);
-                if (input == null) {
-                    throw new IOException("Couldn't find file META-INF/" + PROPERTIES_FILE_NAME);
-                }
-            }
-
-            prop.load(input);
-            url = prop.getProperty("sweb.webapi.url");
-            port = Integer.parseInt(prop.getProperty("sweb.webapi.port"));
-            root = prop.getProperty("sweb.webapi.root");
-
-        }
-        catch (IOException ex) {
-            throw new RuntimeException("Couldn't read properties file: " + PROPERTIES_FILE_NAME, ex);
-        }
-        finally {
-            if (input != null) {
-                try {
-                    input.close();
-                }
-                catch (IOException ex) {
-                    logger.error("Couldn't close input", ex);
-                }
-            }
-        }
-
+    private static void readProperties() {  
+            // todo 'url' should actually be called 'host'
+            url = checkNotNull(DisiConfiguration.getString("sweb.webapi.host"));              
+            port = Integer.parseInt(DisiConfiguration.getString("sweb.webapi.port"));            
+            root = checkNotNull(DisiConfiguration.getString("sweb.webapi.root"));
     }
 
 }

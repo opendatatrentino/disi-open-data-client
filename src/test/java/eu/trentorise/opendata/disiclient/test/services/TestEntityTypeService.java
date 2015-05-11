@@ -12,11 +12,14 @@ import org.junit.Test;
 import eu.trentorise.opendata.disiclient.model.entity.EntityType;
 import eu.trentorise.opendata.disiclient.services.DisiEkb;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
+import eu.trentorise.opendata.disiclient.test.ConfigLoader;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
+import org.junit.Before;
+import org.parboiled.common.ImmutableList;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
@@ -26,6 +29,13 @@ import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
  */
 public class TestEntityTypeService {
 
+    private IEkb disiEkb;
+    
+    @Before
+    public void beforeMethod(){
+        disiEkb = ConfigLoader.init();
+    }
+    
     @Test
     public void testGetEntityTypeByID() {
         EntityTypeService ets = new EntityTypeService();
@@ -72,7 +82,7 @@ public class TestEntityTypeService {
         System.out.println(finalTime);
         assertNotNull(etypes.get(0));
     }
-
+    
     @Test
     public void testGetRootsTypes() {
         EntityTypeService ets = new EntityTypeService();
@@ -106,10 +116,8 @@ public class TestEntityTypeService {
     }
 
     @Test
-    public void testReadNonExistingEntityType() {
-        IEkb disiEkb = new DisiEkb();
-
-        assertEquals(disiEkb.getEntityTypeService().getEntityType("http://blabla.com"), null);
+    public void testReadNonExistingEntityType() {        
+        assertEquals(null, disiEkb.getEntityTypeService().getEntityType("http://blabla.com"));
 
     }
 

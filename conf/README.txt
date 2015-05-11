@@ -1,5 +1,8 @@
-You need to put in this directory a file named sweb-webapi-model.properties 
-Files in this directory won't be versioned (except for this README.txt)
+For tests to succeed you need to put in this directory a file named sweb-webapi-model-override.properties 
+overriding at least the properties in the "Mandatory configuration section" of src/main/resources/META-INF/sweb-webapi-model.properties
 
-As an alternative, the properties be also be put in /src/main/resources/META-INF/sweb-webapi-model.properties
+Notice sweb-webapi-model-override is called differently from sweb-webapi-model.properties on purpose so it won't be found 
+by sweb client and we can test Disi client own overriding mechanism.
+
+Files in this directory won't be versioned.
 

@@ -6,11 +6,18 @@ import org.junit.Test;
 
 import eu.trentorise.opendata.disiclient.model.entity.StructureODR;
 import eu.trentorise.opendata.disiclient.services.EntityService;
-import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
+import eu.trentorise.opendata.disiclient.test.ConfigLoader;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
+import org.junit.Before;
 
 public class TestStructure {
 
+    @Before
+    public void beforeMethod() {
+        ConfigLoader.init();        
+    }    
+    
+    
     @Test
     public void testGetAttributeByURL() {
 

@@ -5,6 +5,8 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
+import eu.trentorise.opendata.disiclient.test.ConfigLoader;
+import org.junit.Before;
 
 /**
  *
@@ -12,6 +14,11 @@ import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
  */
 public class TestWebServiceURLs {
 
+    @Before
+    public void beforeMethod(){
+        ConfigLoader.init();
+    }
+    
     @Test
     public void testURLConversion() {
         assertEquals(WebServiceURLs.urlToAttrDefToID(WebServiceURLs.attrDefIDToURL(3)), 3);
