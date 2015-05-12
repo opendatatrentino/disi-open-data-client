@@ -311,8 +311,15 @@ public class TestEntityService {
         for (Attribute a : attributes) {
 
             if (a.getDefinitionId() != attrDefClassAtrID) {                
-                attrsEntityToCreate.add(a);
-            }
+                
+                a.setInstanceId(null);
+            	a.setId(null);
+            	a.getValues().get(0).setId(null);
+            	a.getValues().get(0).setAttributeId(null);
+            	System.out.println(a.getValues());
+            //	a.setValues(null);
+                 attrsEntityToCreate.add(a);		                 
+            } break;
         }
         
         //assigning variables

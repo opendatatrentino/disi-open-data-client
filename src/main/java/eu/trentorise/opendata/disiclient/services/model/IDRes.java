@@ -15,6 +15,7 @@ import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.services.model.AssignmentResult;
 import eu.trentorise.opendata.semantics.services.model.IIDResult;
+import java.util.Random;
 
 public class IDRes extends IDResult implements IIDResult {
 
@@ -29,6 +30,15 @@ public class IDRes extends IDResult implements IIDResult {
         super.setResult(result.getResult());
         super.setEntitiesWithSameSwebID(result.getEntitiesWithSameSwebID());
         super.setSwebID(result.getSwebID());
+
+    }
+
+    public IDRes(IEntity en) {
+
+        super.setResult(ASSIGNMENT_RESULT.ID_NEW);
+        super.setSwebID((long) randInt(0, 10000000));
+        this.asResult = AssignmentResult.NEW;
+        this.entity = en;
 
     }
 
@@ -110,6 +120,14 @@ public class IDRes extends IDResult implements IIDResult {
         String fullUrl = WebServiceURLs.getURL();
         String url = fullUrl + "/instances/new/" + super.getSwebID();
         return url;
+    }
+
+    public static int randInt(int min, int max) {
+
+        Random rand = new Random();
+        int randomNum = rand.nextInt((max - min) + 1) + min;
+
+        return randomNum;
     }
 
 //	private IEntity entityForNewResults(){

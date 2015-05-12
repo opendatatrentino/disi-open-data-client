@@ -139,7 +139,7 @@ public class NLPService implements INLPService {
         if (WebServiceURLs.isConceptURL(domainURL)) {
             List<NLText> nlTexts = runNlpItODH(texts);            
             for (NLText nlText : nlTexts) {
-                SemText semText = nltextConverter.semText(nlText);                
+                SemText semText = nltextConverter.semText(nlText, false);  
                 ret.add(extractEntities(semText, domainURL));
             }            
             return ret;
@@ -147,7 +147,7 @@ public class NLPService implements INLPService {
         if (WebServiceURLs.isEtypeURL(domainURL)) {
             List<NLText> nlTexts = runNlpItNEP(texts);
             for (NLText nlText : nlTexts) {
-                SemText semText = nltextConverter.semText(nlText);
+                SemText semText = nltextConverter.semText(nlText, false);
                 //extractEntities(semText, domainURL);
                 ret.add(extractEntities(semText, domainURL));
             }
@@ -156,7 +156,7 @@ public class NLPService implements INLPService {
         if (domainURL == null) {
             List<NLText> nlTexts = runNlpItNEDW(texts);
             for (NLText nlText : nlTexts) {
-                ret.add(nltextConverter.semText(nlText));
+                ret.add(nltextConverter.semText(nlText, false));
             }
             return ret;
         }

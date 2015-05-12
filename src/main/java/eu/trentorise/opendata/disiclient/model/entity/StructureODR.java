@@ -85,7 +85,7 @@ public class StructureODR extends Instance implements IStructure {
                     if (val.getValue() instanceof SemText) {
                         fixedVals.add(val);
                     } else {
-                        SemText semtext = NLPService.getSemanticStringConverter().semText((SemanticString) val.getSemanticValue());
+                        SemText semtext = NLPService.getSemanticStringConverter().semText((SemanticString) val.getSemanticValue(), true);
                         Locale loc = OdtUtils.languageTagToLocale(val.getLanguageCode()); // dav so java 6 doesn't bother us Locale.forLanguageTag(val.getLanguageCode());
                         SemText stext = semtext.with(loc);
                         Value fixedVal = new Value();

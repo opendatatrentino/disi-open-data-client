@@ -102,7 +102,7 @@ public class EntityODR extends StructureODR implements IEntity {
                     if (val.getValue() instanceof SemText) {
                         fixedVals.add(val);
                     } else {                        
-                        SemText semtext = NLPService.getSemanticStringConverter().semText((SemanticString) val.getSemanticValue());
+                        SemText semtext = NLPService.getSemanticStringConverter().semText((SemanticString) val.getSemanticValue(), true);
                         Locale loc = OdtUtils.languageTagToLocale(val.getLanguageCode()); // dav so java 6 doesn't bother us Locale.forLanguageTag(val.getLanguageCode());
                         SemText stext = semtext.with(loc);
                         Value fixedVal = new Value();
@@ -623,7 +623,7 @@ public class EntityODR extends StructureODR implements IEntity {
 
             List<SemanticString> SStringList = (List<SemanticString>) pairs.getValue();
             for (SemanticString sstring : SStringList) {
-                SemText stext = NLPService.getSemanticStringConverter().semText(sstring);
+                SemText stext = NLPService.getSemanticStringConverter().semText(sstring, true);
                 sTextList.add(stext);
             }
             odrDescriptionMap.put((String) pairs.getKey(), sTextList);

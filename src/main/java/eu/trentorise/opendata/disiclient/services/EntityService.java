@@ -589,6 +589,7 @@ public class EntityService implements IEntityService {
         return WebServiceURLs.entityIDToURL(id);
     }
 
+    @Override
     public void exportToRdf(List<String> entityURLs, Writer writer) {
         if (entityURLs.isEmpty()) {
             throw new IllegalArgumentException("The list of entities for export is empty");
@@ -605,8 +606,8 @@ public class EntityService implements IEntityService {
         }
 
         Long fileId = null;
-        try {
-            fileId = ees.methodPost(entitiesID, filename);
+        try {            
+            fileId = ees.methodPostRDF(entitiesID, filename);
         }
         catch (ClientProtocolException e) {
             throw new DisiClientException("Error while getting fileId", e);
