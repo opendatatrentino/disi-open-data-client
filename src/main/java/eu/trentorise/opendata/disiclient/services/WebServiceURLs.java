@@ -1,6 +1,10 @@
 package eu.trentorise.opendata.disiclient.services;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import eu.trentorise.opendata.commons.OdtUtils;
+import static eu.trentorise.opendata.disiclient.services.DisiConfiguration.SWEB_WEBAPI_HOST;
+import static eu.trentorise.opendata.disiclient.services.DisiConfiguration.SWEB_WEBAPI_PORT;
+import static eu.trentorise.opendata.disiclient.services.DisiConfiguration.SWEB_WEBAPI_ROOT;
 import eu.trentorise.opendata.semtext.nltext.UrlMapper;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
@@ -33,8 +37,8 @@ public class WebServiceURLs {
 
     public static final String ETYPE_PREFIX = "/types/";
 
-    private static final UrlMapper urlMapper = UrlMapper.of(WebServiceURLs.getURL() + ENTITY_PREFIX, 
-                                                            WebServiceURLs.getURL() + CONCEPT_PREFIX);
+    private static final UrlMapper urlMapper = UrlMapper.of(WebServiceURLs.getURL() + ENTITY_PREFIX,
+            WebServiceURLs.getURL() + CONCEPT_PREFIX);
 
     public static boolean isEntityURL(String entityURL) {
         return entityURL != null && entityURL.contains(ENTITY_PREFIX);
@@ -60,32 +64,30 @@ public class WebServiceURLs {
     }
 
     public static String conceptIDToURL(long ID) {
-        return urlMapper.conceptIdToUrl(ID);        
+        return urlMapper.conceptIdToUrl(ID);
     }
 
     public static String entityIDToURL(long ID) {
-        return urlMapper.entityIdToUrl(ID);        
+        return urlMapper.entityIdToUrl(ID);
     }
 
     /**
      * @throws IllegalArgumentException on unparseable URL
-     */    
+     */
     public static Long urlToEntityID(String URL) {
         return urlMapper.urlToEntityId(URL);
-    }    
-    
+    }
+
     public static String etypeIDToURL(long ID) {
-         return WebServiceURLs.getURL() + ETYPE_PREFIX + ID;
+        return WebServiceURLs.getURL() + ETYPE_PREFIX + ID;
     }
 
     /**
      * @throws IllegalArgumentException on unparseable URL
      */
     public static long urlToEtypeID(String URL) {
-        return OdtUtils.parseNumericalId(ETYPE_PREFIX, URL);
+        return OdtUtils.parseNumericalId(WebServiceURLs.getURL() + ETYPE_PREFIX, URL);
     }
-
-
 
     public static String attrDefIDToURL(long id) {
         return WebServiceURLs.getURL() + ATTR_DEF_PREFIX + id;
@@ -96,7 +98,7 @@ public class WebServiceURLs {
      * @throws IllegalArgumentException on unparseable URL
      */
     public static long urlToAttrDefToID(String URL) {
-        return OdtUtils.parseNumericalId(ATTR_DEF_PREFIX, URL);
+        return OdtUtils.parseNumericalId(WebServiceURLs.getURL() + ATTR_DEF_PREFIX, URL);
     }
 
     public static final String PROPERTIES_FILE_NAME = "sweb-webapi-model.properties";
@@ -111,6 +113,7 @@ public class WebServiceURLs {
 
     public static IProtocolClient getClientProtocol() {
 
+        DisiConfiguration.checkInitialized();
         if (api == null) {
             locale = new Locale("all");
             readProperties();
@@ -125,6 +128,7 @@ public class WebServiceURLs {
 
     public static IProtocolClient getClientProtocol(Locale locale) {
 
+        DisiConfiguration.checkInitialized();
         if (api == null) {
             readProperties();
             api = ProtocolFactory.getHttpClient(locale, url, port);
@@ -141,6 +145,7 @@ public class WebServiceURLs {
             if (url == null) {
                 readProperties();
             }
+            logger.warn("TODO - ASSUMING HTTP AS PROTOCOL");
             fullURL = "http://" + url + ":" + port + root;
             return fullURL;
         } else {
@@ -149,46 +154,13 @@ public class WebServiceURLs {
     }
 
     private static void readProperties() {
-        Properties prop = new Properties();
-        InputStream input = null;
-
-        try {
-
-            if (new File("conf/" + PROPERTIES_FILE_NAME).exists()) {
-                input = new FileInputStream("conf/" + PROPERTIES_FILE_NAME);
-            } else {
-                System.out.println("Couldn't find file conf/" + PROPERTIES_FILE_NAME + ", trying in WEB-INF/");
-                input = Thread.currentThread().getContextClassLoader().
-                        getResourceAsStream("META-INF/" + PROPERTIES_FILE_NAME);
-                if (input == null) {
-                    throw new IOException("Couldn't find file META-INF/" + PROPERTIES_FILE_NAME);
-                }
-            }
-
-            prop.load(input);
-            url = prop.getProperty("sweb.webapi.url");
-            port = Integer.parseInt(prop.getProperty("sweb.webapi.port"));
-            root = prop.getProperty("sweb.webapi.root");
-
-        }
-        catch (IOException ex) {
-            throw new RuntimeException("Couldn't read properties file: " + PROPERTIES_FILE_NAME, ex);
-        }
-        finally {
-            if (input != null) {
-                try {
-                    input.close();
-                }
-                catch (IOException ex) {
-                    logger.error("Couldn't close input", ex);
-                }
-            }
-        }
-
+       // todo 'url' should actually be called 'host'
+            url = checkNotNull(DisiConfiguration.getString(SWEB_WEBAPI_HOST));              
+            port = Integer.parseInt(DisiConfiguration.getString(SWEB_WEBAPI_PORT));            
+            root = checkNotNull(DisiConfiguration.getString(SWEB_WEBAPI_ROOT));
     }
-    
 
-    public static UrlMapper getSemtextUrlMapper(){
+    public static UrlMapper getSemtextUrlMapper() {
         return urlMapper;
     }
 }

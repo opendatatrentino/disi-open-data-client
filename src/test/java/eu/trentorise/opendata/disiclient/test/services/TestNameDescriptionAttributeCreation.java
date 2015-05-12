@@ -22,12 +22,19 @@ import eu.trentorise.opendata.disiclient.services.IdentityService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.commons.Dict;
+import eu.trentorise.opendata.disiclient.test.ConfigLoader;
+import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TestNameDescriptionAttributeCreation {
 
     private static final Logger logger = LoggerFactory.getLogger(TestNameDescriptionAttributeCreation.class);
+
+    @Before
+    public void beforeMethod() {
+        ConfigLoader.init();
+    }    
     
     @Test
     public void testCreateDescription() {

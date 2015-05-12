@@ -5,12 +5,19 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
+import eu.trentorise.opendata.disiclient.test.ConfigLoader;
+import org.junit.Before;
 
 /**
  *
  * @author David Leoni
  */
 public class TestWebServiceURLs {
+
+    @Before
+    public void beforeMethod() {
+        ConfigLoader.init();
+    }
 
     @Test
     public void testURLConversion() {
@@ -19,8 +26,6 @@ public class TestWebServiceURLs {
         assertEquals(WebServiceURLs.urlToConceptID(WebServiceURLs.conceptIDToURL(3)), 3);
         assertEquals(WebServiceURLs.urlToEtypeID(WebServiceURLs.etypeIDToURL(3)), 3);
 
-        
     }
-    
 
 }

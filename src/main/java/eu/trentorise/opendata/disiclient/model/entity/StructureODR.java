@@ -32,6 +32,8 @@ import eu.trentorise.opendata.semtext.SemText;
 public class StructureODR extends Instance implements IStructure {    
 	 public static final Long PART_OF_CONCEPT_ID1 = 5l;
 	    public static final Long PART_OF_CONCEPT_ID2 = 22l;
+    
+    @Override
     public Long getLocalID() {
         return super.getId();
     }

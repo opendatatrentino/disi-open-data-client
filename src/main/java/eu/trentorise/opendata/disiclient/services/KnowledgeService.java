@@ -97,12 +97,15 @@ public class KnowledgeService implements IKnowledgeService {
     }
 
     public List<ISearchResult> searchConcepts(String partialName, Locale locale) {
-
+        
+        logger.warn("TODO - SETTING CONCEPT PARTIAL NAME TO LOWERCASE");
+        String lowerCasePartialName = partialName.toLowerCase(locale);
+        
         List<ISearchResult> conceptRes = new ArrayList<ISearchResult>();
         
         ConceptClient client = new ConceptClient(WebServiceURLs.getClientProtocol(locale));
         logger.warn("Knowledge base is set to default (1)");
-        List<Concept> concepts = client.readConcepts(1L, null, partialName, null, null, null);
+        List<Concept> concepts = client.readConcepts(1L, null, lowerCasePartialName, null, null, null);
 
         for (Concept c : concepts) {
             ConceptODR codr = new ConceptODR(c);

@@ -16,11 +16,18 @@ import eu.trentorise.opendata.disiclient.services.KnowledgeService;
 import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 import eu.trentorise.opendata.commons.OdtUtils;
+import eu.trentorise.opendata.disiclient.test.ConfigLoader;
 import static org.junit.Assert.assertTrue;
+import org.junit.Before;
 
 public class TestKnowledgeService {
 
     Logger logger = LoggerFactory.getLogger(TestKnowledgeService.class);
+
+    @Before
+    public void beforeMethod() {
+        ConfigLoader.init();
+    }
 
     @Test
     public void testReadConcept() {
@@ -34,7 +41,7 @@ public class TestKnowledgeService {
     public void testReadNonExistingConcept() {
         KnowledgeService kserv = new KnowledgeService();
         String url = "blabla";
-        IConcept con = kserv.readConcept(url);        
+        IConcept con = kserv.readConcept(url);
 
         assertEquals(con, null);
     }
@@ -76,7 +83,6 @@ public class TestKnowledgeService {
             assertNotNull(r.getURL());
         }
     }
-    
 
     @Test
     public void testCapitalizedConcept() {
@@ -99,11 +105,11 @@ public class TestKnowledgeService {
         assertTrue(res.size() > 0);
     }
 
-   @Test
+    @Test
     public void testSearchMultiWordConcept() {
         KnowledgeService ks = new KnowledgeService();
         List<ISearchResult> res = ks.searchConcepts("programming language", Locale.ENGLISH);
-       assertTrue(res.size() > 0);
+        assertTrue(res.size() > 0);
     }
 
     @Test
@@ -112,6 +118,5 @@ public class TestKnowledgeService {
         List<ISearchResult> res = ks.searchConcepts("programming langu", Locale.ENGLISH);
         assertTrue(res.size() > 0);
     }
-    
 
 }

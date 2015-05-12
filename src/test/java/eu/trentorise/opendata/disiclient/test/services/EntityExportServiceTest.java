@@ -27,6 +27,7 @@ import java.util.List;
 import org.junit.After;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import eu.trentorise.opendata.disiclient.test.ConfigLoader;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import org.apache.commons.io.FileUtils;
@@ -45,24 +46,15 @@ import org.slf4j.LoggerFactory;
 public class EntityExportServiceTest {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
-/*
-    //public static final long ENTITY1 = 1L;
-    public static final String ENTITY1_URL = WebServiceURLs.entityIDToURL();
-    // public static final long ENTITY2 = 4L;
-    public static final String ENTITY2_URL = WebServiceURLs.entityIDToURL(ENTITY2);
-    //public static final long ENTITY3 = 7;
-    public static final String ENTITY3_URL = WebServiceURLs.entityIDToURL(ENTITY3);
-    
-    */
-    
-    
+        
     List<String> entities;
     EntityExportService ess;
     EntityService enServ;
 
 
     @Before
-    public void before() {
+    public void beforeMethod() {
+        ConfigLoader.init();
         entities = new ArrayList<String>();
         entities.add(TestEntityService.ANDALO_URL);
         entities.add(TestEntityService.RAVAZZONE_URL);
@@ -134,7 +126,9 @@ public class EntityExportServiceTest {
         br.close();
         
         Model model = ModelFactory.createDefaultModel(); 
-        model.read(file.getAbsolutePath());        
+                        
+        model.read(new FileInputStream(file), "RDF/XML") ;        
+        
     }
 
     @Test

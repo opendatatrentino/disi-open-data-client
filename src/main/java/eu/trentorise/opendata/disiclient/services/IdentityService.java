@@ -77,13 +77,14 @@ public class IdentityService implements IIdentityService {
         return ent;
     }
 
+    @Override
     public List<IIDResult> assignURL(List<? extends IEntity> iEntities, int numCandidates) {
 
         if (iEntities == null) {
             List<IIDResult> idResults = new ArrayList<IIDResult>();
             return idResults;
         }
-        if (iEntities.size() == 0) {
+        if (iEntities.isEmpty()) {
             List<IIDResult> idResults = new ArrayList<IIDResult>();
             return idResults;
         } else {
@@ -93,11 +94,10 @@ public class IdentityService implements IIdentityService {
             for (IEntity ie : iEntities) {
                 entities.add(disify(ie, true));
             }
-
+                       
+            /*
             IDManagementClient idManCl = new IDManagementClient(WebServiceURLs.getClientProtocol());
             List<Entity> resEntities = new ArrayList<Entity>();
-            
-            /*
             for (IEntity en : entities) {
                 EntityODR ent = (EntityODR) en;
                 EntityODR enODRwClass = checkClassAttr(ent);
@@ -108,17 +108,10 @@ public class IdentityService implements IIdentityService {
             }
             List<IDResult> results = idManCl.assignIdentifier(resEntities, 0);
                     */
-//            for (IEntity en : entities) {
-//                EntityODR ent = (EntityODR) en;
-//                EntityODR enODRwClass = checkClassAttr(ent);
-//
-//                EntityODR entODR = convertNameAttr(enODRwClass);
-//                Entity entity = entODR.convertToEntity();
-//                resEntities.add(entity);
-//            }
-          //  List<IDResult> results = idManCl.assignIdentifier(resEntities, 0);
+            
             List<IIDResult> idResults = new ArrayList<IIDResult>();
-            for (IEntity en : entities) {
+            for (EntityODR en : entities) {
+                
                 IDRes idRes = new IDRes(en);
                 idResults.add(idRes);
             }            

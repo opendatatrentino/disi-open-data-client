@@ -33,13 +33,17 @@ public class IDRes extends IDResult implements IIDResult {
 
     }
 
-    public IDRes(IEntity en) {
-
+    /**
+     * This hacky version always assigns NEW and modifies provided entity so to
+     * set a a random id.
+     */
+    public IDRes(EntityODR en) {
         super.setResult(ASSIGNMENT_RESULT.ID_NEW);
-        super.setSwebID((long) randInt(0, 10000000));
+        long localId = (long) randInt(0, 10000000);
+        super.setSwebID(localId);
         this.asResult = AssignmentResult.NEW;
         this.entity = en;
-
+        en.setId(localId);
     }
 
     public IEntity getResultEntity() {

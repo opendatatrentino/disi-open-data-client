@@ -40,7 +40,7 @@ import eu.trentorise.opendata.commons.OdtUtils;
  */
 public class EntityTypeService implements IEntityTypeService {
 
-	Logger logger = LoggerFactory.getLogger(EntityService.class);
+	private static Logger LOG = LoggerFactory.getLogger(EntityService.class);
 
 	public static final double MAX_SCORE_FOR_NO_FIRST_LETTER_MATCH = 0.3;
 	private static final Comparator SINGLE = new ValueComparator();
@@ -50,7 +50,7 @@ public class EntityTypeService implements IEntityTypeService {
 
 		//TODO decide what to do with knowledge base id which knowldege base id to take the first one? 
 		List<KnowledgeBase> kbList = kbClient.readKnowledgeBases(null);
-		logger.warn("The Knowledge base is set to default (the first KB from the returned list of KB).");
+		LOG.warn("The Knowledge base is set to default (the first KB from the returned list of KB).");
 		long kbId = kbList.get(0).getId();
 
 		ComplexTypeClient ctc = new ComplexTypeClient(getClientProtocol());
@@ -58,7 +58,8 @@ public class EntityTypeService implements IEntityTypeService {
 		ctFilter.setIncludeRestrictions(true);
 		ctFilter.setIncludeAttributes(true);
 		ctFilter.setIncludeAttributesAsProperties(true);
-
+                ctFilter.setIncludeTimestamps(true);
+                
 		List<ComplexType> complexTypeList = ctc.readComplexTypes(kbId, null, null, ctFilter);
 
 		AttributeDefinitionClient attrDefs = new AttributeDefinitionClient(getClientProtocol());
@@ -92,13 +93,13 @@ public class EntityTypeService implements IEntityTypeService {
 		ctFilter.setIncludeAttributes(true);
 		ctFilter.setIncludeAttributesAsProperties(true);
 
-		logger.warn("The Knowledge base is set to default: '1'.");
+		LOG.warn("The Knowledge base is set to default: '1'.");
 
 		List<ComplexType> complexTypes = ctc.readComplexTypes(1L, conceptId, null, ctFilter);
 
 		ComplexType complexType = complexTypes.get(0);
 		if (complexTypes.size() > 1) {
-			logger.warn("There are " + complexTypes.size() + " Entity types for a given concept. The first one will be returned!.");
+			LOG.warn("There are " + complexTypes.size() + " Entity types for a given concept. The first one will be returned!.");
 		}
 		EntityType eType = new EntityType(complexType);
 		AttributeDefinitionClient attrDefs = new AttributeDefinitionClient(getClientProtocol());

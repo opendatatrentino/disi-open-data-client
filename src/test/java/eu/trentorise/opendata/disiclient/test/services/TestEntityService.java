@@ -27,6 +27,7 @@ import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.IEntityService;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 import eu.trentorise.opendata.commons.OdtUtils;
+import eu.trentorise.opendata.disiclient.test.ConfigLoader;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
 import it.unitn.disi.sweb.webapi.client.eb.EbClient;
@@ -179,21 +180,24 @@ public class TestEntityService {
 
     private IEntityService enServ;
     
+    private IEkb disiEkb;
+    
     @Before
     public void before() {
-        api = WebServiceURLs.getClientProtocol();
-        enServ = new EntityService(api);        
+        disiEkb = ConfigLoader.init();
+        api = WebServiceURLs.getClientProtocol();        
+        enServ = disiEkb.getEntityService();
     }
     
     @After
     public void after(){
         api = null;
         enServ = null;
+        disiEkb = null;
     }
 
     @Test
-    public void testPalazzettoReadNameEtype() {
-        IEkb disiEkb = new DisiEkb();
+    public void testPalazzettoReadNameEtype() {        
 
         EntityODR entity = (EntityODR) disiEkb.getEntityService().readEntity(PALAZZETTO_URL);
         logger.info("\n\n *************   entity Palazzetto (" + PALAZZETTO_URL + ") ***************** \n\n" + entity);
@@ -208,8 +212,7 @@ public class TestEntityService {
     }
 
     @Test
-    public void testPalazzettoRead() {
-        IEkb disiEkb = new DisiEkb();
+    public void testPalazzettoRead() {        
 
         EntityODR entity = (EntityODR) disiEkb.getEntityService().readEntity(PALAZZETTO_URL);
         logger.info("\n\n *************   entity Palazzetto (" + PALAZZETTO_URL + ") ***************** \n\n" + entity);
@@ -226,8 +229,7 @@ public class TestEntityService {
     }
 
     @Test
-    public void testReadNonExistingEntity() {
-        IEkb disiEkb = new DisiEkb();
+    public void testReadNonExistingEntity() {        
         assertEquals(disiEkb.getEntityService().readEntity("http://blabla.com"), null);
     }
 
@@ -251,11 +253,10 @@ public class TestEntityService {
 
     @Test
     public void testUpdateNonExistingEntity() {
-        EntityODR entity = new EntityODR();
-        IEkb ekb = new DisiEkb();
-        IEntityService es = ekb.getEntityService();
+        EntityODR entity = new EntityODR();        
+        IEntityService es = disiEkb.getEntityService();
         entity.setEntityAttributes(new ArrayList<IAttribute>());
-        entity.setEtype(ekb.getEntityTypeService().getEntityType(FACILITY_URL));
+        entity.setEtype(disiEkb.getEntityTypeService().getEntityType(FACILITY_URL));
         entity.setEntityBaseId(1L);
         entity.setURL("http://blabla.org");
         try {

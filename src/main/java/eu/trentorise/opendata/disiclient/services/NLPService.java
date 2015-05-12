@@ -1,6 +1,7 @@
 package eu.trentorise.opendata.disiclient.services;
 
 import com.google.common.collect.Lists;
+import eu.trentorise.opendata.commons.OdtUtils;
 import eu.trentorise.opendata.semantics.impl.model.TermSearchResult;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.knowledge.IResourceContext;
@@ -16,7 +17,7 @@ import eu.trentorise.opendata.semantics.services.model.ITermSearchResult;
 import eu.trentorise.opendata.semtext.nltext.NLTextConverter;
 import eu.trentorise.opendata.semtext.nltext.SemanticStringConverter;
 import it.unitn.disi.sweb.core.nlp.model.NLText;
-import it.unitn.disi.sweb.webapi.client.IProtocolClient;
+import it.unitn.disi.sweb.webapi.client.nlp.ComponentClient;
 import it.unitn.disi.sweb.webapi.client.nlp.PipelineClient;
 import it.unitn.disi.sweb.webapi.model.NLPInput;
 import it.unitn.disi.sweb.webapi.model.PipelineDescription;
@@ -60,7 +61,7 @@ public class NLPService implements INLPService {
      */
     public List<NLText> runNlpItNEP(Iterable<String> texts) {
 
-        PipelineClient pipClient = new PipelineClient(getClientProtocol());
+        PipelineClient pipClient = new PipelineClient(WebServiceURLs.getClientProtocol());
         NLPInput input = new NLPInput();
         input.setText(Lists.newArrayList(texts));
         logger.warn("USING HARDCODED VOCABULARY ID!");
@@ -80,12 +81,12 @@ public class NLPService implements INLPService {
      */
     public List<NLText> runNlpItODH(Iterable<String> texts) {
 
-        PipelineClient pipClient = new PipelineClient(getClientProtocol());
+        PipelineClient pipClient = new PipelineClient(WebServiceURLs.getClientProtocol());
         NLPInput input = new NLPInput();
         input.setText(Lists.newArrayList(texts));
         logger.warn("USING HARDCODED VOCABULARY ID!");
         NLText[] processedTexts = pipClient.run("ODHPipeline", input, 1l);
-		//		for (NLText nlext : processedText) {
+        //		for (NLText nlext : processedText) {
         //		   System.out.println(nlext.toString());
         //		}
 
@@ -100,31 +101,27 @@ public class NLPService implements INLPService {
      */
     public List<NLText> runNlpItNEDW(Iterable<String> texts) {
 
-        PipelineClient pipClient = new PipelineClient(getClientProtocol());
+        PipelineClient pipClient = new PipelineClient(WebServiceURLs.getClientProtocol());
         NLPInput input = new NLPInput();
         input.setText(Lists.newArrayList(texts));
         logger.warn("USING HARDCODED VOCABULARY ID!");
         NLText[] processedTexts = pipClient.run("NEDWSDPipeline", input, 1l);
-		//		for (NLText nlext : processedText) {
+        //		for (NLText nlext : processedText) {
         //		   System.out.println(nlext.toString());
         //		}
 
         return Arrays.asList(processedTexts);
     }
 
-    public NLText runNlpIt(String nlText) {        
+    public NLText runNlpIt(String nlText) {
         return runNlpItNEDW(Arrays.asList(nlText)).get(0);
     }
 
     public List<PipelineDescription> readPipelinesDescription() {
-        PipelineClient pipClient = new PipelineClient(getClientProtocol());
+        PipelineClient pipClient = new PipelineClient(WebServiceURLs.getClientProtocol());
         return pipClient.readPipelines();
     }
-
-    private IProtocolClient getClientProtocol() {
-
-        return WebServiceURLs.getClientProtocol();
-    }
+    
 
     public SemText runNLP(String text) {
         return runNLP(Arrays.asList(text), null).get(0);
@@ -137,11 +134,11 @@ public class NLPService implements INLPService {
     public List<SemText> runNLP(Iterable<String> texts, @Nullable String domainURL) {
         List<SemText> ret = new ArrayList();
         if (WebServiceURLs.isConceptURL(domainURL)) {
-            List<NLText> nlTexts = runNlpItODH(texts);            
+            List<NLText> nlTexts = runNlpItODH(texts);
             for (NLText nlText : nlTexts) {
-                SemText semText = nltextConverter.semText(nlText, false);  
+                SemText semText = nltextConverter.semText(nlText, false);
                 ret.add(extractEntities(semText, domainURL));
-            }            
+            }
             return ret;
         }
         if (WebServiceURLs.isEtypeURL(domainURL)) {
@@ -149,7 +146,8 @@ public class NLPService implements INLPService {
             for (NLText nlText : nlTexts) {
                 SemText semText = nltextConverter.semText(nlText, false);
                 //extractEntities(semText, domainURL);
-                ret.add(extractEntities(semText, domainURL));
+                //ret.add(extractEntities(semText, domainURL));
+                ret.add(semText);
             }
             return ret;
         }
@@ -165,12 +163,13 @@ public class NLPService implements INLPService {
     }
 
     private SemText extractEntities(SemText semText, String etypeURL) {
+
         SemText textEntities;
         List<String> entVocab = collectEntitiesFromMeanings(semText);
         List<String> filteredEntities = filterEntitiesByType(entVocab, etypeURL);
 
         List<Term> words = new ArrayList<Term>();
-        for (Term term : semText.terms()) {            
+        for (Term term : semText.terms()) {
 
             Meaning wsm = term.getSelectedMeaning();
             Meaning selectedMeaning;
@@ -220,7 +219,7 @@ public class NLPService implements INLPService {
      */
     private List<String> collectEntitiesFromMeanings(SemText semText) {
         List<String> entitiesId = new ArrayList<String>();
-        for (Term term : semText.terms()) {            
+        for (Term term : semText.terms()) {
             for (Meaning meaning : term.getMeanings()) {
                 if (MeaningKind.ENTITY.equals(meaning.getKind()) && (meaning.getId().length() > 0)) {
                     entitiesId.add(meaning.getId());
@@ -248,9 +247,9 @@ public class NLPService implements INLPService {
 
     @Override
     public List<? extends ITermSearchResult> freeSearch(String partialName, Locale locale) {
-        
+
         String lowerCasePartialName = partialName.toLowerCase(locale);
-        
+
         List<ISearchResult> entities;
 
         Search search = new Search(WebServiceURLs.getClientProtocol());
@@ -284,5 +283,15 @@ public class NLPService implements INLPService {
 
     public static NLTextConverter getNLTextConverter() {
         return nltextConverter;
+    }
+
+    public static Locale detectLanguage(List<String> inputStr) {
+        ComponentClient component = new ComponentClient(WebServiceURLs.getClientProtocol());
+        NLPInput input = new NLPInput();
+        input.setText(inputStr);
+        logger.warn("USING HARDCODED KB ID!");
+        NLText[] processedTexts = component.run("LanguageDetector", input, 1L);
+
+        return OdtUtils.languageTagToLocale(processedTexts[0].getLanguage());
     }
 }

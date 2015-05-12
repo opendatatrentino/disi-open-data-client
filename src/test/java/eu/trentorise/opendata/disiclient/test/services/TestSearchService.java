@@ -2,7 +2,6 @@ package eu.trentorise.opendata.disiclient.test.services;
 
 import static org.junit.Assert.assertNotNull;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
-import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
 import it.unitn.disi.sweb.webapi.model.eb.Name;
 
 import java.util.List;
@@ -16,13 +15,15 @@ import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 import eu.trentorise.opendata.commons.OdtUtils;
+import eu.trentorise.opendata.disiclient.test.ConfigLoader;
 
 public class TestSearchService {
 
     private IProtocolClient api;
 
     @Before
-    public void getClientProtocol() {
+    public void beforeMethod() {
+        ConfigLoader.init();
         this.api = WebServiceURLs.getClientProtocol();
     }
 

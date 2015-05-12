@@ -17,14 +17,23 @@ import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 import eu.trentorise.opendata.commons.OdtUtils;
+import eu.trentorise.opendata.disiclient.test.ConfigLoader;
+import org.junit.Before;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
  * @author David Leoni <david.leoni@unitn.it>
- * 
+ *
  *
  */
 public class TestEntityTypeService {
+
+    private IEkb disiEkb;
+    
+    @Before
+    public void beforeMethod() {
+        disiEkb = ConfigLoader.init();
+    }
 
     @Test
     public void testGetEntityTypeByID() {
@@ -106,10 +115,9 @@ public class TestEntityTypeService {
     }
 
     @Test
-    public void testReadNonExistingEntityType() {
-        IEkb disiEkb = new DisiEkb();
+    public void testReadNonExistingEntityType() {        
 
-        assertEquals(disiEkb.getEntityTypeService().getEntityType("http://blabla.com"), null);
+        assertEquals(null, disiEkb.getEntityTypeService().getEntityType("http://blabla.com"));
 
     }
 

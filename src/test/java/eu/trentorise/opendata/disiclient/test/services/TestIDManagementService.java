@@ -10,6 +10,7 @@ import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import eu.trentorise.opendata.disiclient.services.IdentityService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
+import eu.trentorise.opendata.disiclient.test.ConfigLoader;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.ATTR_DEF_PART_OF_URL;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.CERTIFIED_PRODUCT_ID;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.CERTIFIED_PRODUCT_URL;
@@ -37,6 +38,7 @@ import java.util.Locale;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,7 +78,8 @@ public class TestIDManagementService {
         }
         return str + "]";
     }
-
+    
+    
     public static IEntity assignNewURL(){
         IdentityService idServ = new IdentityService();
         EntityService enServ = new EntityService(getClientProtocol());
@@ -110,6 +113,11 @@ public class TestIDManagementService {
                 
         return results.get(0).getResultEntity();
     }
+    
+   @Before
+    public void beforeMethod() {
+        ConfigLoader.init();
+    }    
     
     @Test
     public void idServiceEntityNew() {       

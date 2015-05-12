@@ -1,8 +1,8 @@
 package eu.trentorise.opendata.disiclient.model.entity;
 
+import com.google.common.collect.ImmutableList;
 import eu.trentorise.opendata.commons.Dict;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
-import eu.trentorise.opendata.disiclient.services.DisiEkb;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.KnowledgeService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
@@ -101,7 +101,7 @@ public class EntityODR extends StructureODR implements IEntity {
                 for (Value val : vals) {
                     if (val.getValue() instanceof SemText) {
                         fixedVals.add(val);
-                    } else {                        
+                    } else {
                         SemText semtext = NLPService.getSemanticStringConverter().semText((SemanticString) val.getSemanticValue(), true);
                         Locale loc = OdtUtils.languageTagToLocale(val.getLanguageCode()); // dav so java 6 doesn't bother us Locale.forLanguageTag(val.getLanguageCode());
                         SemText stext = semtext.with(loc);
@@ -293,14 +293,19 @@ public class EntityODR extends StructureODR implements IEntity {
         this.globalId = globalId;
     }
 
+    @Override
     public String getURL() {
         if (this.localId != null) {
             return WebServiceURLs.entityIDToURL(this.localId);
         } else {
+            if (this.getId() == null) {
+                throw new NullPointerException("Found null entity id while converting to url!");
+            }
             return WebServiceURLs.entityIDToURL(this.getId());
         }
     }
 
+    @Override
     public void setURL(String sUrl) {
         this.sUrl = sUrl;
     }
@@ -309,6 +314,7 @@ public class EntityODR extends StructureODR implements IEntity {
         return names;
     }
 
+    @Override
     public Dict getName() {
 
         if ((this.names == null) && (super.getId() == null)) {
@@ -316,6 +322,9 @@ public class EntityODR extends StructureODR implements IEntity {
         } else if (this.names == null) {
             EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
             EntityODR e = (EntityODR) es.readEntity(super.getId());
+            if (e == null) {
+                return Dict.of();
+            }
             this.names = e.getNames();
             this.descriptions = e.getDescriptions();
             this.classConceptId = e.getClassConceptId();
@@ -343,7 +352,7 @@ public class EntityODR extends StructureODR implements IEntity {
     public void setClassConceptId(Long classConceptId, AttributeDef classAttributeDef) {
         this.classConceptId = classConceptId;
         List<IAttribute> attributes = super.getStructureAttributes();
-        if (attributes.size() != 0) {
+        if (!attributes.isEmpty()) {
             for (IAttribute attr : attributes) {
                 AttributeDef ad = (AttributeDef) attr;
                 if (ad.getName(Locale.ENGLISH).equals("Class")) {
@@ -586,6 +595,10 @@ public class EntityODR extends StructureODR implements IEntity {
     }
 
     public String getName(Locale locale) {
+        if (names == null) {
+            logger.warn("EntityODR.getName(): FOUND null names in entity, returning empty string");
+            return "";
+        }
         logger.info("Returing the first value of the name. Hovewer, the number of values is: " + this.names.size());
         Map<String, List<String>> name = this.names.get(0).getNames();
         List<String> stName = name.get(OdtUtils.localeToLanguageTag(locale));
@@ -598,8 +611,10 @@ public class EntityODR extends StructureODR implements IEntity {
 
     }
 
+    @Override
     public Dict getDescription() {
         if (this.descriptions == null) {
+            logger.warn("EntityODR.getDescription(): FOUND null names in entity, returning empty Dict");
             return Dict.of();
         }
         return DictFactory.semtextsToDict(this.descriptions);
@@ -613,8 +628,7 @@ public class EntityODR extends StructureODR implements IEntity {
         Map<String, List<SemText>> odrDescriptionMap = new HashMap<String, List<SemText>>();
         if (descriptionSString == null) {
             return odrDescriptionMap;
-        }        
-        
+        }
 
         Iterator<?> it = descriptionSString.entrySet().iterator();
         while (it.hasNext()) {
@@ -633,8 +647,6 @@ public class EntityODR extends StructureODR implements IEntity {
         return odrDescriptionMap;
 
     }
-
-
 
     public Map<String, List<SemanticString>> convertDescriptionToSWEB(Map<String, List<SemText>> descriptionSText) {
 
@@ -739,7 +751,9 @@ public class EntityODR extends StructureODR implements IEntity {
                     } else {
 
                         if (attrDef.getURL().equals(nameAttrDefURL)) {
-                            objects.add(entity.getName().anyString(new DisiEkb().getDefaultLocales())); // todo find way to link entity service to DisiEkb
+
+                            logger.warn("TODO HARD CODING LOCALE ENGLISH IN ATTRIBUTE DEF NAME " + attrDef.getURL());
+                            objects.add(entity.getName().anyString(ImmutableList.of(Locale.ENGLISH))); // todo find way to link entity service to DisiEkb
                         } else {
                             for (IValue val : attr.getValues()) {
                                 objects.add(disifyObject(val.getValue()));
