@@ -144,7 +144,8 @@
         </dependency>
         <dependency>
             <groupId>eu.trentorise.opendata</groupId>
-            <artifactId>openentity-api</artifactId>          
+            <artifactId>openentity-api</artifactId>     
+  
         </dependency>
         
         <dependency>
@@ -167,11 +168,23 @@
             <groupId>it.unitn.disi.sweb</groupId>
             <artifactId>sweb-webapi-eb-client</artifactId>
             <version>3.0.1-SNAPSHOT</version>
+            <exclusions>                            
+                <exclusion>
+                    <groupId>it.unitn.disi.sweb</groupId>
+                    <artifactId>sweb-webapi-commons-client</artifactId>                    
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>it.unitn.disi.sweb.odt</groupId>
             <artifactId>sweb-webapi-odt-client</artifactId>
             <version>1.0.1-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>it.unitn.disi.sweb</groupId>
+                    <artifactId>sweb-webapi-commons-client</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
                 
         <dependency>
