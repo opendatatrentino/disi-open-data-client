@@ -14,7 +14,7 @@ import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.model.entity.IStructure;
 import eu.trentorise.opendata.semantics.model.entity.IValue;
-import eu.trentorise.opendata.semantics.services.model.DataTypes;
+import eu.trentorise.opendata.semantics.DataTypes;
 import eu.trentorise.opendata.commons.OdtUtils;
 import eu.trentorise.opendata.disiclient.DictFactory;
 import eu.trentorise.opendata.disiclient.services.NLPService;
@@ -321,7 +321,7 @@ public class EntityODR extends StructureODR implements IEntity {
             return Dict.of();
         } else if (this.names == null) {
             EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
-            EntityODR e = (EntityODR) es.readEntity(super.getId());
+            EntityODR e =  es.readEntity(super.getId());
             if (e == null) {
                 return Dict.of();
             }
@@ -367,7 +367,7 @@ public class EntityODR extends StructureODR implements IEntity {
                 }
             }
         } else {
-            List<IAttribute> attrs = new ArrayList<IAttribute>();
+            List<IAttribute> attrs = new ArrayList();
             ValueODR val = new ValueODR();
             val.setValue(classConceptId);
             AttributeODR at = new AttributeODR(classAttributeDef, val);
@@ -485,7 +485,7 @@ public class EntityODR extends StructureODR implements IEntity {
     }
 
     private List<IAttribute> convertToAttributeODR(List<Attribute> attributes) {
-        List<IAttribute> attributesODR = new ArrayList<IAttribute>();
+        List<IAttribute> attributesODR = new ArrayList();
         for (Attribute attr : attributes) {
             AttributeODR attrODR = new AttributeODR(api, attr);
             attributesODR.add(attrODR);
@@ -494,7 +494,7 @@ public class EntityODR extends StructureODR implements IEntity {
     }
 
     public List<Attribute> convertToAttributes(List<IAttribute> attributes) {
-        List<Attribute> attrs = new ArrayList<Attribute>();
+        List<Attribute> attrs = new ArrayList();
         for (IAttribute attr : attributes) {
             AttributeODR attribute = (AttributeODR) attr;
             Attribute at = attribute.convertToAttribute();
@@ -509,7 +509,7 @@ public class EntityODR extends StructureODR implements IEntity {
         entity.setDuration(this.duration);
         List<Attribute> attrs = super.getAttributes();
         if (attrs != null) {
-            List<Attribute> attrsFixed = new ArrayList<Attribute>();
+            List<Attribute> attrsFixed = new ArrayList();
 
             for (Attribute at : attrs) {
                 Attribute atFixed = new Attribute();
@@ -523,7 +523,7 @@ public class EntityODR extends StructureODR implements IEntity {
 
                 if ((at.getConceptId() != null) && (at.getConceptId() == KnowledgeService.DESCRIPTION_CONCEPT_ID)) {
                     List<Value> vals = at.getValues();
-                    List<Value> fixedVals = new ArrayList<Value>();
+                    List<Value> fixedVals = new ArrayList();
 
                     for (Value val : vals) {
                         if (val.getValue() instanceof String) {
@@ -550,7 +550,7 @@ public class EntityODR extends StructureODR implements IEntity {
                     }
                     atFixed.setValues(fixedVals);
                 } else {
-                    List<Value> fixedVals = new ArrayList<Value>();
+                    List<Value> fixedVals = new ArrayList();
                     for (Value val : at.getValues()) {
                         if (val.getValue() instanceof EntityODR) {
                             EntityODR enodr = (EntityODR) val.getValue();
@@ -625,7 +625,7 @@ public class EntityODR extends StructureODR implements IEntity {
      */
     private Map<String, List<SemText>> convertDescriptionToODR(Map<String, List<SemanticString>> descriptionSString) {
 
-        Map<String, List<SemText>> odrDescriptionMap = new HashMap<String, List<SemText>>();
+        Map<String, List<SemText>> odrDescriptionMap = new HashMap();
         if (descriptionSString == null) {
             return odrDescriptionMap;
         }
@@ -633,7 +633,7 @@ public class EntityODR extends StructureODR implements IEntity {
         Iterator<?> it = descriptionSString.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pairs = (Map.Entry) it.next();
-            List<SemText> sTextList = new ArrayList<SemText>();
+            List<SemText> sTextList = new ArrayList();
 
             List<SemanticString> SStringList = (List<SemanticString>) pairs.getValue();
             for (SemanticString sstring : SStringList) {
@@ -650,7 +650,7 @@ public class EntityODR extends StructureODR implements IEntity {
 
     public Map<String, List<SemanticString>> convertDescriptionToSWEB(Map<String, List<SemText>> descriptionSText) {
 
-        Map<String, List<SemanticString>> epDescriptionMap = new HashMap<String, List<SemanticString>>();
+        Map<String, List<SemanticString>> epDescriptionMap = new HashMap();
         if (descriptionSText == null) {
             return epDescriptionMap;
         }
@@ -658,7 +658,7 @@ public class EntityODR extends StructureODR implements IEntity {
 
         while (it.hasNext()) {
             Map.Entry pairs = (Map.Entry) it.next();
-            List<SemanticString> sStringList = new ArrayList<SemanticString>();
+            List<SemanticString> sStringList = new ArrayList();
 
             List<SemText> SStringList = (List<SemText>) pairs.getValue();
             for (SemText stext : SStringList) {
@@ -673,11 +673,13 @@ public class EntityODR extends StructureODR implements IEntity {
         return epDescriptionMap;
     }
 
+    @Override
     public void setName(Locale locale, String name) {
         throw new UnsupportedOperationException("todo to implement");
 
     }
 
+    @Override
     public void setDescription(Locale language, String description) {
         throw new UnsupportedOperationException("todo to implement");
 
@@ -701,7 +703,7 @@ public class EntityODR extends StructureODR implements IEntity {
      */
     private static Map<IAttributeDef, Object> disifyStructure(IStructure structure) {
 
-        HashMap<IAttributeDef, Object> map = new HashMap<IAttributeDef, Object>();
+        HashMap<IAttributeDef, Object> map = new HashMap();
 
         for (IAttribute subattr : structure.getStructureAttributes()) {
             for (IValue val : subattr.getValues()) {
@@ -739,7 +741,7 @@ public class EntityODR extends StructureODR implements IEntity {
                     IAttributeDef attrDef = attr.getAttrDef();
                     AttributeODR attrODR;
 
-                    List<Object> objects = new ArrayList<Object>();
+                    List<Object> objects = new ArrayList();
 
                     if (DataTypes.ENTITY.equals(attrDef.getDataType())) {
                         List<EntityODR> ensODR = new ArrayList();

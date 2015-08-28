@@ -7,6 +7,7 @@ import it.unitn.disi.sweb.webapi.model.eb.Instance;
 import it.unitn.disi.sweb.webapi.model.eb.Name;
 import it.unitn.disi.sweb.webapi.model.eb.search.InstanceSearchResult;
 import it.unitn.disi.sweb.webapi.model.filters.SearchResultFilter;
+import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +18,11 @@ import org.slf4j.LoggerFactory;
 
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityType;
-import eu.trentorise.opendata.disiclient.services.model.SearchResult;
+
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
-import eu.trentorise.opendata.semantics.services.model.ISearchResult;
+import eu.trentorise.opendata.semantics.services.SearchResult;
 import eu.trentorise.opendata.commons.OdtUtils;
+import eu.trentorise.opendata.disiclient.DisiClients;
 
 public class Search {
 
@@ -150,8 +152,8 @@ public class Search {
         this.api = WebServiceURLs.getClientProtocol();
     }
 
-    public List<ISearchResult> searchEntities(String partialName, String etypeURL, Locale locale) {
-        List<ISearchResult> entities = new ArrayList<ISearchResult>();
+    public List<SearchResult> searchEntities(String partialName, String etypeURL, Locale locale) {
+        List<SearchResult> entities = new ArrayList<SearchResult>();
         SearchResultFilter srf = new SearchResultFilter();
         srf.setLocale(locale);
         srf.setIncludeAttributesAsProperties(true);
@@ -164,7 +166,7 @@ public class Search {
 
         List<Entity> ents = getEntities(resInstances);
         for (Entity e : ents) {
-            SearchResult res = new SearchResult(e);
+            SearchResult res = DisiClients.makeSearchResult(e);
             entities.add(res);
         }
 

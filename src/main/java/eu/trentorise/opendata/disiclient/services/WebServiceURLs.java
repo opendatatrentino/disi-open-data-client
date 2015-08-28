@@ -1,23 +1,20 @@
 package eu.trentorise.opendata.disiclient.services;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
 import eu.trentorise.opendata.commons.OdtUtils;
-import static eu.trentorise.opendata.disiclient.services.DisiConfiguration.SWEB_WEBAPI_HOST;
-import static eu.trentorise.opendata.disiclient.services.DisiConfiguration.SWEB_WEBAPI_PORT;
-import static eu.trentorise.opendata.disiclient.services.DisiConfiguration.SWEB_WEBAPI_ROOT;
+import static eu.trentorise.opendata.columnrecognizers.SwebConfiguration.SWEB_WEBAPI_HOST;
+import static eu.trentorise.opendata.columnrecognizers.SwebConfiguration.SWEB_WEBAPI_PORT;
+import static eu.trentorise.opendata.columnrecognizers.SwebConfiguration.SWEB_WEBAPI_ROOT;
 import eu.trentorise.opendata.semtext.nltext.UrlMapper;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Locale;
-import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * 
  * The class reads property file and create singletone with relatted to url
  * information
  *
@@ -113,12 +110,11 @@ public class WebServiceURLs {
 
     public static IProtocolClient getClientProtocol() {
 
-        DisiConfiguration.checkInitialized();
+        SwebConfiguration.checkInitialized();
         if (api == null) {
             locale = new Locale("all");
             readProperties();
-            api = ProtocolFactory.getHttpClient(locale, url, port);
-            //System.out.println(api.getLocale());
+            api = ProtocolFactory.getHttpClient(locale, url, port);            
             return api;
         } else {
             return api;
@@ -128,11 +124,10 @@ public class WebServiceURLs {
 
     public static IProtocolClient getClientProtocol(Locale locale) {
 
-        DisiConfiguration.checkInitialized();
+        SwebConfiguration.checkInitialized();
         if (api == null) {
             readProperties();
-            api = ProtocolFactory.getHttpClient(locale, url, port);
-            //System.out.println(api.getLocale());
+            api = ProtocolFactory.getHttpClient(locale, url, port);            
             return api;
         } else {
             return api;
@@ -155,9 +150,9 @@ public class WebServiceURLs {
 
     private static void readProperties() {
        // todo 'url' should actually be called 'host'
-            url = checkNotNull(DisiConfiguration.getString(SWEB_WEBAPI_HOST));              
-            port = Integer.parseInt(DisiConfiguration.getString(SWEB_WEBAPI_PORT));            
-            root = checkNotNull(DisiConfiguration.getString(SWEB_WEBAPI_ROOT));
+            url = checkNotNull(SwebConfiguration.getString(SWEB_WEBAPI_HOST));              
+            port = Integer.parseInt(SwebConfiguration.getString(SWEB_WEBAPI_PORT));            
+            root = checkNotNull(SwebConfiguration.getString(SWEB_WEBAPI_ROOT));
     }
 
     public static UrlMapper getSemtextUrlMapper() {

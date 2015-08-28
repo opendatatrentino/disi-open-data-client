@@ -17,7 +17,7 @@ import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
-import eu.trentorise.opendata.semantics.services.model.DataTypes;
+import eu.trentorise.opendata.semantics.DataTypes;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>

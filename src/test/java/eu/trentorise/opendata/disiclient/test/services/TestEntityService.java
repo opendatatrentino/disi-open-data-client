@@ -7,7 +7,6 @@ import eu.trentorise.opendata.disiclient.model.entity.EntityType;
 import eu.trentorise.opendata.disiclient.model.entity.StructureODR;
 import eu.trentorise.opendata.disiclient.model.entity.ValueODR;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
-import eu.trentorise.opendata.disiclient.services.DisiEkb;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
@@ -25,7 +24,7 @@ import eu.trentorise.opendata.semantics.model.entity.IValue;
 import eu.trentorise.opendata.semtext.SemText;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.IEntityService;
-import eu.trentorise.opendata.semantics.services.model.ISearchResult;
+import eu.trentorise.opendata.semantics.services.SearchResult;
 import eu.trentorise.opendata.commons.OdtUtils;
 import eu.trentorise.opendata.disiclient.test.ConfigLoader;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
@@ -218,7 +217,7 @@ public class TestEntityService {
         logger.info("\n\n *************   entity Palazzetto (" + PALAZZETTO_URL + ") ***************** \n\n" + entity);
         /*               This stuff should be caught by the integrity checker 
          IAttributeDef nameAttrDef = entity.getEtype().getNameAttrDef();
-         IStructure nameValue = (IStructure) entity.getAttribute(nameAttrDef.getURL()).getValues().get(0).getValue();
+         IStructure nameValue = (IStructure) entity.getAttribute(nameAttrDef.getURL()).getValues().strs(0).getValue();
          assertTrue(nameValue.getEtype() != null);
          */
         Checker.checkEntity(entity);
@@ -491,7 +490,7 @@ public class TestEntityService {
 
             if (atr.getName().get("en").equalsIgnoreCase("Longitude")) {
                 AttributeODR attrODR = new AttributeODR(api, atr);
-                //				ValueODR val = (ValueODR) attrODR.getValues().get(0);
+                //				ValueODR val = (ValueODR) attrODR.getValues().strs(0);
                 //				val.setValue(value);
                 es.updateAttributeValue(newEntityODR, attrODR, val);
             }
@@ -661,11 +660,10 @@ public class TestEntityService {
     public void testEntitySearch() {        
         String etypeURL = WebServiceURLs.etypeIDToURL(18L);
         Locale locale = OdtUtils.languageTagToLocale("it");
-        List<ISearchResult> sResults = enServ.searchEntities("Povo", etypeURL, locale);
-        for (ISearchResult sr : sResults) {
-            assertNotNull(sr.getURL());
+        List<SearchResult> sResults = enServ.searchEntities("Povo", etypeURL, locale);
+        for (SearchResult sr : sResults) {
+            assertNotNull(sr.getId());
             assertNotNull(sr.getName());
-
         }
     }
     
@@ -673,12 +671,10 @@ public class TestEntityService {
     public void testEntitySearchAndalo() {        
         String etypeURL = WebServiceURLs.etypeIDToURL(18L);
         Locale locale = OdtUtils.languageTagToLocale("it");
-        List<ISearchResult> sResults = enServ.searchEntities("Andalo", etypeURL, locale);
+        List<SearchResult> sResults = enServ.searchEntities("Andalo", etypeURL, locale);
         assertTrue(sResults.size() > 0);
         
-        assertEquals("Andalo", sResults.get(0).getName().string(Locale.ITALIAN));
-
-        
+        assertEquals("Andalo", sResults.get(0).getName().string(Locale.ITALIAN));       
     }
     
     @Test
@@ -689,22 +685,22 @@ public class TestEntityService {
     
   @Test
     public void testSearchIncompleteEntity() {        
-        List<ISearchResult> res = enServ.searchEntities("roveret", null, Locale.ITALIAN);
+        List<SearchResult> res = enServ.searchEntities("roveret", null, Locale.ITALIAN);
         assertTrue(res.size() > 0);
     }
-    
-    
+        
     @Test
     public void testSearchMultiWordEntity() {        
-        List<ISearchResult> res = enServ.searchEntities("borgo valsugana", null, Locale.ITALIAN);
+        List<SearchResult> res = enServ.searchEntities("borgo valsugana", null, Locale.ITALIAN);
         assertTrue(res.size() > 0);
     }
     
     @Test
     public void testSearchIncompleteMultiWordEntity() {        
         
-        List<ISearchResult> res = enServ.searchEntities("borgo valsu", null, Locale.ITALIAN);
+        List<SearchResult> res = enServ.searchEntities("borgo valsu", null, Locale.ITALIAN);
         assertTrue(res.size() > 0);
+               
     }        
     
 }

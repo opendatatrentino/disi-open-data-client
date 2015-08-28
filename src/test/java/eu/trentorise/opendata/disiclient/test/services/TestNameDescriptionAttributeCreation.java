@@ -61,9 +61,9 @@ public class TestNameDescriptionAttributeCreation {
             if (atr.getName().get("en").equalsIgnoreCase("Name")) {
                 Attribute a = createAttributeNameEntityWithDict(newNames);
                 attrs1.add(a);
-            } else //				if (atr.getName().get("en").equalsIgnoreCase("Description")){
+            } else //				if (atr.getName().strs("en").equalsIgnoreCase("Description")){
             //					IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
-            //					//Value v = atr.getValues().get(0);
+            //					//Value v = atr.getValues().strs(0);
             //				//	AttributeODR attr = enServ.createAttribute(atDef, "my description");
             //					//Attribute a=attr.convertToAttribute();
             //					attrs1.add(atr);

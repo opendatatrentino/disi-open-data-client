@@ -2,17 +2,17 @@ package eu.trentorise.opendata.disiclient.services;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.collect.ImmutableList;
-import eu.trentorise.opendata.disiclient.services.shematching.MatchingService;
+import eu.trentorise.opendata.schemamatcher.odr.impl.MatchingService;
+import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.IEntityService;
 import eu.trentorise.opendata.semantics.services.IEntityTypeService;
 import eu.trentorise.opendata.semantics.services.IIdentityService;
 import eu.trentorise.opendata.semantics.services.IKnowledgeService;
 import eu.trentorise.opendata.semantics.services.INLPService;
-import eu.trentorise.opendata.semantics.services.ISemanticMatchingService;
+import eu.trentorise.opendata.semantics.services.ISchemaMatchingService;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -29,11 +29,11 @@ public class DisiEkb implements IEkb {
 
     public static final String PROPERTIES_PREFIX = "sweb.webapi";
     
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger LOG = LoggerFactory.getLogger(DisiEkb.class);
 
     private INLPService NLPService;
     private IKnowledgeService knowledgeService;
-    private ISemanticMatchingService semanticMatchingService;
+    private ISchemaMatchingService schemaMatchingService;
     private IIdentityService identityService;
     private IEntityTypeService entityTypeService;
     private IEntityService entityService;
@@ -64,8 +64,8 @@ public class DisiEkb implements IEkb {
     }
 
     @Override
-    public ISemanticMatchingService getSemanticMatchingService() {
-        return semanticMatchingService;
+    public ISchemaMatchingService getSchemaMatchingService() {
+        return schemaMatchingService;
     }
 
     @Override
@@ -85,8 +85,8 @@ public class DisiEkb implements IEkb {
 
     @Override
     public List<Locale> getSupportedLocales() {
-        List<Locale> ret = new ArrayList<Locale>();
-        logger.warn("TODO LOCALES SUPPORT IS HARD CODED!");
+        List<Locale> ret = new ArrayList();
+        LOG.warn("TODO LOCALES SUPPORT IS HARD CODED!");
         ret.add(Locale.ITALIAN);
         ret.add(Locale.ENGLISH);
         return ret;
@@ -104,13 +104,13 @@ public class DisiEkb implements IEkb {
     @Override
     public void setProperties(Map<String, String> properties) {
         checkNotNull(properties);
-        DisiConfiguration.init(properties);
+        SwebConfiguration.init(properties);
         this.NLPService = new NLPService();
         this.entityTypeService = new EntityTypeService();
         this.knowledgeService = new KnowledgeService();
         this.identityService = new IdentityService();
-        this.semanticMatchingService = new MatchingService();
-        this.entityService = (IEntityService) new EntityService();
+        this.schemaMatchingService = new MatchingService(this);
+        this.entityService = new EntityService();
     }
 
     @Override

@@ -15,7 +15,6 @@ import it.unitn.disi.sweb.webapi.client.kb.ComplexTypeClient;
 import it.unitn.disi.sweb.webapi.model.kb.types.AttributeDefinition;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -71,6 +70,7 @@ public class EntityType implements IEntityType {
         ConceptODR conc = (ConceptODR) concept;
         ComplexTypeClient ctypeCl = new ComplexTypeClient(WebServiceURLs.getClientProtocol());
         ComplexType ctype = ctypeCl.readComplexType(this.conceptId, null);
+        
         // set concept on server-side 
         ctype.setConceptId(conc.getId());
         //set concept on client-side
@@ -169,11 +169,6 @@ public class EntityType implements IEntityType {
         return url;
     }
 
-    public void addAttributeDef(IAttributeDef attr) {
-        AttributeDef atDef = (AttributeDef) attr;
-        addAttributeD(atDef);
-
-    }
 
     public Dict getName() {
         return DictFactory.mapToDict(this.name);
@@ -183,15 +178,7 @@ public class EntityType implements IEntityType {
         return DictFactory.mapToDict(this.description);
     }
 
-    public void removeAttributeDef(String attrDefURL) {
-        throw new UnsupportedOperationException("todo to implement");
 
-    }
-
-    public void removeUniqueIndex(String uniqueIndexURL) {
-        throw new UnsupportedOperationException("todo to implement");
-
-    }
 
     public IAttributeDef getNameAttrDef() {
         List<IAttributeDef> attrDefs = getAttributeDefs();

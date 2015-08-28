@@ -15,7 +15,7 @@ import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.services.IEkb;
-import eu.trentorise.opendata.semantics.services.model.ISearchResult;
+import eu.trentorise.opendata.semantics.services.SearchResult;
 import eu.trentorise.opendata.commons.OdtUtils;
 import eu.trentorise.opendata.disiclient.test.ConfigLoader;
 import org.junit.Before;
@@ -125,7 +125,7 @@ public class TestEntityTypeService {
     public void testFuzzySearchEtype() {
         EntityTypeService ets = new EntityTypeService();
         Locale locale = OdtUtils.languageTagToLocale("en");
-        List<ISearchResult> searchEtypes = ets.searchEntityTypes("Product", locale);
+        List<SearchResult> searchEtypes = ets.searchEntityTypes("Product", locale);
         assertEquals("Product", searchEtypes.get(0).getName().string(Locale.ENGLISH));
 
     }

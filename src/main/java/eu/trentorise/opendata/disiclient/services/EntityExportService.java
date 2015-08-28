@@ -20,17 +20,17 @@ import com.google.gson.JsonStreamParser;
 
 import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
 import eu.trentorise.opendata.disiclient.model.entity.EntityType;
-import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
+import eu.trentorise.opendata.schemamatcher.util.SwebClientCrap;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
-import eu.trentorise.opendata.semantics.services.model.DataTypes;
+import eu.trentorise.opendata.semantics.DataTypes;
 
 public class EntityExportService {
 
 	private static final String regexInput = "@type";
 
-	/**
+        /**
 	 * The method generates JSON-LD @context
 	 *
 	 * @param id
@@ -106,7 +106,7 @@ public class EntityExportService {
 		obj.remove("dataType");
 		obj.remove(regexInput);
 		obj.remove("typeId");
-		Long globalID=null;
+		Long globalID;
 		try {
 		 globalID = obj.get("globalId").getAsLong();
 		 EntityService es = new EntityService();
@@ -119,13 +119,10 @@ public class EntityExportService {
 		} catch(NullPointerException e) {
 			
 		}
-		
-	
-
 
 		//convert from global concept to local one
-		ConceptODR codr = new ConceptODR();
-		Long conceptTypeID = codr.readConceptGUID(typeId);
+		
+		Long conceptTypeID = SwebClientCrap.readConceptGUID(typeId);
 
 		EntityTypeService ets = new EntityTypeService();
 		/////////////////!!!!!!!!!!!!!IMPORTANT CHANGE THE ETYPE ID!!!!!!!!!!!!!!///////////
@@ -142,7 +139,7 @@ public class EntityExportService {
 
 			Long attrGlobalConceptID = attrObj.get("conceptId").getAsLong();
 			obj.remove("conceptId");
-			Long attrConceptID = codr.readConceptGUID(attrGlobalConceptID);
+			Long attrConceptID = SwebClientCrap.readConceptGUID(attrGlobalConceptID);
 
 			//	System.out.println(attrConceptID);
 			for (IAttributeDef atDef : attrDefs) {

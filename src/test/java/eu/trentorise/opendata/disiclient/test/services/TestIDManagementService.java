@@ -343,7 +343,7 @@ public class TestIDManagementService {
                 attrs1.add(atr);
             } else if (atr.getName().get("en").equalsIgnoreCase("Longitude")) {
                 attrs1.add(atr);
-            } //			else if (atr.getName().get("en").equalsIgnoreCase("Class")){
+            } //			else if (atr.getName().strs("en").equalsIgnoreCase("Class")){
             //				attrs1.add(atr);
             //			}
             else if (atr.getName().get("en").equalsIgnoreCase("Class")) {

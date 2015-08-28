@@ -6,6 +6,7 @@ import it.unitn.disi.sweb.webapi.client.kb.ComplexTypeClient;
 import it.unitn.disi.sweb.webapi.client.kb.KbClient;
 import it.unitn.disi.sweb.webapi.model.filters.AttributeDefinitionFilter;
 import it.unitn.disi.sweb.webapi.model.filters.ComplexTypeFilter;
+import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
 import it.unitn.disi.sweb.webapi.model.kb.KnowledgeBase;
 import it.unitn.disi.sweb.webapi.model.kb.types.AttributeDefinition;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
@@ -24,13 +25,13 @@ import org.slf4j.LoggerFactory;
 
 import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
 import eu.trentorise.opendata.disiclient.model.entity.EntityType;
-import eu.trentorise.opendata.disiclient.services.model.SearchResult;
+
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
-import eu.trentorise.opendata.semantics.model.entity.IUniqueIndex;
 import eu.trentorise.opendata.semantics.services.IEntityTypeService;
-import eu.trentorise.opendata.semantics.services.model.ISearchResult;
+import eu.trentorise.opendata.semantics.services.SearchResult;
 import eu.trentorise.opendata.commons.OdtUtils;
+import eu.trentorise.opendata.disiclient.DisiClients;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
@@ -40,11 +41,12 @@ import eu.trentorise.opendata.commons.OdtUtils;
  */
 public class EntityTypeService implements IEntityTypeService {
 
-	private static Logger LOG = LoggerFactory.getLogger(EntityService.class);
+	private static final Logger LOG = LoggerFactory.getLogger(EntityService.class);
 
 	public static final double MAX_SCORE_FOR_NO_FIRST_LETTER_MATCH = 0.3;
 	private static final Comparator SINGLE = new ValueComparator();
 
+        @Override
 	public List<IEntityType> getAllEntityTypes() {
 		KbClient kbClient = new KbClient(getClientProtocol());
 
@@ -63,7 +65,7 @@ public class EntityTypeService implements IEntityTypeService {
 		List<ComplexType> complexTypeList = ctc.readComplexTypes(kbId, null, null, ctFilter);
 
 		AttributeDefinitionClient attrDefs = new AttributeDefinitionClient(getClientProtocol());
-		List<IEntityType> etypes = new ArrayList<IEntityType>();
+		List<IEntityType> etypes = new ArrayList();
 
 		for (ComplexType cType : complexTypeList) {
 			EntityType eType = new EntityType(cType);
@@ -72,7 +74,7 @@ public class EntityTypeService implements IEntityTypeService {
 
 			List<AttributeDefinition> attrDefList = attrDefs.readAttributeDefinitions(cType.getId(), null, null, adf);
 
-			List<IAttributeDef> attributeDefList = new ArrayList<IAttributeDef>();
+			List<IAttributeDef> attributeDefList = new ArrayList();
 			for (AttributeDefinition attrDef : attrDefList) {
 				IAttributeDef attributeDef = new AttributeDef(attrDef);
 				//System.out.println(attributeDef.toString());
@@ -106,7 +108,7 @@ public class EntityTypeService implements IEntityTypeService {
 		AttributeDefinitionFilter adf = new AttributeDefinitionFilter();
 		adf.setIncludeRestrictions(true);
 		List<AttributeDefinition> attrDefList = attrDefs.readAttributeDefinitions(eType.getGUID(), null, null, adf);
-		List<IAttributeDef> attributeDefList = new ArrayList<IAttributeDef>();
+		List<IAttributeDef> attributeDefList = new ArrayList();
 
 		for (AttributeDefinition attrDef : attrDefList) {
 
@@ -117,6 +119,7 @@ public class EntityTypeService implements IEntityTypeService {
 		return eType;
 	}
 
+        @Override
 	public EntityType getEntityType(long id) {
 		ComplexTypeClient ctc = new ComplexTypeClient(getClientProtocol());
 		ComplexTypeFilter ctFilter = new ComplexTypeFilter();
@@ -130,7 +133,7 @@ public class EntityTypeService implements IEntityTypeService {
 		AttributeDefinitionFilter adf = new AttributeDefinitionFilter();
 		adf.setIncludeRestrictions(true);
 		List<AttributeDefinition> attrDefList = attrDefs.readAttributeDefinitions(id, null, null, adf);
-		List<IAttributeDef> attributeDefList = new ArrayList<IAttributeDef>();
+		List<IAttributeDef> attributeDefList = new ArrayList();
 
 		for (AttributeDefinition attrDef : attrDefList) {
 
@@ -141,19 +144,9 @@ public class EntityTypeService implements IEntityTypeService {
 		return eType;
 	}
 
-	public void addAttributeDefToEtype(IEntityType entityType,
-			IAttributeDef attrDef) {
-		EntityType eType = (EntityType) entityType;
+	
 
-		eType.addAttributeDef(attrDef);
-
-	}
-
-	public void addUniqueIndexToEtype(IEntityType entityType,
-			IUniqueIndex uniqueIndex) {
-		throw new UnsupportedOperationException("todo to implement");
-	}
-
+	
 	/**
 	 * The method returns client protocol
 	 *
@@ -164,8 +157,9 @@ public class EntityTypeService implements IEntityTypeService {
 		return WebServiceURLs.getClientProtocol();
 	}
 
+        @Override
 	public List<IEntityType> getEntityTypes(List<String> URLs) {
-		List<IEntityType> etypes = new ArrayList<IEntityType>();
+		List<IEntityType> etypes = new ArrayList();
 
 		for (String url : URLs) {
 			etypes.add(getEntityType(url));
@@ -173,6 +167,7 @@ public class EntityTypeService implements IEntityTypeService {
 		return etypes;
 	}
 
+        @Override
 	public EntityType getEntityType(String URL) {
 		String s;
 		try {
@@ -194,11 +189,12 @@ public class EntityTypeService implements IEntityTypeService {
 		return getEntityType(typeID);
 	}
 
-	public List<ISearchResult> searchEntityTypes(String partialName, Locale locale) {
+        @Override
+	public List<SearchResult> searchEntityTypes(String partialName, Locale locale) {
 		ComplexTypeClient ctc = new ComplexTypeClient(getClientProtocol());
-		List<ISearchResult> etypesSortedSearch = new ArrayList();
+		List<SearchResult> etypesSortedSearch = new ArrayList();
 		List<ComplexType> complexTypeList = ctc.readComplexTypes(1L, null, null, null);
-		HashMap<ComplexType, Double> ctypeMap = new HashMap<ComplexType, Double>();
+		HashMap<ComplexType, Double> ctypeMap = new HashMap();
 
 		for (ComplexType cType : complexTypeList) {
 
@@ -212,7 +208,7 @@ public class EntityTypeService implements IEntityTypeService {
 		for (ComplexType cType : ctypeSortedEN) {
 			System.out.println(cType.getName().get("it"));
 
-			ISearchResult etype = new SearchResult(cType);
+			SearchResult etype = DisiClients.makeSearchResult(cType);
 
 			etypesSortedSearch.add(etype);
 		}

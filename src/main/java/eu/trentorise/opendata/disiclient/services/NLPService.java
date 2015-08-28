@@ -2,18 +2,16 @@ package eu.trentorise.opendata.disiclient.services;
 
 import com.google.common.collect.Lists;
 import eu.trentorise.opendata.commons.OdtUtils;
-import eu.trentorise.opendata.semantics.impl.model.TermSearchResult;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
-import eu.trentorise.opendata.semantics.model.knowledge.IResourceContext;
-import eu.trentorise.opendata.semantics.model.knowledge.ITableResource;
 import eu.trentorise.opendata.semtext.MeaningKind;
 import eu.trentorise.opendata.semtext.MeaningStatus;
 import eu.trentorise.opendata.semtext.Meaning;
 import eu.trentorise.opendata.semtext.SemText;
 import eu.trentorise.opendata.semtext.Term;
 import eu.trentorise.opendata.semantics.services.INLPService;
-import eu.trentorise.opendata.semantics.services.model.ISearchResult;
-import eu.trentorise.opendata.semantics.services.model.ITermSearchResult;
+import eu.trentorise.opendata.semantics.services.SearchResult;
+import eu.trentorise.opendata.semantics.services.TermSearchResult;
+import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
 import eu.trentorise.opendata.semtext.nltext.NLTextConverter;
 import eu.trentorise.opendata.semtext.nltext.SemanticStringConverter;
 import it.unitn.disi.sweb.core.nlp.model.NLText;
@@ -42,16 +40,6 @@ public class NLPService implements INLPService {
 
     private static final Logger logger = LoggerFactory.getLogger(NLPService.class);
 
-    public List<SemText> disambiguateColumns(ITableResource table,
-            IResourceContext context) {
-        throw new UnsupportedOperationException("Service is not supported yet.");
-        // TODO implementation is required
-    }
-
-    public String guessType(Iterable<String> cellList) {
-        throw new UnsupportedOperationException("Service is not supported yet.");
-        // TODO implementation is required
-    }
 
     /**
      * For italian text and 1st knowledge base
@@ -182,7 +170,7 @@ public class NLPService implements INLPService {
                 selectedMeaning = null;
             }
 
-            List<Meaning> filteredMeanings = new ArrayList<Meaning>();
+            List<Meaning> filteredMeanings = new ArrayList();
             for (Meaning m : term.getMeanings()) {
                 if (MeaningKind.ENTITY.equals(m.getKind()) && (m.getId().length() > 0)) {
                     if (filteredEntities.contains(m.getId())) {
@@ -218,7 +206,7 @@ public class NLPService implements INLPService {
      * @return
      */
     private List<String> collectEntitiesFromMeanings(SemText semText) {
-        List<String> entitiesId = new ArrayList<String>();
+        List<String> entitiesId = new ArrayList();
         for (Term term : semText.terms()) {
             for (Meaning meaning : term.getMeanings()) {
                 if (MeaningKind.ENTITY.equals(meaning.getKind()) && (meaning.getId().length() > 0)) {
@@ -246,29 +234,29 @@ public class NLPService implements INLPService {
     }
 
     @Override
-    public List<? extends ITermSearchResult> freeSearch(String partialName, Locale locale) {
+    public List<TermSearchResult> freeSearch(String partialName, Locale locale) {
 
         String lowerCasePartialName = partialName.toLowerCase(locale);
 
-        List<ISearchResult> entities;
+        List<SearchResult> entities;
 
         Search search = new Search(WebServiceURLs.getClientProtocol());
         entities = search.searchEntities(lowerCasePartialName, null, locale);
 
         KnowledgeService ks = new KnowledgeService();
-        List<ISearchResult> concepts = ks.searchConcepts(lowerCasePartialName, locale);
+        List<SearchResult> concepts = ks.searchConcepts(lowerCasePartialName, locale);
 
-        List<TermSearchResult> allSearchResult = new ArrayList<TermSearchResult>();
+        List<TermSearchResult> allSearchResult = new ArrayList();
 
         if (entities.size() > 0) {
-            for (ISearchResult en : entities) {
-                TermSearchResult wsr = new TermSearchResult(en.getURL(), en.getName(), MeaningKind.ENTITY);
+            for (SearchResult en : entities) {
+                TermSearchResult wsr = TermSearchResult.of(en.getId(), en.getName(), MeaningKind.ENTITY);
                 allSearchResult.add(wsr);
             }
         }
         if (concepts.size() > 0) {
-            for (ISearchResult con : concepts) {
-                TermSearchResult wsr = new TermSearchResult(con.getURL(), con.getName(), MeaningKind.CONCEPT);
+            for (SearchResult con : concepts) {
+                TermSearchResult wsr = TermSearchResult.of(con.getId(), con.getName(), MeaningKind.CONCEPT);
                 allSearchResult.add(wsr);
 
             }
@@ -285,10 +273,11 @@ public class NLPService implements INLPService {
         return nltextConverter;
     }
 
-    public static Locale detectLanguage(List<String> inputStr) {
+    @Override
+    public Locale detectLanguage(Iterable<String> inputStr) {
         ComponentClient component = new ComponentClient(WebServiceURLs.getClientProtocol());
         NLPInput input = new NLPInput();
-        input.setText(inputStr);
+        input.setText(Lists.newArrayList(inputStr));
         logger.warn("USING HARDCODED KB ID!");
         NLText[] processedTexts = component.run("LanguageDetector", input, 1L);
 

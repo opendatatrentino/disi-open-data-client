@@ -11,8 +11,6 @@ import java.util.Locale;
 
 import org.junit.Test;
 
-import eu.trentorise.opendata.columnrecognizers.ColumnConceptCandidate;
-import eu.trentorise.opendata.columnrecognizers.ColumnRecognizer;
 import static eu.trentorise.opendata.commons.OdtUtils.checkNotDirtyUrl;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
@@ -23,17 +21,16 @@ import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import eu.trentorise.opendata.disiclient.services.IdentityService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
-import eu.trentorise.opendata.disiclient.services.model.SchemaCorrespondence;
-import eu.trentorise.opendata.disiclient.services.shematching.MatchingService;
 import eu.trentorise.opendata.disiclient.test.services.TestEntityService;
 import eu.trentorise.opendata.semantics.Checker;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
-import eu.trentorise.opendata.semantics.services.model.DataTypes;
+import eu.trentorise.opendata.semantics.DataTypes;
 import eu.trentorise.opendata.semantics.services.model.IIDResult;
 import org.junit.Before;
+import org.junit.Ignore;
 
 public class IntegrityCheckerTest {
 
@@ -118,40 +115,12 @@ public class IntegrityCheckerTest {
         ConfigLoader.init();        
     }  
     
-    /**
-     * Check the integration TODO REVIEW COMMENTED TEST
-     */
-    //@Test 
-    public void testCheckSchemaCorrespondence() {
-        MatchingService mService = new MatchingService();
-        EntityTypeService etypeService = new EntityTypeService();
-        List<IEntityType> etypeList = etypeService.getAllEntityTypes();
-
-        List<ColumnConceptCandidate> odrHeaders
-                = ColumnRecognizer.computeScoredCandidates(cols, bodies);
-        for (IEntityType etype : etypeList) {
-
-            EntityType eType = (EntityType) etype;
-
-            if (etype.getName().string(Locale.ENGLISH).equals("Name")) {
-                //System.out.println(etype.getName().getString(Locale.ENGLISH));
-            }
-            long conid = 2923L;
-            SchemaCorrespondence scCorr = (SchemaCorrespondence) mService.schemaMatch(eType, odrHeaders, conid);
-            Checker.checkSchemaCorrespondence(scCorr);
-            checkNotNull(etype.getName(), "etype name is null!");
-            checkNotNull(etype.getConcept().getDescription(), "etype concept description is null!");
-            checkNotNull(etype.getConcept().getName(), "etype concept name is null!");
-            assertNotNull(scCorr.getScore());
-            assertNotNull(scCorr.getAttributeCorrespondence());
-            assertNotNull(scCorr.getEtype());
-        }
-    }
 
     /**
-     * TODO REVIEW COMMENTED TEST
+     * TODO REVIEW IGNORED COMMENTED TEST
      */
-    //@Test
+    @Test
+    @Ignore
     public void testCheckEtypesWithAttrDef() {
         EntityTypeService ets = new EntityTypeService();
         List<IEntityType> etypes = ets.getAllEntityTypes();
@@ -175,7 +144,8 @@ public class IntegrityCheckerTest {
     }
 
     // TODO REVIEW COMMENTED TEST
-    //@Test 
+    @Test
+    @Ignore
     public void testCheckEntity() {
         EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
         IEntity entity = es.readEntity(15001L);
@@ -196,7 +166,7 @@ public class IntegrityCheckerTest {
         IEntity entity2 = entityForNewResults();
         IEntity entity3 = entityForMissingResults();
 
-        List<IEntity> entities = new ArrayList<IEntity>();
+        List<IEntity> entities = new ArrayList();
         entities.add(entity1);
         entities.add(entity2);
         entities.add(entity3);
@@ -215,7 +185,7 @@ public class IntegrityCheckerTest {
 
         EntityODR entity = (EntityODR) enServ.readEntity(TestEntityService.PALAZZETTO_URL);
         List<Attribute> attrs = entity.getAttributes();
-        List<Attribute> attrs1 = new ArrayList<Attribute>();
+        List<Attribute> attrs1 = new ArrayList();
         for (Attribute atr : attrs) {
 
             if (atr.getName().get("en").equalsIgnoreCase("Latitude")) {
@@ -240,7 +210,7 @@ public class IntegrityCheckerTest {
 
         EntityODR entity = (EntityODR) enServ.readEntity(TestEntityService.PALAZZETTO_URL);
         List<Attribute> attrs = entity.getAttributes();
-        List<Attribute> attrs1 = new ArrayList<Attribute>();
+        List<Attribute> attrs1 = new ArrayList();
         for (Attribute atr : attrs) {
 
             if (atr.getName().get("en").equalsIgnoreCase("Latitude")) {
@@ -269,7 +239,7 @@ public class IntegrityCheckerTest {
         EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
         EntityODR entity = (EntityODR) enServ.readEntity(TestEntityService.PALAZZETTO_URL);
         List<Attribute> attrs = entity.getAttributes();
-        List<Attribute> attrs1 = new ArrayList<Attribute>();
+        List<Attribute> attrs1 = new ArrayList();
 
         for (Attribute atr : attrs) {
 
@@ -279,7 +249,7 @@ public class IntegrityCheckerTest {
                 attrs1.add(atr);
             }
 //			else 
-//				if (atr.getName().get("en").equalsIgnoreCase("Class")){
+//				if (atr.getName().strs("en").equalsIgnoreCase("Class")){
 //					attrs1.add(atr);
 //				}
         }
@@ -299,7 +269,7 @@ public class IntegrityCheckerTest {
         EntityType etype = ets.getEntityType(12L);
 
         List<IAttributeDef> attrDefList = etype.getAttributeDefs();
-        List<Attribute> attrs = new ArrayList<Attribute>();
+        List<Attribute> attrs = new ArrayList();
 
         Attribute a = null;
         for (IAttributeDef atd : attrDefList) {

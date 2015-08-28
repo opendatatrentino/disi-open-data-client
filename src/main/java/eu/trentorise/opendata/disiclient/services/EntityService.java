@@ -17,8 +17,9 @@ import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IValue;
 import eu.trentorise.opendata.semtext.SemText;
 import eu.trentorise.opendata.semantics.services.IEntityService;
-import eu.trentorise.opendata.semantics.services.model.DataTypes;
-import eu.trentorise.opendata.semantics.services.model.ISearchResult;
+import eu.trentorise.opendata.semantics.DataTypes;
+import eu.trentorise.opendata.semantics.services.SearchResult;
+import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
 import eu.trentorise.opendata.commons.OdtUtils;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
@@ -167,7 +168,7 @@ public class EntityService implements IEntityService {
      * @return 
      */
     @Nullable
-    public static EntityODR readEntity(long entityID) {
+    public EntityODR readEntity(long entityID) {
         InstanceClient instanceCl = new InstanceClient(WebServiceURLs.getClientProtocol());
 
         InstanceFilter instFilter = new InstanceFilter();
@@ -196,11 +197,11 @@ public class EntityService implements IEntityService {
 
     public List<IEntity> readEntities(List<String> entityUrls) {
 
-        if (entityUrls.size() == 0) {
-            return new ArrayList<IEntity>();
+        if (entityUrls.isEmpty()) {
+            return new ArrayList();
         }
 
-        List<Long> entityIDs = new ArrayList<Long>();
+        List<Long> entityIDs = new ArrayList();
 
         for (String entityURL : entityUrls) {
             entityIDs.add(WebServiceURLs.urlToEntityID(entityURL));
@@ -215,7 +216,7 @@ public class EntityService implements IEntityService {
 
         List instances = instanceCl.readInstancesById(entityIDs, instFilter);
         List<Entity> entities = (List<Entity>) instances;
-        List<IEntity> ret = new ArrayList<IEntity>();
+        List<IEntity> ret = new ArrayList();
         for (Entity epEnt : entities) {
             EntityODR en = new EntityODR(this.api, epEnt);
             Checker.checkEntity(en);
@@ -242,7 +243,7 @@ public class EntityService implements IEntityService {
 
             if (a.getDataType() == DataType.CONCEPT) {
                 List<Value> vals = a.getValues();
-                List<Value> fixedVals = new ArrayList<Value>();
+                List<Value> fixedVals = new ArrayList();
 
                 for (Value val : vals) {
 
@@ -292,11 +293,13 @@ public class EntityService implements IEntityService {
         return structureName;
     }
 
+    @Override
     public void addAttribute(IEntity entity, IAttribute attribute) {
         EntityODR ent = (EntityODR) entity;
         ent.addAttribute(attribute);
     }
 
+    @Override
     public void addAttributeValue(IEntity entity, IAttribute attribute,
             IValue value) {
         AttributeODR atrODr = (AttributeODR) attribute;
@@ -310,6 +313,7 @@ public class EntityService implements IEntityService {
     /**
      * @param value Note: can be a Collection
      */
+    @Override
     public AttributeODR createAttribute(IAttributeDef attrDef, Object value) {
         AttributeDef ad = (AttributeDef) attrDef;
 
@@ -330,7 +334,7 @@ public class EntityService implements IEntityService {
 
         } else {
             if (value instanceof Collection) {
-                List<ValueODR> valsODR = new ArrayList<ValueODR>();
+                List<ValueODR> valsODR = new ArrayList();
                 for (Object obj : (Collection) value) {
                     ValueODR valODR = new ValueODR();
                     if (obj instanceof IEntity) {
@@ -387,7 +391,7 @@ public class EntityService implements IEntityService {
     private AttributeODR createDescriptionAttributeODR(IAttributeDef attrDef,
             Object descr) {
         if (descr instanceof Collection) {
-            List<ValueODR> valsODR = new ArrayList<ValueODR>();
+            List<ValueODR> valsODR = new ArrayList();
             for (Object obj : (Collection) descr) {
                 ValueODR valODR = new ValueODR();
                 valODR.setValue(descrToSemText(obj));
@@ -407,7 +411,7 @@ public class EntityService implements IEntityService {
 
     private StructureODR createStructure(IAttributeDef attrDef,
             HashMap<IAttributeDef, Object> atributes) {
-        List<Attribute> attrs = new ArrayList<Attribute>();
+        List<Attribute> attrs = new ArrayList();
         StructureODR attributeStructure = new StructureODR();
         logger.warn("Hardcoded entity base id 1");
         attributeStructure.setEntityBaseId(1L);
@@ -429,7 +433,7 @@ public class EntityService implements IEntityService {
 
         Attribute nAtr = new Attribute();
         nAtr.setDefinitionId(attrDef.getGUID());
-        List<Value> values = new ArrayList<Value>();
+        List<Value> values = new ArrayList();
 
         for (HashMap<IAttributeDef, Object> structMap : structs) {
             values.add(new Value(createStructure(attrDef, structMap)));
@@ -443,7 +447,7 @@ public class EntityService implements IEntityService {
     }
 
     public HashMap<String, Long> getVocabularies() {
-        HashMap<String, Long> mapVocabs = new HashMap<String, Long>();
+        HashMap<String, Long> mapVocabs = new HashMap();
         VocabularyClient vc = new VocabularyClient(api);
         List<Vocabulary> vocabs = vc.readVocabularies(1L, null, null);
         for (Vocabulary v : vocabs) {
@@ -461,7 +465,7 @@ public class EntityService implements IEntityService {
 
         Attribute nAtr = new Attribute();
         nAtr.setDefinitionId(attrDef.getGUID());
-        List<Value> values = new ArrayList<Value>();
+        List<Value> values = new ArrayList();
         values.add(new Value(name));
         nAtr.setValues(values);
         AttributeODR a = new AttributeODR(api, nAtr);
@@ -527,13 +531,13 @@ public class EntityService implements IEntityService {
             }
         }
 
-        List<Attribute> nameAttributes = new ArrayList<Attribute>();
+        List<Attribute> nameAttributes = new ArrayList();
 
         Attribute nameAttribute = new Attribute();
         nameAttribute.setDefinitionId(atrDefId);
-        nameAttribute.setConceptId(attrDef.getConcept().getGUID());
+        // 0.12 nameAttribute.setConceptId(attrDef.getConcept().getGUID());
 
-        List<Value> nameValues = new ArrayList<Value>();
+        List<Value> nameValues = new ArrayList();
         //Vocabularies 
 
         if (name instanceof Collection) {
@@ -548,7 +552,7 @@ public class EntityService implements IEntityService {
         nameAttributes.add(nameAttribute);
         nameStructure.setAttributes(nameAttributes);
 
-        List<Value> entityNameValues = new ArrayList<Value>();
+        List<Value> entityNameValues = new ArrayList();
 
         entityNameValues.add(new Value(nameStructure)); // here is your link to the name structure, if you want you can put the id copyOf the name instance (if you created it before) but make sure the data type is COMPLEX_TYPE
         entityNameAttribute.setValues(entityNameValues);
@@ -557,6 +561,7 @@ public class EntityService implements IEntityService {
 
     }
 
+    @Override
     public void updateAttributeValue(IEntity entity, IAttribute attribute,
             IValue newValue) {
         AttributeODR attr = (AttributeODR) attribute;
@@ -564,6 +569,7 @@ public class EntityService implements IEntityService {
 
     }
 
+    @Override
     public void updateEntity(IEntity entity) {
         EntityODR ent;
 
@@ -579,6 +585,7 @@ public class EntityService implements IEntityService {
         }
     }
 
+    @Override
     public EntityODR readEntity(String URL) {
 
         Long typeID;
@@ -592,6 +599,7 @@ public class EntityService implements IEntityService {
         return readEntity(typeID);
     }
 
+    @Override
     public String createEntityURL(IEntity entity) {
         Long id = createEntity(entity);
         return WebServiceURLs.entityIDToURL(id);
@@ -605,7 +613,7 @@ public class EntityService implements IEntityService {
 
         String filename = "test" + System.currentTimeMillis();
         EntityExportService ees = new EntityExportService();
-        List<Long> entitiesID = new ArrayList<Long>();
+        List<Long> entitiesID = new ArrayList();
 
         for (String entityURL : entityURLs) {
 
@@ -643,13 +651,14 @@ public class EntityService implements IEntityService {
                 bw.flush();
             }
         }
-        catch (IOException e) {
+        catch (IOException ex) {
 
-            e.printStackTrace();
+            throw new DisiClientException("Error while writing file!", ex);
         }
 
     }
 
+    @Override
     public void exportToJsonLd(List<String> entityURLs, Writer writer) throws DisiClientException {
 
         if (entityURLs.isEmpty()) {
@@ -658,7 +667,7 @@ public class EntityService implements IEntityService {
 
         String filename = "test" + System.currentTimeMillis();
         EntityExportService ees = new EntityExportService();
-        List<Long> entitiesID = new ArrayList<Long>();
+        List<Long> entitiesID = new ArrayList();
 
         for (String entityURL : entityURLs) {
             entitiesID.add(WebServiceURLs.urlToEntityID(entityURL));
@@ -693,6 +702,7 @@ public class EntityService implements IEntityService {
 
     }
 
+    @Override
     public void exportToCsv(List<String> entityURLs, Writer writer) {
         //TODO exportToCsv
         throw new UnsupportedOperationException("todo to implement");
@@ -713,12 +723,12 @@ public class EntityService implements IEntityService {
     }
 
     @Override
-    public List<ISearchResult> searchEntities(String partialName, @Nullable String etypeURL, Locale locale) {
+    public List<SearchResult> searchEntities(String partialName, @Nullable String etypeURL, Locale locale) {
                 
         logger.warn("TODO - SETTING ENTITY PARTIAL NAME TO LOWERCASE");
         String lowerCasepartialName = partialName.toLowerCase(locale);
         
-        List<ISearchResult> entities;
+        List<SearchResult> entities;
 
         Search search = new Search(disiEkb);
         entities = search.searchEntities(lowerCasepartialName, etypeURL, locale);
@@ -729,6 +739,7 @@ public class EntityService implements IEntityService {
     /* (non-Javadoc)
      * @see eu.trentorise.opendata.semantics.services.IEntityService#isTemporaryURL(java.lang.String)
      */
+    @Override
     public boolean isTemporaryURL(String entityURL) {
         return entityURL.contains("instances/new/");
     }

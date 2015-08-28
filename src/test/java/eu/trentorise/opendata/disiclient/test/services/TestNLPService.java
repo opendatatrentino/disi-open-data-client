@@ -13,7 +13,7 @@ import eu.trentorise.opendata.semtext.Meaning;
 import eu.trentorise.opendata.semtext.SemText;
 import eu.trentorise.opendata.semtext.Term;
 import eu.trentorise.opendata.semtext.MeaningKind;
-import eu.trentorise.opendata.semantics.services.model.ITermSearchResult;
+import eu.trentorise.opendata.semantics.services.TermSearchResult;
 import it.unitn.disi.sweb.core.nlp.model.NLEntityMeaning;
 import it.unitn.disi.sweb.core.nlp.model.NLText;
 import it.unitn.disi.sweb.core.nlp.model.NLToken;
@@ -157,10 +157,10 @@ public class TestNLPService {
     public void testRunBatchNLP() {
 
         List<SemText> output = nlpService.runNLP(PRODOTTI_CERTIFICATI_DESCRIPTIONS, null);
-        //		logger.debug(output.get(0).getSentences().get(0).terms().get(0).getMeanings().get(0).getURL());
-        //		logger.debug(output.get(0).getSentences().get(0).terms().get(0).getMeanings().get(0).getProbability());
-        //		logger.debug(output.get(0).getSentences().get(0).getStart());
-        //		logger.debug(output.get(0).getSentences().get(0).getEnd());
+        //		logger.debug(output.strs(0).getSentences().strs(0).terms().strs(0).getMeanings().strs(0).getURL());
+        //		logger.debug(output.strs(0).getSentences().strs(0).terms().strs(0).getMeanings().strs(0).getProbability());
+        //		logger.debug(output.strs(0).getSentences().strs(0).getStart());
+        //		logger.debug(output.strs(0).getSentences().strs(0).getEnd());
 
         assertEquals("it", output.get(0).getLocale().toLanguageTag().toString());
         assertEquals(0, output.get(0).getSentences().get(0).getStart());
@@ -344,7 +344,7 @@ public class TestNLPService {
         }
 
         assertEquals(0, nltxt.getSentences().get(0).getMultiWords().size());
-        // assertEquals(1, nltxt.getSentences().get(0).getNamedEntities().size()); // fails, finds 0
+        // assertEquals(1, nltxt.getSentences().strs(0).getNamedEntities().size()); // fails, finds 0
 
         SemText semText = disiNlpService.runNLP(inputText);
 
@@ -385,14 +385,14 @@ public class TestNLPService {
         for (NLToken tok : nltxt.getSentences().get(0).getTokens()) {
             assertTrue("tok '" + tok.getText() + "'should be used in named entity!", tok.isUsedInNamedEntity());
             assertTrue("tok '" + tok.getText() + "' is used in named entity, but has no named entities!", tok.getNamedEntities().size() > 0);
-            // there can be zero meanings... assertTrue(tok.getNamedEntities().get(0).getMeanings().size() > 0);
-            // NLEntityMeaning m = tok.getNamedEntities().get(0).getSelectedMeaning();
+            // there can be zero meanings... assertTrue(tok.getNamedEntities().strs(0).getMeanings().size() > 0);
+            // NLEntityMeaning m = tok.getNamedEntities().strs(0).getSelectedMeaning();
             // assertNotNull(m);            
 
         }
 
         assertEquals(0, nltxt.getSentences().get(0).getMultiWords().size());
-        // assertEquals(1, nltxt.getSentences().get(0).getNamedEntities().size()); // fails, finds 0
+        // assertEquals(1, nltxt.getSentences().strs(0).getNamedEntities().size()); // fails, finds 0
 
         SemText semText = disiNlpService.runNLP(inputText);
 
@@ -510,7 +510,7 @@ public class TestNLPService {
 
     @Test
     public void testFreeSearch() {
-        List<? extends ITermSearchResult> res = nlpService.freeSearch("restau", Locale.ENGLISH);
+        List<TermSearchResult> res = nlpService.freeSearch("restau", Locale.ENGLISH);
         assertTrue(res.size() > 0);
     }
 
@@ -534,31 +534,31 @@ public class TestNLPService {
 
     @Test
     public void testFreeSearchCapitalized() {        
-        List<? extends ITermSearchResult> res = nlpService.freeSearch("Restau", Locale.ENGLISH);
+        List<TermSearchResult> res = nlpService.freeSearch("Restau", Locale.ENGLISH);
         assertTrue(res.size() > 0);
     }
 
     @Test
     public void testFreeSearchMultiWord() {
-        List<? extends ITermSearchResult> res = nlpService.freeSearch("programming language", Locale.ENGLISH);
+        List<TermSearchResult> res = nlpService.freeSearch("programming language", Locale.ENGLISH);
         assertTrue(res.size() > 0);
     }
 
     @Test
     public void testFreeSearchIncompleteMultiWordConcept() {                
-        List<? extends ITermSearchResult> res = nlpService.freeSearch("programming langu", Locale.ENGLISH);
+        List<TermSearchResult> res = nlpService.freeSearch("programming langu", Locale.ENGLISH);
         assertTrue(res.size() > 0);
     }
 
     @Test
     public void testFreeSearchIncompleteMultiWordEntity() {                
-        List<? extends ITermSearchResult> res = nlpService.freeSearch("borgo valsu", Locale.ENGLISH);
+        List<TermSearchResult> res = nlpService.freeSearch("borgo valsu", Locale.ENGLISH);
         assertTrue(res.size() > 0);
     }
 
     @Test
     public void testFreeSearchWithSpaces() {
-        List<? extends ITermSearchResult> res = nlpService.freeSearch("  restau", Locale.ENGLISH);
+        List<TermSearchResult> res = nlpService.freeSearch("  restau", Locale.ENGLISH);
         assertTrue(res.size() > 0);
     }
 

@@ -14,7 +14,10 @@ import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IValue;
 
 /**
- * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
+ * 
+ * Dav 0.12 WARNING: removed conceptId, which was only used to convert to Attribute
+ * This could cause breakages.
+ * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it> 
  */
 public class AttributeODR implements IAttribute {
 
@@ -22,10 +25,9 @@ public class AttributeODR implements IAttribute {
     private List<IValue> values;
     private Long id;
     private IAttributeDef attrDef;
-    private Long attrDefId;
-    private Long conceptId;
+    private Long attrDefId;    
     private Long instanceID;
-
+        
     public AttributeODR() {
     }
 
@@ -34,9 +36,7 @@ public class AttributeODR implements IAttribute {
         if (attribute.getId() != null) {
             this.id = attribute.getId();
         }
-
-        this.attrDefId = attribute.getDefinitionId();
-        this.conceptId = attribute.getConceptId();
+        this.attrDefId = attribute.getDefinitionId();           
         this.instanceID = attribute.getInstanceId();
         this.values = convertToValueODR(attribute.getValues());
     }
@@ -45,7 +45,6 @@ public class AttributeODR implements IAttribute {
     public String toString() {
         return "AttributeODR [api=" + api + ", id=" + id
                 + ", attrDef=" + attrDef + ", attrDefId=" + attrDefId
-                + ", conceptId=" + conceptId
                 + ", instanceID=" + instanceID
                 + ", values=" + values
                 + "]";
@@ -57,10 +56,9 @@ public class AttributeODR implements IAttribute {
 
     public AttributeODR(IAttributeDef attrDef, ValueODR val) {
         this.attrDef = attrDef;
-        this.attrDefId = attrDef.getGUID();
-        this.conceptId = attrDef.getConcept().getGUID();
+        this.attrDefId = attrDef.getGUID();        
 
-        List<IValue> vals = new ArrayList<IValue>();
+        List<IValue> vals = new ArrayList();
         vals.add(val);
         this.values = vals;
 
@@ -68,10 +66,9 @@ public class AttributeODR implements IAttribute {
 
     public AttributeODR(IAttributeDef attrDef, List<ValueODR> val) {
         this.attrDef = attrDef;
-        this.attrDefId = attrDef.getGUID();
-        this.conceptId = attrDef.getConcept().getGUID();
+        this.attrDefId = attrDef.getGUID();        
 
-        List<IValue> vals = new ArrayList<IValue>();
+        List<IValue> vals = new ArrayList();
         vals.addAll(val);
         this.values = vals;
 
@@ -81,20 +78,21 @@ public class AttributeODR implements IAttribute {
         return id;
     }
 
+    @Override
     public IAttributeDef getAttributeDefinition() {
         if (this.attrDef == null) {
-            IAttributeDef attrDef = new AttributeDef(attrDefId);
-            return attrDef;
+            IAttributeDef ret = new AttributeDef(attrDefId);
+            return ret;
         } else {
             return this.attrDef;
         }
     }
 
+    @Override
     public void setAttributeDefinition(IAttributeDef ad) {
         //client side
         this.attrDef = ad;
-        this.attrDefId = attrDef.getGUID();
-        this.conceptId = attrDef.getConcept().getGUID();
+        this.attrDefId = attrDef.getGUID();        
 		//server side
         //	AttributeDef atrDef = (AttributeDef) ad;
         //	AttributeDefinition attrDef = atrDef.convertAttributeDefinition(); 
@@ -106,12 +104,13 @@ public class AttributeODR implements IAttribute {
         //	atClient.update(atr);
     }
 
+    @Override
     public void addValue(IValue value) {
         //client side
         if (this.values != null) {
             this.values.add(value);
         } else {
-            List<IValue> vals = new ArrayList<IValue>();
+            List<IValue> vals = new ArrayList();
             vals.add(value);
             this.values = vals;
 
@@ -126,6 +125,7 @@ public class AttributeODR implements IAttribute {
         //		attr.setValues(vals);
     }
 
+    @Override
     public void removeValue(long valueID) {
         //remove from server side
         AttributeClient attrCl = new AttributeClient(api);
@@ -133,43 +133,44 @@ public class AttributeODR implements IAttribute {
         Value atrVal = attrCl.readValue(attr.getId(), valueID, null);
         attrCl.delete(atrVal);
         //client side
-        ArrayList<IValue> values = (ArrayList<IValue>) this.values;
-        for (IValue val : values) {
+        ArrayList<IValue> vals = (ArrayList) this.values;
+        for (IValue val : vals) {
             if (val.getLocalID() == valueID) {
-                values.remove(val);
+                vals.remove(val);
                 return;
             }
-
         }
     }
 
+    @Override
     public List<IValue> getValues() {
         return this.values;
     }
 
+    @Override
     public IValue getFirstValue() {
         return this.values.iterator().next();
     }
 
+    @Override
     public Long getValuesCount() {
         return (long) values.size();
     }
 
     private List<IValue> convertToValueODR(List<Value> vals) {
     	
-        List<IValue> values = new ArrayList<IValue>();
+        List<IValue> ret = new ArrayList();
         for (Value val : vals) {
             ValueODR value = new ValueODR(val);
-            values.add(value);
+            ret.add(value);
             value.setVocabularyId(val.getVocabularyId());
         }
-        return values;
+        return ret;
     }
 
     public Attribute convertToAttribute() {
 
-        Attribute attribute = new Attribute();
-        attribute.setConceptId(this.conceptId);
+        Attribute attribute = new Attribute();        
         attribute.setId(this.id);
         attribute.setInstanceId(this.instanceID);
         attribute.setDefinitionId(this.attrDefId);
@@ -180,13 +181,13 @@ public class AttributeODR implements IAttribute {
 
     private List<Value> convertValuesList() {
         List<IValue> valuesODR = this.values;
-        List<Value> values = new ArrayList<Value>();
+        List<Value> vals = new ArrayList();
         for (IValue val : valuesODR) {
             ValueODR valODR = (ValueODR) val;
             Value value = valODR.convertToValue();
-            values.add(value);
+            vals.add(value);
         }
-        return values;
+        return vals;
     }
 
     public void updateValue(IValue newValue) {
@@ -202,8 +203,8 @@ public class AttributeODR implements IAttribute {
         }
 
         ValueODR val = (ValueODR) newValue;
-        Long id = attr.getValues().iterator().next().getId();
-        val.setId(id);
+        Long vid = attr.getValues().iterator().next().getId();
+        val.setId(vid);
 
         if (values.size() == 1) {
             values.remove(0);
@@ -217,6 +218,7 @@ public class AttributeODR implements IAttribute {
 
     }
 
+    @Override
     public Long getLocalID() {
         return this.id;
     }
@@ -228,6 +230,7 @@ public class AttributeODR implements IAttribute {
         return url;
     }
 
+    @Override
     public IAttributeDef getAttrDef() {
         return getAttributeDefinition();
     }

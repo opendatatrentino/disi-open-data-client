@@ -1,24 +1,33 @@
 package eu.trentorise.opendata.disiclient.test.services;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 
-import eu.trentorise.opendata.columnrecognizers.ColumnConceptCandidate;
-import eu.trentorise.opendata.columnrecognizers.ColumnRecognizer;
-import eu.trentorise.opendata.disiclient.model.entity.EntityType;
-import eu.trentorise.opendata.disiclient.services.EntityTypeService;
-import eu.trentorise.opendata.disiclient.services.model.SchemaCorrespondence;
-import eu.trentorise.opendata.disiclient.services.shematching.MatchingService;
 import eu.trentorise.opendata.disiclient.test.ConfigLoader;
+import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
+import eu.trentorise.opendata.semantics.services.IEkb;
+import eu.trentorise.opendata.semantics.services.SchemaMapping;
+import eu.trentorise.opendata.traceprov.data.DcatMetadata;
+import eu.trentorise.opendata.traceprov.types.ClassType;
+import eu.trentorise.opendata.traceprov.types.Def;
+import eu.trentorise.opendata.traceprov.types.ListType;
+import eu.trentorise.opendata.traceprov.types.StringType;
+import java.util.Locale;
+import org.junit.After;
 import org.junit.Before;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TestMatchingService {
+
+    private Logger LOG = LoggerFactory.getLogger(this.getClass());
+
+    private IEkb client;
 
     String resourceName = "IMPIANTI RISALITA";
 
@@ -99,49 +108,44 @@ public class TestMatchingService {
     @Before
     public void beforeMethod() {
         ConfigLoader.init();
+        client = ConfigLoader.init();
     }
+
+    @After
+    public void after() {
+        client = null;
+    }
+
+    /**
+     * TODO REVIEW this thing always sets property type to StringType ....
+     */
+    private ClassType etypeToClassType(IEntityType et) {
+        ClassType.Builder builder = ClassType.builder();
+        builder.setId(et.getURL());
+        for (IAttributeDef attrDef : et.getAttributeDefs()) {
+            String attrName = attrDef.getName().str(Locale.ENGLISH);
+            builder.putMethodDefs(attrName, Def.builder().setId(attrDef.getURL()).setType(StringType.of()).build());
+        }
+        return builder.build();
+    }
+
 
     @Test
     public void testMatchingService() {
-        MatchingService mService = new MatchingService();
-        EntityTypeService etypeService = new EntityTypeService();
-        List<IEntityType> etypeList = etypeService.getAllEntityTypes();
 
-        List<ColumnConceptCandidate> odrHeaders
-                = ColumnRecognizer.computeScoredCandidates(cols, bodies);
-        //	System.out.println(odrHeaders.get(1).toString());
-        for (IEntityType etype : etypeList) {
+        List<IEntityType> allEntityTypes = client.getEntityTypeService().getAllEntityTypes();
 
-            EntityType eType = (EntityType) etype;
+        for (IEntityType et : allEntityTypes) {
 
-            //List<IAttributeDef> attrs = eType.getAttributeDefs();
-            long conid = 2923L;
-            SchemaCorrespondence scCorr = (SchemaCorrespondence) mService.schemaMatch(eType, odrHeaders, conid);
-//			System.out.print(eType.getName().string(Locale.ENGLISH)+ "  ");
-//			System.out.print(scCorr.getScore());
-            assertNotNull(scCorr.getScore());
-            //	assertNotNull(scCorr.getAttributeCorrespondence());
-            assertNotNull(scCorr.getEtype());
+            ClassType classType = etypeToClassType(et);
+            
+            List<SchemaMapping> schemaMappings = client.getSchemaMatchingService().matchSchemas(DcatMetadata.of(),
+                    ListType.of(classType),null);
+            
+            assertEquals(allEntityTypes.size(), schemaMappings.size());
+            
+            LOG.warn("TODO MATCHING SERVICE NEEDS BETTER TESTING");
         }
-
-    }
-
-    @Test
-    public void testConceptFromText() {
-
-        String resourceName = "impianti risalita";
-
-        Long conceptID = ColumnRecognizer.conceptFromText(resourceName);
-        assertNotNull(conceptID);
-
-    }
-
-    @Test
-    public void testGetConceptDistance() {
-        MatchingService mService = new MatchingService();
-        float scoreDist = mService.getConceptsDistance(33292L, 2L);
-        //	System.out.println(scoreDist);
-        assertEquals(0, scoreDist, 0.1);
     }
 
 }

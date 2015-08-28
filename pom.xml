@@ -90,6 +90,14 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>        
+                    
             </plugin>            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -156,7 +164,7 @@
         <dependency>
             <groupId>it.unitn.disi.sweb</groupId>
             <artifactId>sweb-webapi-kb-client</artifactId>
-            <version>3.0.1-SNAPSHOT</version>
+            <version>3.0.1-RELEASE</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.httpcomponents</groupId>
@@ -167,7 +175,7 @@
         <dependency>
             <groupId>it.unitn.disi.sweb</groupId>
             <artifactId>sweb-webapi-eb-client</artifactId>
-            <version>3.0.1-SNAPSHOT</version>
+            <version>3.0.1-RELEASE</version>
             <exclusions>                            
                 <exclusion>
                     <groupId>it.unitn.disi.sweb</groupId>
@@ -183,6 +191,10 @@
                 <exclusion>
                     <groupId>it.unitn.disi.sweb</groupId>
                     <artifactId>sweb-webapi-commons-client</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>it.unitn.disi.sweb</groupId>
+                    <artifactId>sweb-webapi-eb-model</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -260,6 +272,13 @@
             </exclusions>            
         </dependency>    
         
+        <dependency>
+            <groupId>eu.trentorise.opendata</groupId>
+            <artifactId>opendata-schema-matcher</artifactId>            
+            <version>0.1.0-SNAPSHOT</version>
+        </dependency>         
+        
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

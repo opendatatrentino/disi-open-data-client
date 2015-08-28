@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.github.jsonldjava.core.JsonLdError;
 import com.github.jsonldjava.core.JsonLdProcessor;
 import com.github.jsonldjava.utils.JsonUtils;
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
 import eu.trentorise.opendata.disiclient.services.EntityExportService;
 import eu.trentorise.opendata.disiclient.services.EntityService;
@@ -30,7 +32,6 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import eu.trentorise.opendata.disiclient.test.ConfigLoader;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import org.apache.commons.io.FileUtils;
 import static org.junit.Assert.assertEquals;
 
 import static org.junit.Assert.assertNotNull;
@@ -55,7 +56,7 @@ public class EntityExportServiceTest {
     @Before
     public void beforeMethod() {
         ConfigLoader.init();
-        entities = new ArrayList<String>();
+        entities = new ArrayList();
         entities.add(TestEntityService.ANDALO_URL);
         entities.add(TestEntityService.RAVAZZONE_URL);
         entities.add(TestEntityService.PALAZZETTO_URL);
@@ -99,7 +100,7 @@ public class EntityExportServiceTest {
         assertNotNull(br.readLine());
         br.close();
         
-        String jsonld = FileUtils.readFileToString(file);
+        String jsonld =  Files.toString(file, Charsets.UTF_8);
                 
         ObjectMapper om = new ObjectMapper();
         JsonNode node = om.readTree(jsonld);
