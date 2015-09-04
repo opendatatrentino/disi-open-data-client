@@ -112,7 +112,7 @@ public class DisiEkb implements IEkb {
         this.knowledgeService = new KnowledgeService();
         this.identityService = new IdentityService();
         this.schemaMatchingService = new MatchingService(this);
-        this.entityService = new EntityService();
+        this.entityService = new EntityService(this);
         
         // disi specific
         this.searchService = new Search();

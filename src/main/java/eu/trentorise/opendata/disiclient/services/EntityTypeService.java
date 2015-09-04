@@ -35,10 +35,10 @@ import eu.trentorise.opendata.semantics.services.IEntityTypeService;
 import eu.trentorise.opendata.semantics.services.SearchResult;
 import eu.trentorise.opendata.commons.OdtUtils;
 import eu.trentorise.opendata.disiclient.DisiClients;
+import eu.trentorise.opendata.semantics.exceptions.NotFoundException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 
 /**
@@ -61,10 +61,10 @@ public class EntityTypeService implements IEntityTypeService {
 
     // todo it's static, but it shouldn't be...
     private static final LoadingCache<Long, AttributeDef> attrDefCache = CacheBuilder.newBuilder()
-            .maximumSize(CACHE_SIZE)
-            // todo think about removal .removalListener(MY_LISTENER)
+            .maximumSize(CACHE_SIZE)            
             .build(
                     new CacheLoader<Long, AttributeDef>() {
+                        
                         @Override
                         public AttributeDef load(Long id) {
                             LOG.info("Couldn't find attrdef with id " + id + " in cache, fetching it....");
@@ -77,8 +77,7 @@ public class EntityTypeService implements IEntityTypeService {
 
     // todo it's static, but it shouldn't be...
     private static final LoadingCache<Long, EntityType> etypesCacheById = CacheBuilder.newBuilder()
-            .maximumSize(CACHE_SIZE)            
-            // todo think about removal .removalListener(MY_LISTENER)
+            .maximumSize(CACHE_SIZE)                        
             .build(
                     new CacheLoader<Long, EntityType>() {
                         @Override
@@ -136,12 +135,19 @@ public class EntityTypeService implements IEntityTypeService {
         if (complexTypes.size() > 1) {
             LOG.warn("There are " + complexTypes.size() + " Entity types for a given concept. The first one will be returned!.");
         } 
+              
         // double read so we read all attr defs properly.
-        return etypesCacheById.getUnchecked(complexType.getId());
+        return readEntityType(complexType.getId());
     }
 
     public EntityType readEntityType(long id) {
-        return etypesCacheById.getUnchecked(id);
+        EntityType cached = etypesCacheById.getIfPresent(id);
+        if (cached == null){
+            return etypesCacheById.getUnchecked(id);
+        } else {
+            LOG.info("Requested etype with id " + id + " was found in client cache.");
+            return cached;
+        }
 
     }
 
@@ -249,7 +255,7 @@ public class EntityTypeService implements IEntityTypeService {
             LOG.info("Finished populating etypes cache.");
             lastPopulation = new Timestamp(new Date().getTime());
         } else {
-            LOG.warn("GIVING BACK ALL ETYPES LIST WITHOUT CHECKING STALE ONES!");
+            LOG.warn("RETURNING CACHED ETYPES LIST WITHOUT CHECKING STALE ONES!");
         }
         ConcurrentMap<Long, EntityType> retMap = etypesCacheById.asMap();
         return new ArrayList(retMap.values());
@@ -261,7 +267,13 @@ public class EntityTypeService implements IEntityTypeService {
     }
 
     public AttributeDef readAttrDef(Long id) {
-        return attrDefCache.getUnchecked(id);
+        AttributeDef cached = attrDefCache.getIfPresent(id);
+        if (cached == null){
+            return attrDefCache.getUnchecked(id);
+        } else {
+            LOG.info("Requested attrDef with id " + id + " was found in client cache.");
+            return cached;
+        }        
     }
 
     @Override
@@ -278,8 +290,7 @@ public class EntityTypeService implements IEntityTypeService {
                 return etype;
             }
         }
-        LOG.error("COULDN'T FIND ROOT STRUCTURE!!!!!!   RETURNING NULL  - TODO SHOULD THROW EXCEPTION");
-        return null;
+        throw new NotFoundException("Couldn't find root structure!");
     }
 
     @Override
@@ -290,8 +301,7 @@ public class EntityTypeService implements IEntityTypeService {
                 return etype;
             }
         }
-        LOG.error("COULDN'T FIND ROOT ETYPE!!!!!!   RETURNING NULL  - TODO SHOULD THROW EXCEPTION");
-        return null;
+        throw new NotFoundException("Couldn't find root structure!");
 
     }
 

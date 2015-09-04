@@ -7,10 +7,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import eu.trentorise.opendata.disiclient.test.ConfigLoader;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
-import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.SchemaMapping;
 import eu.trentorise.opendata.traceprov.data.DcatMetadata;
 import eu.trentorise.opendata.traceprov.types.ClassType;
@@ -18,8 +16,6 @@ import eu.trentorise.opendata.traceprov.types.Def;
 import eu.trentorise.opendata.traceprov.types.ListType;
 import eu.trentorise.opendata.traceprov.types.StringType;
 import java.util.Locale;
-import org.junit.After;
-import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

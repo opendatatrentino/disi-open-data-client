@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import eu.trentorise.opendata.disiclient.DisiClientException;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.KnowledgeService;
@@ -28,6 +27,7 @@ import eu.trentorise.opendata.disiclient.DisiClients;
 import static eu.trentorise.opendata.disiclient.services.KnowledgeService.CONTACT_CONCEPT_ID;
 import static eu.trentorise.opendata.disiclient.services.KnowledgeService.PART_OF_CONCEPT_ID1;
 import eu.trentorise.opendata.disiclient.services.NLPService;
+import eu.trentorise.opendata.semantics.exceptions.NotFoundException;
 import eu.trentorise.opendata.semtext.SemText;
 import it.unitn.disi.sweb.webapi.model.eb.Structure;
 
@@ -226,13 +226,14 @@ public class StructureODR extends Instance implements IStructure {
 
     @Override
     public IAttribute getAttribute(String attrDefURL) {
+        
         List<IAttribute> attributes = getStructureAttributes();
         for (IAttribute attribute : attributes) {
             if (attribute.getAttrDefUrl().equals(attrDefURL)) {
                 return attribute;
             }
         }
-        throw new DisiClientException("There is no attribute having attributeDef URL: " + attrDefURL + " in the structure with URL " + getUrl());
+        throw new NotFoundException("There is no attribute having attributeDef URL: " + attrDefURL + " in the structure with URL " + getUrl());
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.google.common.cache.LoadingCache;
 import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
 import eu.trentorise.opendata.disiclient.DisiClientException;
 import eu.trentorise.opendata.disiclient.DisiClients;
+import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
 import it.unitn.disi.sweb.webapi.client.kb.ConceptClient;
 import it.unitn.disi.sweb.webapi.model.kb.concepts.Concept;
 
@@ -38,11 +39,11 @@ public class KnowledgeService implements IKnowledgeService {
     private static final long ROOT_GLOBAL_CONCEPT_ID = 1L;
     public static final long DESCRIPTION_CONCEPT_ID = 3L;
     public static final long DESCRIPTION_GLOBAL_CONCEPT_ID = 3L;
-    
+
     public static final Long PART_OF_CONCEPT_ID1 = 5l;
-    public static final Long PART_OF_CONCEPT_ID2 = 22l;  
+    public static final Long PART_OF_CONCEPT_ID2 = 22l;
     public static final long CONTACT_CONCEPT_ID = 111001;
-    
+
     private static final int CACHE_SIZE = 1000;
     private final LoadingCache<Long, ConceptODR> conceptCacheById;
     private final LoadingCache<Long, ConceptODR> conceptCacheByGuid;
@@ -111,12 +112,25 @@ public class KnowledgeService implements IKnowledgeService {
 
     public ConceptODR readConceptById(Long conceptId) {
         checkNotNull(conceptId);
-        return conceptCacheById.getUnchecked(conceptId);
+        ConceptODR cached = conceptCacheById.getIfPresent(conceptId);
+        if (cached == null) {
+            return conceptCacheById.getUnchecked(conceptId);
+        } else {
+            LOG.info("Requested concept with id " + conceptId + " was found in client cache.");
+            return cached;
+        }
+
     }
 
     public ConceptODR readConceptByGuid(Long conceptGuid) {
         checkNotNull(conceptGuid);
-        return conceptCacheByGuid.getUnchecked(conceptGuid);
+        ConceptODR cached = conceptCacheByGuid.getIfPresent(conceptGuid);
+        if (cached == null) {
+            return conceptCacheByGuid.getUnchecked(conceptGuid);
+        } else {
+            LOG.info("Requested concept with id " + conceptGuid + " was found in client cache.");
+            return cached;
+        }
     }
 
     @Override

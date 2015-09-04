@@ -64,7 +64,7 @@ public class EntityService implements IEntityService {
     @Nullable
     private InstanceClient instanceClient;
 
-    EntityService() {
+    private EntityService() {
     }
 
     private InstanceClient getInstanceClient() {

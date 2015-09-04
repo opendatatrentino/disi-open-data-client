@@ -1,7 +1,6 @@
 package eu.trentorise.opendata.disiclient.test.services;
 
 import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
-import eu.trentorise.opendata.disiclient.UrlMapper;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
@@ -10,7 +9,6 @@ import eu.trentorise.opendata.disiclient.model.entity.StructureODR;
 import eu.trentorise.opendata.disiclient.model.entity.ValueODR;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.disiclient.services.EntityService;
-import eu.trentorise.opendata.semantics.Checker;
 import eu.trentorise.opendata.commons.NotFoundException;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
@@ -18,13 +16,10 @@ import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IStructure;
 import eu.trentorise.opendata.semantics.model.entity.IValue;
 import eu.trentorise.opendata.semtext.SemText;
-import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.IEntityService;
 import eu.trentorise.opendata.semantics.services.SearchResult;
 import eu.trentorise.opendata.commons.OdtUtils;
-import eu.trentorise.opendata.disiclient.test.ConfigLoader;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
-import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
 import it.unitn.disi.sweb.webapi.client.eb.EbClient;
 import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
@@ -537,6 +532,7 @@ public class EntityServiceIT extends DisiTest {
         
         a.addValue(val);
 
+        en.setURL(null);
         IEntity ent = EntityODR.disify(en, true);
         assertNotNull(ent);        
         String URL = null;

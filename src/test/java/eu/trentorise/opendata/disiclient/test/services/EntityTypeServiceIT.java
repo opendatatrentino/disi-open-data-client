@@ -13,15 +13,11 @@ import org.junit.Test;
 import eu.trentorise.opendata.disiclient.model.entity.EntityType;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
-import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.SearchResult;
 import eu.trentorise.opendata.commons.OdtUtils;
-import eu.trentorise.opendata.disiclient.test.ConfigLoader;
 import static eu.trentorise.opendata.disiclient.test.services.EntityServiceIT.FACILITY_URL;
-import eu.trentorise.opendata.semantics.Checker;
 import eu.trentorise.opendata.semantics.services.IEntityTypeService;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 
 /**
@@ -87,13 +83,15 @@ public class EntityTypeServiceIT extends DisiTest {
     }
 
     @Test
-    public void testReadRootsTypes() {
+    public void testReadRootTypes() {
         
-        assertEquals("Entity", ets.readRootEtype().getName().string(Locale.ENGLISH));
-        checker.checkEtype(ets.readRootEtype());
-        assertEquals("Structure", ets.readRootStructure().getName().string(Locale.ENGLISH));
+        IEntityType rootEtype = ets.readRootEtype();                
+        assertEquals("Entity", rootEtype.getName().string(Locale.ENGLISH));        
+        checker.checkEtype(rootEtype);
+        
+        IEntityType rootStructure = ets.readRootStructure();        
+        assertEquals("Structure", rootStructure.getName().string(Locale.ENGLISH));
         checker.checkEtype(ets.readRootStructure());
-
     }
 
     @Test
@@ -101,11 +99,8 @@ public class EntityTypeServiceIT extends DisiTest {
         
         List<IEntityType> etypes = ets.readAllEntityTypes();
         for (IEntityType etype : etypes) {
-            //System.out.println(etype.getName());
-            //System.out.println(etype.getURL());
             IEntityType et = ets.readEntityType(etype.getURL());
-            checker.checkEtype(et);
-            //	System.out.println(et.getName());
+            checker.checkEtype(et);       
             assertNotNull(et);
         }
     }

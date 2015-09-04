@@ -136,7 +136,8 @@ public abstract class DisiTest {
     public static final long ATTR_DEF_CLASS_CONCEPT_ID = 42806L;
     public static final String ATTR_DEF_CLASS_URL = um.attrDefIdToUrl(ATTR_DEF_CLASS, ATTR_DEF_CLASS_CONCEPT_ID);
     public static final long ATTR_DEF_DESCRIPTION = 62L;
-    public static final String ATTR_DEF_DESCRIPTION_URL = um.attrDefIdToUrl(ATTR_DEF_DESCRIPTION, ATTR_DEF_CLASS_CONCEPT_ID);
+    public static final long ATTR_DEF_DESCRIPTION_CONCEPT_ID = 3L;
+    public static final String ATTR_DEF_DESCRIPTION_URL = um.attrDefIdToUrl(ATTR_DEF_DESCRIPTION, ATTR_DEF_DESCRIPTION_CONCEPT_ID);
 
     public static final long ATTR_DEF_PART_OF = 60L;
     public static final long ATTR_DEF_PART_OF_CONCEPT_ID = 5L;
