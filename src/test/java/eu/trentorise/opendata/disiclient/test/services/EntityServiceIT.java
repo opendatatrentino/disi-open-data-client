@@ -81,14 +81,14 @@ public class EntityServiceIT extends DisiTest {
     }
 
     @Test
-    public void testPalazzettoReadNameEtype() {        
+    public void testReadPalazzettoNameEtype() {        
 
         EntityODR entity = (EntityODR) ekb.getEntityService().readEntity(PALAZZETTO_URL);
         logger.info("\n\n *************   entity Palazzetto (" + PALAZZETTO_URL + ") ***************** \n\n" + entity);
         IAttributeDef nameAttrDef = entity.getEtype().getNameAttrDef();
         IStructure nameValue = (IStructure) entity.getAttribute(nameAttrDef.getURL()).getValues().get(0).getValue();
 
-        assertTrue(nameValue.getEtypeURL() != null);
+        checker.checkStructure(nameValue);        
 
         assertTrue(entity.getName().string(Locale.ITALIAN).length() > 0);
         // assertTrue(entity.getDescription().getString(Locale.ITALIAN).length() > 0);
@@ -96,7 +96,7 @@ public class EntityServiceIT extends DisiTest {
     }
 
     @Test
-    public void testPalazzettoRead() {        
+    public void testReadPalazzetto() {        
 
         EntityODR entity = (EntityODR) ekb.getEntityService().readEntity(PALAZZETTO_URL);
         logger.info("\n\n *************   entity Palazzetto (" + PALAZZETTO_URL + ") ***************** \n\n" + entity);
@@ -114,7 +114,7 @@ public class EntityServiceIT extends DisiTest {
 
     @Test
     public void testReadNonExistingEntity() {        
-        assertEquals(ekb.getEntityService().readEntity("http://blabla.com"), null);
+        assertEquals(ekb.getEntityService().readEntity(um.entityIdToUrl(10000000000000000L)), null);
     }
 
     /**
@@ -138,11 +138,10 @@ public class EntityServiceIT extends DisiTest {
     @Test
     public void testUpdateNonExistingEntity() {
         EntityODR entity = new EntityODR();        
-        IEntityService es = ekb.getEntityService();
         entity.setEntityAttributes(new ArrayList<IAttribute>());
         entity.setEtype(ekb.getEntityTypeService().readEntityType(FACILITY_URL));
         entity.setEntityBaseId(1L);
-        entity.setURL("http://blabla.org");
+        entity.setURL(um.entityIdToUrl(10000000000000000L));
         try {
             enServ.updateEntity(entity);
             fail("Should have failed while updating non existing entity!");
@@ -224,6 +223,7 @@ public class EntityServiceIT extends DisiTest {
             entityURL = enServ.createEntityURL(entityToCreate);
 
             EntityBase ebafter = ebc.readEntityBase(1L, null);
+            
             int instanceNumAfter = ebafter.getInstancesNumber();
             assertEquals(instanceNum + 1, instanceNumAfter);
         }
@@ -468,6 +468,9 @@ public class EntityServiceIT extends DisiTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
+    /**
+     * TODO REVIEW - MOST TEST IS COMMENTED!
+     */
     @Test
     public void createNameStructure() {
 
@@ -487,10 +490,7 @@ public class EntityServiceIT extends DisiTest {
         }
     }
 
-    @Test
-    public void testReadEntity_2() {        
-        enServ.readEntity(RAVAZZONE_URL);
-    }
+
 
     IEntityType readEtype(IEntity en){
         return ekb.getEntityTypeService().readEntityType(en.getEtypeURL());
@@ -521,6 +521,12 @@ public class EntityServiceIT extends DisiTest {
 
     }
 
+    @Test
+    public void testReadRavazzone() {        
+        IEntity en = enServ.readEntity(RAVAZZONE_URL);
+        checker.checkEntity(en);
+    }    
+    
     @Test
     public void testDisify() {
         

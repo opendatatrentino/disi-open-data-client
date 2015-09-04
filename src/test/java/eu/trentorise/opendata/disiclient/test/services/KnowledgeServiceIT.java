@@ -45,18 +45,20 @@ public class KnowledgeServiceIT extends DisiTest {
     public void testReadConcept() {
         
         IConcept con = kserv.readConcept(CONCEPT_3_URL);
+        checker.checkConcept(con);
         assertEquals(con.getURL(), CONCEPT_3_URL);
     }
 
     @Test
     public void testReadNonExistingConcept() {        
         IConcept con = kserv.readConcept("blabla");
-        assertEquals(con, null);
+        assertEquals( null, con);
     }
 
     @Test
     public void testGetRootConcept() {
         IConcept concept = kserv.readRootConcept();
+        checker.checkConcept(concept);
         assertNotEquals(concept.getURL(), null);
     }
 
@@ -90,7 +92,7 @@ public class KnowledgeServiceIT extends DisiTest {
 
     @Test
     public void testCapitalizedConcept() {
-        List<SearchResult> res = kserv.searchConcepts("Vacation", Locale.ENGLISH);
+        List<SearchResult> res = kserv.searchConcepts("Vacation", Locale.ENGLISH);        
         assertTrue(res.size() > 0);
     }
 
@@ -108,7 +110,7 @@ public class KnowledgeServiceIT extends DisiTest {
 
     @Test
     public void testSearchMultiWordConcept() {
-        List<SearchResult> res = kserv.searchConcepts("programming language", Locale.ENGLISH);
+        List<SearchResult> res = kserv.searchConcepts("programming language", Locale.ENGLISH);        
         assertTrue(res.size() > 0);
     }
 
@@ -130,7 +132,7 @@ public class KnowledgeServiceIT extends DisiTest {
     @Test
     public void testLocalGlobalConceptId(){
         
-        SwebClientCrap.readConceptGUID(1);
+        assertTrue(SwebClientCrap.readConceptGUID(1) > 0);
     }
 
 }

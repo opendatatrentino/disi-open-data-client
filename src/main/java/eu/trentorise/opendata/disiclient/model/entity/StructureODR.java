@@ -80,6 +80,7 @@ public class StructureODR extends Instance implements IStructure {
         EntityService es = DisiClients.getSingleton().getEntityService();
         //++++++++++++++
         for (Attribute at : attributes) {
+            
             if (at.getConceptId() == null) {
                 continue;
             } else if (at.getConceptId() == KnowledgeService.DESCRIPTION_CONCEPT_ID) {
