@@ -16,6 +16,7 @@ import org.junit.Test;
 import eu.trentorise.opendata.columnrecognizers.ColumnConceptCandidate;
 import eu.trentorise.opendata.columnrecognizers.ColumnRecognizer;
 import eu.trentorise.opendata.disiclient.test.ConfigLoader;
+import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.FACILITY_URL;
 import eu.trentorise.opendata.schemamatcher.implementation.model.SchemaMatcherException;
 import eu.trentorise.opendata.schemamatcher.implementation.services.SchemaImport;
 import eu.trentorise.opendata.schemamatcher.implementation.services.SchemaMatcherFactory;
@@ -23,9 +24,9 @@ import eu.trentorise.opendata.schemamatcher.model.ISchema;
 import eu.trentorise.opendata.schemamatcher.model.ISchemaCorrespondence;
 import eu.trentorise.opendata.schemamatcher.model.ISchemaElement;
 import eu.trentorise.opendata.schemamatcher.model.ISchemaMatcher;
-import eu.trentorise.opendata.schemamatcher.util.SwebClientCrap;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.services.IEkb;
+import org.junit.After;
 
 public class TestSimpleSchemaMatcher {
 
@@ -39,9 +40,14 @@ public class TestSimpleSchemaMatcher {
     
     @Before
     public void readEtype() {        
-        ekb = ConfigLoader.init();
-        String etypeUrl = SwebClientCrap.etypeIDToURL(12L);
-        etype = ekb.getEntityTypeService().readEntityType(etypeUrl);
+        ekb = ConfigLoader.init();        
+        etype = ekb.getEntityTypeService().readEntityType(FACILITY_URL);
+    }
+    
+    @After
+    public void after(){
+        ekb = null;
+        etype = null;
     }
 
     @Test

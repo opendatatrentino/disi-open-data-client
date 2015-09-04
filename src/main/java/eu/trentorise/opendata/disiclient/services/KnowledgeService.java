@@ -1,5 +1,10 @@
 package eu.trentorise.opendata.disiclient.services;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
 import eu.trentorise.opendata.disiclient.DisiClientException;
 import eu.trentorise.opendata.disiclient.DisiClients;
 import it.unitn.disi.sweb.webapi.client.kb.ConceptClient;
@@ -17,6 +22,8 @@ import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
 import eu.trentorise.opendata.semantics.services.IKnowledgeService;
 import eu.trentorise.opendata.semantics.services.SearchResult;
+import java.util.concurrent.TimeUnit;
+import javax.annotation.Nullable;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
@@ -27,92 +34,109 @@ public class KnowledgeService implements IKnowledgeService {
 
     private static final Logger LOG = LoggerFactory.getLogger(KnowledgeService.class);
 
-    private static final long ROOT_CONCEPT_ID = 1;
+    private static final long ROOT_CONCEPT_ID = 1L;
+    private static final long ROOT_GLOBAL_CONCEPT_ID = 1L;
     public static final long DESCRIPTION_CONCEPT_ID = 3L;
-    public static final long PARTOF_CONCEPT_ID = 3L;
-    //	public List<IConcept> getConcepts(List<Long> GUIDs) {
-    //		List<IConcept> iconcepts = new ArrayList<IConcept>();
-    //
-    //		for (Long guid :GUIDs){
-    //			ConceptODR con = new ConceptODR();
-    //			con = con.readConceptGlobalID(guid);
-    //			iconcepts.add(con);
-    //		}
-    //		return iconcepts;
-    //	}
+    public static final long DESCRIPTION_GLOBAL_CONCEPT_ID = 3L;
 
-    @Override
-    public IConcept getConcept(String URL) {
+    private static final int CACHE_SIZE = 1000;
+    private final LoadingCache<Long, ConceptODR> conceptCacheById;
+    private final LoadingCache<Long, ConceptODR> conceptCacheByGuid;
 
-        Long conceptId;
+    KnowledgeService() {
 
-        String s;
-        try {
-            s = URL.substring(URL.indexOf("ts/") + 3);
-        }
-        catch (Exception e) {
-            return null;
+        conceptCacheByGuid = CacheBuilder.newBuilder()
+                .maximumSize(CACHE_SIZE)
+                .expireAfterWrite(0, TimeUnit.MINUTES)
+                // todo think about removal .removalListener(MY_LISTENER)
+                .build(
+                        new CacheLoader<Long, ConceptODR>() {
+                            @Nullable
+                            @Override
+                            public ConceptODR load(Long conceptGuid) {
+                                LOG.info("Couldn't find concept with global id " + conceptGuid + " in cache, fetching it.");
+                                ConceptClient client = new ConceptClient(SwebConfiguration.getClientProtocol());
+                                LOG.warn("todo - fixed entity Base = 1");
+                                List<Concept> concepts = client.readConcepts(1L, conceptGuid, null, null, null, null);
+                                if (concepts.isEmpty()) {
+                                    return null;
+                                } else {
+                                    if (concepts.size() > 1) {
+                                        LOG.warn("todo - only the first concept is returned. The number of returned concepts were: " + concepts.size());
+                                    }
+                                    Concept conc = concepts.get(0);
+                                    ConceptODR conceptODR = new ConceptODR(conc);
+                                    conceptCacheById.put(conc.getId(), conceptODR);
+                                    return conceptODR;
+                                }
 
-            //throw new DisiClientException("Wrong Concept URL!");
-        }
+                            }
+                        });
+        conceptCacheById = CacheBuilder.newBuilder()
+                .maximumSize(CACHE_SIZE)
+                .expireAfterWrite(0, TimeUnit.MINUTES)
+                // todo think about removal .removalListener(MY_LISTENER)
+                .build(
+                        new CacheLoader<Long, ConceptODR>() {
+                            @Nullable
+                            @Override
+                            public ConceptODR load(Long conceptId) {
+                                LOG.info("Couldn't find concept with id " + conceptId + " in cache, fetching it.");
+                                ConceptClient client = new ConceptClient(SwebConfiguration.getClientProtocol());
+                                Concept conc = client.readConcept(conceptId, false);
+                                if (conc == null) {
+                                    return null;
+                                } else {
+                                    ConceptODR conceptODR = new ConceptODR(conc);
+                                    conceptCacheByGuid.put(conc.getGlobalId(), conceptODR);
+                                    return conceptODR;
+                                }
 
-        try {
-            conceptId = Long.parseLong(s);
-        }
-        catch (Exception e) {
-            return null;
-
-            //throw new DisiClientException("Wrong concept ID!");
-        }
-
-        ConceptODR concept = new ConceptODR();
-        concept = concept.readConcept(conceptId);
-
-        return concept;
+                            }
+                        });
     }
 
     @Override
-    public List<IConcept> getConcepts(List<String> URLs) {
+    public List<IConcept> readConcepts(List<String> urls) {
         List<IConcept> concepts = new ArrayList();
 
-        for (String url : URLs) {
-            IConcept c = getConcept(url);
+        for (String url : urls) {
+            IConcept c = readConcept(url);
             concepts.add(c);
         }
         return concepts;
     }
 
-    @Override
-    public IConcept getRootConcept() {
-        ConceptODR concept = new ConceptODR();
-        concept = concept.readConcept(ROOT_CONCEPT_ID);
-        return concept;
+    public ConceptODR readConceptById(Long conceptId) {
+        checkNotNull(conceptId);
+        return conceptCacheById.getUnchecked(conceptId);
+    }
+
+    public ConceptODR readConceptByGuid(Long conceptGuid) {
+        checkNotNull(conceptGuid);
+        return conceptCacheByGuid.getUnchecked(conceptGuid);
     }
 
     @Override
-    public List<IConcept> readConcepts(List<String> URLs) {
-        return getConcepts(URLs);
-    }
-
-    @Override
-    public IConcept readConcept(String URL) {
-        return getConcept(URL);
+    public IConcept readConcept(String url) {
+        return readConceptById(SwebConfiguration.getUrlMapper().conceptUrlToId(url));
     }
 
     @Override
     public IConcept readRootConcept() {
-        return getRootConcept();
+        return readConcept(SwebConfiguration.getUrlMapper().conceptIdToUrl(ROOT_CONCEPT_ID));
     }
 
     @Override
-    public List<SearchResult> searchConcepts(String partialName, Locale locale) {
+    public List<SearchResult> searchConcepts(String partialName, Locale locale
+    ) {
 
         LOG.warn("TODO - SETTING CONCEPT PARTIAL NAME TO LOWERCASE");
         String lowerCasePartialName = partialName.toLowerCase(locale);
 
         List<SearchResult> conceptRes = new ArrayList();
 
-        ConceptClient client = new ConceptClient(WebServiceURLs.getClientProtocol(locale));
+        ConceptClient client = new ConceptClient(SwebConfiguration.getClientProtocol());
         LOG.warn("Knowledge base is set to default (1)");
         List<Concept> concepts = client.readConcepts(1L, null, lowerCasePartialName, null, null, null);
 
@@ -125,12 +149,12 @@ public class KnowledgeService implements IKnowledgeService {
         return conceptRes;
     }
 
-    
     /**
      * The maximum distance between two concepts todo super arbitrary number
-     * @return 
+     *
+     * @return
      */
-    public int getConceptHierarchyDiameter(){        
+    public int getConceptHierarchyDiameter() {
         return 50;
     }
 
@@ -145,13 +169,13 @@ public class KnowledgeService implements IKnowledgeService {
         if ((source < 0) || (target < 0)) {
             throw new IllegalArgumentException("Invalid concept ids: source " + source + ", target " + target);
         }
-        ConceptClient cClient = new ConceptClient(WebServiceURLs.getClientProtocol());
-        Integer distanceInteger = cClient.getDistanceUsingLca(source, target);        
+        ConceptClient cClient = new ConceptClient(SwebConfiguration.getClientProtocol());
+        Integer distanceInteger = cClient.getDistanceUsingLca(source, target);
         if (distanceInteger == null) {
             throw new DisiClientException("Server returned null distance between concepts!");
-        }       
+        }
         int distanceInt = (int) distanceInteger;
-        if (distanceInt < 0){
+        if (distanceInt < 0) {
             return 1.0;
         }
         if (Math.abs(distanceInt) == 1) {
@@ -159,12 +183,11 @@ public class KnowledgeService implements IKnowledgeService {
         }
         return distanceInt * 1.0 / getConceptHierarchyDiameter();
     }
-  
 
     @Override
     public double getConceptsDistance(String sourceUrl, String targetUrl) {
-        return getConceptsDistance(WebServiceURLs.urlToConceptID(sourceUrl),
-                WebServiceURLs.urlToConceptID(sourceUrl));
+        return getConceptsDistance(SwebConfiguration.getUrlMapper().conceptUrlToId(sourceUrl),
+                SwebConfiguration.getUrlMapper().conceptUrlToId(sourceUrl));
     }
 
 }

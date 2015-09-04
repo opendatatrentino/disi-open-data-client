@@ -5,29 +5,30 @@ import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityType;
-import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.disiclient.services.EntityService;
-import eu.trentorise.opendata.disiclient.services.EntityTypeService;
-import eu.trentorise.opendata.disiclient.services.IdentityService;
-import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
+
 import eu.trentorise.opendata.disiclient.test.ConfigLoader;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.ATTR_DEF_PART_OF_URL;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.CERTIFIED_PRODUCT_ID;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.CERTIFIED_PRODUCT_URL;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.FACILITY_ID;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.FACILITY_URL;
+import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.GYMNASIUM_CONCEPT_URL;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.LOCATION_URL;
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.PALAZZETTO_ID;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.PALAZZETTO_NAME_IT;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.PALAZZETTO_URL;
-import eu.trentorise.opendata.semantics.impl.model.entity.MinimalEntity;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
-import eu.trentorise.opendata.semantics.services.model.AssignmentResult;
-import eu.trentorise.opendata.semantics.services.model.IIDResult;
-import it.unitn.disi.sweb.webapi.client.IProtocolClient;
+import eu.trentorise.opendata.semantics.model.entity.MinimalEntity;
+import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
+import eu.trentorise.opendata.semantics.services.IEkb;
+import eu.trentorise.opendata.semantics.services.IEntityService;
+import eu.trentorise.opendata.semantics.services.IEntityTypeService;
+import eu.trentorise.opendata.semantics.services.IIdentityService;
+import eu.trentorise.opendata.semantics.services.AssignmentResult;
+import eu.trentorise.opendata.semantics.services.IIDResult;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.Value;
@@ -35,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import org.junit.After;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -49,11 +51,30 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class TestIDManagementService {
-
-    public static final long GYMNASIUM_CONCEPT_ID = 18565L;
     
-    private static final Logger logger = LoggerFactory.getLogger(TestIDManagementService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TestIDManagementService.class);
 
+    IEkb ekb;
+    IEntityService enServ;
+    IEntityTypeService ets;
+    IIdentityService idServ;
+    
+    @Before
+    public void before(){
+        ekb = ConfigLoader.init();
+        enServ = ekb.getEntityService();
+        idServ = ekb.getIdentityService();
+        ets = ekb.getEntityTypeService();
+    }
+    
+    @After
+    public void after(){
+        enServ = null;
+        idServ = null;
+        ets = null;
+        ekb = null;
+    }
+    
     private String entityToString(Entity e) {
         String str = "id:" + e.getId()
                 + ", gID:" + e.getGlobalId()
@@ -80,17 +101,17 @@ public class TestIDManagementService {
     }
     
     
-    public static IEntity assignNewURL(){
-        IdentityService idServ = new IdentityService();
-        EntityService enServ = new EntityService(getClientProtocol());
-        EntityODR entity = (EntityODR) enServ.readEntity(PALAZZETTO_ID);
+    public  IEntity assignNewURL(){
+        
+        
+        EntityODR entity = (EntityODR) enServ.readEntity(PALAZZETTO_URL);
         List<Attribute> attrs = entity.getAttributes();
-        List<Attribute> attrs1 = new ArrayList<Attribute>();
+        List<Attribute> attrs1 = new ArrayList();
         for (Attribute atr : attrs) {
             if (atr.getName().get("en").equalsIgnoreCase("Foursquare ID")) {
                 //	System.out.println(atr.getName());
                 IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
-                AttributeODR attr = enServ.createAttribute(atDef, "50f6e6f516488f6cc81a42fc");
+                AttributeODR attr = (AttributeODR) enServ.createAttribute(atDef, "50f6e6f516488f6cc81a42fc");
                 Attribute a = attr.convertToAttribute();
                 attrs1.add(a);
             }
@@ -101,12 +122,12 @@ public class TestIDManagementService {
         en.setTypeId(12L);
         en.setAttributes(attrs1);
 
-        IEntity ent = new EntityODR(WebServiceURLs.getClientProtocol(), en);
+        IEntity ent = new EntityODR(en);
 
-        List<IEntity> entities = new ArrayList<IEntity>();
+        List<IEntity> entities = new ArrayList();
         entities.add(ent);
 
-        List<IIDResult> results = idServ.assignURL(entities, 3);
+        List<? extends IIDResult> results = idServ.assignURL(entities, 3);
         assertEquals(1, results.size());
         assertEquals(AssignmentResult.NEW, results.get(0).getAssignmentResult());
         assertNotNull(results.get(0).getResultEntity());
@@ -130,19 +151,18 @@ public class TestIDManagementService {
      */
     @Test
     public void testIdManagementEmptyArray() {
-        IdentityService idServ = new IdentityService();
+        
         List res = idServ.assignURL(new ArrayList(), 3);
         assertTrue(res.isEmpty());
     }
 
     @Test
     public void testIdManagementReuse() {
-        EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
-        IdentityService idServ = new IdentityService();
+                
         String name = PALAZZETTO_NAME_IT;
-        EntityODR entity = (EntityODR) enServ.readEntity(PALAZZETTO_ID);
+        EntityODR entity = (EntityODR) enServ.readEntity(PALAZZETTO_URL);
         List<Attribute> attrs = entity.getAttributes();
-        List<Attribute> attrs1 = new ArrayList<Attribute>();
+        List<Attribute> attrs1 = new ArrayList();
         List<IAttribute> iattr = entity.getStructureAttributes();
 
         for (Attribute atr : attrs) {
@@ -151,20 +171,20 @@ public class TestIDManagementService {
                 attrs1.add(a);
             } else if (atr.getName().get("en").equalsIgnoreCase("Longitude")) {
                 IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
-                AttributeODR attr = enServ.createAttribute(atDef, 11.466894f);
+                AttributeODR attr = (AttributeODR) enServ.createAttribute(atDef, 11.466894f);
                 Attribute a = attr.convertToAttribute();
                 attrs1.add(a);
             } else if (atr.getName().get("en").equalsIgnoreCase("Latitude")) {
                 IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
-                AttributeODR attr = enServ.createAttribute(atDef, 46.289413f);
+                AttributeODR attr = (AttributeODR) enServ.createAttribute(atDef, 46.289413f);
                 Attribute a = attr.convertToAttribute();
                 attrs1.add(a);
                 //					
             } else if (atr.getName().get("en").equalsIgnoreCase("Class")) {
-                ConceptODR concept = new ConceptODR();
-                concept = concept.readConcept(GYMNASIUM_CONCEPT_ID);
+                
+                IConcept concept = ekb.getKnowledgeService().readConcept(GYMNASIUM_CONCEPT_URL);
                 IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
-                AttributeODR attr = enServ.createAttribute(atDef, concept);
+                AttributeODR attr = (AttributeODR) enServ.createAttribute(atDef, concept);
                 Attribute a = attr.convertToAttribute();
                 attrs1.add(a);
             }
@@ -175,14 +195,14 @@ public class TestIDManagementService {
         en.setTypeId(FACILITY_ID);
         en.setAttributes(attrs1);
         //en.setGlobalId(10002538L);
-        EntityODR ent = new EntityODR(WebServiceURLs.getClientProtocol(), en);
+        EntityODR ent = new EntityODR(en);
         System.out.println("Name:" + ent.getName());
         System.out.println("Name:" + ent.getDescription());
 
-        List<IEntity> entities = new ArrayList<IEntity>();
+        List<IEntity> entities = new ArrayList();
         entities.add(ent);
 
-        List<IIDResult> results = idServ.assignURL(entities, 3);
+        List<? extends IIDResult> results = idServ.assignURL(entities, 3);
         for (IIDResult res : results) {
             EntityODR entityODR = (EntityODR) res.getResultEntity();
             System.out.println("result " + res.getAssignmentResult());
@@ -195,12 +215,12 @@ public class TestIDManagementService {
 
     @Test
     public void testFacilityIdMissingClass() {
-        EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
-        IdentityService idServ = new IdentityService();
+        
+        
         String name = PALAZZETTO_NAME_IT;
-        EntityODR entity = (EntityODR) enServ.readEntity(PALAZZETTO_ID);
+        EntityODR entity = (EntityODR) enServ.readEntity(PALAZZETTO_URL);
         List<Attribute> attrs = entity.getAttributes();
-        List<Attribute> attrs1 = new ArrayList<Attribute>();
+        List<Attribute> attrs1 = new ArrayList();
 
         for (Attribute atr : attrs) {
             if (atr.getName().get("en").equalsIgnoreCase("Name")) {
@@ -208,12 +228,12 @@ public class TestIDManagementService {
                 attrs1.add(a);
             } else if (atr.getName().get("en").equalsIgnoreCase("Longitude")) {
                 IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
-                AttributeODR attr = enServ.createAttribute(atDef, 11.466894f);
+                AttributeODR attr = (AttributeODR) enServ.createAttribute(atDef, 11.466894f);
                 Attribute a = attr.convertToAttribute();
                 attrs1.add(a);
             } else if (atr.getName().get("en").equalsIgnoreCase("Latitude")) {
                 IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
-                AttributeODR attr = enServ.createAttribute(atDef, 46.289413f);
+                AttributeODR attr = (AttributeODR) enServ.createAttribute(atDef, 46.289413f);
                 Attribute a = attr.convertToAttribute();
                 attrs1.add(a);
                 //					
@@ -224,14 +244,14 @@ public class TestIDManagementService {
         en.setEntityBaseId(1L);
         en.setTypeId(FACILITY_ID);
         en.setAttributes(attrs1);
-        EntityODR ent = new EntityODR(WebServiceURLs.getClientProtocol(), en);
+        EntityODR ent = new EntityODR(en);
         System.out.println("Name:" + ent.getName());
         System.out.println("Name:" + ent.getDescription());
 
-        List<IEntity> entities = new ArrayList<IEntity>();
+        List<IEntity> entities = new ArrayList();
         entities.add(ent);
 
-        List<IIDResult> results = idServ.assignURL(entities, 3);
+        List<? extends IIDResult> results = idServ.assignURL(entities, 3);
         for (IIDResult res : results) {
             assertEquals(AssignmentResult.NEW, res.getAssignmentResult());
 
@@ -240,10 +260,7 @@ public class TestIDManagementService {
 
     @Test
     public void testMissingClassCertifiedProduct() {
-        EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
-        IdentityService idServ = new IdentityService();
-
-        EntityTypeService ets = new EntityTypeService();
+                       
         IEntityType et = ets.readEntityType(CERTIFIED_PRODUCT_URL);
 
         IAttributeDef certificateTypeAttrDef = et.getAttrDef(TestEntityService.ATTR_TYPE_OF_CERTIFICATE_URL);
@@ -260,27 +277,24 @@ public class TestIDManagementService {
         attrs.add(attr);
         en.setStructureAttributes(attrs);
 
-        List<IEntity> entities = new ArrayList<IEntity>();
+        List<IEntity> entities = new ArrayList();
         entities.add(en);
 
-        List<IIDResult> results = idServ.assignURL(entities, 3);
+        List<? extends IIDResult> results = idServ.assignURL(entities, 3);
         for (IIDResult res : results) {
             assertEquals(AssignmentResult.NEW, res.getAssignmentResult());
         }
     }
 
     @Test
-    public void testRelationalAttribute() {
-        EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
-        EntityTypeService etypeServ = new EntityTypeService();
-        IdentityService idServ = new IdentityService();
+    public void testRelationalAttribute() {                        
 
         final EntityODR enodr = new EntityODR();
         
-        IEntityType facility = etypeServ.readEntityType(FACILITY_URL);
+        IEntityType facility = ets.readEntityType(FACILITY_URL);
         enodr.setEtype(facility);
         enodr.setEntityBaseId(1L); 
-        logger.warn("USING FIXED ID FOR ENTITY BASE! TODO FIXME!");
+        LOG.warn("USING FIXED ID FOR ENTITY BASE! TODO FIXME!");
                 
 
         List<IAttribute> attrs = new ArrayList();
@@ -304,7 +318,6 @@ public class TestIDManagementService {
     public void testNewEntityWithPartOfNewEntity() {
 
         
-        EntityService enServ = new EntityService();        
         
         // IEntity entityPartOf = new MinimalEntity(RAVAZZONE_URL, new Dict(), new Dict(), null);
         
@@ -317,25 +330,23 @@ public class TestIDManagementService {
         List<IAttribute> structureAttributes = newEntity.getStructureAttributes();
         for (int i = 0; i < structureAttributes.size(); i++){
             IAttribute attr = structureAttributes.get(i);
-            if (attr.getAttrDef().getURL().equals(ATTR_DEF_PART_OF_URL)){
-                AttributeODR newAttr = enServ.createAttribute(attr.getAttrDef(), 
+            if (attr.getAttrDefUrl().equals(ATTR_DEF_PART_OF_URL)){
+                IAttribute newAttr = enServ.createAttribute(ets.readAttrDef(attr.getAttrDefUrl()), 
                         new MinimalEntity("http://trial/instances/new/1234567", Dict.of(), Dict.of(), LOCATION_URL));
                 structureAttributes.set(i, newAttr);
             }
         }
         
-        List<IIDResult> idRes = new IdentityService().assignURL(Arrays.asList(newEntity), 3);
+        List<? extends IIDResult> idRes = idServ.assignURL(Arrays.asList(newEntity), 3);
                         
     }    
        
     @Test
     public void idServiceEntityMissing() {
-
-        IdentityService idServ = new IdentityService();
-        EntityService enServ = new EntityService(getClientProtocol());
-        EntityODR entity = (EntityODR) enServ.readEntity(64000L);
+                
+        EntityODR entity = (EntityODR) enServ.readEntity(PALAZZETTO_URL);
         List<Attribute> attrs = entity.getAttributes();
-        List<Attribute> attrs1 = new ArrayList<Attribute>();
+        List<Attribute> attrs1 = new ArrayList();
 
         for (Attribute atr : attrs) {
 
@@ -346,11 +357,10 @@ public class TestIDManagementService {
             } //			else if (atr.getName().strs("en").equalsIgnoreCase("Class")){
             //				attrs1.add(atr);
             //			}
-            else if (atr.getName().get("en").equalsIgnoreCase("Class")) {
-                ConceptODR concept = new ConceptODR();
-                concept = concept.readConcept(GYMNASIUM_CONCEPT_ID);
+            else if (atr.getName().get("en").equalsIgnoreCase("Class")) {                
+                IConcept concept =  ekb.getKnowledgeService().readConcept(GYMNASIUM_CONCEPT_URL);
                 IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
-                AttributeODR attr = enServ.createAttribute(atDef, concept);
+                AttributeODR attr = (AttributeODR) enServ.createAttribute(atDef, concept);
                 Attribute a = attr.convertToAttribute();
                 attrs1.add(atr);
             }
@@ -362,12 +372,12 @@ public class TestIDManagementService {
         en.setTypeId(12L);
         en.setAttributes(attrs1);
 
-        IEntity ent = new EntityODR(WebServiceURLs.getClientProtocol(), en);
+        IEntity ent = new EntityODR(en);
 
-        List<IEntity> entities = new ArrayList<IEntity>();
+        List<IEntity> entities = new ArrayList();
         entities.add(ent);
 
-        List<IIDResult> results = idServ.assignURL(entities, 3);
+        List<? extends IIDResult> results = idServ.assignURL(entities, 3);
         
         for (IIDResult res : results) {
             EntityODR entityODR = (EntityODR) res.getResultEntity();
@@ -378,23 +388,19 @@ public class TestIDManagementService {
         }
     }
 
-    private static IProtocolClient getClientProtocol() {
-        return WebServiceURLs.getClientProtocol();
-    }
 
     public Attribute createAttributeNameEntity(String value) {
-        EntityService es = new EntityService(getClientProtocol());
-        EntityTypeService ets = new EntityTypeService();
-        EntityType etype = ets.getEntityType(12L);
+                
+        EntityType etype = (EntityType) ets.readEntityType(FACILITY_URL);
 
         List<IAttributeDef> attrDefList = etype.getAttributeDefs();
-        List<Attribute> attrs = new ArrayList<Attribute>();
+        List<Attribute> attrs = new ArrayList();
 
         Attribute a = null;
         for (IAttributeDef atd : attrDefList) {
             if (atd.getName().string(Locale.ENGLISH).equals("Name")) {
                 System.out.println(atd.getName());
-                AttributeODR attr = es.createNameAttributeODR(atd, value);
+                AttributeODR attr = ((EntityService) enServ).createNameAttributeODR(atd, value);
                 a = attr.convertToAttribute();
                 return a;
             }
@@ -403,12 +409,12 @@ public class TestIDManagementService {
     }
 
     public Attribute createAttributeEntity(Object value) {
-        EntityService es = new EntityService(getClientProtocol());
-        EntityTypeService ets = new EntityTypeService();
-        EntityType etype = ets.getEntityType(12L);
+        
+        
+        IEntityType etype = ets.readEntityType(FACILITY_URL);
 
         List<IAttributeDef> attrDefList = etype.getAttributeDefs();
-        List<Attribute> attrs = new ArrayList<Attribute>();
+        List<Attribute> attrs = new ArrayList();
 
         Attribute a = null;
         for (IAttributeDef atd : attrDefList) {

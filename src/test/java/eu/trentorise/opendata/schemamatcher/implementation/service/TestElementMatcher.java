@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import eu.trentorise.opendata.disiclient.test.ConfigLoader;
+import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.FACILITY_URL;
 import eu.trentorise.opendata.schemamatcher.implementation.model.SchemaMatcherException;
 import eu.trentorise.opendata.schemamatcher.implementation.services.ElementMatcherFactory;
 import eu.trentorise.opendata.schemamatcher.implementation.services.SchemaImport;
@@ -38,9 +39,8 @@ public class TestElementMatcher {
     @Before
     public void beforeMethod() {
         ekb = ConfigLoader.init();
-        IEntityTypeService ets = ekb.getEntityTypeService();
-        String etypeUrl = SwebClientCrap.etypeIDToURL(12L);
-        etype = ets.readEntityType(etypeUrl);
+        IEntityTypeService ets = ekb.getEntityTypeService();     
+        etype = ets.readEntityType(FACILITY_URL);
     }
     
     @After

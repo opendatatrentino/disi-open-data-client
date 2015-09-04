@@ -29,7 +29,9 @@ import java.util.List;
 import org.junit.After;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import eu.trentorise.opendata.disiclient.services.DisiEkb;
 import eu.trentorise.opendata.disiclient.test.ConfigLoader;
+import eu.trentorise.opendata.semantics.services.IEkb;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import static org.junit.Assert.assertEquals;
@@ -48,6 +50,8 @@ public class EntityExportServiceTest {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
         
+    
+    DisiEkb ekb;
     List<String> entities;
     EntityExportService ess;
     EntityService enServ;
@@ -55,14 +59,14 @@ public class EntityExportServiceTest {
 
     @Before
     public void beforeMethod() {
-        ConfigLoader.init();
+        ekb = (DisiEkb) ConfigLoader.init();
         entities = new ArrayList();
         entities.add(TestEntityService.ANDALO_URL);
         entities.add(TestEntityService.RAVAZZONE_URL);
         entities.add(TestEntityService.PALAZZETTO_URL);
         
-        ess = new EntityExportService();       
-        enServ = new EntityService();        
+        ess = ekb.getEntityExportService();       
+        enServ = ekb.getEntityService();        
     }
 
     @After
@@ -135,8 +139,8 @@ public class EntityExportServiceTest {
     @Test
     public void testCreateAndExportCertifiedProduct() {
        
-        EntityTypeService ets = new EntityTypeService();
-        IEntityType et = ets.readEntityType(CERTIFIED_PRODUCT_URL);
+        
+        IEntityType et = ekb.getEntityTypeService().readEntityType(CERTIFIED_PRODUCT_URL);
 
         IAttributeDef certificateTypeAttrDef = et.getAttrDef(TestEntityService.ATTR_TYPE_OF_CERTIFICATE_URL);
 

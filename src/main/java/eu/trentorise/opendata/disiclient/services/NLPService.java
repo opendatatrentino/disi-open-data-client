@@ -12,6 +12,7 @@ import eu.trentorise.opendata.semantics.services.INLPService;
 import eu.trentorise.opendata.semantics.services.SearchResult;
 import eu.trentorise.opendata.semantics.services.TermSearchResult;
 import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
+import eu.trentorise.opendata.disiclient.DisiClients;
 import eu.trentorise.opendata.semtext.nltext.NLTextConverter;
 import eu.trentorise.opendata.semtext.nltext.SemanticStringConverter;
 import it.unitn.disi.sweb.core.nlp.model.NLText;
@@ -34,12 +35,14 @@ import org.slf4j.LoggerFactory;
  */
 public class NLPService implements INLPService {
 
-    private static final SemanticStringConverter semanticStringConverter = SemanticStringConverter.of(WebServiceURLs.getSemtextUrlMapper());
+    private static final SemanticStringConverter semanticStringConverter = SemanticStringConverter.of(SwebConfiguration.getUrlMapper());
 
-    private static final NLTextConverter nltextConverter = NLTextConverter.of(WebServiceURLs.getSemtextUrlMapper());
+    private static final NLTextConverter nltextConverter = NLTextConverter.of(SwebConfiguration.getUrlMapper());
 
     private static final Logger logger = LoggerFactory.getLogger(NLPService.class);
 
+    NLPService(){}
+    
 
     /**
      * For italian text and 1st knowledge base
@@ -49,7 +52,7 @@ public class NLPService implements INLPService {
      */
     public List<NLText> runNlpItNEP(Iterable<String> texts) {
 
-        PipelineClient pipClient = new PipelineClient(WebServiceURLs.getClientProtocol());
+        PipelineClient pipClient = new PipelineClient(SwebConfiguration.getClientProtocol());
         NLPInput input = new NLPInput();
         input.setText(Lists.newArrayList(texts));
         logger.warn("USING HARDCODED VOCABULARY ID!");
@@ -69,7 +72,7 @@ public class NLPService implements INLPService {
      */
     public List<NLText> runNlpItODH(Iterable<String> texts) {
 
-        PipelineClient pipClient = new PipelineClient(WebServiceURLs.getClientProtocol());
+        PipelineClient pipClient = new PipelineClient(SwebConfiguration.getClientProtocol());
         NLPInput input = new NLPInput();
         input.setText(Lists.newArrayList(texts));
         logger.warn("USING HARDCODED VOCABULARY ID!");
@@ -89,7 +92,7 @@ public class NLPService implements INLPService {
      */
     public List<NLText> runNlpItNEDW(Iterable<String> texts) {
 
-        PipelineClient pipClient = new PipelineClient(WebServiceURLs.getClientProtocol());
+        PipelineClient pipClient = new PipelineClient(SwebConfiguration.getClientProtocol());
         NLPInput input = new NLPInput();
         input.setText(Lists.newArrayList(texts));
         logger.warn("USING HARDCODED VOCABULARY ID!");
@@ -106,7 +109,7 @@ public class NLPService implements INLPService {
     }
 
     public List<PipelineDescription> readPipelinesDescription() {
-        PipelineClient pipClient = new PipelineClient(WebServiceURLs.getClientProtocol());
+        PipelineClient pipClient = new PipelineClient(SwebConfiguration.getClientProtocol());
         return pipClient.readPipelines();
     }
     
@@ -119,9 +122,10 @@ public class NLPService implements INLPService {
         return runNLP(Arrays.asList(text), domainURL).get(0);
     }
 
+    @Override
     public List<SemText> runNLP(Iterable<String> texts, @Nullable String domainURL) {
         List<SemText> ret = new ArrayList();
-        if (WebServiceURLs.isConceptURL(domainURL)) {
+        if (SwebConfiguration.getUrlMapper().isConceptUrl(domainURL)) {
             List<NLText> nlTexts = runNlpItODH(texts);
             for (NLText nlText : nlTexts) {
                 SemText semText = nltextConverter.semText(nlText, false);
@@ -129,7 +133,7 @@ public class NLPService implements INLPService {
             }
             return ret;
         }
-        if (WebServiceURLs.isEtypeURL(domainURL)) {
+        if (SwebConfiguration.getUrlMapper().isEtypeUrl(domainURL)) {
             List<NLText> nlTexts = runNlpItNEP(texts);
             for (NLText nlText : nlTexts) {
                 SemText semText = nltextConverter.semText(nlText, false);
@@ -156,7 +160,7 @@ public class NLPService implements INLPService {
         List<String> entVocab = collectEntitiesFromMeanings(semText);
         List<String> filteredEntities = filterEntitiesByType(entVocab, etypeURL);
 
-        List<Term> words = new ArrayList<Term>();
+        List<Term> words = new ArrayList();
         for (Term term : semText.terms()) {
 
             Meaning wsm = term.getSelectedMeaning();
@@ -219,14 +223,14 @@ public class NLPService implements INLPService {
     }
 
     private List<String> filterEntitiesByType(List<String> entitiesUrls, String etypeURL) {
-        List<String> filteredEntities = new ArrayList<String>();
+        List<String> filteredEntities = new ArrayList();
 
-        EntityService es = new EntityService();
-        List<IEntity> entities = es.readEntities(entitiesUrls);
+        
+        List<IEntity> entities = DisiClients.getClient().getEntityService().readEntities(entitiesUrls);
 
         for (IEntity e : entities) {
             if (e.getEtypeURL().equals(etypeURL)) {
-                filteredEntities.add(e.getURL());
+                filteredEntities.add(e.getUrl());
             }
 
         }
@@ -240,7 +244,7 @@ public class NLPService implements INLPService {
 
         List<SearchResult> entities;
 
-        Search search = new Search(WebServiceURLs.getClientProtocol());
+        Search search = new Search();
         entities = search.searchEntities(lowerCasePartialName, null, locale);
 
         KnowledgeService ks = new KnowledgeService();
@@ -275,7 +279,7 @@ public class NLPService implements INLPService {
 
     @Override
     public Locale detectLanguage(Iterable<String> inputStr) {
-        ComponentClient component = new ComponentClient(WebServiceURLs.getClientProtocol());
+        ComponentClient component = new ComponentClient(SwebConfiguration.getClientProtocol());
         NLPInput input = new NLPInput();
         input.setText(Lists.newArrayList(inputStr));
         logger.warn("USING HARDCODED KB ID!");

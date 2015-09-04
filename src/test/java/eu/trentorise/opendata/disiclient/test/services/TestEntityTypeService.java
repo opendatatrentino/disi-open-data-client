@@ -18,6 +18,8 @@ import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.SearchResult;
 import eu.trentorise.opendata.commons.OdtUtils;
 import eu.trentorise.opendata.disiclient.test.ConfigLoader;
+import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.FACILITY_URL;
+import eu.trentorise.opendata.semantics.services.IEntityTypeService;
 import org.junit.Before;
 
 /**
@@ -29,16 +31,18 @@ import org.junit.Before;
 public class TestEntityTypeService {
 
     private IEkb disiEkb;
+    private IEntityTypeService ets;
     
     @Before
     public void beforeMethod() {
         disiEkb = ConfigLoader.init();
+        ets = disiEkb.getEntityTypeService();
     }
 
     @Test
     public void testGetEntityTypeByID() {
-        EntityTypeService ets = new EntityTypeService();
-        EntityType etype = (EntityType) ets.getEntityType(12L);
+        
+        EntityType etype = (EntityType) ets.readEntityType(FACILITY_URL);
         List<IAttributeDef> atdefs = etype.getAttributeDefs();
         //for (IAttributeDef ad:atdefs){
 //			System.out.println(ad.getName());
@@ -52,7 +56,7 @@ public class TestEntityTypeService {
 
     @Test
     public void testGetEntityTypesofStructure() {
-        EntityTypeService ets = new EntityTypeService();
+        
         // EntityType etype = (EntityType) ets.getEntityType(12L);
         EntityType etype = (EntityType) ets.readEntityType(NAME_URL);
         System.out.println("Etype:" + etype);
@@ -62,8 +66,8 @@ public class TestEntityTypeService {
     @Test
     public void testGetAllEntityTypes() {
         long timeStart = System.currentTimeMillis();
-        EntityTypeService ets = new EntityTypeService();
-        List<IEntityType> etypes = ets.getAllEntityTypes();
+        
+        List<IEntityType> etypes = ets.readAllEntityTypes();
         for (IEntityType etype : etypes) {
 
             List<IAttributeDef> atdefs = etype.getAttributeDefs();
@@ -73,7 +77,7 @@ public class TestEntityTypeService {
             //	System.out.println("AttributeDef Description:"+etype.getDescriptionAttrDef());
             for (IAttributeDef ad : atdefs) {
                 System.out.println("AttributeDef URL:" + ad.getURL());
-                System.out.println("AttributeDef  DataType:" + ad.getEType());
+                System.out.println("AttributeDef  DataType:" + ad.getEtypeURL());
             }
         }
         long timeEnd = System.currentTimeMillis();
@@ -84,21 +88,21 @@ public class TestEntityTypeService {
 
     @Test
     public void testGetRootsTypes() {
-        EntityTypeService ets = new EntityTypeService();
-        assertEquals("Entity", ets.getRootEtype().getName().string(Locale.ENGLISH));
-        assertEquals("Structure", ets.getRootStructure().getName().string(Locale.ENGLISH));
+        
+        assertEquals("Entity", ets.readRootEtype().getName().string(Locale.ENGLISH));
+        assertEquals("Structure", ets.readRootStructure().getName().string(Locale.ENGLISH));
 
     }
 
     @Test
     public void testGetEntityTypeByURL() {
-        EntityTypeService ets = new EntityTypeService();
-        List<IEntityType> etypes = ets.getAllEntityTypes();
+        
+        List<IEntityType> etypes = ets.readAllEntityTypes();
         for (IEntityType etype : etypes) {
 
             //System.out.println(etype.getName());
             //System.out.println(etype.getURL());
-            IEntityType et = ets.getEntityType(etype.getURL());
+            IEntityType et = ets.readEntityType(etype.getURL());
             //	System.out.println(et.getName());
             assertNotNull(et);
         }
@@ -106,8 +110,8 @@ public class TestEntityTypeService {
 
     @Test
     public void testGetAttributeDefbyUrl() {
-        EntityTypeService ets = new EntityTypeService();
-        List<IEntityType> etypes = ets.getAllEntityTypes();
+        
+        List<IEntityType> etypes = ets.readAllEntityTypes();
         List<IAttributeDef> attrDefs = etypes.get(0).getAttributeDefs();
         String attrDefUrl = attrDefs.get(0).getURL();
         IAttributeDef attrDef = etypes.get(0).getAttrDef(attrDefUrl);
@@ -117,13 +121,13 @@ public class TestEntityTypeService {
     @Test
     public void testReadNonExistingEntityType() {        
 
-        assertEquals(null, disiEkb.getEntityTypeService().getEntityType("http://blabla.com"));
+        assertEquals(null, disiEkb.getEntityTypeService().readEntityType("http://blabla.com"));
 
     }
 
     @Test
     public void testFuzzySearchEtype() {
-        EntityTypeService ets = new EntityTypeService();
+        
         Locale locale = OdtUtils.languageTagToLocale("en");
         List<SearchResult> searchEtypes = ets.searchEntityTypes("Product", locale);
         assertEquals("Product", searchEtypes.get(0).getName().string(Locale.ENGLISH));

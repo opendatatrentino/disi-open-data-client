@@ -1,5 +1,6 @@
 package eu.trentorise.opendata.disiclient.model.entity;
 
+import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
@@ -17,23 +18,21 @@ import java.util.Locale;
 import eu.trentorise.opendata.disiclient.DisiClientException;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.disiclient.services.EntityService;
-import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import eu.trentorise.opendata.disiclient.services.KnowledgeService;
-import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.model.entity.IStructure;
 import eu.trentorise.opendata.commons.OdtUtils;
+import eu.trentorise.opendata.disiclient.DisiClients;
 import eu.trentorise.opendata.disiclient.services.NLPService;
 import eu.trentorise.opendata.semtext.SemText;
 
+public class StructureODR extends Instance implements IStructure {
 
-public class StructureODR extends Instance implements IStructure {    
-	 public static final Long PART_OF_CONCEPT_ID1 = 5l;
-	    public static final Long PART_OF_CONCEPT_ID2 = 22l;
+    public static final Long PART_OF_CONCEPT_ID1 = 5l;
+    public static final Long PART_OF_CONCEPT_ID2 = 22l;
     
-    @Override
     public Long getLocalID() {
         return super.getId();
     }
@@ -41,7 +40,7 @@ public class StructureODR extends Instance implements IStructure {
     public StructureODR() {
     }
 
-
+    @Override
     public List<IAttribute> getStructureAttributes() {
         if (super.getAttributes() != null) {
             List<IAttribute> atrs = convertToAttributeODR(super.getAttributes());
@@ -55,17 +54,19 @@ public class StructureODR extends Instance implements IStructure {
         }
     }
 
+
     public void setStructureAttributes(List<IAttribute> attributes) {
         super.setAttributes(convertToAttributes(attributes));
     }
 
+
     public IEntityType getEtype() {
-        EntityTypeService ets = new EntityTypeService();
+         
         Long id = super.getTypeId();
         if (id == null) {
             throw new RuntimeException("Got a null id for super.getTypeId() in Structure.java!");
         } else {
-            return ets.getEntityType((long) id);
+            return DisiClients.getClient().getEntityTypeService().readEntityType(id);
         }
     }
 
@@ -74,14 +75,15 @@ public class StructureODR extends Instance implements IStructure {
     }
 
     private List<IAttribute> convertToAttributeODR(List<Attribute> attributes) {
-        List<IAttribute> attributesODR = new ArrayList<IAttribute>();
+        List<IAttribute> attributesODR = new ArrayList();
+        EntityService es = DisiClients.getClient().getEntityService();
         //++++++++++++++
         for (Attribute at : attributes) {
             if (at.getConceptId() == null) {
                 continue;
             } else if (at.getConceptId() == KnowledgeService.DESCRIPTION_CONCEPT_ID) {
                 List<Value> vals = at.getValues();
-                List<Value> fixedVals = new ArrayList<Value>();
+                List<Value> fixedVals = new ArrayList();
 
                 for (Value val : vals) {
                     if (val.getValue() instanceof SemText) {
@@ -106,7 +108,7 @@ public class StructureODR extends Instance implements IStructure {
 
                         if (a.getDataType() == DataType.CONCEPT) {
                             List<Value> vals = a.getValues();
-                            List<Value> fixedVals = new ArrayList<Value>();
+                            List<Value> fixedVals = new ArrayList();
 
                             for (Value val : vals) {
 
@@ -117,10 +119,9 @@ public class StructureODR extends Instance implements IStructure {
                                 Concept c = (Concept) val.getValue();
                                 ConceptODR codr = new ConceptODR(c);
 
-                                ValueODR fixedVal = new ValueODR();
-                                fixedVal.setId(val.getId());
+                                ValueODR fixedVal = new ValueODR(val.getId(), null, codr);                                
                                 // fixedVal.setDataType(IConcept.class);
-                                fixedVal.setValue(codr);
+                                
                                 fixedVals.add(fixedVal);
                             }
                             a.setValues(fixedVals);
@@ -129,7 +130,7 @@ public class StructureODR extends Instance implements IStructure {
                 }
             } else if (at.getDataType() == DataType.CONCEPT) {
                 List<Value> vals = at.getValues();
-                List<Value> fixedVals = new ArrayList<Value>();
+                List<Value> fixedVals = new ArrayList();
 
                 for (Value val : vals) {
 
@@ -140,22 +141,22 @@ public class StructureODR extends Instance implements IStructure {
                     Concept c = (Concept) val.getValue();
                     ConceptODR codr = new ConceptODR(c);
 
-                    ValueODR fixedVal = new ValueODR();
-                    fixedVal.setId(val.getId());
+                    ValueODR fixedVal = new ValueODR(val.getId(), null, codr);
+                    
                     // fixedVal.setDataType(IConcept.class);
-                    fixedVal.setValue(codr);
+                    
                     fixedVals.add(fixedVal);
                 }
                 at.setValues(fixedVals);
             } else {
-                if ((at.getConceptId() == PART_OF_CONCEPT_ID1) && (at.getValues().size() != 0)) { // todo hardcoded long
+                if ((at.getConceptId() == PART_OF_CONCEPT_ID1) && (!at.getValues().isEmpty())) { // todo hardcoded long
                     List<Value> vals = at.getValues();
-                    List<Value> fixedVals = new ArrayList<Value>();
-                    EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
+                    List<Value> fixedVals = new ArrayList();
+                    
                     if (vals.size() > 0) {
                         Instance inst = (Instance) vals.get(0).getValue();
                         IEntity e = es.readEntity(inst.getId());
-                        //	EntityODR enodr = new EntityODR(WebServiceURLs.getClientProtocol(), e);
+                        //	EntityODR enodr = new EntityODR(SwebConfiguration.getClientProtocol(), e);
 
                         for (Value v : vals) {
                             Value fixedVal = new Value();
@@ -167,8 +168,8 @@ public class StructureODR extends Instance implements IStructure {
                     at.setValues(fixedVals);
                 } else if (at.getConceptId() == 111001L) { // todo hardcoded long
                     List<Value> vals = at.getValues();
-                    List<Value> fixedVals = new ArrayList<Value>();
-                    EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
+                    List<Value> fixedVals = new ArrayList();
+                    
                     for (Value v : vals) {
                         Instance inst = (Instance) v.getValue();
                         IStructure e = es.readStructure(inst.getId());
@@ -184,20 +185,18 @@ public class StructureODR extends Instance implements IStructure {
                 }
             }
         }
+
         
-        //++++++++++++++
         for (Attribute attr : attributes) {
-        	
-        
-                
-            AttributeODR attrODR = new AttributeODR(getClientProtocol(), attr);
+
+            AttributeODR attrODR = new AttributeODR(attr);
             attributesODR.add(attrODR);
         }
         return attributesODR;
     }
 
     public List<Attribute> convertToAttributes(List<IAttribute> attributes) {
-        List<Attribute> attrs = new ArrayList<Attribute>();
+        List<Attribute> attrs = new ArrayList();
         for (IAttribute attr : attributes) {
             AttributeODR attribute = (AttributeODR) attr;
             Attribute at = attribute.convertToAttribute();
@@ -207,35 +206,30 @@ public class StructureODR extends Instance implements IStructure {
     }
 
     private IProtocolClient getClientProtocol() {
-        return WebServiceURLs.getClientProtocol();
+        return SwebConfiguration.getClientProtocol();
     }
 
-    public String getURL() {
-        String fullUrl = WebServiceURLs.getURL();
-        //if(super.getId()!=null){
-        String url = fullUrl + "/instances/" + super.getId();
-        return url;
+    @Override
+    public String getUrl() {
+        return SwebConfiguration.getUrlMapper().entityIdToUrl(super.getId());
     }
 
-    public void setURL(String url) {
-        throw new UnsupportedOperationException("todo to implement");
 
-    }
 
+    @Override
     public IAttribute getAttribute(String attrDefURL) {
         List<IAttribute> attributes = getStructureAttributes();
         for (IAttribute attribute : attributes) {
-            if (attribute.getAttributeDefinition().getURL().equals(attrDefURL)) {
+            if (attribute.getAttrDefUrl().equals(attrDefURL)) {
                 return attribute;
             }
         }
-        throw new DisiClientException("There is no attribute having attributeDef URL: " + attrDefURL + " in the structure with URL " + getURL());
+        throw new DisiClientException("There is no attribute having attributeDef URL: " + attrDefURL + " in the structure with URL " + getUrl());
     }
 
+    @Override
     public String getEtypeURL() {
-        String fullUrl = WebServiceURLs.getURL();
-        String url = fullUrl + "/types/" + super.getTypeId();
-        return url;
+        return SwebConfiguration.getUrlMapper().etypeIdToUrl(super.getTypeId());
     }
 
     public StructureODR convertToStructure(it.unitn.disi.sweb.webapi.model.eb.Structure st) {
@@ -251,7 +245,7 @@ public class StructureODR extends Instance implements IStructure {
 
         it.unitn.disi.sweb.webapi.model.eb.Structure strSweb = new it.unitn.disi.sweb.webapi.model.eb.Structure();
         List<Attribute> attrs = s.getAttributes();
-        List<Attribute> attrsFixed = new ArrayList<Attribute>();
+        List<Attribute> attrsFixed = new ArrayList();
 
         for (Attribute a : attrs) {
             Attribute atFixed = new Attribute();
@@ -292,7 +286,7 @@ public class StructureODR extends Instance implements IStructure {
                 List<Value> valsF = new ArrayList();
 
                 for (Value v : vals) {
-                    Value vf = new Value();                    
+                    Value vf = new Value();
                     vf.setValue(v.getValue());
                     valsF.add(vf);
                 }
@@ -309,5 +303,4 @@ public class StructureODR extends Instance implements IStructure {
         return strSweb;
     }
 
-    
 }

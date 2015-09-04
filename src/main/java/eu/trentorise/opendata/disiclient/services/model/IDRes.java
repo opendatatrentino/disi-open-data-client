@@ -1,5 +1,7 @@
 package eu.trentorise.opendata.disiclient.services.model;
 
+import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
+import eu.trentorise.opendata.disiclient.DisiClients;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.model.odt.IDResult;
 
@@ -10,11 +12,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
-import eu.trentorise.opendata.disiclient.services.EntityService;
-import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
-import eu.trentorise.opendata.semantics.services.model.AssignmentResult;
-import eu.trentorise.opendata.semantics.services.model.IIDResult;
+import eu.trentorise.opendata.semantics.services.AssignmentResult;
+import eu.trentorise.opendata.semantics.services.IIDResult;
 import java.util.Random;
 
 public class IDRes extends IDResult implements IIDResult {
@@ -23,7 +23,7 @@ public class IDRes extends IDResult implements IIDResult {
     IEntity entity;
     AssignmentResult asResult;
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger LOG = LoggerFactory.getLogger(IDRes.class);
 
     public IDRes(IDResult result) {
 
@@ -46,15 +46,14 @@ public class IDRes extends IDResult implements IIDResult {
         en.setId(localId);
     }
 
+    @Override
     public IEntity getResultEntity() {
-        if (this.api == null) {
-            this.api = WebServiceURLs.getClientProtocol();
-        }
+
 
         if (getAssignmentResult() == AssignmentResult.REUSE) {
             if (this.entity == null) {
-                EntityService es = new EntityService(this.api);
-                IEntity en = es.readEntityByGUID(getGUID());
+                
+                IEntity en = DisiClients.getClient().getEntityService().readEntityByGlobalId(getGUID());
 
                 this.entity = en;
 
@@ -77,12 +76,10 @@ public class IDRes extends IDResult implements IIDResult {
         }
     }
 
+    @Override
     public Set<IEntity> getEntities() {
-        if (this.api == null) {
-            this.api = WebServiceURLs.getClientProtocol();
-        }
 
-        Set<IEntity> entities = new HashSet<IEntity>();
+        Set<IEntity> entities = new HashSet();
         if (getAssignmentResult() == AssignmentResult.REUSE) {
             entities.add(getResultEntity());
 
@@ -98,6 +95,7 @@ public class IDRes extends IDResult implements IIDResult {
         return entities;
     }
 
+    @Override
     public AssignmentResult getAssignmentResult() {
         switch (super.getResult()) {
             case ID_NEW:
@@ -111,6 +109,7 @@ public class IDRes extends IDResult implements IIDResult {
         }
     }
 
+    @Override
     public Long getGUID() {
         return super.getSwebID();
     }
@@ -120,10 +119,9 @@ public class IDRes extends IDResult implements IIDResult {
         this.entity = entity;
     }
 
-    public String getURL() {
-        String fullUrl = WebServiceURLs.getURL();
-        String url = fullUrl + "/instances/new/" + super.getSwebID();
-        return url;
+    @Override
+    public String getURL() {        
+        return SwebConfiguration.getUrlMapper().entityNewIdToUrl(super.getSwebID());
     }
 
     public static int randInt(int min, int max) {
@@ -135,7 +133,7 @@ public class IDRes extends IDResult implements IIDResult {
     }
 
 //	private IEntity entityForNewResults(){
-//		EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
+//		EntityService enServ = new EntityService(SwebConfiguration.getClientProtocol());
 //
 //                logger.warn("TODO REVIEW WHY IT IS READING PALAZZETTO HERE??"); 
 //		EntityODR entity = (EntityODR)enServ.readEntity(64000L);
@@ -174,7 +172,7 @@ public class IDRes extends IDResult implements IIDResult {
 //		en.setTypeId(12L);
 //		en.setAttributes(attrs1);
 //		en.setId(1L);
-//		IEntity ent = new EntityODR(WebServiceURLs.getClientProtocol(),en);
+//		IEntity ent = new EntityODR(SwebConfiguration.getClientProtocol(),en);
 //		return ent;
 //	}
 //	private float createRandomFloat()

@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import eu.trentorise.opendata.disiclient.test.ConfigLoader;
+import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.FACILITY_URL;
 import eu.trentorise.opendata.schemamatcher.implementation.model.SchemaElementFeatureExtractor;
 import eu.trentorise.opendata.schemamatcher.implementation.model.SchemaMatcherException;
 import eu.trentorise.opendata.schemamatcher.implementation.services.SchemaImport;
@@ -39,8 +40,8 @@ public class TestSchemaElementFeatureNormalization {
         ekb = ConfigLoader.init();
         SchemaImport si = new SchemaImport(ekb);
         IEntityTypeService ets = ekb.getEntityTypeService();
-        String etypeUrl = SwebClientCrap.etypeIDToURL(12L);
-        etype = ets.readEntityType(etypeUrl);
+        
+        etype = ets.readEntityType(FACILITY_URL);
 
         File file = new File("impianti risalita.csv");
         sourceSchema = si.parseCSV(file);

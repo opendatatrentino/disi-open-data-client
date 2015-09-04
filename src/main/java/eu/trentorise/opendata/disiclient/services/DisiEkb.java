@@ -5,11 +5,6 @@ import com.google.common.collect.ImmutableList;
 import eu.trentorise.opendata.schemamatcher.odr.impl.MatchingService;
 import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
 import eu.trentorise.opendata.semantics.services.IEkb;
-import eu.trentorise.opendata.semantics.services.IEntityService;
-import eu.trentorise.opendata.semantics.services.IEntityTypeService;
-import eu.trentorise.opendata.semantics.services.IIdentityService;
-import eu.trentorise.opendata.semantics.services.IKnowledgeService;
-import eu.trentorise.opendata.semantics.services.INLPService;
 import eu.trentorise.opendata.semantics.services.ISchemaMatchingService;
 
 import java.util.ArrayList;
@@ -31,14 +26,20 @@ public class DisiEkb implements IEkb {
     
     private static final Logger LOG = LoggerFactory.getLogger(DisiEkb.class);
 
-    private INLPService NLPService;
-    private IKnowledgeService knowledgeService;
-    private ISchemaMatchingService schemaMatchingService;
-    private IIdentityService identityService;
-    private IEntityTypeService entityTypeService;
-    private IEntityService entityService;
+    private NLPService NLPService;
+    private KnowledgeService knowledgeService;
+    private MatchingService schemaMatchingService;
+    private IdentityService identityService;
+    private EntityTypeService entityTypeService;
+    private EntityService entityService;
+    /** disi client specific */
+    private Search searchService;
+    /** disi client specific */
+    private EntityExportService entityExportService;
+    
     private List<Locale> defaultLocales;
-
+    
+    
     /**
      * Constructor for the client - by default sets English locale. Note that to
      * complete initialization {@link #setProperties(java.util.Map) } MUST be
@@ -54,32 +55,32 @@ public class DisiEkb implements IEkb {
     }
 
     @Override
-    public INLPService getNLPService() {
+    public NLPService getNLPService() {
         return NLPService;
     }
 
     @Override
-    public IKnowledgeService getKnowledgeService() {
+    public KnowledgeService getKnowledgeService() {
         return knowledgeService;
     }
 
     @Override
-    public ISchemaMatchingService getSchemaMatchingService() {
+    public MatchingService getSchemaMatchingService() {
         return schemaMatchingService;
     }
 
     @Override
-    public IIdentityService getIdentityService() {
+    public IdentityService getIdentityService() {
         return identityService;
     }
 
     @Override
-    public IEntityTypeService getEntityTypeService() {
+    public EntityTypeService getEntityTypeService() {
         return entityTypeService;
     }
 
     @Override
-    public IEntityService getEntityService() {
+    public EntityService getEntityService() {
         return entityService;
     }
 
@@ -101,6 +102,7 @@ public class DisiEkb implements IEkb {
      * A call to this method completes the initialization of Disi client.
      * @param properties a map with the 4 mandatory properties of sweb 
      */
+    // todo this thing still uses static initializer, probably we will never get read of it
     @Override
     public void setProperties(Map<String, String> properties) {
         checkNotNull(properties);
@@ -111,7 +113,27 @@ public class DisiEkb implements IEkb {
         this.identityService = new IdentityService();
         this.schemaMatchingService = new MatchingService(this);
         this.entityService = new EntityService();
+        
+        // disi specific
+        this.searchService = new Search();
+        this.entityExportService = new EntityExportService();
     }
+
+    /**
+     * Disi client specific
+     */
+    public Search getSearchService() {
+        return searchService;
+    }
+
+    /**
+     * Disi client specific
+     */
+    public EntityExportService getEntityExportService() {
+        return entityExportService;
+    }
+    
+    
 
     @Override
     public void setDefaultLocales(Iterable<Locale> locales) {

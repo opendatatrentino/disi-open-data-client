@@ -133,7 +133,7 @@ public class TestMatchingService {
     @Test
     public void testMatchingService() {
 
-        List<IEntityType> allEntityTypes = client.getEntityTypeService().getAllEntityTypes();
+        List<IEntityType> allEntityTypes = client.getEntityTypeService().readAllEntityTypes();
 
         for (IEntityType et : allEntityTypes) {
 

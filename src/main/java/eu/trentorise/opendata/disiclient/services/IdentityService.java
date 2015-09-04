@@ -1,16 +1,13 @@
 package eu.trentorise.opendata.disiclient.services;
 
+import eu.trentorise.opendata.disiclient.DisiClients;
 import static eu.trentorise.opendata.disiclient.model.entity.EntityODR.disify;
-import it.unitn.disi.sweb.webapi.client.eb.IDManagementClient;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
-import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.Name;
 import it.unitn.disi.sweb.webapi.model.eb.Value;
-import it.unitn.disi.sweb.webapi.model.odt.IDResult;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,21 +15,22 @@ import org.slf4j.LoggerFactory;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
-import eu.trentorise.opendata.disiclient.model.entity.EntityType;
 import eu.trentorise.opendata.disiclient.services.model.IDRes;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semtext.SemText;
 import eu.trentorise.opendata.semantics.services.IIdentityService;
-import eu.trentorise.opendata.semantics.services.model.IIDResult;
+import eu.trentorise.opendata.semantics.services.IIDResult;
 
 public class IdentityService implements IIdentityService {
 
     Logger logger = LoggerFactory.getLogger(IdentityService.class);
 
+    IdentityService(){}
+    
     private EntityODR convertNameAttr(EntityODR ent) {
         List<Attribute> attrs = ent.getAttributes();
-        EntityService enServ = new EntityService();
+        EntityService enServ = DisiClients.getClient().getEntityService();
 
         for (Attribute atr : attrs) {
 
@@ -52,10 +50,10 @@ public class IdentityService implements IIdentityService {
                     throw new IllegalArgumentException("Found unhandled class! Value class is " + val.getClass().getSimpleName());
                 }
 
-                Search search = new Search(WebServiceURLs.getClientProtocol());
+                Search search = new Search();
                 List<Name> foundNames;
                 if (nameSt.equals("")) {
-                    foundNames = new ArrayList<Name>();
+                    foundNames = new ArrayList();
                 } else {
                     foundNames = search.nameSearch(nameSt);
                 }
@@ -81,22 +79,22 @@ public class IdentityService implements IIdentityService {
     public List<IIDResult> assignURL(List<? extends IEntity> iEntities, int numCandidates) {
 
         if (iEntities == null) {
-            List<IIDResult> idResults = new ArrayList<IIDResult>();
+            List<IIDResult> idResults = new ArrayList();
             return idResults;
         }
         if (iEntities.isEmpty()) {
-            List<IIDResult> idResults = new ArrayList<IIDResult>();
+            List<IIDResult> idResults = new ArrayList();
             return idResults;
         } else {
 
-            List<EntityODR> entities = new ArrayList<EntityODR>();
+            List<EntityODR> entities = new ArrayList();
 
             for (IEntity ie : iEntities) {
                 entities.add(disify(ie, true));
             }
                        
             /*
-            IDManagementClient idManCl = new IDManagementClient(WebServiceURLs.getClientProtocol());
+            IDManagementClient idManCl = new IDManagementClient(SwebConfiguration.getClientProtocol());
             List<Entity> resEntities = new ArrayList<Entity>();
             for (IEntity en : entities) {
                 EntityODR ent = (EntityODR) en;
@@ -109,7 +107,7 @@ public class IdentityService implements IIdentityService {
             List<IDResult> results = idManCl.assignIdentifier(resEntities, 0);
                     */
             
-            List<IIDResult> idResults = new ArrayList<IIDResult>();
+            List<IIDResult> idResults = new ArrayList();
             for (EntityODR en : entities) {
                 
                 IDRes idRes = new IDRes(en);
@@ -119,18 +117,19 @@ public class IdentityService implements IIdentityService {
         }
     }
 
+    /* NOT USED FOR NOW SO NOT A PROBLEM
     private EntityODR checkClassAttr(EntityODR ent) {
-        EntityTypeService es = new EntityTypeService();
-        EntityService enServ = new EntityService();
+        EntityTypeService es = DisiClients.getClient().getEntityTypeService();
+        EntityService enServ = DisiClients.getClient().getEntityService();
 
-        EntityType etype = es.getEntityType(ent.getTypeId());
+        EntityType etype = es.readEntityType(ent.getTypeId());
 
         List<IAttributeDef> attrDefs = etype.getAttributeDefs();
-        Long attrDefClassAtrID = null;
+        Long attrDefClassAtrId = null;
         for (IAttributeDef adef : attrDefs) {
 
             if (adef.getName().string(Locale.ENGLISH).equalsIgnoreCase("class")) {
-                attrDefClassAtrID = adef.getGUID();
+                attrDefClassAtrId = adef.getGUID();
                 break;
             }
         }
@@ -139,18 +138,18 @@ public class IdentityService implements IIdentityService {
 
         for (Attribute a : ent.getAttributes()) {
 
-            if (a.getDefinitionId() == attrDefClassAtrID) {
+            if (a.getDefinitionId() == attrDefClassAtrId) {
                 isExistAttrClass = true;
                 break;
             }
         }
 
         if (!isExistAttrClass) {
-            Attribute a = enServ.createClassAttribute(attrDefClassAtrID, etype.getConceptID());
+            Attribute a = enServ.createClassAttribute(attrDefClassAtrId, etype.getConceptID());
             ent.getAttributes().add(a);
             logger.warn("No class attribute is assigned for the entity. Default class attribute is assigned");
         }
         return ent;
     }
-
+    */
 }

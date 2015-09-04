@@ -15,9 +15,10 @@
  */
 package eu.trentorise.opendata.disiclient;
 
+import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
 import eu.trentorise.opendata.commons.Dict;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
-import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
+import eu.trentorise.opendata.disiclient.services.DisiEkb;
 import eu.trentorise.opendata.semantics.services.SearchResult;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
@@ -34,6 +35,7 @@ import org.slf4j.LoggerFactory;
 public final class DisiClients {
 
     private static final Logger LOG = LoggerFactory.getLogger(DisiClients.class);
+    private static final DisiEkb INSTANCE = new DisiEkb();;
 
     public static SearchResult makeSearchResult(ConceptODR codr) {
 
@@ -46,15 +48,16 @@ public final class DisiClients {
             name = codr.getName();
         }
                 
-        String url = WebServiceURLs.conceptIDToURL(codr.getId());
+        String url = SwebConfiguration.getUrlMapper().conceptIdToUrl(codr.getId());
 
         return SearchResult.of(url, name);
     }
     
     
     public static SearchResult makeSearchResult(ComplexType cType) {
-        Dict name = DictFactory.mapToDict(cType.getName());        
-        String url = WebServiceURLs.etypeIDToURL(cType.getId());    
+        Dict name = DictFactory.mapToDict(cType.getName());       
+        
+        String url = SwebConfiguration.getUrlMapper().etypeIdToUrl(cType.getId());    
         
         return SearchResult.of(url, name);
     }
@@ -62,8 +65,19 @@ public final class DisiClients {
     public static SearchResult makeSearchResult(Entity instance) {                       
         Map<String, List<String>> names = instance.getNames().iterator().next().getNames();
         Dict name = DictFactory.multimapToDict(names);
-        String url = WebServiceURLs.entityIDToURL(instance.getId());
+        String url = SwebConfiguration.getUrlMapper().entityIdToUrl(instance.getId());
         
         return SearchResult.of(url, name);
     }    
+    
+    
+    
+    /**
+     * Horror method to get singleton
+     * 
+     * @deprecated todo try to use me as little as possible, pleease
+     */
+    public static DisiEkb getClient(){        
+        return INSTANCE;
+    }
 }

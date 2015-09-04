@@ -1,9 +1,10 @@
 package eu.trentorise.opendata.disiclient.test.services;
 
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import static eu.trentorise.opendata.commons.OdtUtils.checkNotEmpty;
 import eu.trentorise.opendata.disiclient.services.EntityService;
-import eu.trentorise.opendata.disiclient.services.KnowledgeService;
 import eu.trentorise.opendata.disiclient.services.NLPService;
 import eu.trentorise.opendata.disiclient.test.ConfigLoader;
 
@@ -28,6 +29,7 @@ import java.util.Locale;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.LOCATION_URL;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.SHOPPING_FACILITY_URL;
 import eu.trentorise.opendata.semantics.services.IEkb;
+import eu.trentorise.opendata.semantics.services.IKnowledgeService;
 import eu.trentorise.opendata.semantics.services.INLPService;
 import eu.trentorise.opendata.semtext.MeaningStatus;
 import it.unitn.disi.sweb.core.nlp.model.NLMeaning;
@@ -142,9 +144,17 @@ public class TestNLPService {
         }
     };
 
+    private SemText runNlp(String text){
+        return nlpService.runNLP(Lists.newArrayList(text), null).get(0);
+    }
+            
+    private SemText runNlp(String text, @Nullable String domainURL){
+        return nlpService.runNLP(Lists.newArrayList(text), domainURL).get(0);
+    }        
+            
     @Test
     public void testGetAllPipelinesDescription() {
-        NLPService disiNlpService = new NLPService();
+        NLPService disiNlpService = (NLPService) ekb.getNLPService();
         List<PipelineDescription> pipelines = disiNlpService.readPipelinesDescription();
         //logger.debug("NLP Pipelines : ");
         for (PipelineDescription pipeline : pipelines) {
@@ -234,7 +244,7 @@ public class TestNLPService {
     @Test
     public void testNLTokenConcept() {
 
-        NLPService disiNlpService = new NLPService();
+        NLPService disiNlpService = (NLPService) ekb.getNLPService();
 
         NLText nlText = disiNlpService.runNlpIt(SINGLE_CONCEPT);
 
@@ -257,7 +267,7 @@ public class TestNLPService {
     @Test
     public void testNLTokenEntity() {
 
-        NLPService disiNlpService = new NLPService();
+        NLPService disiNlpService = (NLPService) ekb.getNLPService();
 
         NLText nlText = disiNlpService.runNlpIt(SINGLE_ENTITY);
 
@@ -282,9 +292,9 @@ public class TestNLPService {
         Meaning m = word.getSelectedMeaning();
 
         assertTrue(m.getName().anyString().getString().length() > 1);
-        KnowledgeService ks = new KnowledgeService();
+        IKnowledgeService ks = ekb.getKnowledgeService();
 
-        IConcept concept = ks.getConcept(word.getSelectedMeaning().getId());
+        IConcept concept = ks.readConcept(word.getSelectedMeaning().getId());
         assertTrue(concept != null);
         assertEquals(word.getSelectedMeaning().getId(), concept.getURL());
 
@@ -295,9 +305,9 @@ public class TestNLPService {
 
     @Test
     public void testMultiWord() {
-        NLPService nlpService = new NLPService();
+        
 
-        SemText semText = nlpService.runNLP(MULTI_WORD);
+        SemText semText = runNlp(MULTI_WORD, null);
 
         assertEquals(1, semText.getSentences().get(0).getTerms().size());
 
@@ -308,9 +318,8 @@ public class TestNLPService {
 
     @Test
     public void testNamedEntity() {
-        NLPService nlpService = new NLPService();
-
-        SemText semText = nlpService.runNLP(SINGLE_ENTITY);
+        
+        SemText semText = runNlp(SINGLE_ENTITY, null);
 
         assertEquals(1, semText.terms().size());
 
@@ -320,19 +329,19 @@ public class TestNLPService {
         assertNotNull(term.getSelectedMeaning());
         checkNotEmpty(term.getSelectedMeaning().getId(), "Invalid id for selected meaning!");
 
-        EntityService es = new EntityService();
-        IEntity ent = es.readEntity(term.getSelectedMeaning().getId());
+        
+        IEntity ent = ekb.getEntityService().readEntity(term.getSelectedMeaning().getId());
         assertTrue(ent != null);
-        assertEquals(term.getSelectedMeaning().getId(), ent.getURL());
+        assertEquals(term.getSelectedMeaning().getId(), ent.getUrl());
     }
 
     @Test
     public void testLongNamedEntity_1() {
-        NLPService disiNlpService = new NLPService();
+        
 
         String inputText = "Pergine Valsugana"; // "San Cristoforo al Lago";                
 
-        NLText nltxt = disiNlpService.runNlpIt(inputText);
+        NLText nltxt = ((NLPService) nlpService).runNlpIt(inputText);
 
         assertEquals(1, nltxt.getSentences().size());
         for (NLToken tok : nltxt.getSentences().get(0).getTokens()) {
@@ -346,7 +355,7 @@ public class TestNLPService {
         assertEquals(0, nltxt.getSentences().get(0).getMultiWords().size());
         // assertEquals(1, nltxt.getSentences().strs(0).getNamedEntities().size()); // fails, finds 0
 
-        SemText semText = disiNlpService.runNLP(inputText);
+        SemText semText = runNlp(inputText);
 
         assertEquals(1, semText.getSentences().size());
 
@@ -361,12 +370,10 @@ public class TestNLPService {
         String url = word.getSelectedMeaning().getId();
 
         assertNotNull(url);
-
-        EntityService es = new EntityService();
-
-        IEntity ent = es.readEntity(url);
+        
+        IEntity ent = ekb.getEntityService().readEntity(url);
         assertTrue(ent != null);
-        assertEquals(word.getSelectedMeaning().getId(), ent.getURL());
+        assertEquals(word.getSelectedMeaning().getId(), ent.getUrl());
     }
 
     /**
@@ -375,7 +382,7 @@ public class TestNLPService {
      */
     @Test
     public void testLongNamedEntity_2() {
-        NLPService disiNlpService = new NLPService();
+        NLPService disiNlpService = (NLPService) ekb.getNLPService();
 
         String inputText = MULTI_ENTITY;
 
@@ -418,12 +425,12 @@ public class TestNLPService {
 
     @Test
     public void testNlpWithMixedEntities() {        
-        NLPService nlpService = (NLPService) ekb.getNLPService();
-        SemText semText = nlpService.runNLP(MIXED_ENTITIES_AND_CONCEPTS, null);
+        NLPService nlpServ = (NLPService) ekb.getNLPService();
+        SemText semText = nlpServ.runNLP(MIXED_ENTITIES_AND_CONCEPTS);
         List<String> entitiesToRead = new ArrayList();
-        List<IEntity> entities = new ArrayList();
+        List<IEntity> entities;
         List<String> conceptsToRead = new ArrayList();
-        List<IConcept> concepts = new ArrayList();
+        List<IConcept> concepts;
 
         for (Term term : semText.terms()) {
             Meaning m = term.getSelectedMeaning();
@@ -454,10 +461,10 @@ public class TestNLPService {
     @Test
     public void testNLPWithEntityRestriction() {
 
-        SemText semTextLocationType = nlpService.runNLP(Arrays.asList(MIXED_ENTITIES_AND_CONCEPTS), LOCATION_URL).get(0);
+        SemText semTextLocationType = runNlp(MIXED_ENTITIES_AND_CONCEPTS, LOCATION_URL);
         testFiltering(semTextLocationType, MeaningKind.ENTITY, LOCATION_URL);
 
-        SemText semTextShoppingFacilityType = nlpService.runNLP(Arrays.asList(MIXED_ENTITIES_AND_CONCEPTS), SHOPPING_FACILITY_URL).get(0);
+        SemText semTextShoppingFacilityType = runNlp(MIXED_ENTITIES_AND_CONCEPTS, SHOPPING_FACILITY_URL);
         testFiltering(semTextShoppingFacilityType, MeaningKind.ENTITY, SHOPPING_FACILITY_URL);
 
     }
@@ -503,7 +510,7 @@ public class TestNLPService {
     @Ignore
     public void testNLPWithConceptRestriction() {
         logger.warn("ONLY TESTING WITH ROOT CONCEPT!");
-        String rootConceptURL = ekb.getKnowledgeService().getRootConcept().getURL();
+        String rootConceptURL = ekb.getKnowledgeService().readRootConcept().getURL();
         SemText semText = nlpService.runNLP(Arrays.asList(MIXED_ENTITIES_AND_CONCEPTS), rootConceptURL).get(0);
         testFiltering(semText, MeaningKind.CONCEPT, rootConceptURL);
     }

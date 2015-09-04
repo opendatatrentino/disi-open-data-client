@@ -1,5 +1,7 @@
 package eu.trentorise.opendata.disiclient.services;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
 import eu.trentorise.opendata.commons.Dict;
 import eu.trentorise.opendata.disiclient.DisiClientException;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
@@ -19,9 +21,10 @@ import eu.trentorise.opendata.semtext.SemText;
 import eu.trentorise.opendata.semantics.services.IEntityService;
 import eu.trentorise.opendata.semantics.DataTypes;
 import eu.trentorise.opendata.semantics.services.SearchResult;
-import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
+
 import eu.trentorise.opendata.commons.OdtUtils;
-import it.unitn.disi.sweb.webapi.client.IProtocolClient;
+import eu.trentorise.opendata.disiclient.UrlMapper;
+import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
 import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
 import it.unitn.disi.sweb.webapi.client.kb.VocabularyClient;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
@@ -54,17 +57,26 @@ import org.slf4j.LoggerFactory;
 
 public class EntityService implements IEntityService {
 
-    Logger logger = LoggerFactory.getLogger(EntityService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EntityService.class);
 
-    private static IProtocolClient api = WebServiceURLs.getClientProtocol();
-    private DisiEkb disiEkb;
+    private DisiEkb ekb;
 
-    public EntityService(IProtocolClient api) {
-        EntityService.api = api;
+    @Nullable
+    private InstanceClient instanceClient;
+
+    EntityService() {
     }
 
-    public EntityService() {
+    private InstanceClient getInstanceClient() {
+        if (instanceClient == null) {
+            instanceClient = new InstanceClient(SwebConfiguration.getClientProtocol());
+        }
+        return instanceClient;
+    }
 
+    EntityService(DisiEkb ekb) {
+        checkNotNull(ekb);
+        this.ekb = ekb;
     }
 
     @Override
@@ -73,17 +85,17 @@ public class EntityService implements IEntityService {
         EntityODR ent = EntityODR.disify(entity, true);
 
         Entity e = ent.convertToEntity();
-        InstanceClient instanceCl = new InstanceClient(this.api);
-        logger.info(e.toString());
+
+        LOG.info(e.toString());
         EntityTypeService es = new EntityTypeService();
-        EntityType etype = es.getEntityType(e.getTypeId());
+        EntityType etype = es.readEntityType(e.getTypeId());
 
         List<IAttributeDef> attrDefs = etype.getAttributeDefs();
         Long attrDefClassAtrID = null;
         for (IAttributeDef adef : attrDefs) {
 
             if (adef.getName().string(Locale.ENGLISH).equalsIgnoreCase("class")) {
-                attrDefClassAtrID = adef.getGUID();
+                attrDefClassAtrID = attrDefUrlToId(adef.getURL());
                 break;
             }
         }
@@ -92,7 +104,7 @@ public class EntityService implements IEntityService {
 
         for (Attribute a : e.getAttributes()) {
 
-            if (a.getDefinitionId() == attrDefClassAtrID) {
+            if (a.getDefinitionId().equals(attrDefClassAtrID)) {
                 isExistAttrClass = true;
                 break;
             }
@@ -101,13 +113,13 @@ public class EntityService implements IEntityService {
         if (!isExistAttrClass) {
             Attribute a = createClassAttribute(attrDefClassAtrID, etype.getConceptID());
             e.getAttributes().add(a);
-            logger.warn("Default class attribute is assigned");
+            LOG.warn("Default class attribute is assigned");
         }
 
         //System.out.println("Class exists: truw");
         Long id = null;
         try {
-            id = instanceCl.create(e);
+            id = getInstanceClient().create(e);
         }
         catch (NotFoundException ex) {
         }
@@ -116,18 +128,16 @@ public class EntityService implements IEntityService {
     }
 
     public Attribute createClassAttribute(Long attrDefClassAtrID, Long conceptID) {
-        IAttributeDef atrDef = new AttributeDef(attrDefClassAtrID);
-        ConceptODR concept = new ConceptODR();
-        concept = concept.readConcept(conceptID);
+        IAttributeDef atrDef = new AttributeDef(attrDefClassAtrID);        
+        IConcept concept = ekb.getKnowledgeService().readConcept(SwebConfiguration.getUrlMapper().conceptIdToUrl(conceptID));
         AttributeODR atrODR = createAttribute(atrDef, concept);
         Attribute a = atrODR.convertToAttribute();
         return a;
 
     }
 
-    public Long createEntity(Name name) {
-        InstanceClient instanceCl = new InstanceClient(this.api);
-        Long id = instanceCl.create(name);
+    public Long createEntity(Name name) {        
+        Long id = getInstanceClient().create(name);
         return id;
     }
 
@@ -135,7 +145,6 @@ public class EntityService implements IEntityService {
 
         //EntityODR ent = (EntityODR) name;
         //Entity en=(Entity)ent;
-        InstanceClient instanceCl = new InstanceClient(this.api);
         //	Instance instance = instanceCl.readInstance(ent.getLocalID(), null);
         //
         //		instance.setTypeId(ent.getEtype().getGUID());
@@ -144,32 +153,30 @@ public class EntityService implements IEntityService {
         //		List<Attribute> attributes = ent.convertToAttributes(attrs);
         //		instance.setAttributes(attributes);
         //Entity e = ent.convertToEntity();
-        instanceCl.update(name);
+        getInstanceClient().update(name);
     }
 
     @Override
     public void deleteEntity(long entityID) {
-        InstanceClient instanceCl = new InstanceClient(this.api);
-        Instance instance = instanceCl.readInstance(entityID, null);
-        instanceCl.delete(instance);
+        Instance instance = getInstanceClient().readInstance(entityID, null);
+        getInstanceClient().delete(instance);
     }
 
     @Override
-    public void deleteEntity(String entityURL) {
-        InstanceClient instanceCl = new InstanceClient(this.api);
-        Long entityID = WebServiceURLs.urlToEntityID(entityURL);
-        Instance instance = instanceCl.readInstance(entityID, null);
-        instanceCl.delete(instance);
+    public void deleteEntity(String entityUrl) {
+        Instance instance = getInstanceClient().readInstance(SwebConfiguration.getUrlMapper().entityUrlToId(entityUrl), null);
+        getInstanceClient().delete(instance);
     }
 
     /**
      * Returns null if entity is not found on the server
+     *
      * @param entityID
-     * @return 
+     * @return
      */
     @Nullable
     public EntityODR readEntity(long entityID) {
-        InstanceClient instanceCl = new InstanceClient(WebServiceURLs.getClientProtocol());
+        InstanceClient instanceCl = new InstanceClient(SwebConfiguration.getClientProtocol());
 
         InstanceFilter instFilter = new InstanceFilter();
         instFilter.setIncludeAttributes(true);
@@ -180,21 +187,15 @@ public class EntityService implements IEntityService {
             return null;
         } else {
             Entity entity = (Entity) instance;
-            EntityODR en = new EntityODR(api, entity);
+            EntityODR en = new EntityODR(entity);
             //   Checker.checkEntity(en);
             return en;
         }
 
     }
 
-    public Long readEntityGlobalID(long globalID) {
-        InstanceClient instanceCl = new InstanceClient(this.api);
-        Instance instance = instanceCl.readEntityByGloabalId(1L, globalID, null);
 
-        Entity entity = (Entity) instance;
-        return entity.getId();
-    }
-
+    @Override
     public List<IEntity> readEntities(List<String> entityUrls) {
 
         if (entityUrls.isEmpty()) {
@@ -204,36 +205,33 @@ public class EntityService implements IEntityService {
         List<Long> entityIDs = new ArrayList();
 
         for (String entityURL : entityUrls) {
-            entityIDs.add(WebServiceURLs.urlToEntityID(entityURL));
+            entityIDs.add(SwebConfiguration.getUrlMapper().entityUrlToId(entityURL));
         }
-
-        InstanceClient instanceCl = new InstanceClient(this.api);
 
         InstanceFilter instFilter = new InstanceFilter();
         instFilter.setIncludeAttributes(true);
         instFilter.setIncludeAttributesAsProperties(true);
         instFilter.setIncludeSemantics(true);
 
-        List instances = instanceCl.readInstancesById(entityIDs, instFilter);
+        List instances = getInstanceClient().readInstancesById(entityIDs, instFilter);
         List<Entity> entities = (List<Entity>) instances;
         List<IEntity> ret = new ArrayList();
         for (Entity epEnt : entities) {
-            EntityODR en = new EntityODR(this.api, epEnt);
-            Checker.checkEntity(en);
+            EntityODR en = new EntityODR(epEnt);
+            Checker.of(ekb).checkEntity(en);
             ret.add(en);
         }
         return ret;
     }
 
     public StructureODR readName(long entityID) {
-        InstanceClient instanceCl = new InstanceClient(this.api);
 
         InstanceFilter instFilter = new InstanceFilter();
         instFilter.setIncludeAttributes(true);
         instFilter.setIncludeAttributesAsProperties(true);
         instFilter.setIncludeSemantics(true);
 
-        Instance instance = instanceCl.readInstance(entityID, instFilter);
+        Instance instance = getInstanceClient().readInstance(entityID, instFilter);
 
         Name name = (Name) instance;
         StructureODR structureName = new StructureODR();
@@ -254,10 +252,10 @@ public class EntityService implements IEntityService {
                     Concept c = (Concept) val.getValue();
                     ConceptODR codr = new ConceptODR(c);
 
-                    ValueODR fixedVal = new ValueODR();
-                    fixedVal.setId(val.getId());
+                    ValueODR fixedVal = new ValueODR(val.getId(), null, codr);
+                    
                     // fixedVal.setDataType(IConcept.class);
-                    fixedVal.setValue(codr);
+                    
                     fixedVals.add(fixedVal);
                 }
                 a.setValues(fixedVals);
@@ -272,15 +270,14 @@ public class EntityService implements IEntityService {
         return structureName;
     }
 
-    public StructureODR readStructure(long entityID) {
-        InstanceClient instanceCl = new InstanceClient(this.api);
+    public StructureODR readStructure(long entityID) {        
 
         InstanceFilter instFilter = new InstanceFilter();
         instFilter.setIncludeAttributes(true);
         instFilter.setIncludeAttributesAsProperties(true);
         instFilter.setIncludeSemantics(true);
 
-        Instance instance = instanceCl.readInstance(entityID, instFilter);
+        Instance instance = getInstanceClient().readInstance(entityID, instFilter);
 
         it.unitn.disi.sweb.webapi.model.eb.Structure structure = (it.unitn.disi.sweb.webapi.model.eb.Structure) instance;
         StructureODR structureName = new StructureODR();
@@ -292,23 +289,12 @@ public class EntityService implements IEntityService {
 
         return structureName;
     }
-
-    @Override
+    
     public void addAttribute(IEntity entity, IAttribute attribute) {
         EntityODR ent = (EntityODR) entity;
         ent.addAttribute(attribute);
     }
 
-    @Override
-    public void addAttributeValue(IEntity entity, IAttribute attribute,
-            IValue value) {
-        AttributeODR atrODr = (AttributeODR) attribute;
-        atrODr.addValue(value);
-        IAttribute atr = atrODr;
-        EntityODR ent = (EntityODR) entity;
-        ent.addAttribute(atr);
-
-    }
 
     /**
      * @param value Note: can be a Collection
@@ -323,7 +309,7 @@ public class EntityService implements IEntityService {
         } else if (ad.getName(Locale.ENGLISH).equals("Description")) {
             return createDescriptionAttributeODR(attrDef, value);
 
-        } else if (attrDef.getDataType().equals(DataTypes.STRUCTURE)) {
+        } else if (attrDef.getDatatype().equals(DataTypes.STRUCTURE)) {
             if (value instanceof Collection) { // notice in Java a Map is *NOT* an instance of Collection
                 return createStructureAttribute(attrDef, (Collection) value);
             } else {
@@ -333,27 +319,31 @@ public class EntityService implements IEntityService {
             }
 
         } else {
+            
+            long attrDefId = attrDefUrlToId(attrDef.getURL());
             if (value instanceof Collection) {
                 List<ValueODR> valsODR = new ArrayList();
                 for (Object obj : (Collection) value) {
-                    ValueODR valODR = new ValueODR();
+                    ValueODR valODR;
                     if (obj instanceof IEntity) {
-                        valODR.setValue(EntityODR.disify((IEntity) obj, false));
+                         valODR = new ValueODR(null, null, EntityODR.disify((IEntity) obj, false));
+                        
                     } else {
-                        valODR.setValue(obj);
+                        valODR = new ValueODR(null, null, obj);                        
                     }
 
                     valsODR.add(valODR);
                 }
-                return new AttributeODR(attrDef, valsODR);
+                return new AttributeODR(attrDefId, valsODR);
             } else {
-                ValueODR valODR = new ValueODR();
+                ValueODR valODR;
                 if (value instanceof IEntity) {
-                    valODR.setValue(EntityODR.disify((IEntity) value, false));
+                     valODR = new ValueODR(null, null, EntityODR.disify((IEntity) value, false));
+                    
                 } else {
-                    valODR.setValue(value);
+                    valODR = new ValueODR(null, null, value);                    
                 }
-                return new AttributeODR(attrDef, valODR);
+                return new AttributeODR(attrDefId, valODR);
             }
 
         }
@@ -390,22 +380,22 @@ public class EntityService implements IEntityService {
      */
     private AttributeODR createDescriptionAttributeODR(IAttributeDef attrDef,
             Object descr) {
+        
+        long attrDefId = attrDefUrlToId(attrDef.getURL());
         if (descr instanceof Collection) {
             List<ValueODR> valsODR = new ArrayList();
             for (Object obj : (Collection) descr) {
-                ValueODR valODR = new ValueODR();
-                valODR.setValue(descrToSemText(obj));
+                ValueODR valODR = new ValueODR(null, null, descrToSemText(obj));                
                 valsODR.add(valODR);
-                logger.warn("Vocabulary id is set to default '1'.");
+                LOG.warn("Vocabulary id is set to default '1'.");
                 valODR.setVocabularyId(1L);
             }
-            return new AttributeODR(attrDef, valsODR);
+            return new AttributeODR(attrDefId, valsODR);
         } else {
-            ValueODR val = new ValueODR();
-            val.setValue(descrToSemText(descr));
-            logger.warn("Vocabulary id is set to default '1'.");
+            ValueODR val = new ValueODR(null, null, descrToSemText(descr));            
+            LOG.warn("Vocabulary id is set to default '1'.");
             val.setVocabularyId(1L);
-            return new AttributeODR(attrDef, val);
+            return new AttributeODR(attrDefId, val);
         }
     }
 
@@ -413,7 +403,7 @@ public class EntityService implements IEntityService {
             HashMap<IAttributeDef, Object> atributes) {
         List<Attribute> attrs = new ArrayList();
         StructureODR attributeStructure = new StructureODR();
-        logger.warn("Hardcoded entity base id 1");
+        LOG.warn("Hardcoded entity base id 1");
         attributeStructure.setEntityBaseId(1L);
 
         AttributeDef adef = (AttributeDef) attrDef;
@@ -432,7 +422,7 @@ public class EntityService implements IEntityService {
             Collection<HashMap<IAttributeDef, Object>> structs) {
 
         Attribute nAtr = new Attribute();
-        nAtr.setDefinitionId(attrDef.getGUID());
+        nAtr.setDefinitionId(attrDefUrlToId(attrDef.getURL()));
         List<Value> values = new ArrayList();
 
         for (HashMap<IAttributeDef, Object> structMap : structs) {
@@ -441,14 +431,14 @@ public class EntityService implements IEntityService {
 
         nAtr.setValues(values);
 
-        AttributeODR a = new AttributeODR(api, nAtr);
+        AttributeODR a = new AttributeODR(nAtr);
 
         return a;
     }
 
     public HashMap<String, Long> getVocabularies() {
         HashMap<String, Long> mapVocabs = new HashMap();
-        VocabularyClient vc = new VocabularyClient(api);
+        VocabularyClient vc = new VocabularyClient(SwebConfiguration.getClientProtocol());
         List<Vocabulary> vocabs = vc.readVocabularies(1L, null, null);
         for (Vocabulary v : vocabs) {
             mapVocabs.put(v.getLanguageCode(), v.getId());
@@ -464,11 +454,11 @@ public class EntityService implements IEntityService {
     public AttributeODR createNameAttribute(IAttributeDef attrDef, Name name) {
 
         Attribute nAtr = new Attribute();
-        nAtr.setDefinitionId(attrDef.getGUID());
+        nAtr.setDefinitionId(SwebConfiguration.getUrlMapper().attrDefUrlToId(attrDef.getURL()));
         List<Value> values = new ArrayList();
         values.add(new Value(name));
         nAtr.setValues(values);
-        AttributeODR a = new AttributeODR(api, nAtr);
+        AttributeODR a = new AttributeODR(nAtr);
         return a;
 
     }
@@ -483,7 +473,7 @@ public class EntityService implements IEntityService {
         List<Value> nameValues = new ArrayList();
         if (name instanceof String) {
             String nameInput = (String) name;
-            logger.warn("No Locale is provided for name" + name + "The vocabulary is set to '1'");
+            LOG.warn("No Locale is provided for name" + name + "The vocabulary is set to '1'");
             nameValues.add(new Value(nameInput, 1L));
             return nameValues;
         } else if (name instanceof Dict) {
@@ -500,7 +490,12 @@ public class EntityService implements IEntityService {
         }
 
     }
-
+    
+    
+    private static long attrDefUrlToId(String attrDefUrl){
+        return SwebConfiguration.getUrlMapper().attrDefUrlToId(attrDefUrl);
+    }
+    
     /**
      *
      * @param attrDef
@@ -508,26 +503,28 @@ public class EntityService implements IEntityService {
      */
     public AttributeODR createNameAttributeODR(IAttributeDef attrDef, Object name) {
 
+        UrlMapper um = SwebConfiguration.getUrlMapper();
+
         Attribute entityNameAttribute = new Attribute();
-        entityNameAttribute.setDefinitionId(attrDef.getGUID());
+        entityNameAttribute.setDefinitionId(attrDefUrlToId(attrDef.getURL()));
 
         Name nameStructure = new Name();
         nameStructure.setEntityBaseId(1L);
-        logger.warn("TODO HARDCODED ENTITY BASE ID TO 1.");
+        LOG.warn("TODO HARDCODED ENTITY BASE ID TO 1.");
         long etypeID;
 //		if(attrDef.getRangeEtypeURL()==null){
 //			etypeID=10L;
 //		}else 
-        etypeID = WebServiceURLs.urlToEtypeID(attrDef.getRangeEtypeURL());
+        etypeID = um.etypeUrlToId(attrDef.getRangeEtypeURL());
         nameStructure.setTypeId(etypeID);
 
         EntityTypeService ets = new EntityTypeService();
-        EntityType etype = (EntityType) ets.readEntityType(WebServiceURLs.etypeIDToURL(etypeID));
+        EntityType etype = (EntityType) ets.readEntityType(um.etypeIdToUrl(etypeID));
         List<IAttributeDef> etypeAtrDefs = etype.getAttributeDefs();
         Long atrDefId = null;
         for (IAttributeDef atrdef : etypeAtrDefs) {
             if (atrdef.getName().string(LocaleUtils.toLocale("en")).equalsIgnoreCase("Name")) {
-                atrDefId = atrdef.getGUID();
+                atrDefId = attrDefUrlToId(atrdef.getURL());
             }
         }
 
@@ -556,7 +553,7 @@ public class EntityService implements IEntityService {
 
         entityNameValues.add(new Value(nameStructure)); // here is your link to the name structure, if you want you can put the id copyOf the name instance (if you created it before) but make sure the data type is COMPLEX_TYPE
         entityNameAttribute.setValues(entityNameValues);
-        AttributeODR a = new AttributeODR(api, entityNameAttribute);
+        AttributeODR a = new AttributeODR(entityNameAttribute);
         return a;
 
     }
@@ -576,9 +573,9 @@ public class EntityService implements IEntityService {
         ent = EntityODR.disify(entity, true);
 
         Entity e = ent.convertToEntity();
-        InstanceClient instanceCl = new InstanceClient(this.api);
+
         try {
-            instanceCl.update(e);
+            getInstanceClient().update(e);
         }
         catch (IllegalArgumentException ex) {
             throw new NotFoundException("Such an entity does not exists.");
@@ -590,7 +587,7 @@ public class EntityService implements IEntityService {
 
         Long typeID;
         try {
-            typeID = WebServiceURLs.urlToEntityID(URL);
+            typeID = SwebConfiguration.getUrlMapper().entityUrlToId(URL);
         }
         catch (Exception e) {
             return null;
@@ -602,11 +599,14 @@ public class EntityService implements IEntityService {
     @Override
     public String createEntityURL(IEntity entity) {
         Long id = createEntity(entity);
-        return WebServiceURLs.entityIDToURL(id);
+        return SwebConfiguration.getUrlMapper().entityIdToUrl(id);
     }
 
     @Override
     public void exportToRdf(List<String> entityURLs, Writer writer) {
+
+        UrlMapper um = SwebConfiguration.getUrlMapper();
+
         if (entityURLs.isEmpty()) {
             throw new IllegalArgumentException("The list of entities for export is empty");
         }
@@ -617,7 +617,7 @@ public class EntityService implements IEntityService {
 
         for (String entityURL : entityURLs) {
 
-            Long eID = WebServiceURLs.urlToEntityID(entityURL);
+            Long eID = um.entityUrlToId(entityURL);
             entitiesID.add(eID);
         }
 
@@ -661,6 +661,8 @@ public class EntityService implements IEntityService {
     @Override
     public void exportToJsonLd(List<String> entityURLs, Writer writer) throws DisiClientException {
 
+        UrlMapper um = SwebConfiguration.getUrlMapper();
+
         if (entityURLs.isEmpty()) {
             throw new IllegalArgumentException("The list of entities to export is empty");
         }
@@ -670,7 +672,7 @@ public class EntityService implements IEntityService {
         List<Long> entitiesID = new ArrayList();
 
         for (String entityURL : entityURLs) {
-            entitiesID.add(WebServiceURLs.urlToEntityID(entityURL));
+            entitiesID.add(um.entityUrlToId(entityURL));
         }
 
         Long fileId = null;
@@ -709,28 +711,27 @@ public class EntityService implements IEntityService {
 
     }
 
-    public EntityODR readEntityByGUID(Long guid) {
-        InstanceClient instanceCl = new InstanceClient(this.api);
+    public EntityODR readEntityByGlobalId(Long globalId) {
 
         InstanceFilter instFilter = new InstanceFilter();
         instFilter.setIncludeAttributes(true);
         instFilter.setIncludeAttributesAsProperties(true);
         instFilter.setIncludeSemantics(true);
-        Entity entity = instanceCl.readEntityByGloabalId(1L, guid, instFilter);
-        //Entity entity =  (Entity)instance; 
-        EntityODR en = new EntityODR(this.api, entity);
+        LOG.warn("TODO - USING FIXED ENTITYBASE WITH ID 1");
+        Entity entity = getInstanceClient().readEntityByGloabalId(1L, globalId, instFilter);         
+        EntityODR en = new EntityODR(entity);
         return en;
     }
 
     @Override
     public List<SearchResult> searchEntities(String partialName, @Nullable String etypeURL, Locale locale) {
-                
-        logger.warn("TODO - SETTING ENTITY PARTIAL NAME TO LOWERCASE");
+
+        LOG.warn("TODO - SETTING ENTITY PARTIAL NAME TO LOWERCASE");
         String lowerCasepartialName = partialName.toLowerCase(locale);
-        
+
         List<SearchResult> entities;
 
-        Search search = new Search(disiEkb);
+        Search search = new Search();
         entities = search.searchEntities(lowerCasepartialName, etypeURL, locale);
 
         return entities;

@@ -1,12 +1,11 @@
 package eu.trentorise.opendata.disiclient.model.entity;
 
 import com.google.common.collect.ImmutableList;
+import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
 import eu.trentorise.opendata.commons.Dict;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.KnowledgeService;
-import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
-import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.urlToEntityID;
 import eu.trentorise.opendata.semantics.Checker;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
@@ -17,9 +16,10 @@ import eu.trentorise.opendata.semantics.model.entity.IValue;
 import eu.trentorise.opendata.semantics.DataTypes;
 import eu.trentorise.opendata.commons.OdtUtils;
 import eu.trentorise.opendata.disiclient.DictFactory;
+import eu.trentorise.opendata.disiclient.DisiClients;
+import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import eu.trentorise.opendata.disiclient.services.NLPService;
 import eu.trentorise.opendata.semtext.SemText;
-import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
 import it.unitn.disi.sweb.webapi.client.kb.ComplexTypeClient;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
@@ -77,15 +77,14 @@ public class EntityODR extends StructureODR implements IEntity {
 
     private IEntityType etype;
 
-    private IProtocolClient api;
-
     public EntityODR() {
     }
 
-    public EntityODR(IProtocolClient api, Entity entity) {
-
-        this.api = api;
-        super.setId((Long) entity.getId());
+    public EntityODR(Entity entity) {
+        
+        EntityService es = DisiClients.getClient().getEntityService();
+        
+        super.setId(entity.getId());
         this.setTypeId(entity.getTypeId());
         super.setEntityBaseId(entity.getEntityBaseId());
         List<Attribute> attrs = entity.getAttributes();
@@ -96,7 +95,7 @@ public class EntityODR extends StructureODR implements IEntity {
                 continue;
             } else if (at.getConceptId() == KnowledgeService.DESCRIPTION_CONCEPT_ID) {
                 List<Value> vals = at.getValues();
-                List<Value> fixedVals = new ArrayList<Value>();
+                List<Value> fixedVals = new ArrayList();
 
                 for (Value val : vals) {
                     if (val.getValue() instanceof SemText) {
@@ -121,8 +120,7 @@ public class EntityODR extends StructureODR implements IEntity {
 
                         if (a.getDataType() == DataType.CONCEPT) {
                             List<Value> vals = a.getValues();
-                            List<Value> fixedVals = new ArrayList<Value>();
-
+                            List<Value> fixedVals = new ArrayList();
                             for (Value val : vals) {
 
                                 if (val.getValue().getClass().equals(ConceptODR.class)) {
@@ -132,10 +130,10 @@ public class EntityODR extends StructureODR implements IEntity {
                                 Concept c = (Concept) val.getValue();
                                 ConceptODR codr = new ConceptODR(c);
 
-                                ValueODR fixedVal = new ValueODR();
-                                fixedVal.setId(val.getId());
+                                ValueODR fixedVal = new ValueODR(val.getId(), null, codr);
+                                
                                 // fixedVal.setDataType(IConcept.class);
-                                fixedVal.setValue(codr);
+                                
                                 fixedVals.add(fixedVal);
                             }
                             a.setValues(fixedVals);
@@ -144,7 +142,7 @@ public class EntityODR extends StructureODR implements IEntity {
                 }
             } else if (at.getDataType() == DataType.CONCEPT) {
                 List<Value> vals = at.getValues();
-                List<Value> fixedVals = new ArrayList<Value>();
+                List<Value> fixedVals = new ArrayList();
 
                 for (Value val : vals) {
 
@@ -155,24 +153,22 @@ public class EntityODR extends StructureODR implements IEntity {
                     Concept c = (Concept) val.getValue();
                     ConceptODR codr = new ConceptODR(c);
 
-                    ValueODR fixedVal = new ValueODR();
-                    fixedVal.setId(val.getId());
-                    // fixedVal.setDataType(IConcept.class);
-                    fixedVal.setValue(codr);
+                    ValueODR fixedVal = new ValueODR(val.getId(), null, codr);
+                    
+                    // fixedVal.setDataType(IConcept.class);                    
                     fixedVals.add(fixedVal);
                 }
                 at.setValues(fixedVals);
             } else {
                 logger.warn("IN EntityODR CONSTRUCTOR: WE NEED GENERIC CODE FOR RELATIONAL ATTRIBUTES! TODO REVIEW!");
-                if ((at.getConceptId() == PART_OF_CONCEPT_ID1) && (at.getValues().size() != 0)) { // todo hardcoded long
+                if ((at.getConceptId() == PART_OF_CONCEPT_ID1) && (!at.getValues().isEmpty())) { // todo hardcoded long
                     List<Value> vals = at.getValues();
-                    List<Value> fixedVals = new ArrayList<Value>();
-                    EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
+                    List<Value> fixedVals = new ArrayList();                    
                     logger.info("PART_OF attrbiute can not have multiple values, we take the first (and only) one");
                     if (vals.size() > 0) {
                         Instance inst = (Instance) vals.get(0).getValue();
                         IEntity e = es.readEntity(inst.getId());
-                        //	EntityODR enodr = new EntityODR(WebServiceURLs.getClientProtocol(), e);
+                        //	EntityODR enodr = new EntityODR(SwebConfiguration.getClientProtocol(), e);
 
                         for (Value v : vals) {
                             Value fixedVal = new Value();
@@ -184,8 +180,8 @@ public class EntityODR extends StructureODR implements IEntity {
                     at.setValues(fixedVals);
                 } else if (at.getConceptId() == 111001L) { // todo hardcoded long
                     List<Value> vals = at.getValues();
-                    List<Value> fixedVals = new ArrayList<Value>();
-                    EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
+                    List<Value> fixedVals = new ArrayList();
+                    
                     for (Value v : vals) {
                         Instance inst = (Instance) v.getValue();
                         IStructure e = es.readStructure(inst.getId());
@@ -221,7 +217,7 @@ public class EntityODR extends StructureODR implements IEntity {
      */
     private void fixConcept(Attribute at) {
         List<Value> vals = at.getValues();
-        List<Value> fixedVals = new ArrayList<Value>();
+        List<Value> fixedVals = new ArrayList();
 
         for (Value val : vals) {
 
@@ -232,10 +228,10 @@ public class EntityODR extends StructureODR implements IEntity {
             Concept c = (Concept) val.getValue();
             ConceptODR codr = new ConceptODR(c);
 
-            ValueODR fixedVal = new ValueODR();
-            fixedVal.setId(val.getId());
+            ValueODR fixedVal = new ValueODR(val.getId(), null, codr);
+            
             // fixedVal.setDataType(IConcept.class);
-            fixedVal.setValue(codr);
+            
             fixedVals.add(fixedVal);
         }
         at.setValues(fixedVals);
@@ -274,11 +270,12 @@ public class EntityODR extends StructureODR implements IEntity {
         str += "]";
         return str;
     }
-
+    
     public Long getGUID() {
         return globalId;
     }
 
+    @Override
     public Long getLocalID() {
 
         if (super.getId() != null) {
@@ -294,18 +291,17 @@ public class EntityODR extends StructureODR implements IEntity {
     }
 
     @Override
-    public String getURL() {
+    public String getUrl() {
         if (this.localId != null) {
-            return WebServiceURLs.entityIDToURL(this.localId);
+            return SwebConfiguration.getUrlMapper().entityIdToUrl(this.localId);
         } else {
             if (this.getId() == null) {
                 throw new NullPointerException("Found null entity id while converting to url!");
             }
-            return WebServiceURLs.entityIDToURL(this.getId());
+            return SwebConfiguration.getUrlMapper().entityIdToUrl(this.getId());
         }
     }
-
-    @Override
+    
     public void setURL(String sUrl) {
         this.sUrl = sUrl;
     }
@@ -320,8 +316,8 @@ public class EntityODR extends StructureODR implements IEntity {
         if ((this.names == null) && (super.getId() == null)) {
             return Dict.of();
         } else if (this.names == null) {
-            EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
-            EntityODR e =  es.readEntity(super.getId());
+            
+            EntityODR e =  DisiClients.getClient().getEntityService().readEntity(super.getId());
             if (e == null) {
                 return Dict.of();
             }
@@ -356,21 +352,21 @@ public class EntityODR extends StructureODR implements IEntity {
             for (IAttribute attr : attributes) {
                 AttributeDef ad = (AttributeDef) attr;
                 if (ad.getName(Locale.ENGLISH).equals("Class")) {
-                    ValueODR val = new ValueODR();
-                    val.setValue(classConceptId);
-                    attr.addValue(val);
+                    ValueODR val = new ValueODR(null, null, classConceptId);
+                    
+                    
+                    ((AttributeODR) attr).addValue(val);
+                    
                 } else {
-                    ValueODR val = new ValueODR();
-                    val.setValue(classConceptId);
-                    AttributeODR at = new AttributeODR(classAttributeDef, val);
+                    ValueODR val = new ValueODR(null, null, classConceptId);                    
+                    AttributeODR at = new AttributeODR(classAttributeDef.getId(), val);
                     attributes.add(at);
                 }
             }
         } else {
             List<IAttribute> attrs = new ArrayList();
-            ValueODR val = new ValueODR();
-            val.setValue(classConceptId);
-            AttributeODR at = new AttributeODR(classAttributeDef, val);
+            ValueODR val = new ValueODR(null, null, classConceptId);           
+            AttributeODR at = new AttributeODR(classAttributeDef.getId(), val);
             attrs.add(at);
             super.setStructureAttributes(attrs);
         }
@@ -414,7 +410,7 @@ public class EntityODR extends StructureODR implements IEntity {
             List<IAttribute> atrs = convertToAttributeODR(super.getAttributes());
             return atrs;
         } else {
-            AttributeClient attrCl = new AttributeClient(this.api);
+            AttributeClient attrCl = new AttributeClient(SwebConfiguration.getClientProtocol());
             Long id = super.getId();
             if (id == null || getTypeId() == null) {
                 return new ArrayList();
@@ -450,33 +446,35 @@ public class EntityODR extends StructureODR implements IEntity {
         attrs.add(attr);
         super.setAttributes(attrs);
         //server side - create attr 
-        AttributeClient attrCl = new AttributeClient(api);
+        AttributeClient attrCl = new AttributeClient(SwebConfiguration.getClientProtocol());
         attrCl.create(attr);
         // add attr to the list copyOf existing attrs
 
     }
 
+    @Override
     public IEntityType getEtype() {
         if (this.etype != null) {
             return this.etype;
         } else {
-            ComplexTypeClient ctc = new ComplexTypeClient(this.api);
+            ComplexTypeClient ctc = new ComplexTypeClient(SwebConfiguration.getClientProtocol());
             Long typeId = super.getTypeId();
             if (typeId == null) {
                 return null;
             }
             ComplexType ctype = ctc.readComplexType(typeId, null);
-            EntityType etype = new EntityType(ctype);
-            this.etype = etype;
+            EntityType et = new EntityType(ctype);
+            this.etype = et;
         }
         return etype;
     }
 
+    @Override
     public void setEtype(IEntityType type) {
         //locally
-        EntityType etype = (EntityType) type;
-        this.etype = etype;
-        super.setTypeId(etype.getGUID());
+        EntityType et = (EntityType) type;
+        this.etype = et;
+        super.setTypeId(et.getGUID());
         //on the server
         //		InstanceClient instanceCl= new  InstanceClient(this.api);
         //		Instance instance = instanceCl.readInstance(super.getId(), null);
@@ -487,12 +485,13 @@ public class EntityODR extends StructureODR implements IEntity {
     private List<IAttribute> convertToAttributeODR(List<Attribute> attributes) {
         List<IAttribute> attributesODR = new ArrayList();
         for (Attribute attr : attributes) {
-            AttributeODR attrODR = new AttributeODR(api, attr);
+            AttributeODR attrODR = new AttributeODR(attr);
             attributesODR.add(attrODR);
         }
         return attributesODR;
     }
 
+    @Override
     public List<Attribute> convertToAttributes(List<IAttribute> attributes) {
         List<Attribute> attrs = new ArrayList();
         for (IAttribute attr : attributes) {
@@ -531,7 +530,7 @@ public class EntityODR extends StructureODR implements IEntity {
                             logger.warn("No vocabulary is provided. Vocabulary is set to default '1");
                             val.setVocabularyId(1L);
                         } else {
-                            EntityService es = new EntityService();
+                            EntityService es = DisiClients.getClient().getEntityService();
                             HashMap<String, Long> vocabularyMap = es.getVocabularies();
 
                             SemText st = (SemText) val.getValue();
@@ -605,11 +604,6 @@ public class EntityODR extends StructureODR implements IEntity {
         return stName.get(0);
     }
 
-    public void setName(Locale locale, List<String> names) {
-        //	this.names = names;
-        throw new UnsupportedOperationException("todo to implement");
-
-    }
 
     @Override
     public Dict getDescription() {
@@ -673,18 +667,7 @@ public class EntityODR extends StructureODR implements IEntity {
         return epDescriptionMap;
     }
 
-    @Override
-    public void setName(Locale locale, String name) {
-        throw new UnsupportedOperationException("todo to implement");
-
-    }
-
-    @Override
-    public void setDescription(Locale language, String description) {
-        throw new UnsupportedOperationException("todo to implement");
-
-    }
-
+  
     /**
      * Converts from object in values of IEntity to disi client format.
      */
@@ -707,7 +690,7 @@ public class EntityODR extends StructureODR implements IEntity {
 
         for (IAttribute subattr : structure.getStructureAttributes()) {
             for (IValue val : subattr.getValues()) {
-                map.put(subattr.getAttrDef(), disifyObject(val.getValue()));
+                map.put(DisiClients.getClient().getEntityTypeService().readAttrDef(subattr.getAttrDefUrl()), disifyObject(val.getValue()));
             }
 
         }
@@ -724,26 +707,30 @@ public class EntityODR extends StructureODR implements IEntity {
      */
     public static EntityODR disify(IEntity entity, boolean root) {
 
+        EntityService es = DisiClients.getClient().getEntityService();
+        
         if (entity instanceof EntityODR) {
             return (EntityODR) entity;
         }
 
+        EntityTypeService ets = DisiClients.getClient().getEntityTypeService();
+        
         EntityODR enodr = new EntityODR();
+        EntityType etype = ets.readEntityType(entity.getEtypeURL());
 
-        EntityService es = new EntityService();
-        List<IAttribute> newAttrs = new ArrayList<IAttribute>();
+        List<IAttribute> newAttrs = new ArrayList();
 
         if (root) {
-            Checker.checkEntity(entity, true);
-            Object nameAttrDefURL = entity.getEtype().getNameAttrDef().getURL();
+            Checker.of(DisiClients.getClient()).checkEntity(entity, true);
+            Object nameAttrDefURL = etype.getNameAttrDef().getURL();
             for (IAttribute attr : entity.getStructureAttributes()) {
                 if (attr.getValuesCount() > 0) {
-                    IAttributeDef attrDef = attr.getAttrDef();
+                    IAttributeDef attrDef = ets.readAttrDef(attr.getAttrDefUrl());
                     AttributeODR attrODR;
 
                     List<Object> objects = new ArrayList();
 
-                    if (DataTypes.ENTITY.equals(attrDef.getDataType())) {
+                    if (DataTypes.ENTITY.equals(attrDef.getDatatype())) {
                         List<EntityODR> ensODR = new ArrayList();
                         for (IValue v : attr.getValues()) {
                             ensODR.add(disify((IEntity) v.getValue(), false));
@@ -762,7 +749,7 @@ public class EntityODR extends StructureODR implements IEntity {
                             }
                         }
 
-                        attrODR = es.createAttribute(attrDef, objects);
+                        attrODR = DisiClients.getClient().getEntityService().createAttribute(attrDef, objects);
                         newAttrs.add(attrODR);
                     }
 
@@ -771,7 +758,7 @@ public class EntityODR extends StructureODR implements IEntity {
             }
 
             enodr.setEntityAttributes(newAttrs);
-            enodr.setEtype(entity.getEtype());
+            enodr.setEtype(etype);
         }
 
         /*
@@ -782,11 +769,11 @@ public class EntityODR extends StructureODR implements IEntity {
         logger.warn("SETTING HARD CODED ENTITY BASE ID = 1 IN DISIFY METHOD.");
         enodr.setEntityBaseId(1L);
 
-        logger.info("disifying entity.getURL = " + entity.getURL());
+        logger.info("disifying entity.getURL = " + entity.getUrl());
 
-        if (entity.getURL() != null && entity.getURL().length() > 0 && !(es.isTemporaryURL(entity.getURL()))) {
-            enodr.setId(urlToEntityID(entity.getURL()));
-            enodr.setURL(entity.getURL());
+        if (entity.getUrl() != null && entity.getUrl().length() > 0 && !(es.isTemporaryURL(entity.getUrl()))) {
+            enodr.setId(SwebConfiguration.getUrlMapper().entityUrlToId(entity.getUrl()));
+            enodr.setURL(entity.getUrl());
         }
 
         return enodr;

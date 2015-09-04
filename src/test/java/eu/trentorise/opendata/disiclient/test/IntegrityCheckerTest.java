@@ -15,20 +15,27 @@ import static eu.trentorise.opendata.commons.OdtUtils.checkNotDirtyUrl;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
-import eu.trentorise.opendata.disiclient.model.entity.EntityType;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
-import eu.trentorise.opendata.disiclient.services.EntityService;
-import eu.trentorise.opendata.disiclient.services.EntityTypeService;
+import eu.trentorise.opendata.disiclient.services.DisiEkb;
 import eu.trentorise.opendata.disiclient.services.IdentityService;
-import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
+
 import eu.trentorise.opendata.disiclient.test.services.TestEntityService;
+
+import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.FACILITY_ID;
+import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.FACILITY_URL;
+import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.RAVAZZONE_URL;
 import eu.trentorise.opendata.semantics.Checker;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.DataTypes;
-import eu.trentorise.opendata.semantics.services.model.IIDResult;
+import eu.trentorise.opendata.semantics.services.IEkb;
+import eu.trentorise.opendata.semantics.services.IEntityService;
+import eu.trentorise.opendata.semantics.services.IEntityTypeService;
+import eu.trentorise.opendata.semantics.services.IIDResult;
+import eu.trentorise.opendata.semantics.services.IIdentityService;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 
@@ -110,10 +117,25 @@ public class IntegrityCheckerTest {
         }
     };
 
+    private IEkb ekb;
+    private Checker checker;
+    private IEntityTypeService ets;
+    
     @Before
     public void beforeMethod() {
-        ConfigLoader.init();        
+        
+        ekb = ConfigLoader.init();
+        ets = ekb.getEntityTypeService();
+        checker = Checker.of(ekb);
     }  
+    
+    @After
+    public void after(){
+        ets = null;
+        ekb = null;
+        checker = null;
+        
+    }
     
 
     /**
@@ -122,20 +144,20 @@ public class IntegrityCheckerTest {
     @Test
     @Ignore
     public void testCheckEtypesWithAttrDef() {
-        EntityTypeService ets = new EntityTypeService();
-        List<IEntityType> etypes = ets.getAllEntityTypes();
+        
+        List<IEntityType> etypes = ekb.getEntityTypeService().readAllEntityTypes();
         for (IEntityType etype : etypes) {
-            Checker.checkEntityType(etype);
+            checker.checkEntityType(etype);
             checkNotDirtyUrl(etype.getURL(), "etype url is dirty!");
             List<IAttributeDef> atdefs = etype.getAttributeDefs();
             for (IAttributeDef ad : atdefs) {
-                Checker.checkAttributeDef(ad);
+                checker.checkAttributeDef(ad);
                 checkNotNull(ad.getName(), "attribute def name is null!");
-                checkNotNull(ad.getConcept().getDescription(), "attribute def concept description is null!");
-                checkNotNull(ad.getConcept().getName(), "attribute def concept name is null!");
+                //checkNotNull(ad.getConcept().getDescription(), "attribute def concept description is null!");
+                //checkNotNull(ad.getConcept().getName(), "attribute def concept name is null!");
                 checkNotDirtyUrl(ad.getURL(), "attr def url is dirty!");
                 checkNotDirtyUrl(ad.getEtypeURL(), "attr def etype url is dirty!");
-                if (ad.getDataType().equals(DataTypes.STRUCTURE)) {
+                if (ad.getDatatype().equals(DataTypes.STRUCTURE)) {
                     checkNotDirtyUrl(ad.getRangeEtypeURL(), "attr def range etype url is dirty!");
                 }
             }
@@ -147,20 +169,20 @@ public class IntegrityCheckerTest {
     @Test
     @Ignore
     public void testCheckEntity() {
-        EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
-        IEntity entity = es.readEntity(15001L);
-        Checker.checkEntity(entity);
+        
+        IEntity entity = ekb.getEntityService().readEntity(RAVAZZONE_URL);
+        checker.checkEntity(entity);
         List<IAttribute> attributes = entity.getStructureAttributes();
 
         for (IAttribute attr : attributes) {
-            Checker.checkValue(attr.getFirstValue(), attr.getAttributeDefinition());
+            checker.checkValue(attr.getFirstValue(), ets.readAttrDef(attr.getAttrDefUrl()));
         }
 
     }
 
     @Test
     public void testCheckIDResults() {
-        IdentityService idServ = new IdentityService();
+        IIdentityService idServ = ekb.getIdentityService();
 
         IEntity entity1 = entityForReuseResults();
         IEntity entity2 = entityForNewResults();
@@ -171,17 +193,17 @@ public class IntegrityCheckerTest {
         entities.add(entity2);
         entities.add(entity3);
 
-        List<IIDResult> results = idServ.assignURL(entities, 3);
+        List<? extends IIDResult> results = idServ.assignURL(entities, 3);
         for (IIDResult res : results) {
             System.out.println(res.getAssignmentResult().toString());
 
-            Checker.checkIDResult(res);
+            checker.checkIDResult(res);
 
         }
     }
 
     private IEntity entityForReuseResults() {
-        EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
+        IEntityService enServ = ekb.getEntityService();
 
         EntityODR entity = (EntityODR) enServ.readEntity(TestEntityService.PALAZZETTO_URL);
         List<Attribute> attrs = entity.getAttributes();
@@ -201,12 +223,12 @@ public class IntegrityCheckerTest {
         en.setTypeId(12L);
         en.setAttributes(attrs1);
 
-        IEntity ent = new EntityODR(WebServiceURLs.getClientProtocol(), en);
+        IEntity ent = new EntityODR(en);
         return ent;
     }
 
     private IEntity entityForNewResults() {
-        EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
+        IEntityService enServ = ekb.getEntityService();
 
         EntityODR entity = (EntityODR) enServ.readEntity(TestEntityService.PALAZZETTO_URL);
         List<Attribute> attrs = entity.getAttributes();
@@ -215,7 +237,7 @@ public class IntegrityCheckerTest {
 
             if (atr.getName().get("en").equalsIgnoreCase("Latitude")) {
                 AttributeDef ad = new AttributeDef(atr.getDefinitionId());
-                AttributeODR attr = enServ.createAttribute(ad, 12.123F);
+                AttributeODR attr = (AttributeODR) enServ.createAttribute(ad, 12.123F);
                 Attribute a = attr.convertToAttribute();
                 attrs1.add(a);
 
@@ -227,16 +249,16 @@ public class IntegrityCheckerTest {
         }
         Entity en = new Entity();
         en.setEntityBaseId(1L);
-        en.setTypeId(12L);
+        en.setTypeId(FACILITY_ID);
         en.setAttributes(attrs1);
 
-        IEntity ent = new EntityODR(WebServiceURLs.getClientProtocol(), en);
+        IEntity ent = new EntityODR(en);
         return ent;
     }
 
     private IEntity entityForMissingResults() {
 
-        EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
+        IEntityService enServ = ekb.getEntityService();
         EntityODR entity = (EntityODR) enServ.readEntity(TestEntityService.PALAZZETTO_URL);
         List<Attribute> attrs = entity.getAttributes();
         List<Attribute> attrs1 = new ArrayList();
@@ -259,14 +281,14 @@ public class IntegrityCheckerTest {
         en.setTypeId(12L);
         en.setAttributes(attrs1);
 
-        IEntity ent = new EntityODR(WebServiceURLs.getClientProtocol(), en);
+        IEntity ent = new EntityODR(en);
         return ent;
     }
 
     private Attribute createAttributeEntity(Object value) {
-        EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
-        EntityTypeService ets = new EntityTypeService();
-        EntityType etype = ets.getEntityType(12L);
+        IEntityService es = ekb.getEntityService();
+        
+        IEntityType etype = ets.readEntityType(FACILITY_URL);
 
         List<IAttributeDef> attrDefList = etype.getAttributeDefs();
         List<Attribute> attrs = new ArrayList();
@@ -274,7 +296,7 @@ public class IntegrityCheckerTest {
         Attribute a = null;
         for (IAttributeDef atd : attrDefList) {
             if (atd.getName().string(Locale.ENGLISH).equals("Foursquare ID")) {
-                AttributeODR attr = es.createAttribute(atd, (String) value);
+                AttributeODR attr = (AttributeODR) es.createAttribute(atd, (String) value);
                 a = attr.convertToAttribute();
                 attrs.add(a);
             }
@@ -287,8 +309,8 @@ public class IntegrityCheckerTest {
     public void testCheckConcepts() {
 
         ConceptODR concept = new ConceptODR();
-        concept = concept.readConcept(1L);
-        Checker.checkConcept(concept);
+        //concept = concept.readConcept(1L);
+        //checker.checkConcept(concept);
 
     }
 

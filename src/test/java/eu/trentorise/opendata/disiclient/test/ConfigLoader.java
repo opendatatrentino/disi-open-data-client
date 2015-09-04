@@ -32,7 +32,7 @@ import java.util.Properties;
 public class ConfigLoader {
        
     /**
-     * Loads configuration from conf/schema-matcher.properties file
+     * Loads configuration from conf/sweb-webapi-model-override.properties file
      */
     public static IEkb init() {
         File file = new File ("conf/sweb-webapi-model-override.properties");

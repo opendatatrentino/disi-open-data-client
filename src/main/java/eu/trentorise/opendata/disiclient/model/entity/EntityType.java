@@ -1,11 +1,11 @@
 package eu.trentorise.opendata.disiclient.model.entity;
 
+import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
 import eu.trentorise.opendata.commons.Dict;
 import eu.trentorise.opendata.commons.OdtUtils;
 import eu.trentorise.opendata.disiclient.DictFactory;
+import eu.trentorise.opendata.disiclient.DisiClients;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
-import eu.trentorise.opendata.disiclient.services.EntityTypeService;
-import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.model.entity.IUniqueIndex;
@@ -59,16 +59,17 @@ public class EntityType implements IEntityType {
         return name;
     }
 
-    public IConcept getConcept() {
-        ConceptODR concept = new ConceptODR();
-        concept = concept.readConcept(conceptId);
-        return concept;
+    @Override
+    public IConcept getConcept() {        
+        return DisiClients.getClient().getKnowledgeService().readConceptById(conceptId);        
     }
 
+    
+    @Override
     public void setConcept(IConcept concept) {
 
         ConceptODR conc = (ConceptODR) concept;
-        ComplexTypeClient ctypeCl = new ComplexTypeClient(WebServiceURLs.getClientProtocol());
+        ComplexTypeClient ctypeCl = new ComplexTypeClient(SwebConfiguration.getClientProtocol());
         ComplexType ctype = ctypeCl.readComplexType(this.conceptId, null);
         
         // set concept on server-side 
@@ -89,12 +90,12 @@ public class EntityType implements IEntityType {
         //		ctype.setAttributes(attrList);
     }
 
+    @Override
     public List<IAttributeDef> getAttributeDefs() {
         if (this.attrs != null) {
             return this.attrs;
-        } else {
-            EntityTypeService ets = new EntityTypeService();
-            EntityType etype = ets.getEntityType(this.id);
+        } else {            
+            EntityType etype = DisiClients.getClient().getEntityTypeService().readEntityType(this.id);
             this.attrs = etype.getAttributeDefs();
             return this.attrs;
         }
@@ -106,11 +107,11 @@ public class EntityType implements IEntityType {
         attrDefList.add(attrDef);
         this.attrs = attrDefList;
         //adding attribute on server side
-        AttributeDefinitionClient attrDefCl = new AttributeDefinitionClient(WebServiceURLs.getClientProtocol());
+        AttributeDefinitionClient attrDefCl = new AttributeDefinitionClient(SwebConfiguration.getClientProtocol());
         List<AttributeDefinition> attrList = attrDefCl.readAttributeDefinitions(this.id, null, null, null);
-        ArrayList<AttributeDefinition> atrList = new ArrayList<AttributeDefinition>(attrList);
+        ArrayList<AttributeDefinition> atrList = new ArrayList(attrList);
         atrList.add(attrDef.convertAttributeDefinition());
-        ComplexTypeClient ctypeCl = new ComplexTypeClient(WebServiceURLs.getClientProtocol());
+        ComplexTypeClient ctypeCl = new ComplexTypeClient(SwebConfiguration.getClientProtocol());
         ComplexType ctype = ctypeCl.readComplexType(this.id, null);
         ctype.setAttributes(attrList);
     }
@@ -127,7 +128,7 @@ public class EntityType implements IEntityType {
         //adding attribute on client side
         this.attrs = attrDefList;
         //adding attribute on server side
-        AttributeDefinitionClient attrDefCl = new AttributeDefinitionClient(WebServiceURLs.getClientProtocol());
+        AttributeDefinitionClient attrDefCl = new AttributeDefinitionClient(SwebConfiguration.getClientProtocol());
         List<AttributeDefinition> attrList = attrDefCl.readAttributeDefinitions(this.id, null, null, null);
         for (int i = 0; i < attrList.size(); i++) {
             if (attrDefID == attrList.get(i).getId()) {
@@ -135,11 +136,12 @@ public class EntityType implements IEntityType {
                 break;
             }
         }
-        ComplexTypeClient ctypeCl = new ComplexTypeClient(WebServiceURLs.getClientProtocol());
+        ComplexTypeClient ctypeCl = new ComplexTypeClient(SwebConfiguration.getClientProtocol());
         ComplexType ctype = ctypeCl.readComplexType(this.conceptId, null);
         ctype.setAttributes(attrList);
     }
 
+    @Override
     public List<IUniqueIndex> getUniqueIndexes() {
         throw new UnsupportedOperationException("The metohf is not supported");
     }
@@ -162,14 +164,13 @@ public class EntityType implements IEntityType {
         return this.conceptId;
     }
 
+    @Override
     public String getURL() {
-        String fullUrl = WebServiceURLs.getURL();
-        String url = fullUrl + "/types/" + this.id;
-
-        return url;
+        return SwebConfiguration.getUrlMapper().etypeIdToUrl(this.id);
     }
 
 
+    @Override
     public Dict getName() {
         return DictFactory.mapToDict(this.name);
     }
@@ -180,6 +181,7 @@ public class EntityType implements IEntityType {
 
 
 
+    @Override
     public IAttributeDef getNameAttrDef() {
         List<IAttributeDef> attrDefs = getAttributeDefs();
         for (IAttributeDef attr : attrDefs) {
@@ -192,6 +194,7 @@ public class EntityType implements IEntityType {
         return null;
     }
 
+    @Override
     public IAttributeDef getDescriptionAttrDef() {
         List<IAttributeDef> attrDefs = getAttributeDefs();
         for (IAttributeDef attr : attrDefs) {
@@ -203,12 +206,12 @@ public class EntityType implements IEntityType {
         return null;
     }
 
-    public String getConceptURL() {
-        String fullUrl = WebServiceURLs.getURL();
-        String url = fullUrl + "/concepts/" + this.conceptId;
-        return url;
+    @Override
+    public String getConceptURL() {        
+        return SwebConfiguration.getUrlMapper().conceptIdToUrl(this.conceptId);        
     }
 
+    @Override
     public IAttributeDef getAttrDef(String URL) {
         List<IAttributeDef> attrDefs = getAttributeDefs();
         for (IAttributeDef attrDef : attrDefs) {
@@ -218,12 +221,6 @@ public class EntityType implements IEntityType {
         }
 
         return null;
-    }
-
-    public Long getAttrDefID(String url) {
-        String s = url.substring(url.indexOf("ns/") + 3);
-        Long attrDefId = Long.parseLong(s);
-        return attrDefId;
     }
 
 }

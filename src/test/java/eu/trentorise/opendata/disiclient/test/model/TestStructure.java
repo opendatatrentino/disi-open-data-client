@@ -8,21 +8,30 @@ import eu.trentorise.opendata.disiclient.model.entity.StructureODR;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.test.ConfigLoader;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
+import eu.trentorise.opendata.semantics.services.IEkb;
+import org.junit.After;
 import org.junit.Before;
 
 public class TestStructure {
 
+    private IEkb ekb;
+    
     @Before
     public void beforeMethod() {
-        ConfigLoader.init();
+        ekb = ConfigLoader.init();
+    }
+    
+    @After
+    public void after(){
+        ekb = null;
     }
 
     @Test
     public void testGetAttributeByURL() {
 
-        EntityService es = new EntityService();
+
         Long entityID = 64008L;
-        StructureODR structure = es.readStructure(entityID);
+        StructureODR structure = ((EntityService) ekb.getEntityService()).readStructure(entityID);
         IAttribute attribute = structure.getAttribute("http://opendata.disi.unitn.it:8080/odr/attributedefinitions/177");
 //		String url = structure.getEtypeURL();
 //		System.out.println(url);
@@ -32,7 +41,7 @@ public class TestStructure {
 
 //	@Test 
 //	public void testGetStructureEtypeL(){
-//		EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
+//		EntityService es = new EntityService(SwebConfiguration.getClientProtocol());
 //		Long entityID= 64008L;
 //		StructureODR structure =es.readStructure(entityID);
 //		IEntityType etype= structure.getEtype();

@@ -96,7 +96,7 @@ public class TestHungarianAlgoApproach {
 
     public  List<ISchema> getAllTargetSchemas() throws SchemaMatcherException {
         IEntityTypeService etypeService = ekb.getEntityTypeService();
-        List<IEntityType> etypeList = etypeService.getAllEntityTypes();
+        List<IEntityType> etypeList = etypeService.readAllEntityTypes();
         List<ISchema> targetSchemas = new ArrayList();
         SchemaImport si = new SchemaImport(ekb);
 

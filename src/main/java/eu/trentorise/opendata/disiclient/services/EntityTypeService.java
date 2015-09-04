@@ -1,12 +1,15 @@
 package eu.trentorise.opendata.disiclient.services;
 
-import it.unitn.disi.sweb.webapi.client.IProtocolClient;
+import static com.google.common.base.Preconditions.checkNotNull;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
 import it.unitn.disi.sweb.webapi.client.kb.AttributeDefinitionClient;
 import it.unitn.disi.sweb.webapi.client.kb.ComplexTypeClient;
 import it.unitn.disi.sweb.webapi.client.kb.KbClient;
 import it.unitn.disi.sweb.webapi.model.filters.AttributeDefinitionFilter;
 import it.unitn.disi.sweb.webapi.model.filters.ComplexTypeFilter;
-import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
 import it.unitn.disi.sweb.webapi.model.kb.KnowledgeBase;
 import it.unitn.disi.sweb.webapi.model.kb.types.AttributeDefinition;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
@@ -32,270 +35,282 @@ import eu.trentorise.opendata.semantics.services.IEntityTypeService;
 import eu.trentorise.opendata.semantics.services.SearchResult;
 import eu.trentorise.opendata.commons.OdtUtils;
 import eu.trentorise.opendata.disiclient.DisiClients;
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+import javax.annotation.Nullable;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
  * @author David Leoni <david.leoni@unitn.it>
- * 
+ *
  *
  */
 public class EntityTypeService implements IEntityTypeService {
 
-	private static final Logger LOG = LoggerFactory.getLogger(EntityService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EntityService.class);
 
-	public static final double MAX_SCORE_FOR_NO_FIRST_LETTER_MATCH = 0.3;
-	private static final Comparator SINGLE = new ValueComparator();
+    public static final double MAX_SCORE_FOR_NO_FIRST_LETTER_MATCH = 0.3;
+    private static final Comparator SINGLE = new ValueComparator();
 
-        @Override
-	public List<IEntityType> getAllEntityTypes() {
-		KbClient kbClient = new KbClient(getClientProtocol());
+    private static final int CACHE_SIZE = 1000;
 
-		//TODO decide what to do with knowledge base id which knowldege base id to take the first one? 
-		List<KnowledgeBase> kbList = kbClient.readKnowledgeBases(null);
-		LOG.warn("The Knowledge base is set to default (the first KB from the returned list of KB).");
-		long kbId = kbList.get(0).getId();
+    @Nullable
+    private static Timestamp lastPopulation;
 
-		ComplexTypeClient ctc = new ComplexTypeClient(getClientProtocol());
-		ComplexTypeFilter ctFilter = new ComplexTypeFilter();
-		ctFilter.setIncludeRestrictions(true);
-		ctFilter.setIncludeAttributes(true);
-		ctFilter.setIncludeAttributesAsProperties(true);
-                ctFilter.setIncludeTimestamps(true);
-                
-		List<ComplexType> complexTypeList = ctc.readComplexTypes(kbId, null, null, ctFilter);
+    // todo it's static, but it shouldn't be...
+    private static final LoadingCache<Long, AttributeDef> attrDefCache = CacheBuilder.newBuilder()
+            .maximumSize(CACHE_SIZE)
+            .expireAfterWrite(0, TimeUnit.MINUTES)
+            // todo think about removal .removalListener(MY_LISTENER)
+            .build(
+                    new CacheLoader<Long, AttributeDef>() {
+                        @Override
+                        public AttributeDef load(Long id) {
+                            LOG.info("Couldn't find attrdef with id " + id + " in cache, loading it....");
+                            AttributeDefinitionClient attrDefsClient = new AttributeDefinitionClient(SwebConfiguration.getClientProtocol());
+                            AttributeDefinition attrDef = attrDefsClient.readAttributeDefinition(id, null);
+                            LOG.info("...attrdef with id " + id + " loaded in cache.");
+                            return new AttributeDef(attrDef);                            
+                        }
+                    });
 
-		AttributeDefinitionClient attrDefs = new AttributeDefinitionClient(getClientProtocol());
-		List<IEntityType> etypes = new ArrayList();
+    // todo it's static, but it shouldn't be...
+    private static final LoadingCache<Long, EntityType> etypesCacheById = CacheBuilder.newBuilder()
+            .maximumSize(CACHE_SIZE)
+            .expireAfterWrite(0, TimeUnit.MINUTES)
+            // todo think about removal .removalListener(MY_LISTENER)
+            .build(
+                    new CacheLoader<Long, EntityType>() {
+                        @Override
+                        public EntityType load(Long id) {
+                            LOG.info("Couldn't find etype with " + id + " in cache, loading it....");
+                            ComplexTypeClient ctc = new ComplexTypeClient(SwebConfiguration.getClientProtocol());
+                            ComplexTypeFilter ctFilter = new ComplexTypeFilter();
 
-		for (ComplexType cType : complexTypeList) {
-			EntityType eType = new EntityType(cType);
-			AttributeDefinitionFilter adf = new AttributeDefinitionFilter();
-			adf.setIncludeRestrictions(true);
+                            ctFilter.setIncludeRestrictions(
+                                    true);
+                            ctFilter.setIncludeAttributes(
+                                    true);
+                            ctFilter.setIncludeAttributesAsProperties(
+                                    true);
+                            ComplexType complexType = ctc.readComplexType(id, ctFilter);
 
-			List<AttributeDefinition> attrDefList = attrDefs.readAttributeDefinitions(cType.getId(), null, null, adf);
+                            EntityType etype = new EntityType(complexType);
+                            AttributeDefinitionClient attrDefs = new AttributeDefinitionClient(SwebConfiguration.getClientProtocol());
+                            AttributeDefinitionFilter adf = new AttributeDefinitionFilter();
 
-			List<IAttributeDef> attributeDefList = new ArrayList();
-			for (AttributeDefinition attrDef : attrDefList) {
-				IAttributeDef attributeDef = new AttributeDef(attrDef);
-				//System.out.println(attributeDef.toString());
-				attributeDefList.add(attributeDef);
-			}
-			eType.setAttrs(attributeDefList);
-			//	System.out.println(eType.toString());
+                            adf.setIncludeRestrictions(
+                                    true);
+                            List<AttributeDefinition> attrDefList = attrDefs.readAttributeDefinitions(id, null, null, adf);
+                            List<IAttributeDef> attributeDefList = new ArrayList();
 
-			etypes.add(eType);
-		}
-		return etypes;
-	}
+                            for (AttributeDefinition attrDef : attrDefList) {
 
-	public EntityType getEntityTypeByConcept(Long conceptId) {
-		ComplexTypeClient ctc = new ComplexTypeClient(getClientProtocol());
-		ComplexTypeFilter ctFilter = new ComplexTypeFilter();
-		ctFilter.setIncludeRestrictions(true);
-		ctFilter.setIncludeAttributes(true);
-		ctFilter.setIncludeAttributesAsProperties(true);
+                                AttributeDef attributeDef = new AttributeDef(attrDef);
+                                attrDefCache.put(attrDef.getId(), attributeDef);
+                                attributeDefList.add(attributeDef);
+                            }
 
-		LOG.warn("The Knowledge base is set to default: '1'.");
+                            etype.setAttrs(attributeDefList);
+                            LOG.info("...etype with id " + id + " loaded in cache.");
+                            return etype;
 
-		List<ComplexType> complexTypes = ctc.readComplexTypes(1L, conceptId, null, ctFilter);
+                        }
+                    });
 
-		ComplexType complexType = complexTypes.get(0);
-		if (complexTypes.size() > 1) {
-			LOG.warn("There are " + complexTypes.size() + " Entity types for a given concept. The first one will be returned!.");
-		}
-		EntityType eType = new EntityType(complexType);
-		AttributeDefinitionClient attrDefs = new AttributeDefinitionClient(getClientProtocol());
-		AttributeDefinitionFilter adf = new AttributeDefinitionFilter();
-		adf.setIncludeRestrictions(true);
-		List<AttributeDefinition> attrDefList = attrDefs.readAttributeDefinitions(eType.getGUID(), null, null, adf);
-		List<IAttributeDef> attributeDefList = new ArrayList();
+    EntityTypeService() {
+    }
 
-		for (AttributeDefinition attrDef : attrDefList) {
+    public EntityType readEntityTypeByConceptId(Long conceptId) {
+        ComplexTypeClient ctc = new ComplexTypeClient(SwebConfiguration.getClientProtocol());
+        ComplexTypeFilter ctFilter = new ComplexTypeFilter();
+        ctFilter.setIncludeRestrictions(true);
+        ctFilter.setIncludeAttributes(true);
+        ctFilter.setIncludeAttributesAsProperties(true);
 
-			IAttributeDef attributeDef = new AttributeDef(attrDef);
-			attributeDefList.add(attributeDef);
-		}
-		eType.setAttrs(attributeDefList);
-		return eType;
-	}
+        LOG.warn("The Knowledge base is set to default: '1'.");
 
-        @Override
-	public EntityType getEntityType(long id) {
-		ComplexTypeClient ctc = new ComplexTypeClient(getClientProtocol());
-		ComplexTypeFilter ctFilter = new ComplexTypeFilter();
-		ctFilter.setIncludeRestrictions(true);
-		ctFilter.setIncludeAttributes(true);
-		ctFilter.setIncludeAttributesAsProperties(true);
-		ComplexType complexType = ctc.readComplexType(id, ctFilter);
+        List<ComplexType> complexTypes = ctc.readComplexTypes(1L, conceptId, null, ctFilter);
 
-		EntityType eType = new EntityType(complexType);
-		AttributeDefinitionClient attrDefs = new AttributeDefinitionClient(getClientProtocol());
-		AttributeDefinitionFilter adf = new AttributeDefinitionFilter();
-		adf.setIncludeRestrictions(true);
-		List<AttributeDefinition> attrDefList = attrDefs.readAttributeDefinitions(id, null, null, adf);
-		List<IAttributeDef> attributeDefList = new ArrayList();
+        ComplexType complexType = complexTypes.get(0);
+        if (complexTypes.size() > 1) {
+            LOG.warn("There are " + complexTypes.size() + " Entity types for a given concept. The first one will be returned!.");
+        } 
+        // double read so we read all attr defs properly.
+        return etypesCacheById.getUnchecked(complexType.getId());
+    }
 
-		for (AttributeDefinition attrDef : attrDefList) {
+    public EntityType readEntityType(long id) {
+        return etypesCacheById.getUnchecked(id);
 
-			IAttributeDef attributeDef = new AttributeDef(attrDef);
-			attributeDefList.add(attributeDef);
-		}
-		eType.setAttrs(attributeDefList);
-		return eType;
-	}
+    }
 
-	
+    @Override
+    public List<SearchResult> searchEntityTypes(String partialName, Locale locale) {
+        ComplexTypeClient ctc = new ComplexTypeClient(SwebConfiguration.getClientProtocol());
+        List<SearchResult> etypesSortedSearch = new ArrayList();
+        List<ComplexType> complexTypeList = ctc.readComplexTypes(1L, null, null, null);
+        HashMap<ComplexType, Double> ctypeMap = new HashMap();
 
-	
-	/**
-	 * The method returns client protocol
-	 *
-	 * @return returns an instance of ClientProtocol that contains information
-	 * where to connect(Url adress and port) and locale
-	 */
-	private IProtocolClient getClientProtocol() {
-		return WebServiceURLs.getClientProtocol();
-	}
+        for (ComplexType cType : complexTypeList) {
 
-        @Override
-	public List<IEntityType> getEntityTypes(List<String> URLs) {
-		List<IEntityType> etypes = new ArrayList();
+            double score = scoreName(partialName, cType.getName().get(OdtUtils.localeToLanguageTag(locale)));
+            ctypeMap.put(cType, score);
 
-		for (String url : URLs) {
-			etypes.add(getEntityType(url));
-		}
-		return etypes;
-	}
+        }
 
-        @Override
-	public EntityType getEntityType(String URL) {
-		String s;
-		try {
-			s = URL.substring(URL.indexOf("es/") + 3);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
+        List<ComplexType> ctypeSortedEN = getKeysSortedByValue(ctypeMap);
 
-		Long typeID;
-		try {
-			typeID = Long.parseLong(s);
-		}
-		catch (NumberFormatException e) {
-			e.printStackTrace();
-			return null;
-		}
-		return getEntityType(typeID);
-	}
+        for (ComplexType cType : ctypeSortedEN) {
+            System.out.println(cType.getName().get("it"));
 
-        @Override
-	public List<SearchResult> searchEntityTypes(String partialName, Locale locale) {
-		ComplexTypeClient ctc = new ComplexTypeClient(getClientProtocol());
-		List<SearchResult> etypesSortedSearch = new ArrayList();
-		List<ComplexType> complexTypeList = ctc.readComplexTypes(1L, null, null, null);
-		HashMap<ComplexType, Double> ctypeMap = new HashMap();
+            SearchResult etype = DisiClients.makeSearchResult(cType);
 
-		for (ComplexType cType : complexTypeList) {
+            etypesSortedSearch.add(etype);
+        }
 
-			double score = scoreName(partialName, cType.getName().get(OdtUtils.localeToLanguageTag(locale)));
-			ctypeMap.put(cType, score);
+        return etypesSortedSearch;
+    }
 
-		}
+    private double scoreName(String searchName, String candidateName) {
+        if (searchName.equals(candidateName)) {
+            return 1.0;
+        }
 
-		List<ComplexType> ctypeSortedEN = getKeysSortedByValue(ctypeMap);
+        int editDistance = StringUtils.getLevenshteinDistance(
+                searchName, candidateName);
 
-		for (ComplexType cType : ctypeSortedEN) {
-			System.out.println(cType.getName().get("it"));
+        // Normalize for length:
+        double score
+                = (double) (candidateName.length() - editDistance) / (double) candidateName.length();
 
-			SearchResult etype = DisiClients.makeSearchResult(cType);
+        // Artificially reduce the score if the first letters don't match
+        if (searchName.charAt(0) != candidateName.charAt(0)) {
+            score = Math.min(score, MAX_SCORE_FOR_NO_FIRST_LETTER_MATCH);
+        }
 
-			etypesSortedSearch.add(etype);
-		}
+        return Math.max(0.0, Math.min(score, 1.0));
+    }
 
-		return etypesSortedSearch;
-	}
+    private static <K, V extends Comparable<? super V>> List<K> getKeysSortedByValue(Map<K, V> map) {
+        final int size = map.size();
+        final List reusedList = new ArrayList(size);
+        final List<Map.Entry<K, V>> meView = reusedList;
+        meView.addAll(map.entrySet());
+        Collections.sort(meView, SINGLE);
+        final List<K> keyView = reusedList;
+        for (int i = 0; i < size; i++) {
+            keyView.set(i, meView.get(i).getKey());
+        }
+        return keyView;
+    }
 
-	private double scoreName(String searchName, String candidateName) {
-		if (searchName.equals(candidateName)) {
-			return 1.0;
-		}
+    @Override
+    public List<IEntityType> readAllEntityTypes() {
+        if (lastPopulation == null) {
+            LOG.info("Etype list was never populated, going to do it now...");
+            KbClient kbClient = new KbClient(SwebConfiguration.getClientProtocol());
 
-		int editDistance = StringUtils.getLevenshteinDistance(
-				searchName, candidateName);
+            //TODO decide what to do with knowledge base id which knowldege base id to take the first one? 
+            List<KnowledgeBase> kbList = kbClient.readKnowledgeBases(null);
+            LOG.warn("The Knowledge base is set to default (the first KB from the returned list of KB).");
+            long kbId = kbList.get(0).getId();
 
-		// Normalize for length:
-			double score
-			= (double) (candidateName.length() - editDistance) / (double) candidateName.length();
+            ComplexTypeClient ctc = new ComplexTypeClient(SwebConfiguration.getClientProtocol());
+            ComplexTypeFilter ctFilter = new ComplexTypeFilter();
+            ctFilter.setIncludeRestrictions(true);
+            ctFilter.setIncludeAttributes(true);
+            ctFilter.setIncludeAttributesAsProperties(true);
+            ctFilter.setIncludeTimestamps(true);
 
-			// Artificially reduce the score if the first letters don't match
-			if (searchName.charAt(0) != candidateName.charAt(0)) {
-				score = Math.min(score, MAX_SCORE_FOR_NO_FIRST_LETTER_MATCH);
-			}
+            List<ComplexType> complexTypeList = ctc.readComplexTypes(kbId, null, null, ctFilter);
 
-			return Math.max(0.0, Math.min(score, 1.0));
-	}
+            AttributeDefinitionClient attrDefsClient = new AttributeDefinitionClient(SwebConfiguration.getClientProtocol());
 
-	private static <K, V extends Comparable<? super V>> List<K> getKeysSortedByValue(Map<K, V> map) {
-		final int size = map.size();
-		final List reusedList = new ArrayList(size);
-		final List<Map.Entry<K, V>> meView = reusedList;
-		meView.addAll(map.entrySet());
-		Collections.sort(meView, SINGLE);
-		final List<K> keyView = reusedList;
-		for (int i = 0; i < size; i++) {
-			keyView.set(i, meView.get(i).getKey());
-		}
-		return keyView;
-	}
+            for (ComplexType cType : complexTypeList) {
 
-	public List<IEntityType> readAllEntityTypes() {
-		return getAllEntityTypes();
-	}
+                EntityType etype = new EntityType(cType);
+                AttributeDefinitionFilter adf = new AttributeDefinitionFilter();
+                adf.setIncludeRestrictions(true);
 
-	public IEntityType readEntityType(String URL) {
-		return getEntityType(URL);
-	}
+                List<AttributeDefinition> attrDefList = attrDefsClient.readAttributeDefinitions(cType.getId(), null, null, adf);
 
-	public IEntityType readRootStructure() {
-		return getRootStructure();
-	}
+                List<IAttributeDef> attributeDefList = new ArrayList();
+                for (AttributeDefinition attrDef : attrDefList) {
+                    IAttributeDef attributeDef = new AttributeDef(attrDef);
+                    attributeDefList.add(attributeDef);
+                }
+                etype.setAttrs(attributeDefList);
 
-	public IEntityType readRootEtype() {
-		return getRootEtype();
-	}
+                etypesCacheById.put(etype.getGUID(), etype);
+            }
+            LOG.info("Finished populating etypes cache.");
+            lastPopulation = new Timestamp(new Date().getTime());
+        } else {
+            LOG.warn("GIVING BACK ALL ETYPES LIST WITHOUT CHECKING STALE ONES!");
+        }
 
-	public List<IEntityType> readEntityTypes(List<String> URLs) {
-		return getEntityTypes(URLs);
-	}
+        return new ArrayList(etypesCacheById.asMap().values());
+    }
 
-	private static final class ValueComparator<V extends Comparable<? super V>>
-	implements Comparator<Map.Entry<?, V>> {
+    @Override
+    public AttributeDef readAttrDef(String url) {
+        return readAttrDef(SwebConfiguration.getUrlMapper().attrDefUrlToId(url));
+    }
 
-		public int compare(Map.Entry<?, V> o1, Map.Entry<?, V> o2) {
-			return o2.getValue().compareTo(o1.getValue());
-		}
-	}
+    public AttributeDef readAttrDef(Long id) {
+        return attrDefCache.getUnchecked(id);
+    }
 
-	public IEntityType getRootStructure() {
-		List<IEntityType> etypes = getAllEntityTypes();
-		for (IEntityType etype : etypes) {
+    @Override
+    public EntityType readEntityType(String url) {
+        return readEntityType(SwebConfiguration.getUrlMapper().etypeUrlToId(url));
+    }
 
-			if (etype.getName().string(Locale.ENGLISH).equals("Structure")) {
-				return etype;
-			}
-		}
-		return null;
-	}
+    @Override
+    public IEntityType readRootStructure() {
+        List<IEntityType> etypes = readAllEntityTypes();
+        for (IEntityType etype : etypes) {
 
-	public IEntityType getRootEtype() {
-		List<IEntityType> etypes = getAllEntityTypes();
-		for (IEntityType etype : etypes) {
+            if (etype.getName().string(Locale.ENGLISH).equals("Structure")) {
+                return etype;
+            }
+        }
+        LOG.error("COULDN'T FIND ROOT STRUCTURE!!!!!!   RETURNING NULL  - TODO SHOULD THROW EXCEPTION");
+        return null;
+    }
 
-			if (etype.getName().string(Locale.ENGLISH).equals("Entity")) {
-				return etype;
-			}
-		}
-		return null;
-	}
+    @Override
+    public IEntityType readRootEtype() {
+        List<IEntityType> etypes = readAllEntityTypes();
+        for (IEntityType etype : etypes) {
+            if (etype.getName().string(Locale.ENGLISH).equals("Entity")) {
+                return etype;
+            }
+        }
+        LOG.error("COULDN'T FIND ROOT ETYPE!!!!!!   RETURNING NULL  - TODO SHOULD THROW EXCEPTION");
+        return null;
+
+    }
+
+    @Override
+    public List<IEntityType> readEntityTypes(Iterable<String> URLs) {
+        List<IEntityType> etypes = new ArrayList();
+
+        for (String url : URLs) {
+            etypes.add(readEntityType(url));
+        }
+        return etypes;
+
+    }
+
+    private static final class ValueComparator<V extends Comparable<? super V>>
+            implements Comparator<Map.Entry<?, V>> {
+
+        public int compare(Map.Entry<?, V> o1, Map.Entry<?, V> o2) {
+            return o2.getValue().compareTo(o1.getValue());
+        }
+    }
+
 }

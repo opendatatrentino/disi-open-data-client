@@ -15,14 +15,17 @@ import org.junit.Test;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
-import eu.trentorise.opendata.disiclient.model.entity.EntityType;
 import eu.trentorise.opendata.disiclient.services.EntityService;
-import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import eu.trentorise.opendata.disiclient.services.IdentityService;
-import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.commons.Dict;
 import eu.trentorise.opendata.disiclient.test.ConfigLoader;
+import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.FACILITY_URL;
+import eu.trentorise.opendata.semantics.model.entity.IEntityType;
+import eu.trentorise.opendata.semantics.services.IEkb;
+import eu.trentorise.opendata.semantics.services.IEntityService;
+import eu.trentorise.opendata.semantics.services.IIdentityService;
+import org.junit.After;
 import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,15 +34,22 @@ public class TestNameDescriptionAttributeCreation {
 
     private static final Logger logger = LoggerFactory.getLogger(TestNameDescriptionAttributeCreation.class);
 
+    private IEkb ekb;
+    
     @Before
     public void beforeMethod() {
-        ConfigLoader.init();
-    }    
+        ekb = ConfigLoader.init();
+    }   
+    
+    @After
+    public void afterMethod(){
+      ekb = null;  
+    }
     
     @Test
     public void testCreateDescription() {
-        EntityService enServ = new EntityService(WebServiceURLs.getClientProtocol());
-        IdentityService idServ = new IdentityService();
+        EntityService enServ = (EntityService) ekb.getEntityService();
+        IIdentityService idServ = ekb.getIdentityService();
         //String name = PALAZZETTO_NAME_IT;
         Dict.Builder namesBuilder = Dict.builder();
         Dict newNames = namesBuilder.put(Locale.ITALIAN, "Buon Giorno")
@@ -47,7 +57,7 @@ public class TestNameDescriptionAttributeCreation {
                 .put(Locale.FRENCH, "Bonjour").build();
         logger.info(newNames.toString());
 		//String name = "my entity name";
-        //		Search search = new Search(WebServiceURLs.getClientProtocol());
+        //		Search search = new Search(SwebConfiguration.getClientProtocol());
         //		List<Name> names = search.nameSearch(name);
 
         //		for (Name n: names ){
@@ -55,7 +65,7 @@ public class TestNameDescriptionAttributeCreation {
         //		}
         EntityODR entity = (EntityODR) enServ.readEntity(PALAZZETTO_ID);
         List<Attribute> attrs = entity.getAttributes();
-        List<Attribute> attrs1 = new ArrayList<Attribute>();
+        List<Attribute> attrs1 = new ArrayList();
         //List<IAttribute> iattr=entity.getStructureAttributes();
         for (Attribute atr : attrs) {
             if (atr.getName().get("en").equalsIgnoreCase("Name")) {
@@ -86,20 +96,20 @@ public class TestNameDescriptionAttributeCreation {
         en.setEntityBaseId(1L);
         en.setTypeId(FACILITY_ID);
         en.setAttributes(attrs1);
-        EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
-        EntityODR ent = new EntityODR(WebServiceURLs.getClientProtocol(), en);
+        IEntityService es = ekb.getEntityService();
+        EntityODR ent = new EntityODR(en);
         Long id = es.createEntity(ent);
         assertNotNull(id);
 
     }
 
     public Attribute createAttributeNameEntityWithDict(Object value) {
-        EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
-        EntityTypeService ets = new EntityTypeService();
-        EntityType etype = ets.getEntityType(12L);
+        EntityService es = (EntityService) ekb.getEntityService();
+        
+        IEntityType etype = ekb.getEntityTypeService().readEntityType(FACILITY_URL);
 
         List<IAttributeDef> attrDefList = etype.getAttributeDefs();
-        List<Attribute> attrs = new ArrayList<Attribute>();
+        List<Attribute> attrs = new ArrayList();
 
         Attribute a = null;
         for (IAttributeDef atd : attrDefList) {
@@ -113,8 +123,5 @@ public class TestNameDescriptionAttributeCreation {
         return a;
     }
 
-    @Test
-    public void testCreateName() {
-
-    }
+    
 }
