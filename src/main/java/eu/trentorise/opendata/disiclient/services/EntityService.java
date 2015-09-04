@@ -256,7 +256,7 @@ public class EntityService implements IEntityService {
                     
                     // fixedVal.setDataType(IConcept.class);
                     
-                    fixedVals.add(fixedVal);
+                    fixedVals.add(fixedVal.asSwebValue());
                 }
                 a.setValues(fixedVals);
             }
@@ -386,14 +386,11 @@ public class EntityService implements IEntityService {
             for (Object obj : (Collection) descr) {
                 ValueODR valODR = new ValueODR(null, null, descrToSemText(obj));                
                 valsODR.add(valODR);
-                LOG.warn("Vocabulary id is set to default '1'.");
-                valODR.setVocabularyId(1L);
+
             }
             return new AttributeODR(attrDefId, valsODR);
         } else {
-            ValueODR val = new ValueODR(null, null, descrToSemText(descr));            
-            LOG.warn("Vocabulary id is set to default '1'.");
-            val.setVocabularyId(1L);
+            ValueODR val = new ValueODR(null, null, descrToSemText(descr));          
             return new AttributeODR(attrDefId, val);
         }
     }

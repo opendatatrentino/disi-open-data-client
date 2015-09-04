@@ -132,7 +132,7 @@ public class EntityODR extends StructureODR implements IEntity {
                                 
                                 // fixedVal.setDataType(IConcept.class);
                                 
-                                fixedVals.add(fixedVal);
+                                fixedVals.add(fixedVal.asSwebValue());
                             }
                             a.setValues(fixedVals);
                         }
@@ -154,7 +154,7 @@ public class EntityODR extends StructureODR implements IEntity {
                     ValueODR fixedVal = new ValueODR(val.getId(), null, codr);
                     
                     // fixedVal.setDataType(IConcept.class);                    
-                    fixedVals.add(fixedVal);
+                    fixedVals.add(fixedVal.asSwebValue());
                 }
                 at.setValues(fixedVals);
             } else {
@@ -230,7 +230,7 @@ public class EntityODR extends StructureODR implements IEntity {
             
             // fixedVal.setDataType(IConcept.class);
             
-            fixedVals.add(fixedVal);
+            fixedVals.add(fixedVal.asSwebValue());
         }
         at.setValues(fixedVals);
     }

@@ -29,10 +29,16 @@ import static eu.trentorise.opendata.disiclient.services.KnowledgeService.CONTAC
 import static eu.trentorise.opendata.disiclient.services.KnowledgeService.PART_OF_CONCEPT_ID1;
 import eu.trentorise.opendata.disiclient.services.NLPService;
 import eu.trentorise.opendata.semtext.SemText;
+import it.unitn.disi.sweb.webapi.model.eb.Structure;
 
 public class StructureODR extends Instance implements IStructure {
 
-
+    StructureODR(Structure st){        
+        this.setAttributes(st.getAttributes());
+        this.setEntityBaseId(st.getEntityBaseId());
+        this.setTypeId(st.getTypeId());
+        this.setId(st.getId());
+    }
     
     public Long getLocalID() {
         return super.getId();
@@ -124,7 +130,7 @@ public class StructureODR extends Instance implements IStructure {
                                 ValueODR fixedVal = new ValueODR(val.getId(), null, codr);                                
                                 // fixedVal.setDataType(IConcept.class);
                                 
-                                fixedVals.add(fixedVal);
+                                fixedVals.add(fixedVal.asSwebValue());
                             }
                             a.setValues(fixedVals);
                         }
@@ -147,7 +153,7 @@ public class StructureODR extends Instance implements IStructure {
                     
                     // fixedVal.setDataType(IConcept.class);
                     
-                    fixedVals.add(fixedVal);
+                    fixedVals.add(fixedVal.asSwebValue());
                 }
                 at.setValues(fixedVals);
             } else {
@@ -233,15 +239,7 @@ public class StructureODR extends Instance implements IStructure {
     public String getEtypeURL() {
         return SwebConfiguration.getUrlMapper().etypeIdToUrl(super.getTypeId());
     }
-
-    public StructureODR convertToStructure(it.unitn.disi.sweb.webapi.model.eb.Structure st) {
-        StructureODR s = new StructureODR();
-        s.setAttributes(st.getAttributes());
-        s.setEntityBaseId(st.getEntityBaseId());
-        s.setTypeId(st.getTypeId());
-        s.setId(st.getId());
-        return s;
-    }
+    
 
     public it.unitn.disi.sweb.webapi.model.eb.Structure convertToSwebStructure(StructureODR s) {
 

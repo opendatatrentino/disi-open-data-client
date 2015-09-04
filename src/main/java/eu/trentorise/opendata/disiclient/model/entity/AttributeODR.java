@@ -92,7 +92,6 @@ public class AttributeODR implements IAttribute {
         for (Value val : vals) {
             ValueODR value = new ValueODR(val);
             ret.add(value);
-            value.setVocabularyId(val.getVocabularyId());
         }
         return ret;
     }
@@ -113,7 +112,7 @@ public class AttributeODR implements IAttribute {
         List<Value> vals = new ArrayList();
         for (IValue val : valuesODR) {
             ValueODR valODR = (ValueODR) val;
-            Value value = valODR.convertToValue();
+            Value value = valODR.asSwebValue();
             vals.add(value);
         }
         return vals;
@@ -133,14 +132,14 @@ public class AttributeODR implements IAttribute {
 
         ValueODR val = (ValueODR) newValue;
         Long vid = attr.getValues().iterator().next().getId();
-        val.setId(vid);
+        val.setLocalId(vid);
 
         if (values.size() == 1) {
             values.remove(0);
         }
         //val.convertToValue();
         val.setAttributeId(attr.getId());
-        Value value = val.convertToValue();
+        Value value = val.asSwebValue();
         attrCl.update(value);
         //client side
         values.add(val);
