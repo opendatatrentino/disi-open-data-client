@@ -16,8 +16,6 @@ import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
-import eu.trentorise.opendata.disiclient.services.DisiEkb;
-import eu.trentorise.opendata.disiclient.services.IdentityService;
 
 import eu.trentorise.opendata.disiclient.test.services.TestEntityService;
 
@@ -147,7 +145,7 @@ public class IntegrityCheckerTest {
         
         List<IEntityType> etypes = ekb.getEntityTypeService().readAllEntityTypes();
         for (IEntityType etype : etypes) {
-            checker.checkEntityType(etype);
+            checker.checkEtype(etype);
             checkNotDirtyUrl(etype.getURL(), "etype url is dirty!");
             List<IAttributeDef> atdefs = etype.getAttributeDefs();
             for (IAttributeDef ad : atdefs) {

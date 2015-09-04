@@ -16,6 +16,7 @@
 package eu.trentorise.opendata.disiclient.test;
 
 import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
+import eu.trentorise.opendata.disiclient.DisiClients;
 import eu.trentorise.opendata.disiclient.services.DisiEkb;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import java.io.File;
@@ -41,9 +42,10 @@ public class ConfigLoader {
             InputStream in = new FileInputStream(file);
     //        props.lo
             props.load(in);            
-            SwebConfiguration.init((Map)props);
+            SwebConfiguration.init((Map)props);            
             DisiEkb ret = new DisiEkb();
             ret.setProperties(new HashMap());
+            DisiClients.setSingleton(ret);
             return ret;
         } catch (Exception ex){
             throw new RuntimeException("Error while loading " + file.getAbsolutePath(), ex);

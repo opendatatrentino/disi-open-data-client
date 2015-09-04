@@ -46,11 +46,11 @@ public class EntityExportService {
      * @return
      */
     public String generateJSONLDContext(Long id) {
-        EntityService es = DisiClients.getClient().getEntityService();
+        EntityService es = DisiClients.getSingleton().getEntityService();
 
         IEntity entity = es.readEntity(id);        
 
-        IEntityType etype = DisiClients.getClient().getEntityTypeService().readEntityType(entity.getEtypeURL());
+        IEntityType etype = DisiClients.getSingleton().getEntityTypeService().readEntityType(entity.getEtypeURL());
         List<IAttributeDef> attributeDefs = etype.getAttributeDefs();
 
         for (IAttributeDef attrDef : attributeDefs) {
@@ -119,7 +119,7 @@ public class EntityExportService {
         try {
             globalID = obj.get("globalId").getAsLong();
             
-            Long locid = DisiClients.getClient().getEntityService().readEntityByGlobalId(globalID).getId();
+            Long locid = DisiClients.getSingleton().getEntityService().readEntityByGlobalId(globalID).getId();
 
             obj.remove("globalId");
             String globalIdURL = SwebConfiguration.getUrlMapper().entityIdToUrl(locid);

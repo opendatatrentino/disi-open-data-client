@@ -53,7 +53,7 @@ public class IDRes extends IDResult implements IIDResult {
         if (getAssignmentResult() == AssignmentResult.REUSE) {
             if (this.entity == null) {
                 
-                IEntity en = DisiClients.getClient().getEntityService().readEntityByGlobalId(getGUID());
+                IEntity en = DisiClients.getSingleton().getEntityService().readEntityByGlobalId(getGUID());
 
                 this.entity = en;
 

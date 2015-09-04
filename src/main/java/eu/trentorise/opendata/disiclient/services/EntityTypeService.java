@@ -67,10 +67,10 @@ public class EntityTypeService implements IEntityTypeService {
                     new CacheLoader<Long, AttributeDef>() {
                         @Override
                         public AttributeDef load(Long id) {
-                            LOG.info("Couldn't find attrdef with id " + id + " in cache, loading it....");
+                            LOG.info("Couldn't find attrdef with id " + id + " in cache, fetching it....");
                             AttributeDefinitionClient attrDefsClient = new AttributeDefinitionClient(SwebConfiguration.getClientProtocol());
                             AttributeDefinition attrDef = attrDefsClient.readAttributeDefinition(id, null);
-                            LOG.info("...attrdef with id " + id + " loaded in cache.");
+                            LOG.info("Attrdef with id " + id + " loaded in cache.");
                             return new AttributeDef(attrDef);                            
                         }
                     });
@@ -84,7 +84,7 @@ public class EntityTypeService implements IEntityTypeService {
                     new CacheLoader<Long, EntityType>() {
                         @Override
                         public EntityType load(Long id) {
-                            LOG.info("Couldn't find etype with " + id + " in cache, loading it....");
+                            LOG.info("Couldn't find etype with " + id + " in cache, fetching it....");
                             ComplexTypeClient ctc = new ComplexTypeClient(SwebConfiguration.getClientProtocol());
                             ComplexTypeFilter ctFilter = new ComplexTypeFilter();
 
@@ -113,7 +113,7 @@ public class EntityTypeService implements IEntityTypeService {
                             }
 
                             etype.setAttrs(attributeDefList);
-                            LOG.info("...etype with id " + id + " loaded in cache.");
+                            LOG.info("Etype with id " + id + " loaded in cache.");
                             return etype;
 
                         }

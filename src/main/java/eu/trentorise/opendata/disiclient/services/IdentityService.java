@@ -30,7 +30,7 @@ public class IdentityService implements IIdentityService {
     
     private EntityODR convertNameAttr(EntityODR ent) {
         List<Attribute> attrs = ent.getAttributes();
-        EntityService enServ = DisiClients.getClient().getEntityService();
+        EntityService enServ = DisiClients.getSingleton().getEntityService();
 
         for (Attribute atr : attrs) {
 

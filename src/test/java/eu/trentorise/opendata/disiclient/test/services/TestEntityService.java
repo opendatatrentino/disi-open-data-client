@@ -183,6 +183,13 @@ public class TestEntityService {
      */
     public static final String MELA_VAL_DI_NON_URL = um.etypeIdToUrl(MELA_VAL_DI_NON);
 
+    /** This contact is a structure */
+    public static final long KINDERGARDEN_CONTACT_ID = 64008L;
+    public static final long ATTR_DEF_TELEPHONE_ID = 177L;
+    public static final long TELEPHONE_CONCEPT_ID = 23985L;
+    public static final String ATTR_DEF_TELEPHONE_URL = um.attrDefIdToUrl(ATTR_DEF_TELEPHONE_ID, TELEPHONE_CONCEPT_ID);
+        
+    
     private IProtocolClient api;        
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());

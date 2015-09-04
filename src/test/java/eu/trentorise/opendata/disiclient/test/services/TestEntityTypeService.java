@@ -10,8 +10,6 @@ import java.util.Locale;
 import org.junit.Test;
 
 import eu.trentorise.opendata.disiclient.model.entity.EntityType;
-import eu.trentorise.opendata.disiclient.services.DisiEkb;
-import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.services.IEkb;
@@ -19,7 +17,9 @@ import eu.trentorise.opendata.semantics.services.SearchResult;
 import eu.trentorise.opendata.commons.OdtUtils;
 import eu.trentorise.opendata.disiclient.test.ConfigLoader;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.FACILITY_URL;
+import eu.trentorise.opendata.semantics.Checker;
 import eu.trentorise.opendata.semantics.services.IEntityTypeService;
+import org.junit.After;
 import org.junit.Before;
 
 /**
@@ -30,13 +30,22 @@ import org.junit.Before;
  */
 public class TestEntityTypeService {
 
-    private IEkb disiEkb;
+    private IEkb ekb;
+    private Checker checker;
     private IEntityTypeService ets;
     
     @Before
-    public void beforeMethod() {
-        disiEkb = ConfigLoader.init();
-        ets = disiEkb.getEntityTypeService();
+    public void before() {
+        ekb = ConfigLoader.init();
+        ets = ekb.getEntityTypeService();
+        checker = Checker.of(ekb);
+    }
+    
+    @After
+    public void after(){
+        checker = null;
+        ets = null;
+        ekb = null;
     }
 
     @Test
@@ -44,6 +53,7 @@ public class TestEntityTypeService {
         
         EntityType etype = (EntityType) ets.readEntityType(FACILITY_URL);
         List<IAttributeDef> atdefs = etype.getAttributeDefs();
+        checker.checkEtype(etype);
         //for (IAttributeDef ad:atdefs){
 //			System.out.println(ad.getName());
 //			System.out.println(ad.getDataType());
@@ -121,7 +131,7 @@ public class TestEntityTypeService {
     @Test
     public void testReadNonExistingEntityType() {        
 
-        assertEquals(null, disiEkb.getEntityTypeService().readEntityType("http://blabla.com"));
+        assertEquals(null, ekb.getEntityTypeService().readEntityType("http://blabla.com"));
 
     }
 

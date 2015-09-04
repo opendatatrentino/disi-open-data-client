@@ -15,6 +15,7 @@
  */
 package eu.trentorise.opendata.disiclient;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
 import eu.trentorise.opendata.commons.Dict;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
@@ -35,7 +36,7 @@ import org.slf4j.LoggerFactory;
 public final class DisiClients {
 
     private static final Logger LOG = LoggerFactory.getLogger(DisiClients.class);
-    private static final DisiEkb INSTANCE = new DisiEkb();;
+    private static DisiEkb INSTANCE;
 
     public static SearchResult makeSearchResult(ConceptODR codr) {
 
@@ -77,7 +78,18 @@ public final class DisiClients {
      * 
      * @deprecated todo try to use me as little as possible, pleease
      */
-    public static DisiEkb getClient(){        
+    public static DisiEkb getSingleton(){        
         return INSTANCE;
+    }
+
+    /**
+     * Horror method to set singleton
+     * 
+     * @deprecated todo try to use me as little as possible, pleease
+     */    
+    public static void setSingleton(DisiEkb disiEkb){
+        checkNotNull(disiEkb);
+        INSTANCE = disiEkb;
+        LOG.info("Set disiclient singleton");
     }
 }

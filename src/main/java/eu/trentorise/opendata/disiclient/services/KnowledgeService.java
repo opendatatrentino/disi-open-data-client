@@ -38,7 +38,11 @@ public class KnowledgeService implements IKnowledgeService {
     private static final long ROOT_GLOBAL_CONCEPT_ID = 1L;
     public static final long DESCRIPTION_CONCEPT_ID = 3L;
     public static final long DESCRIPTION_GLOBAL_CONCEPT_ID = 3L;
-
+    
+    public static final Long PART_OF_CONCEPT_ID1 = 5l;
+    public static final Long PART_OF_CONCEPT_ID2 = 22l;  
+    public static final long CONTACT_CONCEPT_ID = 111001;
+    
     private static final int CACHE_SIZE = 1000;
     private final LoadingCache<Long, ConceptODR> conceptCacheById;
     private final LoadingCache<Long, ConceptODR> conceptCacheByGuid;

@@ -41,7 +41,7 @@ public class ValueODR extends Value implements IValue {
             Instance instance = (Instance) this.value;
             //System.out.println(value.toString());
             
-            StructureODR structure = DisiClients.getClient().getEntityService().readName(instance.getId());
+            StructureODR structure = DisiClients.getSingleton().getEntityService().readName(instance.getId());
             //Structure structure = 
             this.value = structure;
         } else {
@@ -62,7 +62,7 @@ public class ValueODR extends Value implements IValue {
             if (value.getClass().equals(Name.class)) {
                 Instance instance = (Instance) this.value;
                 
-                StructureODR name = DisiClients.getClient().getEntityService().readName(instance.getId());
+                StructureODR name = DisiClients.getSingleton().getEntityService().readName(instance.getId());
                 this.value = name;
             }
             if (value.getClass().equals(it.unitn.disi.sweb.webapi.model.eb.Structure.class)) {

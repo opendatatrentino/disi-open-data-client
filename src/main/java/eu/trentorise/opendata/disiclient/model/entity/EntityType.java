@@ -61,7 +61,7 @@ public class EntityType implements IEntityType {
 
     @Override
     public IConcept getConcept() {        
-        return DisiClients.getClient().getKnowledgeService().readConceptById(conceptId);        
+        return DisiClients.getSingleton().getKnowledgeService().readConceptById(conceptId);        
     }
 
     
@@ -95,7 +95,7 @@ public class EntityType implements IEntityType {
         if (this.attrs != null) {
             return this.attrs;
         } else {            
-            EntityType etype = DisiClients.getClient().getEntityTypeService().readEntityType(this.id);
+            EntityType etype = DisiClients.getSingleton().getEntityTypeService().readEntityType(this.id);
             this.attrs = etype.getAttributeDefs();
             return this.attrs;
         }

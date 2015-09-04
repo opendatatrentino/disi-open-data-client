@@ -154,7 +154,7 @@ public class AttributeODR implements IAttribute {
 
     @Override
     public String getAttrDefUrl() {
-        return DisiClients.getClient().getEntityTypeService().readAttrDef(attrDefId).getURL();
+        return DisiClients.getSingleton().getEntityTypeService().readAttrDef(attrDefId).getURL();
     }
 
 }

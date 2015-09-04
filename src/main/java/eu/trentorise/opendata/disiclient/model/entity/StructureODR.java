@@ -25,13 +25,14 @@ import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.model.entity.IStructure;
 import eu.trentorise.opendata.commons.OdtUtils;
 import eu.trentorise.opendata.disiclient.DisiClients;
+import static eu.trentorise.opendata.disiclient.services.KnowledgeService.CONTACT_CONCEPT_ID;
+import static eu.trentorise.opendata.disiclient.services.KnowledgeService.PART_OF_CONCEPT_ID1;
 import eu.trentorise.opendata.disiclient.services.NLPService;
 import eu.trentorise.opendata.semtext.SemText;
 
 public class StructureODR extends Instance implements IStructure {
 
-    public static final Long PART_OF_CONCEPT_ID1 = 5l;
-    public static final Long PART_OF_CONCEPT_ID2 = 22l;
+
     
     public Long getLocalID() {
         return super.getId();
@@ -66,7 +67,7 @@ public class StructureODR extends Instance implements IStructure {
         if (id == null) {
             throw new RuntimeException("Got a null id for super.getTypeId() in Structure.java!");
         } else {
-            return DisiClients.getClient().getEntityTypeService().readEntityType(id);
+            return DisiClients.getSingleton().getEntityTypeService().readEntityType(id);
         }
     }
 
@@ -76,7 +77,7 @@ public class StructureODR extends Instance implements IStructure {
 
     private List<IAttribute> convertToAttributeODR(List<Attribute> attributes) {
         List<IAttribute> attributesODR = new ArrayList();
-        EntityService es = DisiClients.getClient().getEntityService();
+        EntityService es = DisiClients.getSingleton().getEntityService();
         //++++++++++++++
         for (Attribute at : attributes) {
             if (at.getConceptId() == null) {
@@ -166,7 +167,7 @@ public class StructureODR extends Instance implements IStructure {
                         }
                     }
                     at.setValues(fixedVals);
-                } else if (at.getConceptId() == 111001L) { // todo hardcoded long
+                } else if (at.getConceptId() == CONTACT_CONCEPT_ID) {
                     List<Value> vals = at.getValues();
                     List<Value> fixedVals = new ArrayList();
                     

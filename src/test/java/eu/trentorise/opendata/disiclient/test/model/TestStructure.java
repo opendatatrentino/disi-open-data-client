@@ -1,5 +1,6 @@
 package eu.trentorise.opendata.disiclient.test.model;
 
+
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
@@ -7,9 +8,12 @@ import org.junit.Test;
 import eu.trentorise.opendata.disiclient.model.entity.StructureODR;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.test.ConfigLoader;
+import eu.trentorise.opendata.disiclient.test.services.TestEntityService;
+import eu.trentorise.opendata.semantics.Checker;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import org.junit.After;
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 
 public class TestStructure {
@@ -29,13 +33,12 @@ public class TestStructure {
     @Test
     public void testGetAttributeByURL() {
 
-
-        Long entityID = 64008L;
-        StructureODR structure = ((EntityService) ekb.getEntityService()).readStructure(entityID);
-        IAttribute attribute = structure.getAttribute("http://opendata.disi.unitn.it:8080/odr/attributedefinitions/177");
+        StructureODR structure = ((EntityService) ekb.getEntityService()).readStructure(TestEntityService.KINDERGARDEN_CONTACT_ID);
+        IAttribute attribute = structure.getAttribute(TestEntityService.ATTR_DEF_TELEPHONE_URL);
 //		String url = structure.getEtypeURL();
 //		System.out.println(url);
-
+        assertEquals(TestEntityService.ATTR_DEF_TELEPHONE_URL, attribute.getAttrDefUrl());
+        Checker.of(ekb).checkStructure(structure);
         assertNotNull(attribute);
     }
 

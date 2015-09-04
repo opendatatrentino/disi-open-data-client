@@ -226,7 +226,7 @@ public class NLPService implements INLPService {
         List<String> filteredEntities = new ArrayList();
 
         
-        List<IEntity> entities = DisiClients.getClient().getEntityService().readEntities(entitiesUrls);
+        List<IEntity> entities = DisiClients.getSingleton().getEntityService().readEntities(entitiesUrls);
 
         for (IEntity e : entities) {
             if (e.getEtypeURL().equals(etypeURL)) {

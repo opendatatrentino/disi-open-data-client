@@ -18,6 +18,7 @@ import eu.trentorise.opendata.commons.OdtUtils;
 import eu.trentorise.opendata.disiclient.DictFactory;
 import eu.trentorise.opendata.disiclient.DisiClients;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
+import static eu.trentorise.opendata.disiclient.services.KnowledgeService.PART_OF_CONCEPT_ID1;
 import eu.trentorise.opendata.disiclient.services.NLPService;
 import eu.trentorise.opendata.semtext.SemText;
 import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
@@ -52,9 +53,6 @@ public class EntityODR extends StructureODR implements IEntity {
 
     private static final Logger logger = LoggerFactory.getLogger(EntityODR.class.getName());
 
-    public static final Long PART_OF_CONCEPT_ID1 = 5l;
-    public static final Long PART_OF_CONCEPT_ID2 = 22l;
-
     private List<Name> names;
 
     private Map<String, List<SemText>> descriptions;
@@ -82,7 +80,7 @@ public class EntityODR extends StructureODR implements IEntity {
 
     public EntityODR(Entity entity) {
         
-        EntityService es = DisiClients.getClient().getEntityService();
+        EntityService es = DisiClients.getSingleton().getEntityService();
         
         super.setId(entity.getId());
         this.setTypeId(entity.getTypeId());
@@ -317,7 +315,7 @@ public class EntityODR extends StructureODR implements IEntity {
             return Dict.of();
         } else if (this.names == null) {
             
-            EntityODR e =  DisiClients.getClient().getEntityService().readEntity(super.getId());
+            EntityODR e =  DisiClients.getSingleton().getEntityService().readEntity(super.getId());
             if (e == null) {
                 return Dict.of();
             }
@@ -530,7 +528,7 @@ public class EntityODR extends StructureODR implements IEntity {
                             logger.warn("No vocabulary is provided. Vocabulary is set to default '1");
                             val.setVocabularyId(1L);
                         } else {
-                            EntityService es = DisiClients.getClient().getEntityService();
+                            EntityService es = DisiClients.getSingleton().getEntityService();
                             HashMap<String, Long> vocabularyMap = es.getVocabularies();
 
                             SemText st = (SemText) val.getValue();
@@ -690,7 +688,7 @@ public class EntityODR extends StructureODR implements IEntity {
 
         for (IAttribute subattr : structure.getStructureAttributes()) {
             for (IValue val : subattr.getValues()) {
-                map.put(DisiClients.getClient().getEntityTypeService().readAttrDef(subattr.getAttrDefUrl()), disifyObject(val.getValue()));
+                map.put(DisiClients.getSingleton().getEntityTypeService().readAttrDef(subattr.getAttrDefUrl()), disifyObject(val.getValue()));
             }
 
         }
@@ -707,13 +705,13 @@ public class EntityODR extends StructureODR implements IEntity {
      */
     public static EntityODR disify(IEntity entity, boolean root) {
 
-        EntityService es = DisiClients.getClient().getEntityService();
+        EntityService es = DisiClients.getSingleton().getEntityService();
         
         if (entity instanceof EntityODR) {
             return (EntityODR) entity;
         }
 
-        EntityTypeService ets = DisiClients.getClient().getEntityTypeService();
+        EntityTypeService ets = DisiClients.getSingleton().getEntityTypeService();
         
         EntityODR enodr = new EntityODR();
         EntityType etype = ets.readEntityType(entity.getEtypeURL());
@@ -721,7 +719,7 @@ public class EntityODR extends StructureODR implements IEntity {
         List<IAttribute> newAttrs = new ArrayList();
 
         if (root) {
-            Checker.of(DisiClients.getClient()).checkEntity(entity, true);
+            Checker.of(DisiClients.getSingleton()).checkEntity(entity, true);
             Object nameAttrDefURL = etype.getNameAttrDef().getURL();
             for (IAttribute attr : entity.getStructureAttributes()) {
                 if (attr.getValuesCount() > 0) {
@@ -749,7 +747,7 @@ public class EntityODR extends StructureODR implements IEntity {
                             }
                         }
 
-                        attrODR = DisiClients.getClient().getEntityService().createAttribute(attrDef, objects);
+                        attrODR = DisiClients.getSingleton().getEntityService().createAttribute(attrDef, objects);
                         newAttrs.add(attrODR);
                     }
 

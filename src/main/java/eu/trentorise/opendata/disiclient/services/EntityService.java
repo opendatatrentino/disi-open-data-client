@@ -284,8 +284,7 @@ public class EntityService implements IEntityService {
         structureName.setAttributes(structure.getAttributes());
         structureName.setTypeId(structure.getTypeId());
         structureName.setEntityBaseId(1L);
-        structureName.setId(structure.getId());
-        //EntityODR en = new EntityODR(this.api,entity);
+        structureName.setId(structure.getId()); 
 
         return structureName;
     }
