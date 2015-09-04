@@ -1,6 +1,6 @@
 package eu.trentorise.opendata.disiclient.services;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -37,6 +37,7 @@ import eu.trentorise.opendata.commons.OdtUtils;
 import eu.trentorise.opendata.disiclient.DisiClients;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 
@@ -61,7 +62,6 @@ public class EntityTypeService implements IEntityTypeService {
     // todo it's static, but it shouldn't be...
     private static final LoadingCache<Long, AttributeDef> attrDefCache = CacheBuilder.newBuilder()
             .maximumSize(CACHE_SIZE)
-            .expireAfterWrite(0, TimeUnit.MINUTES)
             // todo think about removal .removalListener(MY_LISTENER)
             .build(
                     new CacheLoader<Long, AttributeDef>() {
@@ -77,8 +77,7 @@ public class EntityTypeService implements IEntityTypeService {
 
     // todo it's static, but it shouldn't be...
     private static final LoadingCache<Long, EntityType> etypesCacheById = CacheBuilder.newBuilder()
-            .maximumSize(CACHE_SIZE)
-            .expireAfterWrite(0, TimeUnit.MINUTES)
+            .maximumSize(CACHE_SIZE)            
             // todo think about removal .removalListener(MY_LISTENER)
             .build(
                     new CacheLoader<Long, EntityType>() {
@@ -205,7 +204,8 @@ public class EntityTypeService implements IEntityTypeService {
         }
         return keyView;
     }
-
+   
+    
     @Override
     public List<IEntityType> readAllEntityTypes() {
         if (lastPopulation == null) {
@@ -238,7 +238,8 @@ public class EntityTypeService implements IEntityTypeService {
 
                 List<IAttributeDef> attributeDefList = new ArrayList();
                 for (AttributeDefinition attrDef : attrDefList) {
-                    IAttributeDef attributeDef = new AttributeDef(attrDef);
+                    AttributeDef attributeDef = new AttributeDef(attrDef);
+                    attrDefCache.put(attrDef.getId(), attributeDef);
                     attributeDefList.add(attributeDef);
                 }
                 etype.setAttrs(attributeDefList);
@@ -250,8 +251,8 @@ public class EntityTypeService implements IEntityTypeService {
         } else {
             LOG.warn("GIVING BACK ALL ETYPES LIST WITHOUT CHECKING STALE ONES!");
         }
-
-        return new ArrayList(etypesCacheById.asMap().values());
+        ConcurrentMap<Long, EntityType> retMap = etypesCacheById.asMap();
+        return new ArrayList(retMap.values());
     }
 
     @Override

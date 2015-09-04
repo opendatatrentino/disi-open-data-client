@@ -1,7 +1,7 @@
 package eu.trentorise.opendata.disiclient.test.services;
 
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.FACILITY_ID;
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.PALAZZETTO_ID;
+import static eu.trentorise.opendata.disiclient.test.services.EntityServiceIT.FACILITY_ID;
+import static eu.trentorise.opendata.disiclient.test.services.EntityServiceIT.PALAZZETTO_ID;
 import static org.junit.Assert.assertNotNull;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
@@ -16,35 +16,19 @@ import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
 import eu.trentorise.opendata.disiclient.services.EntityService;
-import eu.trentorise.opendata.disiclient.services.IdentityService;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.commons.Dict;
-import eu.trentorise.opendata.disiclient.test.ConfigLoader;
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.FACILITY_URL;
+import static eu.trentorise.opendata.disiclient.test.services.EntityServiceIT.FACILITY_URL;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
-import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.IEntityService;
 import eu.trentorise.opendata.semantics.services.IIdentityService;
-import org.junit.After;
-import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TestNameDescriptionAttributeCreation {
+public class NameDescriptionAttributeCreationIT extends DisiTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(TestNameDescriptionAttributeCreation.class);
+    private static final Logger logger = LoggerFactory.getLogger(NameDescriptionAttributeCreationIT.class);
 
-    private IEkb ekb;
-    
-    @Before
-    public void beforeMethod() {
-        ekb = ConfigLoader.init();
-    }   
-    
-    @After
-    public void afterMethod(){
-      ekb = null;  
-    }
     
     @Test
     public void testCreateDescription() {

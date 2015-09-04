@@ -23,11 +23,10 @@ import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TestMatchingService {
+public class MatchingServiceIT extends DisiTest {
 
     private Logger LOG = LoggerFactory.getLogger(this.getClass());
 
-    private IEkb client;
 
     String resourceName = "IMPIANTI RISALITA";
 
@@ -105,17 +104,7 @@ public class TestMatchingService {
         }
     };
 
-    @Before
-    public void beforeMethod() {
-        ConfigLoader.init();
-        client = ConfigLoader.init();
-    }
-
-    @After
-    public void after() {
-        client = null;
-    }
-
+    
     /**
      * TODO REVIEW this thing always sets property type to StringType ....
      */
@@ -133,13 +122,13 @@ public class TestMatchingService {
     @Test
     public void testMatchingService() {
 
-        List<IEntityType> allEntityTypes = client.getEntityTypeService().readAllEntityTypes();
+        List<IEntityType> allEntityTypes = ekb.getEntityTypeService().readAllEntityTypes();
 
         for (IEntityType et : allEntityTypes) {
 
             ClassType classType = etypeToClassType(et);
             
-            List<SchemaMapping> schemaMappings = client.getSchemaMatchingService().matchSchemas(DcatMetadata.of(),
+            List<SchemaMapping> schemaMappings = ekb.getSchemaMatchingService().matchSchemas(DcatMetadata.of(),
                     ListType.of(classType),null);
             
             assertEquals(allEntityTypes.size(), schemaMappings.size());

@@ -17,11 +17,10 @@ import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 
-import eu.trentorise.opendata.disiclient.test.services.TestEntityService;
-
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.FACILITY_ID;
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.FACILITY_URL;
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.RAVAZZONE_URL;
+import eu.trentorise.opendata.disiclient.test.services.EntityServiceIT;
+import static eu.trentorise.opendata.disiclient.test.services.EntityServiceIT.FACILITY_ID;
+import static eu.trentorise.opendata.disiclient.test.services.EntityServiceIT.FACILITY_URL;
+import static eu.trentorise.opendata.disiclient.test.services.EntityServiceIT.RAVAZZONE_URL;
 import eu.trentorise.opendata.semantics.Checker;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
@@ -203,7 +202,7 @@ public class IntegrityCheckerTest {
     private IEntity entityForReuseResults() {
         IEntityService enServ = ekb.getEntityService();
 
-        EntityODR entity = (EntityODR) enServ.readEntity(TestEntityService.PALAZZETTO_URL);
+        EntityODR entity = (EntityODR) enServ.readEntity(EntityServiceIT.PALAZZETTO_URL);
         List<Attribute> attrs = entity.getAttributes();
         List<Attribute> attrs1 = new ArrayList();
         for (Attribute atr : attrs) {
@@ -228,7 +227,7 @@ public class IntegrityCheckerTest {
     private IEntity entityForNewResults() {
         IEntityService enServ = ekb.getEntityService();
 
-        EntityODR entity = (EntityODR) enServ.readEntity(TestEntityService.PALAZZETTO_URL);
+        EntityODR entity = (EntityODR) enServ.readEntity(EntityServiceIT.PALAZZETTO_URL);
         List<Attribute> attrs = entity.getAttributes();
         List<Attribute> attrs1 = new ArrayList();
         for (Attribute atr : attrs) {
@@ -257,7 +256,7 @@ public class IntegrityCheckerTest {
     private IEntity entityForMissingResults() {
 
         IEntityService enServ = ekb.getEntityService();
-        EntityODR entity = (EntityODR) enServ.readEntity(TestEntityService.PALAZZETTO_URL);
+        EntityODR entity = (EntityODR) enServ.readEntity(EntityServiceIT.PALAZZETTO_URL);
         List<Attribute> attrs = entity.getAttributes();
         List<Attribute> attrs1 = new ArrayList();
 

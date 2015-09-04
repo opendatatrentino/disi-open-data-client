@@ -26,8 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.LOCATION_URL;
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.SHOPPING_FACILITY_URL;
+import static eu.trentorise.opendata.disiclient.test.services.EntityServiceIT.LOCATION_URL;
+import static eu.trentorise.opendata.disiclient.test.services.EntityServiceIT.SHOPPING_FACILITY_URL;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.IKnowledgeService;
 import eu.trentorise.opendata.semantics.services.INLPService;
@@ -56,23 +56,19 @@ import org.slf4j.LoggerFactory;
  *
  *
  */
-public class TestNLPService {
+public class NlpServiceIT extends DisiTest {
 
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    IEkb ekb;
     INLPService nlpService;
 
     @Before
     public void beforeMethod() {        
-        ekb = ConfigLoader.init();
-
         nlpService = ekb.getNLPService();
     }
 
     @After
     public void afterMethod() {
-        ekb = null;
         nlpService = null;
     }
 

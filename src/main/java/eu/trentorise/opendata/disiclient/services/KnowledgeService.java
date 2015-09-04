@@ -51,7 +51,6 @@ public class KnowledgeService implements IKnowledgeService {
 
         conceptCacheByGuid = CacheBuilder.newBuilder()
                 .maximumSize(CACHE_SIZE)
-                .expireAfterWrite(0, TimeUnit.MINUTES)
                 // todo think about removal .removalListener(MY_LISTENER)
                 .build(
                         new CacheLoader<Long, ConceptODR>() {
@@ -78,7 +77,6 @@ public class KnowledgeService implements IKnowledgeService {
                         });
         conceptCacheById = CacheBuilder.newBuilder()
                 .maximumSize(CACHE_SIZE)
-                .expireAfterWrite(0, TimeUnit.MINUTES)
                 // todo think about removal .removalListener(MY_LISTENER)
                 .build(
                         new CacheLoader<Long, ConceptODR>() {

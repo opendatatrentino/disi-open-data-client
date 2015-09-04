@@ -1,9 +1,9 @@
 package eu.trentorise.opendata.schemamatcher.implementation.service;
 
-import eu.trentorise.opendata.disiclient.test.services.TestKnowledgeService;
-import static eu.trentorise.opendata.disiclient.test.services.TestKnowledgeService.HOURS_CONCEPT_URL;
-import static eu.trentorise.opendata.disiclient.test.services.TestKnowledgeService.INFORMATION_TECHNOLOGY_CONCEPT_URL;
-import static eu.trentorise.opendata.disiclient.test.services.TestKnowledgeService.NAME_CONCEPT_URL;
+import eu.trentorise.opendata.disiclient.test.services.KnowledgeServiceIT;
+import static eu.trentorise.opendata.disiclient.test.services.KnowledgeServiceIT.HOURS_CONCEPT_URL;
+import static eu.trentorise.opendata.disiclient.test.services.KnowledgeServiceIT.INFORMATION_TECHNOLOGY_CONCEPT_URL;
+import static eu.trentorise.opendata.disiclient.test.services.KnowledgeServiceIT.NAME_CONCEPT_URL;
 import eu.trentorise.opendata.disiclient.test.ConfigLoader;
 import static org.junit.Assert.*;
 

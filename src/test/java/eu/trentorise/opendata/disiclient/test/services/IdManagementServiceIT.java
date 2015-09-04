@@ -8,15 +8,15 @@ import eu.trentorise.opendata.disiclient.model.entity.EntityType;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 
 import eu.trentorise.opendata.disiclient.test.ConfigLoader;
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.ATTR_DEF_PART_OF_URL;
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.CERTIFIED_PRODUCT_ID;
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.CERTIFIED_PRODUCT_URL;
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.FACILITY_ID;
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.FACILITY_URL;
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.GYMNASIUM_CONCEPT_URL;
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.LOCATION_URL;
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.PALAZZETTO_NAME_IT;
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.PALAZZETTO_URL;
+import static eu.trentorise.opendata.disiclient.test.services.EntityServiceIT.ATTR_DEF_PART_OF_URL;
+import static eu.trentorise.opendata.disiclient.test.services.EntityServiceIT.CERTIFIED_PRODUCT_ID;
+import static eu.trentorise.opendata.disiclient.test.services.EntityServiceIT.CERTIFIED_PRODUCT_URL;
+import static eu.trentorise.opendata.disiclient.test.services.EntityServiceIT.FACILITY_ID;
+import static eu.trentorise.opendata.disiclient.test.services.EntityServiceIT.FACILITY_URL;
+import static eu.trentorise.opendata.disiclient.test.services.EntityServiceIT.GYMNASIUM_CONCEPT_URL;
+import static eu.trentorise.opendata.disiclient.test.services.EntityServiceIT.LOCATION_URL;
+import static eu.trentorise.opendata.disiclient.test.services.EntityServiceIT.PALAZZETTO_NAME_IT;
+import static eu.trentorise.opendata.disiclient.test.services.EntityServiceIT.PALAZZETTO_URL;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
@@ -50,18 +50,17 @@ import org.slf4j.LoggerFactory;
  * 
  *
  */
-public class TestIDManagementService {
+public class IdManagementServiceIT extends DisiTest {
     
-    private static final Logger LOG = LoggerFactory.getLogger(TestIDManagementService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(IdManagementServiceIT.class);
 
-    IEkb ekb;
+
     IEntityService enServ;
     IEntityTypeService ets;
     IIdentityService idServ;
     
     @Before
-    public void before(){
-        ekb = ConfigLoader.init();
+    public void before(){        
         enServ = ekb.getEntityService();
         idServ = ekb.getIdentityService();
         ets = ekb.getEntityTypeService();
@@ -71,8 +70,7 @@ public class TestIDManagementService {
     public void after(){
         enServ = null;
         idServ = null;
-        ets = null;
-        ekb = null;
+        ets = null;        
     }
     
     private String entityToString(Entity e) {
@@ -263,7 +261,7 @@ public class TestIDManagementService {
                        
         IEntityType et = ets.readEntityType(CERTIFIED_PRODUCT_URL);
 
-        IAttributeDef certificateTypeAttrDef = et.getAttrDef(TestEntityService.ATTR_TYPE_OF_CERTIFICATE_URL);
+        IAttributeDef certificateTypeAttrDef = et.getAttrDef(EntityServiceIT.ATTR_TYPE_OF_CERTIFICATE_URL);
 
         assertNotNull(certificateTypeAttrDef);
 
@@ -302,7 +300,7 @@ public class TestIDManagementService {
                 "test entity")); // so doesn't complain about missing name...
         
 
-        attrs.add(enServ.createAttribute(facility.getAttrDef(TestEntityService.ATTR_DEF_PART_OF_URL),
+        attrs.add(enServ.createAttribute(facility.getAttrDef(EntityServiceIT.ATTR_DEF_PART_OF_URL),
             new MinimalEntity(PALAZZETTO_URL,Dict.of(), Dict.of(), "")));
         
         enodr.setStructureAttributes(attrs);

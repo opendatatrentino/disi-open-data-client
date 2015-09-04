@@ -15,26 +15,24 @@ import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.services.SearchResult;
 import eu.trentorise.opendata.commons.OdtUtils;
 import eu.trentorise.opendata.disiclient.services.DisiEkb;
-import eu.trentorise.opendata.disiclient.test.ConfigLoader;
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.LOCATION_URL;
+import static eu.trentorise.opendata.disiclient.test.services.EntityServiceIT.LOCATION_URL;
 import org.junit.After;
 
 
-public class TestSearchService {
+public class SearchServiceIT extends DisiTest {
 
-    private DisiEkb ekb;
+    
     private Search searchService;
     
     @Before
     public void beforeMethod() {
-        ekb = (DisiEkb) ConfigLoader.init();
-        searchService = ekb.getSearchService();
+    
+        searchService = ((DisiEkb) ekb).getSearchService();
     }
     
     @After
     public void after(){
-        searchService = null;
-        ekb = null;        
+        searchService = null;        
     }
 
     @Test

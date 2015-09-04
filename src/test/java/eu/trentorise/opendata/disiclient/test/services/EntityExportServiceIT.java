@@ -11,9 +11,6 @@ import com.google.common.io.Files;
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
 import eu.trentorise.opendata.disiclient.services.EntityExportService;
 import eu.trentorise.opendata.disiclient.services.EntityService;
-import eu.trentorise.opendata.disiclient.services.EntityTypeService;
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.CERTIFIED_PRODUCT_ID;
-import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.CERTIFIED_PRODUCT_URL;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
@@ -30,8 +27,6 @@ import org.junit.After;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import eu.trentorise.opendata.disiclient.services.DisiEkb;
-import eu.trentorise.opendata.disiclient.test.ConfigLoader;
-import eu.trentorise.opendata.semantics.services.IEkb;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import static org.junit.Assert.assertEquals;
@@ -46,27 +41,24 @@ import org.slf4j.LoggerFactory;
 
 
 
-public class EntityExportServiceTest {
+public class EntityExportServiceIT extends DisiTest {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
-        
     
-    DisiEkb ekb;
     List<String> entities;
     EntityExportService ess;
     EntityService enServ;
 
 
     @Before
-    public void beforeMethod() {
-        ekb = (DisiEkb) ConfigLoader.init();
+    public void beforeMethod() {    
         entities = new ArrayList();
-        entities.add(TestEntityService.ANDALO_URL);
-        entities.add(TestEntityService.RAVAZZONE_URL);
-        entities.add(TestEntityService.PALAZZETTO_URL);
+        entities.add(EntityServiceIT.ANDALO_URL);
+        entities.add(EntityServiceIT.RAVAZZONE_URL);
+        entities.add(EntityServiceIT.PALAZZETTO_URL);
         
-        ess = ekb.getEntityExportService();       
-        enServ = ekb.getEntityService();        
+        ess = ((DisiEkb) ekb).getEntityExportService();       
+        enServ = (EntityService) ekb.getEntityService();        
     }
 
     @After
@@ -142,7 +134,7 @@ public class EntityExportServiceTest {
         
         IEntityType et = ekb.getEntityTypeService().readEntityType(CERTIFIED_PRODUCT_URL);
 
-        IAttributeDef certificateTypeAttrDef = et.getAttrDef(TestEntityService.ATTR_TYPE_OF_CERTIFICATE_URL);
+        IAttributeDef certificateTypeAttrDef = et.getAttrDef(EntityServiceIT.ATTR_TYPE_OF_CERTIFICATE_URL);
 
         assertNotNull(certificateTypeAttrDef);
 
