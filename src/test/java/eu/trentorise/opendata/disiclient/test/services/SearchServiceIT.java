@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import eu.trentorise.opendata.disiclient.services.Search;
 
-import eu.trentorise.opendata.semantics.model.entity.IEntity;
+import eu.trentorise.opendata.semantics.model.entity.Entity;
 import eu.trentorise.opendata.semantics.services.SearchResult;
 import eu.trentorise.opendata.commons.OdtUtils;
 import eu.trentorise.opendata.disiclient.services.DisiEkb;
@@ -35,19 +35,7 @@ public class SearchServiceIT extends DisiTest {
         searchService = null;        
     }
 
-    @Test
-    public void conceptSearchTest() {
-        
-        List<IEntity> entities = searchService.conceptSearch("PALAZZETTO DELLO SPORT");
-        for (IEntity entity : entities) {
-
-            //			System.out.println(entity.getGUID());
-            //			System.out.println("URL:"+entity.getURL());
-            assertNotNull(entity);
-            //assertEquals("Location",entity.getEtype().getName(Locale.ENGLISH));
-        }
-    }
-
+  
     @Test
     public void nameSearchTest() {
         

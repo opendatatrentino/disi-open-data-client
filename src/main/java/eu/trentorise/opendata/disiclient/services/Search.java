@@ -1,8 +1,8 @@
 package eu.trentorise.opendata.disiclient.services;
 
-import it.unitn.disi.sweb.webapi.client.IProtocolClient;
+import static com.google.common.base.Preconditions.checkNotNull;
 import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
-import it.unitn.disi.sweb.webapi.model.eb.Entity;
+
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
 import it.unitn.disi.sweb.webapi.model.eb.Name;
 import it.unitn.disi.sweb.webapi.model.eb.search.InstanceSearchResult;
@@ -16,13 +16,11 @@ import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
-import eu.trentorise.opendata.disiclient.model.entity.EntityType;
 
-import eu.trentorise.opendata.semantics.model.entity.IEntity;
+
 import eu.trentorise.opendata.semantics.services.SearchResult;
-import eu.trentorise.opendata.commons.OdtUtils;
-import eu.trentorise.opendata.disiclient.DisiClients;
+import eu.trentorise.opendata.disiclient.UrlMapper;
+import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
 import javax.annotation.Nullable;
 
 public class Search {
@@ -32,6 +30,8 @@ public class Search {
     @Nullable
     private InstanceClient instanceClient;
 
+    private DisiEkb ekb;
+    private UrlMapper um;
 
     private InstanceClient getInstanceClient() {
         if (instanceClient == null) {
@@ -41,15 +41,18 @@ public class Search {
     }
     
     
-    Search() {        
+    Search(DisiEkb ekb) {
+        checkNotNull(ekb);
+        this.ekb = ekb;
+        this.um = SwebConfiguration.getUrlMapper();
     }
 
     public String[][] searchEQL(String eqlQuery) {
         throw new UnsupportedOperationException("todo to implement");
     }
 
-    //	public List<List<IEntity>> search(IEntityType entityType,
-    //			int numCandidates, List<List<IAttribute>> attributes) {
+    //	public List<List<Entity>> search(Etype entityType,
+    //			int numCandidates, List<List<Attr>> attributes) {
     //
     //		InstanceClient client = new InstanceClient(api);
     //		Query query = new Query();
@@ -73,11 +76,11 @@ public class Search {
 
     private List<Name> getNames(List<Instance> instances) {
         List<Name> names = new ArrayList();
-        EntityTypeService ets = new EntityTypeService();
+        EtypeService ets = ekb.getEtypeService();
 
         for (Instance instance : instances) {
-            EntityType etype = ets.readEntityType(instance.getTypeId());
-            if (etype.getName().string(OdtUtils.languageTagToLocale("en")).equals("Name")) {
+            ComplexType etype = ets.readSwebComplexType(instance.getTypeId());
+            if (KnowledgeService.NAME_CONCEPT_ID == etype.getConceptId()) {
                 Name name = (Name) instance;
                 names.add(name);
             }
@@ -86,12 +89,15 @@ public class Search {
         return names;
     }
 
-    private List<Entity> getEntities(List<Instance> instances) {
-        List<Entity> entities = new ArrayList();        
+    /**
+     * Structures are skipped
+     */
+    private List<it.unitn.disi.sweb.webapi.model.eb.Entity> swebInstancesToSwebEntities(Iterable<Instance> instances) {
+        List<it.unitn.disi.sweb.webapi.model.eb.Entity> entities = new ArrayList();        
 
-        for (Instance instance : instances) {
-            if (instance instanceof Entity) {
-                Entity name = (Entity) instance;
+        for (Instance instance : instances) {            
+            if (instance instanceof it.unitn.disi.sweb.webapi.model.eb.Entity) {
+                it.unitn.disi.sweb.webapi.model.eb.Entity name = (it.unitn.disi.sweb.webapi.model.eb.Entity) instance;
                 entities.add(name);
             }
         }
@@ -99,16 +105,18 @@ public class Search {
         return entities;
     }
 
-    public List<IEntity> conceptSearch(String conceptSearchQuery) {        
+    /* dav 0.12 seems nobody calls this... 
+    public List<Entity> conceptSearch(String conceptSearchQuery) {        
         SearchResultFilter srf = new SearchResultFilter();
         srf.setLocale(Locale.ITALIAN);
         //srf.setIncludeAttributesAsProperties(true);
         srf.setIncludeAttributes(true);
         InstanceSearchResult result = getInstanceClient().searchInstances(conceptSearchQuery, 1, null, null, srf, null);
         List<Instance> resInstances = result.getResults();
-        List<IEntity> resEntities = convertInstancesToEntities(resInstances);
+        List<Entity> resEntities = swebInstancesToSwebEntities(resInstances);
         return resEntities;
     }
+    */
 
 //	public void conceptEntitySearch(String searchQuery) {
 //		InstanceClient client = new InstanceClient(api);
@@ -121,32 +129,9 @@ public class Search {
 //			System.out.println(entry.getValue().iterator().next().getResultValue());
 //		}
 //
-//		//			List<IEntity> resEntities  = convertInstancesToEntities(resInstances);
+//		//			List<Entity> resEntities  = convertInstancesToEntities(resInstances);
 //
 //	}
-    /**
-     * Method converts list of SWEB instances to ODR entities
-     *
-     * @param instances list of instances from the server
-     * @return list of entities
-     */
-    private List<IEntity> convertInstancesToEntities(List<Instance> instances) {
-        List<IEntity> entities = new ArrayList();        
-        for (Instance instance : instances) {            
-            if (instance instanceof Entity) {
-                System.out.println(instance.getTypeId());
-                Entity entity = (Entity) instance;
-                EntityODR entityODR = new EntityODR(entity);
-                entities.add(entityODR);
-            } else {
-                Name name = (Name) instance;
-                System.out.println(name.getId());
-                name.getId();
-            }
-        }
-        return entities;
-    }
-
 
     public List<SearchResult> searchEntities(String partialName, String etypeUrl, Locale locale) {
         List<SearchResult> entities = new ArrayList();
@@ -160,9 +145,9 @@ public class Search {
         InstanceSearchResult result = getInstanceClient().searchInstances(partialName, 1, etype, null, srf, null);
         List<Instance> resInstances = result.getResults();
 
-        List<Entity> ents = getEntities(resInstances);
-        for (Entity e : ents) {
-            SearchResult res = DisiClients.makeSearchResult(e);
+        List<it.unitn.disi.sweb.webapi.model.eb.Entity> ents = swebInstancesToSwebEntities(resInstances);
+        for (it.unitn.disi.sweb.webapi.model.eb.Entity e : ents) {
+            SearchResult res = ekb.getConverter().makeSearchResult(e);
             entities.add(res);
         }
 

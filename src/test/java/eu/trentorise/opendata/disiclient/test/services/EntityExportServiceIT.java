@@ -8,12 +8,12 @@ import com.github.jsonldjava.core.JsonLdProcessor;
 import com.github.jsonldjava.utils.JsonUtils;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
-import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
 import eu.trentorise.opendata.disiclient.services.EntityExportService;
 import eu.trentorise.opendata.disiclient.services.EntityService;
-import eu.trentorise.opendata.semantics.model.entity.IAttribute;
-import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
-import eu.trentorise.opendata.semantics.model.entity.IEntityType;
+import eu.trentorise.opendata.semantics.model.entity.Attr;
+import eu.trentorise.opendata.semantics.model.entity.AttrDef;
+import eu.trentorise.opendata.semantics.model.entity.Entity;
+import eu.trentorise.opendata.semantics.model.entity.Etype;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -132,35 +132,35 @@ public class EntityExportServiceIT extends DisiTest {
     public void testCreateAndExportCertifiedProduct() {
        
         
-        IEntityType et = ekb.getEntityTypeService().readEntityType(CERTIFIED_PRODUCT_URL);
+        Etype et = ekb.getEtypeService().readEtype(CERTIFIED_PRODUCT_URL);
 
-        IAttributeDef certificateTypeAttrDef = et.getAttrDef(EntityServiceIT.ATTR_TYPE_OF_CERTIFICATE_URL);
+        AttrDef certificateTypeAttrDef = et.attrDefById(EntityServiceIT.ATTR_TYPE_OF_CERTIFICATE_URL);
 
         assertNotNull(certificateTypeAttrDef);
 
-        IAttribute attr = enServ.createAttribute(certificateTypeAttrDef, "Please work");
+        Attr attr = Attr.ofObject(certificateTypeAttrDef, "Please work");
 
-        EntityODR en = new EntityODR();
-        en.setEntityBaseId(1L);
-        en.setTypeId(CERTIFIED_PRODUCT_ID);
+        Entity.Builder enb = Entity.builder();
+        
+        enb.setEtypeId(CERTIFIED_PRODUCT_URL);
+               
+        enb.putAttrs(certificateTypeAttrDef.getId(), attr);
+        
+        Entity en = enb.build();
 
-        List<IAttribute> attrs = new ArrayList();
-        attrs.add(attr);
-        en.setStructureAttributes(attrs);
-
-        String enURL = null;
+        Entity createdEntity = null;
 
         try {
-            enURL = enServ.createEntityURL(en);
+            createdEntity = enServ.createEntity(en);
             StringWriter sw = new StringWriter();
             List<String> entityURLs = new ArrayList();
-            entityURLs.add(enURL);
+            entityURLs.add(createdEntity.getId());
             enServ.exportToJsonLd(entityURLs, sw);
             logger.info("JSONLD = " + sw.toString());
             assertTrue(sw.toString().length() > 0);
         } finally {
-            if (enURL != null) {
-                enServ.deleteEntity(enURL);
+            if (createdEntity != null) {
+                enServ.deleteEntity(createdEntity.getId());
             }
         }
 

@@ -20,9 +20,9 @@ import eu.trentorise.opendata.schemamatcher.model.ISchema;
 import eu.trentorise.opendata.schemamatcher.model.ISchemaCorrespondence;
 import eu.trentorise.opendata.schemamatcher.model.ISchemaElementCorrespondence;
 import eu.trentorise.opendata.schemamatcher.model.ISchemaMatcher;
-import eu.trentorise.opendata.semantics.model.entity.IEntityType;
+import eu.trentorise.opendata.semantics.model.entity.Etype;
 import eu.trentorise.opendata.semantics.services.IEkb;
-import eu.trentorise.opendata.semantics.services.IEntityTypeService;
+import eu.trentorise.opendata.semantics.services.IEtypeService;
 import org.junit.After;
 import org.junit.Before;
 
@@ -95,12 +95,12 @@ public class TestHungarianAlgoApproach {
     }
 
     public  List<ISchema> getAllTargetSchemas() throws SchemaMatcherException {
-        IEntityTypeService etypeService = ekb.getEntityTypeService();
-        List<IEntityType> etypeList = etypeService.readAllEntityTypes();
+        IEtypeService etypeService = ekb.getEtypeService();
+        List<Etype> etypeList = etypeService.readAllEtypes();
         List<ISchema> targetSchemas = new ArrayList();
         SchemaImport si = new SchemaImport(ekb);
 
-        for (IEntityType etype : etypeList) {
+        for (Etype etype : etypeList) {
             ISchema schemaEtype = si.extractSchema(etype, Locale.ENGLISH);
             targetSchemas.add(schemaEtype);
         }

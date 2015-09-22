@@ -2,17 +2,15 @@ package eu.trentorise.opendata.disiclient.test.services;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import edu.umd.cs.findbugs.annotations.Nullable;
-import static eu.trentorise.opendata.commons.OdtUtils.checkNotEmpty;
 import eu.trentorise.opendata.disiclient.services.EntityService;
-import eu.trentorise.opendata.disiclient.services.NLPService;
+import eu.trentorise.opendata.disiclient.services.NlpService;
 import eu.trentorise.opendata.disiclient.test.ConfigLoader;
 
-import eu.trentorise.opendata.semantics.model.entity.IEntity;
-import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
+import eu.trentorise.opendata.semantics.model.entity.Entity;
 import eu.trentorise.opendata.semtext.Meaning;
 import eu.trentorise.opendata.semtext.SemText;
 import eu.trentorise.opendata.semtext.Term;
+import eu.trentorise.opendata.traceprov.types.Concept;
 import eu.trentorise.opendata.semtext.MeaningKind;
 import eu.trentorise.opendata.semantics.services.TermSearchResult;
 import it.unitn.disi.sweb.core.nlp.model.NLEntityMeaning;
@@ -37,6 +35,9 @@ import it.unitn.disi.sweb.core.nlp.model.NLTextUnit;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.annotation.Nullable;
+
 import org.junit.After;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -49,6 +50,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static eu.trentorise.opendata.commons.validation.Preconditions.checkNotEmpty;
+
 /**
  * Testing the client implementaion of NLP services.
  *
@@ -60,16 +63,19 @@ public class NlpServiceIT extends DisiTest {
 
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    INLPService nlpService;
+    INLPService nlps;
+    NlpService disiNlps;
 
     @Before
     public void beforeMethod() {        
-        nlpService = ekb.getNLPService();
+        nlps = ekb.getNLPService();
+        disiNlps = (NlpService) ekb.getNLPService();
     }
 
     @After
     public void afterMethod() {
-        nlpService = null;
+        nlps = null;
+        disiNlps = null;
     }
 
     /**
@@ -94,7 +100,7 @@ public class NlpServiceIT extends DisiTest {
 
     public static String MIXED_ENTITIES_AND_CONCEPTS = "Comuni di: Andalo, Amblar, Bresimo. Ci sono le seguenti infrastrutture: Agrifer, Athenas, Hairstudio. Il mondo è bello quando l'NLP funziona";
 
-    public static List<String> PRODOTTI_CERTIFICATI_DESCRIPTIONS = new ArrayList<String>() {
+    public static List<String> PRODOTTI_CERTIFICATI_DESCRIPTIONS = new ArrayList() {
         {
             add("Golden Delicious: forma tronco-conica oblunga e colore dal verde al giallo,"
                     + " a volte con faccetta rosata. La polpa Ã¨ croccante e succosa, con un peculiare sapore dolce-acidulo."
@@ -141,16 +147,16 @@ public class NlpServiceIT extends DisiTest {
     };
 
     private SemText runNlp(String text){
-        return nlpService.runNLP(Lists.newArrayList(text), null).get(0);
+        return nlps.runNLP(Lists.newArrayList(text), null).get(0);
     }
             
     private SemText runNlp(String text, @Nullable String domainURL){
-        return nlpService.runNLP(Lists.newArrayList(text), domainURL).get(0);
+        return nlps.runNLP(Lists.newArrayList(text), domainURL).get(0);
     }        
             
     @Test
     public void testGetAllPipelinesDescription() {
-        NLPService disiNlpService = (NLPService) ekb.getNLPService();
+        NlpService disiNlpService = (NlpService) ekb.getNLPService();
         List<PipelineDescription> pipelines = disiNlpService.readPipelinesDescription();
         //logger.debug("NLP Pipelines : ");
         for (PipelineDescription pipeline : pipelines) {
@@ -162,7 +168,7 @@ public class NlpServiceIT extends DisiTest {
     @Test
     public void testRunBatchNLP() {
 
-        List<SemText> output = nlpService.runNLP(PRODOTTI_CERTIFICATI_DESCRIPTIONS, null);
+        List<SemText> output = nlps.runNLP(PRODOTTI_CERTIFICATI_DESCRIPTIONS, null);
         //		logger.debug(output.strs(0).getSentences().strs(0).terms().strs(0).getMeanings().strs(0).getURL());
         //		logger.debug(output.strs(0).getSentences().strs(0).terms().strs(0).getMeanings().strs(0).getProbability());
         //		logger.debug(output.strs(0).getSentences().strs(0).getStart());
@@ -178,7 +184,7 @@ public class NlpServiceIT extends DisiTest {
     public void testRunNLP() {
         String inputStr = "Hello World";
 
-        List<SemText> outputList = nlpService.runNLP(Arrays.asList(inputStr), null);
+        List<SemText> outputList = nlps.runNLP(Arrays.asList(inputStr), null);
         assertNotNull(outputList);
 
         SemText st = outputList.get(0);
@@ -202,20 +208,20 @@ public class NlpServiceIT extends DisiTest {
                 + "acqua con eventuale aggiunta di sale.";
 
         //from NLText to SemText
-        SemText sText = nlpService.runNLP(Arrays.asList(testText), null).get(0);
+        SemText sText = nlps.runNLP(Arrays.asList(testText), null).get(0);
         logger.debug("Sentences1:" + sText.getSentences().size());
         logger.debug("Terms1:" + sText.getSentences().get(0).getTerms().size());
         logger.debug("Terms1:" + sText.getSentences().get(0).getTerms().get(0).getMeanings().get(0).getId());
 
         //from SemText to SemanticString
-        SemanticString sstring = NLPService.getSemanticStringConverter().semanticString(sText);
+        SemanticString sstring = disiNlps.getSemanticStringConverter().semanticString(sText);
 
         logger.debug("Complex concepts:" + sstring.getComplexConcepts().size());
         logger.debug("Complex concepts:" + sstring.getComplexConcepts().get(0).getTerms().get(0).getConceptTerms().get(0).getValue());
 
         List<ComplexConcept> ccList = sstring.getComplexConcepts();
         //from SemanticString to SemText
-        SemText semText = NLPService.getSemanticStringConverter().semText(sstring, false);
+        SemText semText = disiNlps.getSemanticStringConverter().semText(sstring, false);
         logger.debug("Sentences2:" + semText.getSentences().size());
         logger.debug("Terms2:" + semText.getSentences().get(0).getTerms().get(0).getMeanings().get(0).getId());
 
@@ -224,7 +230,7 @@ public class NlpServiceIT extends DisiTest {
     @Test
     public void testSingleEntity() {
 
-        SemText singleText = nlpService.runNLP(Arrays.asList(SINGLE_ENTITY), null).get(0);
+        SemText singleText = nlps.runNLP(Arrays.asList(SINGLE_ENTITY), null).get(0);
 
         assertEquals(1, singleText.getSentences().get(0).getTerms().size());
 
@@ -233,14 +239,13 @@ public class NlpServiceIT extends DisiTest {
         assertEquals(MeaningStatus.SELECTED, odrToken.getMeaningStatus());
         Meaning m = odrToken.getSelectedMeaning();
         assertEquals(MeaningKind.ENTITY, m.getKind());
-        assertTrue(m.getName().anyString().getString().length() > 0);
-
+        assertTrue(m.getName().some().str().length() > 0);
     }
 
     @Test
     public void testNLTokenConcept() {
 
-        NLPService disiNlpService = (NLPService) ekb.getNLPService();
+        NlpService disiNlpService = (NlpService) ekb.getNLPService();
 
         NLText nlText = disiNlpService.runNlpIt(SINGLE_CONCEPT);
 
@@ -263,7 +268,7 @@ public class NlpServiceIT extends DisiTest {
     @Test
     public void testNLTokenEntity() {
 
-        NLPService disiNlpService = (NLPService) ekb.getNLPService();
+        NlpService disiNlpService = (NlpService) ekb.getNLPService();
 
         NLText nlText = disiNlpService.runNlpIt(SINGLE_ENTITY);
 
@@ -279,7 +284,7 @@ public class NlpServiceIT extends DisiTest {
     @Test
     public void testSingleConcept() {
 
-        SemText singleSemText = nlpService.runNLP(Arrays.asList(SINGLE_CONCEPT), null).get(0);
+        SemText singleSemText = nlps.runNLP(Arrays.asList(SINGLE_CONCEPT), null).get(0);
         assertEquals(1, singleSemText.getSentences().get(0).getTerms().size());
 
         Term word = singleSemText.getSentences().get(0).getTerms().get(0);
@@ -287,15 +292,15 @@ public class NlpServiceIT extends DisiTest {
         assertEquals(MeaningStatus.SELECTED, word.getMeaningStatus());
         Meaning m = word.getSelectedMeaning();
 
-        assertTrue(m.getName().anyString().getString().length() > 1);
+        assertTrue(m.getName().some().str().length() > 1);
         IKnowledgeService ks = ekb.getKnowledgeService();
 
-        IConcept concept = ks.readConcept(word.getSelectedMeaning().getId());
+        Concept concept = ks.readConcept(word.getSelectedMeaning().getId());
         assertTrue(concept != null);
-        assertEquals(word.getSelectedMeaning().getId(), concept.getURL());
+        assertEquals(word.getSelectedMeaning().getId(), concept.getId());
 
         assertEquals(MeaningKind.CONCEPT, m.getKind());
-        assertTrue(m.getName().anyString().getString().length() > 0);
+        assertTrue(m.getName().some().str().length() > 0);
 
     }
 
@@ -326,9 +331,9 @@ public class NlpServiceIT extends DisiTest {
         checkNotEmpty(term.getSelectedMeaning().getId(), "Invalid id for selected meaning!");
 
         
-        IEntity ent = ekb.getEntityService().readEntity(term.getSelectedMeaning().getId());
+        Entity ent = ekb.getEntityService().readEntity(term.getSelectedMeaning().getId());
         assertTrue(ent != null);
-        assertEquals(term.getSelectedMeaning().getId(), ent.getUrl());
+        assertEquals(term.getSelectedMeaning().getId(), ent.getId());
     }
 
     @Test
@@ -337,7 +342,7 @@ public class NlpServiceIT extends DisiTest {
 
         String inputText = "Pergine Valsugana"; // "San Cristoforo al Lago";                
 
-        NLText nltxt = ((NLPService) nlpService).runNlpIt(inputText);
+        NLText nltxt = ((NlpService) nlps).runNlpIt(inputText);
 
         assertEquals(1, nltxt.getSentences().size());
         for (NLToken tok : nltxt.getSentences().get(0).getTokens()) {
@@ -367,9 +372,9 @@ public class NlpServiceIT extends DisiTest {
 
         assertNotNull(url);
         
-        IEntity ent = ekb.getEntityService().readEntity(url);
+        Entity ent = ekb.getEntityService().readEntity(url);
         assertTrue(ent != null);
-        assertEquals(word.getSelectedMeaning().getId(), ent.getUrl());
+        assertEquals(word.getSelectedMeaning().getId(), ent.getId());
     }
 
     /**
@@ -378,7 +383,7 @@ public class NlpServiceIT extends DisiTest {
      */
     @Test
     public void testLongNamedEntity_2() {
-        NLPService disiNlpService = (NLPService) ekb.getNLPService();
+        NlpService disiNlpService = (NlpService) ekb.getNLPService();
 
         String inputText = MULTI_ENTITY;
 
@@ -413,7 +418,7 @@ public class NlpServiceIT extends DisiTest {
 
         /*
          EntityService es = new EntityService();        
-         IEntity ent = es.readEntity(word.getSelectedMeaning().getURL());
+         Entity ent = es.readEntity(word.getSelectedMeaning().getURL());
          assertTrue(ent != null);
          assertEquals(word.getSelectedMeaning().getURL(), ent.getURL());
          */
@@ -421,12 +426,12 @@ public class NlpServiceIT extends DisiTest {
 
     @Test
     public void testNlpWithMixedEntities() {        
-        NLPService nlpServ = (NLPService) ekb.getNLPService();
+        NlpService nlpServ = (NlpService) ekb.getNLPService();
         SemText semText = nlpServ.runNLP(MIXED_ENTITIES_AND_CONCEPTS);
         List<String> entitiesToRead = new ArrayList();
-        List<IEntity> entities;
+        List<Entity> entities;
         List<String> conceptsToRead = new ArrayList();
-        List<IConcept> concepts;
+        List<Concept> concepts;
 
         for (Term term : semText.terms()) {
             Meaning m = term.getSelectedMeaning();
@@ -443,10 +448,10 @@ public class NlpServiceIT extends DisiTest {
         assertTrue(entities.size() > 1);
 
         Set<String> etypeURLs = new HashSet();
-        for (IEntity en : entities) {
+        for (Entity en : entities) {
             logger.info("entity name: " + en.getName().string(Locale.ENGLISH));
-            logger.info("entityEtype: " + en.getEtypeURL());
-            etypeURLs.add(en.getEtypeURL());
+            logger.info("entityEtype: " + en.getEtypeId());
+            etypeURLs.add(en.getEtypeId());
         }
         assertTrue(concepts.size() > 0);
         assertEquals(2, etypeURLs.size());
@@ -486,9 +491,9 @@ public class NlpServiceIT extends DisiTest {
 
         if (MeaningKind.ENTITY.equals(kind)) {
             EntityService entityService = (EntityService) ekb.getEntityService();
-            List<IEntity> entities = entityService.readEntities(urlsToRead);
+            List<Entity> entities = entityService.readEntities(urlsToRead);
             logger.warn("TODO check inheritance in filtering!!");
-/*            for (IEntity en : entities) {
+/*            for (Entity en : entities) {
                 assertEquals("Failed for entity " + en.getURL() + " with name " + SemText.of(en.getName(), ekb.getDefaultLocales()).getText(),                        
                         domainURL,
                         en.getEtypeURL());
@@ -506,21 +511,21 @@ public class NlpServiceIT extends DisiTest {
     @Ignore
     public void testNLPWithConceptRestriction() {
         logger.warn("ONLY TESTING WITH ROOT CONCEPT!");
-        String rootConceptURL = ekb.getKnowledgeService().readRootConcept().getURL();
-        SemText semText = nlpService.runNLP(Arrays.asList(MIXED_ENTITIES_AND_CONCEPTS), rootConceptURL).get(0);
+        String rootConceptURL = ekb.getKnowledgeService().readRootConcept().getId();
+        SemText semText = nlps.runNLP(Arrays.asList(MIXED_ENTITIES_AND_CONCEPTS), rootConceptURL).get(0);
         testFiltering(semText, MeaningKind.CONCEPT, rootConceptURL);
     }
 
     @Test
     public void testFreeSearch() {
-        List<TermSearchResult> res = nlpService.freeSearch("restau", Locale.ENGLISH);
+        List<TermSearchResult> res = nlps.freeSearch("restau", Locale.ENGLISH);
         assertTrue(res.size() > 0);
     }
 
     @Test
     public void testMeaningNamesSwebNlp() {
         
-        NLPService disiNlpService = (NLPService) ekb.getNLPService();
+        NlpService disiNlpService = (NlpService) ekb.getNLPService();
         NLText nlText = disiNlpService.runNlpIt(PRODOTTI_CERTIFICATI_DESCRIPTIONS.get(0));
 
         List<NLToken> list = nlText.getSentences().get(0).getTokens();
@@ -530,38 +535,38 @@ public class NlpServiceIT extends DisiTest {
 
     @Test
     public void testMeaningNames() {
-        SemText semText = nlpService.runNLP(PRODOTTI_CERTIFICATI_DESCRIPTIONS, null).get(0);
+        SemText semText = nlps.runNLP(PRODOTTI_CERTIFICATI_DESCRIPTIONS, null).get(0);
         Term term = semText.terms().get(0);
         term.getMeanings();
     }
 
     @Test
     public void testFreeSearchCapitalized() {        
-        List<TermSearchResult> res = nlpService.freeSearch("Restau", Locale.ENGLISH);
+        List<TermSearchResult> res = nlps.freeSearch("Restau", Locale.ENGLISH);
         assertTrue(res.size() > 0);
     }
 
     @Test
     public void testFreeSearchMultiWord() {
-        List<TermSearchResult> res = nlpService.freeSearch("programming language", Locale.ENGLISH);
+        List<TermSearchResult> res = nlps.freeSearch("programming language", Locale.ENGLISH);
         assertTrue(res.size() > 0);
     }
 
     @Test
     public void testFreeSearchIncompleteMultiWordConcept() {                
-        List<TermSearchResult> res = nlpService.freeSearch("programming langu", Locale.ENGLISH);
+        List<TermSearchResult> res = nlps.freeSearch("programming langu", Locale.ENGLISH);
         assertTrue(res.size() > 0);
     }
 
     @Test
     public void testFreeSearchIncompleteMultiWordEntity() {                
-        List<TermSearchResult> res = nlpService.freeSearch("borgo valsu", Locale.ENGLISH);
+        List<TermSearchResult> res = nlps.freeSearch("borgo valsu", Locale.ENGLISH);
         assertTrue(res.size() > 0);
     }
 
     @Test
     public void testFreeSearchWithSpaces() {
-        List<TermSearchResult> res = nlpService.freeSearch("  restau", Locale.ENGLISH);
+        List<TermSearchResult> res = nlps.freeSearch("  restau", Locale.ENGLISH);
         assertTrue(res.size() > 0);
     }
 

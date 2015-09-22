@@ -17,7 +17,7 @@ import eu.trentorise.opendata.schemamatcher.implementation.model.SchemaMatcherEx
 import eu.trentorise.opendata.schemamatcher.implementation.services.SchemaImport;
 import eu.trentorise.opendata.schemamatcher.model.ISchema;
 import eu.trentorise.opendata.schemamatcher.util.SwebClientCrap;
-import eu.trentorise.opendata.semantics.model.entity.IEntityType;
+import eu.trentorise.opendata.semantics.model.entity.Etype;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import org.junit.After;
 import org.slf4j.Logger;
@@ -34,13 +34,13 @@ public class TestSchemaImport {
     private static final int INSTANCES = 100;
     private static final String FACILITY = "Facility";
     private final static Logger LOG = LoggerFactory.getLogger(TestSchemaImport.class.getName());
-    private IEntityType etype;
+    private Etype etype;
     private IEkb ekb;
     
     @Before
     public void readEtype() {
         ekb = ConfigLoader.init();                        
-        etype =  ekb.getEntityTypeService().readEntityType(FACILITY_URL);
+        etype =  ekb.getEtypeService().readEtype(FACILITY_URL);
     }
     
     @After

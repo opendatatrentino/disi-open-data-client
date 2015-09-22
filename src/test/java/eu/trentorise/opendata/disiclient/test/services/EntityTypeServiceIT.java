@@ -10,13 +10,15 @@ import java.util.Locale;
 
 import org.junit.Test;
 
-import eu.trentorise.opendata.disiclient.model.entity.EntityType;
-import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
-import eu.trentorise.opendata.semantics.model.entity.IEntityType;
+
+import eu.trentorise.opendata.semantics.model.entity.AttrDef;
+import eu.trentorise.opendata.semantics.model.entity.Etype;
 import eu.trentorise.opendata.semantics.services.SearchResult;
 import eu.trentorise.opendata.commons.OdtUtils;
 import static eu.trentorise.opendata.disiclient.test.services.EntityServiceIT.FACILITY_URL;
-import eu.trentorise.opendata.semantics.services.IEntityTypeService;
+
+import eu.trentorise.opendata.semantics.services.IEtypeService;
+
 import org.junit.After;
 import org.junit.Before;
 
@@ -29,11 +31,11 @@ import org.junit.Before;
 public class EntityTypeServiceIT extends DisiTest {
 
   
-    private IEntityTypeService ets;
+    private IEtypeService ets;
     
     @Before
     public void before() {  
-        ets = ekb.getEntityTypeService();
+        ets = ekb.getEtypeService();
   
     }
     
@@ -43,37 +45,36 @@ public class EntityTypeServiceIT extends DisiTest {
     }
 
     @Test
-    public void testReadEntityTypeByID() {
+    public void testreadEtypeByID() {
         
-        EntityType etype = (EntityType) ets.readEntityType(FACILITY_URL);
-        List<IAttributeDef> atdefs = etype.getAttributeDefs();
+        Etype etype = (Etype) ets.readEtype(FACILITY_URL);        
         checker.checkEtype(etype);       
-        assertEquals(etype.getName1().get("it"), "Infrastruttura");
+        assertEquals(etype.getName().str(Locale.ITALIAN), "Infrastruttura");
     }
 
     @Test
-    public void testReadEntityTypesofStructure() {
+    public void testreadEtypesofStructure() {
         
         // EntityType etype = (EntityType) ets.getEntityType(12L);
-        EntityType etype = (EntityType) ets.readEntityType(NAME_URL);
+        Etype etype = (Etype) ets.readEtype(NAME_URL);
         checker.checkEtype(etype);        
     }
 
     @Test
-    public void testReadAllEntityTypes() {
+    public void testReadAllEtypes() {
         long timeStart = System.currentTimeMillis();
         
-        List<IEntityType> etypes = ets.readAllEntityTypes();
-        for (IEntityType etype : etypes) {
+        List<Etype> etypes = ets.readAllEtypes();
+        for (Etype etype : etypes) {
             checker.checkEtype(etype);
-            List<IAttributeDef> atdefs = etype.getAttributeDefs();
+            
             //System.out.println("AttributeDef ETYPE Name:"+etype.getName().string(Locale.ENGLISH));
-            //	System.out.println("AttributeDefs:"+etype.getAttributeDefs());
+            //	System.out.println("AttributeDefs:"+etype.getAttrDefs());
             //	System.out.println("AttributeDef Name:"+etype.getNameAttrDef());
             //	System.out.println("AttributeDef Description:"+etype.getDescriptionAttrDef());
-            for (IAttributeDef ad : atdefs) {
-                System.out.println("AttributeDef URL:" + ad.getURL());
-                System.out.println("AttributeDef  DataType:" + ad.getEtypeURL());
+            for (AttrDef ad : etype.getAttrDefs().values()) {
+                System.out.println("AttributeDef URL:" + ad.getId());
+                System.out.println("AttributeDef  Type:" + ad.getType());
             }
         }
         long timeEnd = System.currentTimeMillis();
@@ -85,21 +86,21 @@ public class EntityTypeServiceIT extends DisiTest {
     @Test
     public void testReadRootTypes() {
         
-        IEntityType rootEtype = ets.readRootEtype();                
+        Etype rootEtype = ets.readRootEtype();                
         assertEquals("Entity", rootEtype.getName().string(Locale.ENGLISH));        
         checker.checkEtype(rootEtype);
         
-        IEntityType rootStructure = ets.readRootStructure();        
+        Etype rootStructure = ets.readRootStruct();        
         assertEquals("Structure", rootStructure.getName().string(Locale.ENGLISH));
-        checker.checkEtype(ets.readRootStructure());
+        checker.checkEtype(ets.readRootStruct());
     }
 
     @Test
-    public void testReadEntityType() {
+    public void testreadEtype() {
         
-        List<IEntityType> etypes = ets.readAllEntityTypes();
-        for (IEntityType etype : etypes) {
-            IEntityType et = ets.readEntityType(etype.getURL());
+        List<Etype> etypes = ets.readAllEtypes();
+        for (Etype etype : etypes) {
+            Etype et = ets.readEtype(etype.getId());
             checker.checkEtype(et);       
             assertNotNull(et);
         }
@@ -109,7 +110,7 @@ public class EntityTypeServiceIT extends DisiTest {
 
     @Test
     public void testReadNonExistingEntityType() {        
-        assertEquals(null, ekb.getEntityTypeService().readEntityType(SwebConfiguration.getUrlMapper().etypeIdToUrl(100000000000000000L)));
+        assertEquals(null, ekb.getEtypeService().readEtype(SwebConfiguration.getUrlMapper().etypeIdToUrl(100000000000000000L)));
 
     }
 
@@ -117,7 +118,7 @@ public class EntityTypeServiceIT extends DisiTest {
     public void testFuzzySearchEtype() {
         
         Locale locale = OdtUtils.languageTagToLocale("en");
-        List<SearchResult> searchEtypes = ets.searchEntityTypes("Product", locale);
+        List<SearchResult> searchEtypes = ets.searchEtypes("Product", locale);
         assertEquals("Product", searchEtypes.get(0).getName().string(Locale.ENGLISH));
 
     }

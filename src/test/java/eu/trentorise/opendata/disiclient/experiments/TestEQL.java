@@ -1,4 +1,4 @@
-package eu.trentorise.opendata.disiclient.test.services;
+package eu.trentorise.opendata.disiclient.experiments;
 
 //package eu.trentorise.opendatarise.semantics.test.services;
 //

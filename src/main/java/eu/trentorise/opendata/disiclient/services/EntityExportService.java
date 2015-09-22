@@ -1,5 +1,6 @@
 package eu.trentorise.opendata.disiclient.services;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,14 +20,16 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonStreamParser;
 import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
 import eu.trentorise.opendata.disiclient.DisiClients;
+import eu.trentorise.opendata.disiclient.UrlMapper;
 
-import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
-import eu.trentorise.opendata.disiclient.model.entity.EntityType;
+
 import eu.trentorise.opendata.schemamatcher.util.SwebClientCrap;
-import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
-import eu.trentorise.opendata.semantics.model.entity.IEntity;
-import eu.trentorise.opendata.semantics.model.entity.IEntityType;
+import eu.trentorise.opendata.semantics.model.entity.AttrDef;
+import eu.trentorise.opendata.semantics.model.entity.Etype;
 import eu.trentorise.opendata.semantics.DataTypes;
+import it.unitn.disi.sweb.webapi.model.kb.types.AttributeDefinition;
+import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
+import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +39,13 @@ public class EntityExportService {
 
     private static final String REGEX_INPUT = "@type";
 
-    EntityExportService() {
+    private DisiEkb ekb;
+    private UrlMapper um;
+    
+    EntityExportService(DisiEkb ekb) {
+        checkNotNull(ekb);
+        this.ekb = ekb;
+        this.um = SwebConfiguration.getUrlMapper();
     }
 
     /**
@@ -48,31 +57,34 @@ public class EntityExportService {
     public String generateJSONLDContext(Long id) {
         EntityService es = DisiClients.getSingleton().getEntityService();
 
-        IEntity entity = es.readEntity(id);        
+        /*
+        it.unitn.disi.sweb.webapi.model.eb.Entity entity = es.readSwebEntity(id);   
 
-        IEntityType etype = DisiClients.getSingleton().getEntityTypeService().readEntityType(entity.getEtypeURL());
-        List<IAttributeDef> attributeDefs = etype.getAttributeDefs();
+        Etype etype = DisiClients.getSingleton().getEtypeService().readEtype(entity.getEtypeURL());
+        Collection<AttrDef> attributeDefs = etype.getAttrDefs().values();
 
-        for (IAttributeDef attrDef : attributeDefs) {
+        for (AttrDef attrDef : attributeDefs) {
             System.out.println(attrDef.getName().string(Locale.ENGLISH));
             System.out.println(attrDef.getURL());
         }
-        throw new UnsupportedOperationException("TODO implement me!");
+        
         //return null;
+        */
+        throw new UnsupportedOperationException("TODO implement me!");
     }
 
-    public JsonObject generateEtypeContext(IEntityType etype) {
-        List<IAttributeDef> attrDefs = etype.getAttributeDefs();
+    public JsonObject generateEtypeContext(Etype etype) {
+        Collection<AttrDef> attrDefs = etype.getAttrDefs().values();
         JsonObject finJsonObject = new JsonObject();
 
-        for (IAttributeDef attrDef : attrDefs) {
+        for (AttrDef attrDef : attrDefs) {
 
             JsonObject jsonObjectAttr = new JsonObject();
-            jsonObjectAttr.addProperty("@id", attrDef.getURL());
-            if (attrDef.getDatatype().equals(DataTypes.STRUCTURE)) {
-                jsonObjectAttr.addProperty(REGEX_INPUT, attrDef.getRangeEtypeURL());
+            jsonObjectAttr.addProperty("@id", attrDef.getId());
+            if (attrDef.getType().getDatatype().equals(DataTypes.STRUCTURE)) {
+                jsonObjectAttr.addProperty(REGEX_INPUT, attrDef.getType().getEtypeId());
             } else {
-                jsonObjectAttr.addProperty(REGEX_INPUT, attrDef.getDatatype());
+                jsonObjectAttr.addProperty(REGEX_INPUT, attrDef.getType().getDatatype());
 
             }
             finJsonObject.add(attrDef.getName().string(Locale.ENGLISH), jsonObjectAttr);
@@ -119,7 +131,7 @@ public class EntityExportService {
         try {
             globalID = obj.get("globalId").getAsLong();
             
-            Long locid = DisiClients.getSingleton().getEntityService().readEntityByGlobalId(globalID).getId();
+            Long locid = um.entityUrlToId(DisiClients.getSingleton().getEntityService().readEntityByGlobalId(globalID).getsUrl());
 
             obj.remove("globalId");
             String globalIdURL = SwebConfiguration.getUrlMapper().entityIdToUrl(locid);
@@ -133,11 +145,11 @@ public class EntityExportService {
 		//convert from global concept to local one
         Long conceptTypeID = SwebClientCrap.readConceptGUID(typeId);
 
-        EntityTypeService ets = new EntityTypeService();
+        EtypeService ets = ekb.getEtypeService();
         /////////////////!!!!!!!!!!!!!IMPORTANT CHANGE THE ETYPE ID!!!!!!!!!!!!!!///////////
-        EntityType etype = ets.readEntityTypeByConceptId(conceptTypeID);
+        ComplexType etype = ets.readSwebComplexTypeByConceptId(conceptTypeID);
 
-        List<IAttributeDef> attrDefs = etype.getAttributeDefs();
+        List<AttributeDefinition> attrDefs = etype.getAttributes();
 
         JsonArray attrArray = (JsonArray) obj.get("attributes");
         JsonArray attrArrayUpdated = new JsonArray();
@@ -151,13 +163,13 @@ public class EntityExportService {
             Long attrConceptID = SwebClientCrap.readConceptGUID(attrGlobalConceptID);
 
             //	System.out.println(attrConceptID);
-            for (IAttributeDef atDef : attrDefs) {
-                AttributeDef ad = (AttributeDef) atDef;
+            for (AttributeDefinition ad : attrDefs) {
+                
 				//System.out.println(ad.getConceptId());
                 //System.out.println(attrConceptID);
-                if (ad.getConceptId() == attrConceptID) {
+                if (ad.getConceptId().equals(attrConceptID)) {
 
-                    String name = atDef.getName().string(Locale.ENGLISH);
+                    String name = ad.getName().get("en");
                     //	System.out.println(name);
                     attrObj.remove("creationDate");
                     attrObj.remove("modificationDate");
@@ -176,9 +188,10 @@ public class EntityExportService {
         }
         /////////////////!!!!!!!!!!!!!IMPORTANT CHANGE THE ETYPE ID!!!!!!!!!!!!!!///////////
 
-        JsonObject contextJson = generateEtypeContext(etype);
+        
+        JsonObject contextJson = generateEtypeContext(ekb.getConverter().swebComplexTypeToOeEtype(etype));
         obj.add("@context", contextJson);
-        //System.out.println(obj);
+        
         return obj;
     }
 

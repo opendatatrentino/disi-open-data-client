@@ -18,7 +18,7 @@ package eu.trentorise.opendata.disiclient.experiments;
 import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.collect.ImmutableList;
 import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
-import eu.trentorise.opendata.semantics.model.entity.IEntityType;
+import eu.trentorise.opendata.semantics.model.entity.Etype;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import it.unitn.disi.sweb.webapi.client.kb.ComplexTypeClient;
 import it.unitn.disi.sweb.webapi.model.filters.ComplexTypeFilter;
@@ -40,7 +40,7 @@ public final class EtypeCache {
 
     private HashMap<Long, Long> etypesStatusMap;
 
-    private ImmutableList<IEntityType> etypes;
+    private ImmutableList<Etype> etypes;
 
     private IEkb ekb;
 
@@ -69,7 +69,7 @@ public final class EtypeCache {
      * Returns an immutable list of all schemas. Schemas can be fetched lazily
      * from the server if not present in cache or if stale
      */
-    public synchronized List<IEntityType> readSchemas() {
+    public synchronized List<Etype> readSchemas() {
 
         if (etypes.size() == 0) {
             createSchemas();
@@ -86,8 +86,8 @@ public final class EtypeCache {
 
     public void createSchemas() {
 
-        List<IEntityType> etypeList = ekb.getEntityTypeService().readAllEntityTypes();
-        etypes = new ImmutableList.Builder<IEntityType>()
+        List<Etype> etypeList = ekb.getEtypeService().readAllEtypes();
+        etypes = new ImmutableList.Builder<Etype>()
                 .addAll(etypeList)
                 .build();
     }
@@ -95,7 +95,7 @@ public final class EtypeCache {
     private void updateSchemas(ArrayList<Long> outdatedSchemaIds) {
 
         for (Long outdatedEtypeId : outdatedSchemaIds) {
-            IEntityType updtadetEtype = ekb.getEntityTypeService().readEntityType(
+            Etype updtadetEtype = ekb.getEtypeService().readEtype(
                     SwebConfiguration.getUrlMapper().etypeIdToUrl(outdatedEtypeId));
             //update immutable list;
         }

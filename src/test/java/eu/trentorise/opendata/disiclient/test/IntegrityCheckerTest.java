@@ -2,41 +2,35 @@ package eu.trentorise.opendata.disiclient.test;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.junit.Assert.assertNotNull;
-import it.unitn.disi.sweb.webapi.model.eb.Attribute;
-import it.unitn.disi.sweb.webapi.model.eb.Entity;
-
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.junit.Test;
 
 import static eu.trentorise.opendata.commons.OdtUtils.checkNotDirtyUrl;
-import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
-import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
-import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
-import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
-
+import eu.trentorise.opendata.disiclient.services.DisiEkb;
+import eu.trentorise.opendata.disiclient.test.services.DisiTest;
 import eu.trentorise.opendata.disiclient.test.services.EntityServiceIT;
-import static eu.trentorise.opendata.disiclient.test.services.EntityServiceIT.FACILITY_ID;
-import static eu.trentorise.opendata.disiclient.test.services.EntityServiceIT.FACILITY_URL;
-import static eu.trentorise.opendata.disiclient.test.services.EntityServiceIT.RAVAZZONE_URL;
-import eu.trentorise.opendata.semantics.Checker;
-import eu.trentorise.opendata.semantics.model.entity.IAttribute;
-import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
-import eu.trentorise.opendata.semantics.model.entity.IEntity;
-import eu.trentorise.opendata.semantics.model.entity.IEntityType;
+import eu.trentorise.opendata.semantics.model.entity.Attr;
+import eu.trentorise.opendata.semantics.model.entity.AttrDef;
+import eu.trentorise.opendata.semantics.model.entity.Entity;
+import eu.trentorise.opendata.semantics.model.entity.Etype;
 import eu.trentorise.opendata.semantics.DataTypes;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.IEntityService;
-import eu.trentorise.opendata.semantics.services.IEntityTypeService;
-import eu.trentorise.opendata.semantics.services.IIDResult;
+import eu.trentorise.opendata.semantics.services.IEtypeService;
+
 import eu.trentorise.opendata.semantics.services.IIdentityService;
+import eu.trentorise.opendata.semantics.services.IdResult;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 
-public class IntegrityCheckerTest {
+public class IntegrityCheckerTest extends DisiTest {
 
     String resourceName = "IMPIANTI RISALITA";
 
@@ -48,7 +42,7 @@ public class IntegrityCheckerTest {
     String col6 = "Indirizio";
     String col7 = "Civico";
 
-    List<String> cols = new ArrayList<String>() {
+    List<String> cols = new ArrayList() {
         {
             add("nr");
             add("Comune");
@@ -60,9 +54,9 @@ public class IntegrityCheckerTest {
         }
     };
 
-    List<List<String>> bodies = new ArrayList<List<String>>() {
+    List<List<String>> bodies = new ArrayList() {
         {
-            add(new ArrayList<String>() {
+            add(new ArrayList() {
                 {
                     add("1");
                     add("2");
@@ -114,24 +108,21 @@ public class IntegrityCheckerTest {
         }
     };
 
-    private IEkb ekb;
-    private Checker checker;
-    private IEntityTypeService ets;
+
+    private IEtypeService ets;
+    private IEntityService es;
     
     @Before
     public void beforeMethod() {
         
-        ekb = ConfigLoader.init();
-        ets = ekb.getEntityTypeService();
-        checker = Checker.of(ekb);
+        ets = ekb.getEtypeService();
+        es = ekb.getEntityService();
     }  
     
     @After
     public void after(){
-        ets = null;
-        ekb = null;
-        checker = null;
-        
+        ets = null;       
+        es = null;
     }
     
 
@@ -142,20 +133,19 @@ public class IntegrityCheckerTest {
     @Ignore
     public void testCheckEtypesWithAttrDef() {
         
-        List<IEntityType> etypes = ekb.getEntityTypeService().readAllEntityTypes();
-        for (IEntityType etype : etypes) {
+        List<Etype> etypes = ekb.getEtypeService().readAllEtypes();
+        for (Etype etype : etypes) {
             checker.checkEtype(etype);
-            checkNotDirtyUrl(etype.getURL(), "etype url is dirty!");
-            List<IAttributeDef> atdefs = etype.getAttributeDefs();
-            for (IAttributeDef ad : atdefs) {
-                checker.checkAttributeDef(ad);
+            checkNotDirtyUrl(etype.getId(), "etype url is dirty!");
+            Collection<AttrDef> atdefs = etype.getAttrDefs().values();
+            for (AttrDef ad : atdefs) {
+                checker.checkAttrDef(ad);
                 checkNotNull(ad.getName(), "attribute def name is null!");
                 //checkNotNull(ad.getConcept().getDescription(), "attribute def concept description is null!");
                 //checkNotNull(ad.getConcept().getName(), "attribute def concept name is null!");
-                checkNotDirtyUrl(ad.getURL(), "attr def url is dirty!");
-                checkNotDirtyUrl(ad.getEtypeURL(), "attr def etype url is dirty!");
-                if (ad.getDatatype().equals(DataTypes.STRUCTURE)) {
-                    checkNotDirtyUrl(ad.getRangeEtypeURL(), "attr def range etype url is dirty!");
+                checkNotDirtyUrl(ad.getId(), "attr def url is dirty!");                
+                if (ad.getType().getDatatype().equals(DataTypes.STRUCTURE)) {
+                    checkNotDirtyUrl(ad.getType().getEtypeId(), "attr def range etype url is dirty!");
                 }
             }
         }
@@ -167,12 +157,12 @@ public class IntegrityCheckerTest {
     @Ignore
     public void testCheckEntity() {
         
-        IEntity entity = ekb.getEntityService().readEntity(RAVAZZONE_URL);
+        Entity entity = ekb.getEntityService().readEntity(RAVAZZONE_URL);
         checker.checkEntity(entity);
-        List<IAttribute> attributes = entity.getStructureAttributes();
+        Collection<Attr> attributes = entity.getAttrs().values();
 
-        for (IAttribute attr : attributes) {
-            checker.checkValue(attr.getFirstValue(), ets.readAttrDef(attr.getAttrDefUrl()));
+        for (Attr attr : attributes) {
+            checker.checkValue(attr.getValues().get(0), ets.readAttrDef(attr.getAttrDefId()));
         }
 
     }
@@ -181,17 +171,17 @@ public class IntegrityCheckerTest {
     public void testCheckIDResults() {
         IIdentityService idServ = ekb.getIdentityService();
 
-        IEntity entity1 = entityForReuseResults();
-        IEntity entity2 = entityForNewResults();
-        IEntity entity3 = entityForMissingResults();
+        Entity entity1 = entityForReuseResults();
+        Entity entity2 = entityForNewResults();
+        Entity entity3 = entityForMissingResults();
 
-        List<IEntity> entities = new ArrayList();
+        List<Entity> entities = new ArrayList();
         entities.add(entity1);
         entities.add(entity2);
         entities.add(entity3);
 
-        List<? extends IIDResult> results = idServ.assignURL(entities, 3);
-        for (IIDResult res : results) {
+        List<IdResult> results = idServ.assignURL(entities, 3);
+        for (IdResult res : results) {
             System.out.println(res.getAssignmentResult().toString());
 
             checker.checkIDResult(res);
@@ -199,122 +189,98 @@ public class IntegrityCheckerTest {
         }
     }
 
-    private IEntity entityForReuseResults() {
-        IEntityService enServ = ekb.getEntityService();
+    private Entity entityForReuseResults() {
+        
 
-        EntityODR entity = (EntityODR) enServ.readEntity(EntityServiceIT.PALAZZETTO_URL);
-        List<Attribute> attrs = entity.getAttributes();
-        List<Attribute> attrs1 = new ArrayList();
-        for (Attribute atr : attrs) {
-
-            if (atr.getName().get("en").equalsIgnoreCase("Latitude")) {
-                attrs1.add(atr);
-            } else if (atr.getName().get("en").equalsIgnoreCase("Longitude")) {
-                attrs1.add(atr);
-            } else if (atr.getName().get("en").equalsIgnoreCase("Class")) {
-                attrs1.add(atr);
+        Entity entity = (Entity) es.readEntity(EntityServiceIT.PALAZZETTO_URL);
+        Etype etype = ets.readEtype(entity.getEtypeId());
+        Map<String, Attr> attrs = entity.getAttrs();
+        
+        Entity.Builder enB = Entity.builder();
+        for (String attrDefId : attrs.keySet()) {
+           AttrDef ad =  etype.attrDefById(attrDefId);
+           String name = ad.getName().str(Locale.ENGLISH);
+            if (name.equalsIgnoreCase("Latitude")
+        	    || name.equalsIgnoreCase("Longitude")
+        	    || name.equalsIgnoreCase("Class")) {
+                enB.putAttrs(attrDefId, attrs.get(attrDefId));
             }
         }
-        Entity en = new Entity();
-        en.setEntityBaseId(1L);
-        en.setTypeId(12L);
-        en.setAttributes(attrs1);
-
-        IEntity ent = new EntityODR(en);
-        return ent;
+                
+        enB.setEtypeId(etype.getId());              
+        return enB.build();
     }
 
-    private IEntity entityForNewResults() {
-        IEntityService enServ = ekb.getEntityService();
+    private Entity entityForNewResults() {
+        Entity entity = (Entity) es.readEntity(EntityServiceIT.PALAZZETTO_URL);
+        Etype etype = ets.readEtype(entity.getEtypeId());
+        Map<String, Attr> attrs = entity.getAttrs();
+        
+        Entity.Builder enB = Entity.builder();
+        for (String attrDefId : attrs.keySet()) {
+           AttrDef ad =  etype.attrDefById(attrDefId);
+           String name = ad.getName().str(Locale.ENGLISH);
 
-        EntityODR entity = (EntityODR) enServ.readEntity(EntityServiceIT.PALAZZETTO_URL);
-        List<Attribute> attrs = entity.getAttributes();
-        List<Attribute> attrs1 = new ArrayList();
-        for (Attribute atr : attrs) {
+            if (name.equalsIgnoreCase("Latitude")) {                
+                Attr attr = Attr.ofObject(ad, 12.123F);                
+                enB.putAttrs(attrDefId, attr);
 
-            if (atr.getName().get("en").equalsIgnoreCase("Latitude")) {
-                AttributeDef ad = new AttributeDef(atr.getDefinitionId());
-                AttributeODR attr = (AttributeODR) enServ.createAttribute(ad, 12.123F);
-                Attribute a = attr.convertToAttribute();
-                attrs1.add(a);
-
-            } else if (atr.getName().get("en").equalsIgnoreCase("Longitude")) {
-                attrs1.add(atr);
-            } else if (atr.getName().get("en").equalsIgnoreCase("Class")) {
-                attrs1.add(atr);
+            } 
+            if (name.equalsIgnoreCase("Longitude")
+        	    || name.equalsIgnoreCase("Class")) {
+                enB.putAttrs(attrDefId, attrs.get(attrDefId));
             }
+            
         }
-        Entity en = new Entity();
-        en.setEntityBaseId(1L);
-        en.setTypeId(FACILITY_ID);
-        en.setAttributes(attrs1);
-
-        IEntity ent = new EntityODR(en);
-        return ent;
+        
+        enB.setEtypeId(etype.getId());               
+        return enB.build();
     }
 
-    private IEntity entityForMissingResults() {
-
-        IEntityService enServ = ekb.getEntityService();
-        EntityODR entity = (EntityODR) enServ.readEntity(EntityServiceIT.PALAZZETTO_URL);
-        List<Attribute> attrs = entity.getAttributes();
-        List<Attribute> attrs1 = new ArrayList();
-
-        for (Attribute atr : attrs) {
-
-            if (atr.getName().get("en").equalsIgnoreCase("Latitude")) {
-                attrs1.add(atr);
-            } else if (atr.getName().get("en").equalsIgnoreCase("Longitude")) {
-                attrs1.add(atr);
+    private Entity entityForMissingResults() {
+        Entity entity = (Entity) es.readEntity(EntityServiceIT.PALAZZETTO_URL);
+        Etype etype = ets.readEtype(entity.getEtypeId());
+        Map<String, Attr> attrs = entity.getAttrs();
+        
+        Entity.Builder enB = Entity.builder();
+        for (String attrDefId : attrs.keySet()) {
+           AttrDef ad =  etype.attrDefById(attrDefId);
+           String name = ad.getName().str(Locale.ENGLISH);
+            if (name.equalsIgnoreCase("Longitude")
+        	    || name.equalsIgnoreCase("Latitude")) {
+                enB.putAttrs(attrDefId, attrs.get(attrDefId));
             }
-//			else 
-//				if (atr.getName().strs("en").equalsIgnoreCase("Class")){
-//					attrs1.add(atr);
-//				}
+            
         }
+        
+        enB.setEtypeId(etype.getId());               
+        return enB.build();
 
-        Entity en = new Entity();
-        en.setEntityBaseId(1L);
-        en.setTypeId(12L);
-        en.setAttributes(attrs1);
-
-        IEntity ent = new EntityODR(en);
-        return ent;
     }
-
+/*
     private Attribute createAttributeEntity(Object value) {
         IEntityService es = ekb.getEntityService();
         
-        IEntityType etype = ets.readEntityType(FACILITY_URL);
+        Etype etype = ets.readEtype(FACILITY_URL);
 
-        List<IAttributeDef> attrDefList = etype.getAttributeDefs();
-        List<Attribute> attrs = new ArrayList();
+        Collection<AttrDef> attrDefList = etype.getAttrDefs().values();
+        List<Attr> attrs = new ArrayList();
 
         Attribute a = null;
-        for (IAttributeDef atd : attrDefList) {
+        for (AttrDef atd : attrDefList) {
             if (atd.getName().string(Locale.ENGLISH).equals("Foursquare ID")) {
-                AttributeODR attr = (AttributeODR) es.createAttribute(atd, (String) value);
-                a = attr.convertToAttribute();
-                attrs.add(a);
+                Attr attr = Attr.ofObject(atd, (String) value);
+                
+                attrs.(a);
             }
         }
         return a;
+    }*/
+
+    
+    @Test
+    public void testCheckEKB(){
+	IEkb ekb = new DisiEkb(); 
+	checker.checkEkbQuick(ekb);
     }
-
-    // TODO REVIEW COMMENTED TEST
-    //@Test
-    public void testCheckConcepts() {
-
-        ConceptODR concept = new ConceptODR();
-        //concept = concept.readConcept(1L);
-        //checker.checkConcept(concept);
-
-    }
-
-    // TODO REVIEW COMMENTED TEST
-    //	@Test
-    //	public void testCheckEKB(){
-    //		IEkb ekb = new Ekb(); 
-    //	Checker.checkEkbQuick(ekb);
-    //	}
 }

@@ -19,16 +19,16 @@ import eu.trentorise.opendata.schemamatcher.implementation.services.SchemaImport
 import eu.trentorise.opendata.schemamatcher.model.ISchema;
 import eu.trentorise.opendata.schemamatcher.model.ISchemaElement;
 import eu.trentorise.opendata.schemamatcher.util.SwebClientCrap;
-import eu.trentorise.opendata.semantics.model.entity.IEntityType;
+import eu.trentorise.opendata.semantics.model.entity.Etype;
 import eu.trentorise.opendata.semantics.services.IEkb;
-import eu.trentorise.opendata.semantics.services.IEntityTypeService;
+import eu.trentorise.opendata.semantics.services.IEtypeService;
 import org.junit.After;
 
 public class TestSchemaElementFeatureNormalization {
     private static final double DELTA = 1e-6;
     private static final double DIVERGENCE = 4.0861425;
     
-    private IEntityType etype;
+    private Etype etype;
     ISchema sourceSchema;
     ISchema targetSchema;
     
@@ -39,9 +39,9 @@ public class TestSchemaElementFeatureNormalization {
     public void importSchemas() throws IOException, SchemaMatcherException {
         ekb = ConfigLoader.init();
         SchemaImport si = new SchemaImport(ekb);
-        IEntityTypeService ets = ekb.getEntityTypeService();
+        IEtypeService ets = ekb.getEtypeService();
         
-        etype = ets.readEntityType(FACILITY_URL);
+        etype = ets.readEtype(FACILITY_URL);
 
         File file = new File("impianti risalita.csv");
         sourceSchema = si.parseCSV(file);

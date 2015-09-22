@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
-import eu.trentorise.opendata.semantics.model.entity.IEntityType;
+import eu.trentorise.opendata.semantics.model.entity.AttrDef;
+import eu.trentorise.opendata.semantics.model.entity.Etype;
 import eu.trentorise.opendata.semantics.services.SchemaMapping;
 import eu.trentorise.opendata.traceprov.data.DcatMetadata;
 import eu.trentorise.opendata.traceprov.types.ClassType;
@@ -104,12 +104,12 @@ public class MatchingServiceIT extends DisiTest {
     /**
      * TODO REVIEW this thing always sets property type to StringType ....
      */
-    private ClassType etypeToClassType(IEntityType et) {
+    private ClassType etypeToClassType(Etype et) {
         ClassType.Builder builder = ClassType.builder();
-        builder.setId(et.getURL());
-        for (IAttributeDef attrDef : et.getAttributeDefs()) {
+        builder.setId(et.getId());
+        for (AttrDef attrDef : et.getAttrDefs().values()) {
             String attrName = attrDef.getName().str(Locale.ENGLISH);
-            builder.putMethodDefs(attrName, Def.builder().setId(attrDef.getURL()).setType(StringType.of()).build());
+            builder.putMethodDefs(attrName, Def.builder().setId(attrDef.getId()).setType(StringType.of()).build());
         }
         return builder.build();
     }
@@ -118,9 +118,9 @@ public class MatchingServiceIT extends DisiTest {
     @Test
     public void testMatchingService() {
 
-        List<IEntityType> allEntityTypes = ekb.getEntityTypeService().readAllEntityTypes();
+        List<Etype> allEntityTypes = ekb.getEtypeService().readAllEtypes();
 
-        for (IEntityType et : allEntityTypes) {
+        for (Etype et : allEntityTypes) {
 
             ClassType classType = etypeToClassType(et);
             

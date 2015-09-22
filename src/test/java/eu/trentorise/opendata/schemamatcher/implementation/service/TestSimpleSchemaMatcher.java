@@ -24,7 +24,7 @@ import eu.trentorise.opendata.schemamatcher.model.ISchema;
 import eu.trentorise.opendata.schemamatcher.model.ISchemaCorrespondence;
 import eu.trentorise.opendata.schemamatcher.model.ISchemaElement;
 import eu.trentorise.opendata.schemamatcher.model.ISchemaMatcher;
-import eu.trentorise.opendata.semantics.model.entity.IEntityType;
+import eu.trentorise.opendata.semantics.model.entity.Etype;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import org.junit.After;
 
@@ -34,14 +34,14 @@ public class TestSimpleSchemaMatcher {
     private static final int NAME_CONCEPT_ID = 2;
     private static final double DELTA = 1e-6;
     private static final int CONCEPT_ID = 14557;
-    private IEntityType etype;
+    private Etype etype;
 
     private IEkb ekb;
     
     @Before
     public void readEtype() {        
         ekb = ConfigLoader.init();        
-        etype = ekb.getEntityTypeService().readEntityType(FACILITY_URL);
+        etype = ekb.getEtypeService().readEtype(FACILITY_URL);
     }
     
     @After

@@ -12,8 +12,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
 import eu.trentorise.opendata.semantics.services.SearchResult;
+import eu.trentorise.opendata.traceprov.types.Concept;
 import eu.trentorise.opendata.commons.OdtUtils;
 
 import eu.trentorise.opendata.disiclient.services.KnowledgeService;
@@ -44,22 +44,21 @@ public class KnowledgeServiceIT extends DisiTest {
     @Test
     public void testReadConcept() {
         
-        IConcept con = kserv.readConcept(CONCEPT_3_URL);
+        Concept con = kserv.readConcept(CONCEPT_3_URL);
         checker.checkConcept(con);
-        assertEquals(con.getURL(), CONCEPT_3_URL);
+        assertEquals(con.getId(), CONCEPT_3_URL);
     }
 
     @Test
     public void testReadNonExistingConcept() {        
-        IConcept con = kserv.readConcept("blabla");
+        Concept con = kserv.readConcept("blabla");
         assertEquals( null, con);
     }
 
     @Test
     public void testGetRootConcept() {
-        IConcept concept = kserv.readRootConcept();
-        checker.checkConcept(concept);
-        assertNotEquals(concept.getURL(), null);
+        Concept concept = kserv.readRootConcept();
+        checker.checkConcept(concept);        
     }
 
     @Test
@@ -70,19 +69,18 @@ public class KnowledgeServiceIT extends DisiTest {
     @Test
     public void testReadConcepts() {
         List<String> conceptURLs = new ArrayList();
-        String rootConceptURL = kserv.readRootConcept().getURL();
+        String rootConceptURL = kserv.readRootConcept().getId();
 
         conceptURLs.add("non-existing-url");
         conceptURLs.add(rootConceptURL);
-        List<IConcept> concepts = kserv.readConcepts(conceptURLs);
+        List<Concept> concepts = kserv.readConcepts(conceptURLs);
         assertEquals(concepts.get(0), null);
-        assertEquals(concepts.get(1).getURL(), rootConceptURL);
+        assertEquals(concepts.get(1).getId(), rootConceptURL);
     }
 
     @Test
-    public void testSearchConcept() {
-        Locale locale = OdtUtils.languageTagToLocale("en");
-        List<SearchResult> res = kserv.searchConcepts("vacation", locale);
+    public void testSearchConcept() {        
+        List<SearchResult> res = kserv.searchConcepts("vacation", Locale.ENGLISH);
         for (SearchResult r : res) {
 
             assertNotNull(r.getName());

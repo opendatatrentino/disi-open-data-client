@@ -1,10 +1,7 @@
 package eu.trentorise.opendata.disiclient.test.services;
 
 import eu.trentorise.opendata.commons.Dict;
-import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
-import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
-import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
-import eu.trentorise.opendata.disiclient.model.entity.EntityType;
+import eu.trentorise.opendata.commons.OdtUtils;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 
 import eu.trentorise.opendata.disiclient.test.ConfigLoader;
@@ -17,20 +14,24 @@ import static eu.trentorise.opendata.disiclient.test.services.EntityServiceIT.GY
 import static eu.trentorise.opendata.disiclient.test.services.EntityServiceIT.LOCATION_URL;
 import static eu.trentorise.opendata.disiclient.test.services.EntityServiceIT.PALAZZETTO_NAME_IT;
 import static eu.trentorise.opendata.disiclient.test.services.EntityServiceIT.PALAZZETTO_URL;
-import eu.trentorise.opendata.semantics.model.entity.IAttribute;
-import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
-import eu.trentorise.opendata.semantics.model.entity.IEntity;
-import eu.trentorise.opendata.semantics.model.entity.IEntityType;
-import eu.trentorise.opendata.semantics.model.entity.MinimalEntity;
-import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
+import eu.trentorise.opendata.semantics.model.entity.Attr;
+import eu.trentorise.opendata.semantics.model.entity.AttrDef;
+import eu.trentorise.opendata.semantics.model.entity.Entities;
+import eu.trentorise.opendata.semantics.model.entity.Entity;
+import eu.trentorise.opendata.semantics.model.entity.Etype;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.IEntityService;
-import eu.trentorise.opendata.semantics.services.IEntityTypeService;
+import eu.trentorise.opendata.semantics.services.IEtypeService;
+import eu.trentorise.opendata.semantics.services.IEntityService;
+import eu.trentorise.opendata.semantics.services.IEtypeService;
 import eu.trentorise.opendata.semantics.services.IIdentityService;
+import eu.trentorise.opendata.semantics.services.IdResult;
+import eu.trentorise.opendata.semantics.services.mock.MockEntityService;
+import eu.trentorise.opendata.traceprov.types.Concept;
 import eu.trentorise.opendata.semantics.services.AssignmentResult;
-import eu.trentorise.opendata.semantics.services.IIDResult;
+
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
-import it.unitn.disi.sweb.webapi.model.eb.Entity;
+
 import it.unitn.disi.sweb.webapi.model.eb.Value;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,102 +46,97 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
+
+import eu.trentorise.opendata.commons.validation.Preconditions;
+
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
  * 
  *
  */
 public class IdManagementServiceIT extends DisiTest {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(IdManagementServiceIT.class);
 
-
     IEntityService enServ;
-    IEntityTypeService ets;
+    IEtypeService ets;
     IIdentityService idServ;
-    
+    MockEntityService mockEs;
+
     @Before
-    public void before(){        
-        enServ = ekb.getEntityService();
-        idServ = ekb.getIdentityService();
-        ets = ekb.getEntityTypeService();
+    public void before() {
+	enServ = ekb.getEntityService();
+	idServ = ekb.getIdentityService();
+	ets = ekb.getEtypeService();
+	mockEs = new MockEntityService(ekb);
     }
-    
+
     @After
-    public void after(){
-        enServ = null;
-        idServ = null;
-        ets = null;        
+    public void after() {
+	enServ = null;
+	idServ = null;
+	ets = null;
+	mockEs = null;
     }
-    
-    private String entityToString(Entity e) {
-        String str = "id:" + e.getId()
-                + ", gID:" + e.getGlobalId()
-                + ", names:" + e.getNames()
-                + ", attributes:" + attributesToString(e.getAttributes());
-        return str;
-    }
+
+
 
     private String attributesToString(List<Attribute> attributes) {
-        String str = "[";
-        for (Attribute attr : attributes) {
-            str += attributeToString(attr) + "\n";
-        }
-        return str + "]";
+	String str = "[";
+	for (Attribute attr : attributes) {
+	    str += attributeToString(attr) + "\n";
+	}
+	return str + "]";
     }
 
     private String attributeToString(Attribute attr) {
-        String str = "attr concept_id:" + attr.getConceptId()
-                + ", datatype:" + attr.getDataType() + " values[";
-        for (Value v : attr.getValues()) {
-            str += v.getValue() + ", ";
-        }
-        return str + "]";
+	String str = "attr concept_id:" + attr.getConceptId() + ", datatype:" + attr.getDataType() + " values[";
+	for (Value v : attr.getValues()) {
+	    str += v.getValue() + ", ";
+	}
+	return str + "]";
     }
-    
-    
-    public  IEntity assignNewURL(){
-        
-        
-        EntityODR entity = (EntityODR) enServ.readEntity(PALAZZETTO_URL);
-        List<Attribute> attrs = entity.getAttributes();
-        List<Attribute> attrs1 = new ArrayList();
-        for (Attribute atr : attrs) {
-            if (atr.getName().get("en").equalsIgnoreCase("Foursquare ID")) {
-                //	System.out.println(atr.getName());
-                IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
-                AttributeODR attr = (AttributeODR) enServ.createAttribute(atDef, "50f6e6f516488f6cc81a42fc");
-                Attribute a = attr.convertToAttribute();
-                attrs1.add(a);
-            }
 
-        }
-        Entity en = new Entity();
-        en.setEntityBaseId(1L);
-        en.setTypeId(12L);
-        en.setAttributes(attrs1);
+    public Entity assignNewURL() {
 
-        IEntity ent = new EntityODR(en);
+	Entity entity = enServ.readEntity(PALAZZETTO_URL);
+	Entity.Builder enb = Entity.builder();
 
-        List<IEntity> entities = new ArrayList();
-        entities.add(ent);
+	Etype etype = ets.readEtype(entity.getEtypeId());
 
-        List<? extends IIDResult> results = idServ.assignURL(entities, 3);
-        assertEquals(1, results.size());
-        assertEquals(AssignmentResult.NEW, results.get(0).getAssignmentResult());
-        assertNotNull(results.get(0).getResultEntity());
-                
-        return results.get(0).getResultEntity();
+	for (AttrDef attrDef : etype.getAttrDefs().values()) {
+	    String adName = attrDef.getName().str(Locale.ENGLISH);
+	    if (adName.equalsIgnoreCase("Foursquare ID")) {
+		// System.out.println(atr.getName());
+		Attr attr = Attr.ofObject(attrDef, "50f6e6f516488f6cc81a42fc");
+
+		enb.putAttrs(attrDef.getId(), attr);
+	    }
+
+	}
+
+	enb.setEtypeId(entity.getEtypeId());
+
+	List<Entity> entities = new ArrayList();
+	entities.add(enb.build());
+
+	List<IdResult> results = idServ.assignURL(entities, 3);
+	assertEquals(1, results.size());
+	assertEquals(AssignmentResult.NEW, results.get(0).getAssignmentResult());
+	assertNotNull(results.get(0).getResultEntity());
+
+	return results.get(0).getResultEntity();
     }
-    
-   @Before
+
+    @Before
     public void beforeMethod() {
-        ConfigLoader.init();
-    }    
-    
+	ConfigLoader.init();
+    }
+
     @Test
-    public void idServiceEntityNew() {       
-        assignNewURL();
+    public void idServiceEntityNew() {
+	assignNewURL();
     }
 
     /**
@@ -149,277 +145,171 @@ public class IdManagementServiceIT extends DisiTest {
      */
     @Test
     public void testIdManagementEmptyArray() {
-        
-        List res = idServ.assignURL(new ArrayList(), 3);
-        assertTrue(res.isEmpty());
+
+	List res = idServ.assignURL(new ArrayList(), 3);
+	assertTrue(res.isEmpty());
     }
 
     @Test
     public void testIdManagementReuse() {
-                
-        String name = PALAZZETTO_NAME_IT;
-        EntityODR entity = (EntityODR) enServ.readEntity(PALAZZETTO_URL);
-        List<Attribute> attrs = entity.getAttributes();
-        List<Attribute> attrs1 = new ArrayList();
-        List<IAttribute> iattr = entity.getStructureAttributes();
 
-        for (Attribute atr : attrs) {
-            if (atr.getName().get("en").equalsIgnoreCase("Name")) {
-                Attribute a = createAttributeNameEntity(name);
-                attrs1.add(a);
-            } else if (atr.getName().get("en").equalsIgnoreCase("Longitude")) {
-                IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
-                AttributeODR attr = (AttributeODR) enServ.createAttribute(atDef, 11.466894f);
-                Attribute a = attr.convertToAttribute();
-                attrs1.add(a);
-            } else if (atr.getName().get("en").equalsIgnoreCase("Latitude")) {
-                IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
-                AttributeODR attr = (AttributeODR) enServ.createAttribute(atDef, 46.289413f);
-                Attribute a = attr.convertToAttribute();
-                attrs1.add(a);
-                //					
-            } else if (atr.getName().get("en").equalsIgnoreCase("Class")) {
-                
-                IConcept concept = ekb.getKnowledgeService().readConcept(GYMNASIUM_CONCEPT_URL);
-                IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
-                AttributeODR attr = (AttributeODR) enServ.createAttribute(atDef, concept);
-                Attribute a = attr.convertToAttribute();
-                attrs1.add(a);
-            }
-        }
+	String name = PALAZZETTO_NAME_IT;
+	Entity entity = enServ.readEntity(PALAZZETTO_URL);
+	Entity.Builder enb = Entity.builder();
+	Etype etype = ets.readEtype(entity.getEtypeId());
 
-        Entity en = new Entity();
-        en.setEntityBaseId(1L);
-        en.setTypeId(FACILITY_ID);
-        en.setAttributes(attrs1);
-        //en.setGlobalId(10002538L);
-        EntityODR ent = new EntityODR(en);
-        System.out.println("Name:" + ent.getName());
-        System.out.println("Name:" + ent.getDescription());
+	enb.setNameAttr(Dict.of("a"), etype.getId(), ets);
+	for (AttrDef attrDef : etype.getAttrDefs().values()) {
 
-        List<IEntity> entities = new ArrayList();
-        entities.add(ent);
+	    String adName = attrDef.getName().str(Locale.ENGLISH);
+	    if (adName.equalsIgnoreCase("Longitude")) {
+		enb.putAttrs(attrDef.getId(), Attr.ofObject(attrDef, 11.466894f));
+	    } else if (adName.equalsIgnoreCase("Latitude")) {
+		enb.putAttrs(attrDef.getId(), Attr.ofObject(attrDef, 46.289413f));
+	    } else if (adName.equalsIgnoreCase("Class")) {
+		Concept concept = ekb.getKnowledgeService().readConcept(GYMNASIUM_CONCEPT_URL);
+		enb.putAttrs(attrDef.getId(), Attr.ofObject(attrDef, concept));
+	    }
+	}
+	enb.setEtypeId(FACILITY_URL);
+	// en.setGlobalId(10002538L);
+	Entity ent = enb.build();
 
-        List<? extends IIDResult> results = idServ.assignURL(entities, 3);
-        for (IIDResult res : results) {
-            EntityODR entityODR = (EntityODR) res.getResultEntity();
-            System.out.println("result " + res.getAssignmentResult());
-            System.out.println("Global ID: " + res.getGUID());
-            System.out.println("Local ID: " + entityODR.getLocalID());
-            assertEquals(AssignmentResult.NEW, res.getAssignmentResult());
+	List<Entity> entities = new ArrayList();
+	entities.add(ent);
 
-        }
+	List<IdResult> results = idServ.assignURL(entities, 3);
+	for (IdResult res : results) {
+	    Entity newEntity = res.getResultEntity();
+	    assertEquals(AssignmentResult.NEW, res.getAssignmentResult());
+	    Preconditions.checkNotDirtyUrl(newEntity.getId(), "Invalid new entity id!");
+	}
     }
 
     @Test
     public void testFacilityIdMissingClass() {
-        
-        
-        String name = PALAZZETTO_NAME_IT;
-        EntityODR entity = (EntityODR) enServ.readEntity(PALAZZETTO_URL);
-        List<Attribute> attrs = entity.getAttributes();
-        List<Attribute> attrs1 = new ArrayList();
 
-        for (Attribute atr : attrs) {
-            if (atr.getName().get("en").equalsIgnoreCase("Name")) {
-                Attribute a = createAttributeNameEntity(name);
-                attrs1.add(a);
-            } else if (atr.getName().get("en").equalsIgnoreCase("Longitude")) {
-                IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
-                AttributeODR attr = (AttributeODR) enServ.createAttribute(atDef, 11.466894f);
-                Attribute a = attr.convertToAttribute();
-                attrs1.add(a);
-            } else if (atr.getName().get("en").equalsIgnoreCase("Latitude")) {
-                IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
-                AttributeODR attr = (AttributeODR) enServ.createAttribute(atDef, 46.289413f);
-                Attribute a = attr.convertToAttribute();
-                attrs1.add(a);
-                //					
-            }
-        }
+	String name = PALAZZETTO_NAME_IT;
+	Entity entity = enServ.readEntity(PALAZZETTO_URL);
+	Entity.Builder enb = Entity.builder();
+	Etype etype = ets.readEtype(entity.getEtypeId());
 
-        Entity en = new Entity();
-        en.setEntityBaseId(1L);
-        en.setTypeId(FACILITY_ID);
-        en.setAttributes(attrs1);
-        EntityODR ent = new EntityODR(en);
-        System.out.println("Name:" + ent.getName());
-        System.out.println("Name:" + ent.getDescription());
+	enb.setNameAttr(Dict.of(name), entity.getEtypeId(), ets);
 
-        List<IEntity> entities = new ArrayList();
-        entities.add(ent);
+	for (AttrDef attrDef : etype.getAttrDefs().values()) {
+	    String adName = attrDef.getName().str(Locale.ENGLISH);
+	    if (adName.equalsIgnoreCase("Longitude")) {
+		enb.putAttrs(attrDef.getId(), Attr.ofObject(attrDef, 11.466894f));
+	    } else if (adName.equalsIgnoreCase("Latitude")) {
+		enb.putAttrs(attrDef.getId(), Attr.ofObject(attrDef, 46.289413f));
+	    }
+	}
 
-        List<? extends IIDResult> results = idServ.assignURL(entities, 3);
-        for (IIDResult res : results) {
-            assertEquals(AssignmentResult.NEW, res.getAssignmentResult());
+	enb.setEtypeId(FACILITY_URL);
 
-        }
+	Entity ent = enb.build();
+
+	List<Entity> entities = new ArrayList();
+	entities.add(ent);
+
+	List<IdResult> results = idServ.assignURL(entities, 3);
+	for (IdResult res : results) {
+	    assertEquals(AssignmentResult.NEW, res.getAssignmentResult());
+	    Preconditions.checkNotDirtyUrl(res.getResultEntity().getId(), "Invalid id result for new entity!");
+	}
     }
 
     @Test
     public void testMissingClassCertifiedProduct() {
-                       
-        IEntityType et = ets.readEntityType(CERTIFIED_PRODUCT_URL);
 
-        IAttributeDef certificateTypeAttrDef = et.getAttrDef(EntityServiceIT.ATTR_TYPE_OF_CERTIFICATE_URL);
+	Entity.Builder enb = Entity.builder();
 
-        assertNotNull(certificateTypeAttrDef);
+	Etype et = ets.readEtype(CERTIFIED_PRODUCT_URL);
 
-        IAttribute attr = enServ.createAttribute(certificateTypeAttrDef, "Please work");
+	AttrDef certificateTypeAttrDef = et.attrDefById(DisiTest.ATTR_TYPE_OF_CERTIFICATE_URL);
 
-        EntityODR en = new EntityODR();
-        en.setEntityBaseId(1L);
-        en.setTypeId(CERTIFIED_PRODUCT_ID);
+	assertNotNull(certificateTypeAttrDef);
 
-        List<IAttribute> attrs = new ArrayList();
-        attrs.add(attr);
-        en.setStructureAttributes(attrs);
+	enb.putAttrs(DisiTest.ATTR_TYPE_OF_CERTIFICATE_URL, Attr.ofObject(certificateTypeAttrDef, "Please work"));
+	enb.setEtypeId(CERTIFIED_PRODUCT_URL);
 
-        List<IEntity> entities = new ArrayList();
-        entities.add(en);
+	List<Entity> entities = new ArrayList();
+	entities.add(enb.build());
 
-        List<? extends IIDResult> results = idServ.assignURL(entities, 3);
-        for (IIDResult res : results) {
-            assertEquals(AssignmentResult.NEW, res.getAssignmentResult());
-        }
+	List<IdResult> results = idServ.assignURL(entities, 3);
+	for (IdResult res : results) {
+	    assertEquals(AssignmentResult.NEW, res.getAssignmentResult());
+	}
     }
 
     @Test
-    public void testRelationalAttribute() {                        
+    public void testRelationalAttribute() {
 
-        final EntityODR enodr = new EntityODR();
-        
-        IEntityType facility = ets.readEntityType(FACILITY_URL);
-        enodr.setEtype(facility);
-        enodr.setEntityBaseId(1L); 
-        LOG.warn("USING FIXED ID FOR ENTITY BASE! TODO FIXME!");
-                
+	Entity.Builder enb = Entity.builder();
 
-        List<IAttribute> attrs = new ArrayList();
-        attrs.add(enServ.createAttribute(facility.getAttrDef(facility.getNameAttrDef().getURL()),
-                "test entity")); // so doesn't complain about missing name...
-        
+	Etype etype = ets.readEtype(FACILITY_URL);
+	enb.setEtypeId(FACILITY_URL);
 
-        attrs.add(enServ.createAttribute(facility.getAttrDef(EntityServiceIT.ATTR_DEF_PART_OF_URL),
-            new MinimalEntity(PALAZZETTO_URL,Dict.of(), Dict.of(), "")));
-        
-        enodr.setStructureAttributes(attrs);
-        
-        idServ.assignURL(new ArrayList() {
-            {
-                add(enodr);
-            }
-        }, 3);
+	enb.setNameAttr(Dict.of("test entity"), etype.getId(), ets);
+
+	Attr partOfAttr = Attr.ofObject(etype.attrDefById(DisiTest.ATTR_DEF_PART_OF_URL),
+		mockEs.newEntity(PALAZZETTO_URL, etype, Dict.of(), Dict.of()));
+	enb.putAttrs(DisiTest.ATTR_DEF_PART_OF_URL, partOfAttr);
+
+	idServ.assignURL(Lists.newArrayList(enb.build()), 3);
+
     }
-    
- @Test
+
+    @Test
     public void testNewEntityWithPartOfNewEntity() {
 
-        
-        
-        // IEntity entityPartOf = new MinimalEntity(RAVAZZONE_URL, new Dict(), new Dict(), null);
-        
-        // assertNotNull(entityPartOf.getEtypeURL());
-                                
-        IEntity newEntity = assignNewURL();
-      
-        
-        
-        List<IAttribute> structureAttributes = newEntity.getStructureAttributes();
-        for (int i = 0; i < structureAttributes.size(); i++){
-            IAttribute attr = structureAttributes.get(i);
-            if (attr.getAttrDefUrl().equals(ATTR_DEF_PART_OF_URL)){
-                IAttribute newAttr = enServ.createAttribute(ets.readAttrDef(attr.getAttrDefUrl()), 
-                        new MinimalEntity("http://trial/instances/new/1234567", Dict.of(), Dict.of(), LOCATION_URL));
-                structureAttributes.set(i, newAttr);
-            }
-        }
-        
-        List<? extends IIDResult> idRes = idServ.assignURL(Arrays.asList(newEntity), 3);
-                        
-    }    
-       
+	// Entity entityPartOf = new MinimalEntity(RAVAZZONE_URL, new Dict(),
+	// new Dict(), null);
+
+	// assertNotNull(entityPartOf.getEtypeURL());
+
+	Entity newEntity = assignNewURL();
+	Etype etype = ets.readEtype(newEntity.getEtypeId());
+
+	
+	Entity.Builder enb = Entity.builder().from(newEntity);
+	
+
+	enb.setAttrs(OdtUtils.putKey(newEntity.getAttrs(),
+		ATTR_DEF_PART_OF_URL,	
+		Attr.ofObject(ets.readAttrDef(ATTR_DEF_PART_OF_URL),
+			mockEs.newEntity("http://trial/instances/new/1234567", etype, Dict.of(), Dict.of()))));			
+
+	List<IdResult> idRes = idServ.assignURL(Arrays.asList(enb.build()), 3);
+
+    }
+
     @Test
-    public void idServiceEntityMissing() {
-                
-        EntityODR entity = (EntityODR) enServ.readEntity(PALAZZETTO_URL);
-        List<Attribute> attrs = entity.getAttributes();
-        List<Attribute> attrs1 = new ArrayList();
+    public void testIdServiceEntityMissing() {
 
-        for (Attribute atr : attrs) {
+	Entity palaz = enServ.readEntity(PALAZZETTO_URL);
 
-            if (atr.getName().get("en").equalsIgnoreCase("Latitude")) {
-                attrs1.add(atr);
-            } else if (atr.getName().get("en").equalsIgnoreCase("Longitude")) {
-                attrs1.add(atr);
-            } //			else if (atr.getName().strs("en").equalsIgnoreCase("Class")){
-            //				attrs1.add(atr);
-            //			}
-            else if (atr.getName().get("en").equalsIgnoreCase("Class")) {                
-                IConcept concept =  ekb.getKnowledgeService().readConcept(GYMNASIUM_CONCEPT_URL);
-                IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
-                AttributeODR attr = (AttributeODR) enServ.createAttribute(atDef, concept);
-                Attribute a = attr.convertToAttribute();
-                attrs1.add(atr);
-            }
+	Entity.Builder enb = Entity.builder();
 
-        }
+	for (String attrDefId : palaz.getAttrs().keySet()) {
 
-        Entity en = new Entity();
-        en.setEntityBaseId(1L);
-        en.setTypeId(12L);
-        en.setAttributes(attrs1);
+	    AttrDef attrDef = ets.readAttrDef(attrDefId);
+	    String adName = attrDef.getName().str(Locale.ENGLISH);
 
-        IEntity ent = new EntityODR(en);
+	    if (adName.equalsIgnoreCase("Latitude") || adName.equalsIgnoreCase("Longitude")) {
+		enb.putAttrs(attrDef.getId(), palaz.attr(attrDef.getId()));
+	    } else if (adName.equalsIgnoreCase("Class")) {
+		Concept concept = ekb.getKnowledgeService().readConcept(GYMNASIUM_CONCEPT_URL);
+		enb.putAttrs(attrDef.getId(), Attr.ofObject(attrDef, concept));
+	    }
+	}
 
-        List<IEntity> entities = new ArrayList();
-        entities.add(ent);
+	List<IdResult> results = idServ.assignURL(Lists.newArrayList(enb.build()), 3);
 
-        List<? extends IIDResult> results = idServ.assignURL(entities, 3);
-        
-        for (IIDResult res : results) {
-            EntityODR entityODR = (EntityODR) res.getResultEntity();
-            //	System.out.println("result "+res.getAssignmentResult());
-            //	System.out.println("Global id: "+res.getGUID());
-            //	System.out.println("Local id: "+entityODR.getLocalID());
-            assertEquals(AssignmentResult.NEW, res.getAssignmentResult());
-        }
-    }
-
-
-    public Attribute createAttributeNameEntity(String value) {
-                
-        EntityType etype = (EntityType) ets.readEntityType(FACILITY_URL);
-
-        List<IAttributeDef> attrDefList = etype.getAttributeDefs();
-        List<Attribute> attrs = new ArrayList();
-
-        Attribute a = null;
-        for (IAttributeDef atd : attrDefList) {
-            if (atd.getName().string(Locale.ENGLISH).equals("Name")) {
-                System.out.println(atd.getName());
-                AttributeODR attr = ((EntityService) enServ).createNameAttributeODR(atd, value);
-                a = attr.convertToAttribute();
-                return a;
-            }
-        }
-        return a;
-    }
-
-    public Attribute createAttributeEntity(Object value) {
-        
-        
-        IEntityType etype = ets.readEntityType(FACILITY_URL);
-
-        List<IAttributeDef> attrDefList = etype.getAttributeDefs();
-        List<Attribute> attrs = new ArrayList();
-
-        Attribute a = null;
-        for (IAttributeDef atd : attrDefList) {
-        }
-
-        return a;
-
+	for (IdResult res : results) {
+	    Entity entityODR =  res.getResultEntity();
+	    assertEquals(AssignmentResult.NEW, res.getAssignmentResult());
+	}
     }
 
 }

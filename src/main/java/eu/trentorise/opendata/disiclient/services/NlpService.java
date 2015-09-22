@@ -1,8 +1,9 @@
 package eu.trentorise.opendata.disiclient.services;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.collect.Lists;
 import eu.trentorise.opendata.commons.OdtUtils;
-import eu.trentorise.opendata.semantics.model.entity.IEntity;
+import eu.trentorise.opendata.semantics.model.entity.Entity;
 import eu.trentorise.opendata.semtext.MeaningKind;
 import eu.trentorise.opendata.semtext.MeaningStatus;
 import eu.trentorise.opendata.semtext.Meaning;
@@ -33,17 +34,28 @@ import org.slf4j.LoggerFactory;
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>ì
  *
  */
-public class NLPService implements INLPService {
+public class NlpService implements INLPService {
 
-    private static final SemanticStringConverter semanticStringConverter = SemanticStringConverter.of(SwebConfiguration.getUrlMapper());
+    private SemanticStringConverter semanticStringConverter = SemanticStringConverter.of(SwebConfiguration.getUrlMapper());
 
-    private static final NLTextConverter nltextConverter = NLTextConverter.of(SwebConfiguration.getUrlMapper());
+    private NLTextConverter nltextConverter = NLTextConverter.of(SwebConfiguration.getUrlMapper());
 
-    private static final Logger logger = LoggerFactory.getLogger(NLPService.class);
+    private static final Logger logger = LoggerFactory.getLogger(NlpService.class);
 
-    NLPService(){}
+    private DisiEkb ekb;
     
+    
+    NlpService(DisiEkb ekb){
+        checkNotNull(ekb);
+        this.ekb = ekb;
+        semanticStringConverter = SemanticStringConverter.of(SwebConfiguration.getUrlMapper());
+        nltextConverter = NLTextConverter.of(SwebConfiguration.getUrlMapper());    
+    }
 
+    public NLTextConverter getNltextConverter() {
+        return nltextConverter;
+    }
+    
     /**
      * For italian text and 1st knowledge base
      *
@@ -226,11 +238,11 @@ public class NLPService implements INLPService {
         List<String> filteredEntities = new ArrayList();
 
         
-        List<IEntity> entities = DisiClients.getSingleton().getEntityService().readEntities(entitiesUrls);
+        List<Entity> entities = DisiClients.getSingleton().getEntityService().readEntities(entitiesUrls);
 
-        for (IEntity e : entities) {
-            if (e.getEtypeURL().equals(etypeURL)) {
-                filteredEntities.add(e.getUrl());
+        for (Entity e : entities) {
+            if (e.getEtypeId().equals(etypeURL)) {
+                filteredEntities.add(e.getId());
             }
 
         }
@@ -244,10 +256,10 @@ public class NLPService implements INLPService {
 
         List<SearchResult> entities;
 
-        Search search = new Search();
+        Search search = ekb.getSearchService();
         entities = search.searchEntities(lowerCasePartialName, null, locale);
 
-        KnowledgeService ks = new KnowledgeService();
+        KnowledgeService ks = ekb.getKnowledgeService();
         List<SearchResult> concepts = ks.searchConcepts(lowerCasePartialName, locale);
 
         List<TermSearchResult> allSearchResult = new ArrayList();
@@ -269,11 +281,11 @@ public class NLPService implements INLPService {
         return allSearchResult;
     }
 
-    public static SemanticStringConverter getSemanticStringConverter() {
+    public SemanticStringConverter getSemanticStringConverter() {
         return semanticStringConverter;
     }
 
-    public static NLTextConverter getNLTextConverter() {
+    public NLTextConverter getNLTextConverter() {
         return nltextConverter;
     }
 

@@ -16,10 +16,13 @@
 package eu.trentorise.opendata.disiclient.test.services;
 
 import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
+import eu.trentorise.opendata.disiclient.Converter;
 import eu.trentorise.opendata.disiclient.UrlMapper;
+import eu.trentorise.opendata.disiclient.services.DisiEkb;
 import eu.trentorise.opendata.disiclient.test.ConfigLoader;
 import eu.trentorise.opendata.semantics.Checker;
 import eu.trentorise.opendata.semantics.services.IEkb;
+
 
 /**
  * Many fields are static, but hey, world can't be perfect.
@@ -28,10 +31,11 @@ import eu.trentorise.opendata.semantics.services.IEkb;
  */
 public abstract class DisiTest {
 
-    static final IEkb ekb = ConfigLoader.init();
-    static final Checker checker = Checker.of(ekb);
+    static protected final IEkb ekb = ConfigLoader.init();
+    static protected final Checker checker = Checker.of(ekb);
+    static protected final Converter converter = Converter.of((DisiEkb) ekb);
 
-    static final UrlMapper um = SwebConfiguration.getUrlMapper();
+    static protected final UrlMapper um = SwebConfiguration.getUrlMapper();
 
     public static final long CONCEPT_1_ID = 33292L;
     public static final long CONCEPT_1_GLOBAL_ID = 33769L;
@@ -114,7 +118,9 @@ public abstract class DisiTest {
      */
     public static final String ANDALO_URL = um.entityIdToUrl(ANDALO_ID);
 
+    /** This is an etype */
     public static final long ROOT_ENTITY_ID = 21L;
+    /** This is an etype */
     public static final String ROOT_ENTITY_URL = um.etypeIdToUrl(ROOT_ENTITY_ID);
 
     public static final Long LOCATION_ID = 18L;
@@ -132,21 +138,25 @@ public abstract class DisiTest {
     public static final long ATTR_DEF_LONGITUDE_CONCEPT_ID = 45427L;
     public static final String ATTR_DEF_LONGITUDE_CONCEPT_URL = um.conceptIdToUrl(ATTR_DEF_LONGITUDE_CONCEPT_ID);
     public static final String ATTR_DEF_LONGITUDE_URL = um.attrDefIdToUrl(ATTR_DEF_LONGITUDE_ID, ATTR_DEF_LONGITUDE_CONCEPT_ID);
-    public static final long ATTR_DEF_CLASS = 58L;
+    public static final long ATTR_DEF_CLASS_ID = 58L;
     public static final long ATTR_DEF_CLASS_CONCEPT_ID = 42806L;
-    public static final String ATTR_DEF_CLASS_URL = um.attrDefIdToUrl(ATTR_DEF_CLASS, ATTR_DEF_CLASS_CONCEPT_ID);
+    public static final String ATTR_DEF_CLASS_URL = um.attrDefIdToUrl(ATTR_DEF_CLASS_ID, ATTR_DEF_CLASS_CONCEPT_ID);
     public static final long ATTR_DEF_DESCRIPTION = 62L;
     public static final long ATTR_DEF_DESCRIPTION_CONCEPT_ID = 3L;
     public static final String ATTR_DEF_DESCRIPTION_URL = um.attrDefIdToUrl(ATTR_DEF_DESCRIPTION, ATTR_DEF_DESCRIPTION_CONCEPT_ID);
 
-    public static final long ATTR_DEF_PART_OF = 60L;
+    public static final long ATTR_DEF_PART_OF_ID = 60L;
     public static final long ATTR_DEF_PART_OF_CONCEPT_ID = 5L;
+    
+;
     /**
      * Part-of has {@link #ROOT_ENTITY_URL} as range
      */
-    public static final String ATTR_DEF_PART_OF_URL = um.attrDefIdToUrl(ATTR_DEF_PART_OF, ATTR_DEF_PART_OF_CONCEPT_ID);
+    public static final String ATTR_DEF_PART_OF_URL = um.attrDefIdToUrl(ATTR_DEF_PART_OF_ID, ATTR_DEF_PART_OF_CONCEPT_ID);
 
+    /** this is an etype */
     public static final long NAME_ID = 10L;
+    /** this is an etype */
     public static final String NAME_URL = um.etypeIdToUrl(NAME_ID);
 
     // Shopping facility

@@ -4,8 +4,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.collect.ImmutableList;
 import eu.trentorise.opendata.schemamatcher.odr.impl.MatchingService;
 import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
+import eu.trentorise.opendata.disiclient.Converter;
+import eu.trentorise.opendata.semantics.Checker;
 import eu.trentorise.opendata.semantics.services.IEkb;
-import eu.trentorise.opendata.semantics.services.ISchemaMatchingService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,12 +26,13 @@ public class DisiEkb implements IEkb {
     public static final String PROPERTIES_PREFIX = "sweb.webapi";
     
     private static final Logger LOG = LoggerFactory.getLogger(DisiEkb.class);
-
-    private NLPService NLPService;
+    
+    private Converter converter;
+    private NlpService NLPService;
     private KnowledgeService knowledgeService;
     private MatchingService schemaMatchingService;
     private IdentityService identityService;
-    private EntityTypeService entityTypeService;
+    private EtypeService entityTypeService;
     private EntityService entityService;
     /** disi client specific */
     private Search searchService;
@@ -39,6 +41,7 @@ public class DisiEkb implements IEkb {
     
     private List<Locale> defaultLocales;
     
+    private Checker checker;
     
     /**
      * Constructor for the client - by default sets English locale. Note that to
@@ -46,7 +49,7 @@ public class DisiEkb implements IEkb {
      * called!
      */
      public DisiEkb() {		     
-        this.defaultLocales = ImmutableList.of(Locale.ENGLISH);    
+        this.defaultLocales = ImmutableList.of(Locale.ENGLISH);            
     }
 
     @Override
@@ -55,7 +58,7 @@ public class DisiEkb implements IEkb {
     }
 
     @Override
-    public NLPService getNLPService() {
+    public NlpService getNLPService() {
         return NLPService;
     }
 
@@ -75,7 +78,7 @@ public class DisiEkb implements IEkb {
     }
 
     @Override
-    public EntityTypeService getEntityTypeService() {
+    public EtypeService getEtypeService() {
         return entityTypeService;
     }
 
@@ -107,18 +110,29 @@ public class DisiEkb implements IEkb {
     public void setProperties(Map<String, String> properties) {
         checkNotNull(properties);
         SwebConfiguration.init(properties);
-        this.NLPService = new NLPService();
-        this.entityTypeService = new EntityTypeService();
-        this.knowledgeService = new KnowledgeService();
-        this.identityService = new IdentityService();
+        this.converter = Converter.of(this);
+        this.NLPService = new NlpService(this);
+        this.entityTypeService = new EtypeService(this);
+        this.knowledgeService = new KnowledgeService(this);
+        this.identityService = new IdentityService(this);
         this.schemaMatchingService = new MatchingService(this);
         this.entityService = new EntityService(this);
         
         // disi specific
-        this.searchService = new Search();
-        this.entityExportService = new EntityExportService();
+        this.searchService = new Search(this);
+        this.entityExportService = new EntityExportService(this);
+        this.checker = Checker.of(this);
     }
 
+    public Checker getChecker() {
+        return checker;
+    }
+
+    public Converter getConverter() {
+        return converter;
+    }
+    
+    
     /**
      * Disi client specific
      */

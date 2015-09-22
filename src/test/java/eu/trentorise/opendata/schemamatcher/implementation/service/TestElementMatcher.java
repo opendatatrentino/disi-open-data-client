@@ -20,9 +20,10 @@ import eu.trentorise.opendata.schemamatcher.model.ISchema;
 import eu.trentorise.opendata.schemamatcher.model.ISchemaElementCorrespondence;
 import eu.trentorise.opendata.schemamatcher.model.ISchemaElementMatcher;
 import eu.trentorise.opendata.schemamatcher.util.SwebClientCrap;
-import eu.trentorise.opendata.semantics.model.entity.IEntityType;
+import eu.trentorise.opendata.semantics.model.entity.Etype;
 import eu.trentorise.opendata.semantics.services.IEkb;
-import eu.trentorise.opendata.semantics.services.IEntityTypeService;
+import eu.trentorise.opendata.semantics.services.IEtypeService;
+
 import org.junit.After;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,15 +33,15 @@ public class TestElementMatcher {
     private final static Logger LOG = LoggerFactory.getLogger(TestSchemaImport.class.getName());
     
     
-    private IEntityType etype;
+    private Etype etype;
     private IEkb ekb;
     private static final double DELTA = 1e-15;
 
     @Before
     public void beforeMethod() {
         ekb = ConfigLoader.init();
-        IEntityTypeService ets = ekb.getEntityTypeService();     
-        etype = ets.readEntityType(FACILITY_URL);
+        IEtypeService ets = ekb.getEtypeService();     
+        etype = ets.readEtype(FACILITY_URL);
     }
     
     @After
