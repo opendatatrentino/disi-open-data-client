@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
 
 import eu.trentorise.opendata.disiclient.services.EntityService;
+import eu.trentorise.opendata.commons.Dict;
 import eu.trentorise.opendata.commons.NotFoundException;
 import eu.trentorise.opendata.semantics.model.entity.Attr;
 import eu.trentorise.opendata.semantics.model.entity.AttrDef;
@@ -13,7 +14,9 @@ import eu.trentorise.opendata.semantics.model.entity.Struct;
 import eu.trentorise.opendata.semantics.model.entity.Struct.Builder;
 import eu.trentorise.opendata.semantics.model.entity.Val;
 import eu.trentorise.opendata.semtext.SemText;
+import eu.trentorise.opendata.traceprov.types.Concept;
 import eu.trentorise.opendata.semantics.services.SearchResult;
+import eu.trentorise.opendata.semantics.services.mock.MockEntityService;
 import eu.trentorise.opendata.commons.OdtUtils;
 import eu.trentorise.opendata.disiclient.services.EtypeService;
 import eu.trentorise.opendata.disiclient.services.KnowledgeService;
@@ -33,7 +36,8 @@ import it.unitn.disi.sweb.webapi.model.eb.EntityBase;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
 import it.unitn.disi.sweb.webapi.model.eb.Structure;
 import it.unitn.disi.sweb.webapi.model.eb.Value;
-import it.unitn.disi.sweb.webapi.model.kb.concepts.Concept;
+import it.unitn.disi.sweb.webapi.model.filters.InstanceFilter;
+
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
 import it.unitn.disi.sweb.webapi.model.kb.types.EntityType;
 
@@ -68,7 +72,7 @@ import org.slf4j.LoggerFactory;
  */
 public class EntityServiceIT extends DisiTest {
 
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+    private static final Logger LOG = LoggerFactory.getLogger(EntityServiceIT.class);
 
     private IEntityService enServ;
 
@@ -90,7 +94,7 @@ public class EntityServiceIT extends DisiTest {
     public void testReadPalazzettoNameEtype() {
 
         Entity entity = ekb.getEntityService().readEntity(PALAZZETTO_URL);
-        log.info("\n\n *************   entity Palazzetto (" + PALAZZETTO_URL + ") ***************** \n\n", (Object) entity);
+        LOG.info("\n\n *************   entity Palazzetto (" + PALAZZETTO_URL + ") ***************** \n\n", (Object) entity);
                         
         AttrDef nameAttrDef = ets.readEtype(entity.getEtypeId()).nameAttrDef();
         Struct nameValue = (Struct) entity.attr(nameAttrDef.getId()).getValues().get(0).getObj();
@@ -106,7 +110,7 @@ public class EntityServiceIT extends DisiTest {
     public void testReadPalazzetto() {
 
         Entity entity = ekb.getEntityService().readEntity(PALAZZETTO_URL);
-        log.info("\n\n *************   entity Palazzetto (" + PALAZZETTO_URL + ") ***************** \n\n", (Object) entity);
+        LOG.info("\n\n *************   entity Palazzetto (" + PALAZZETTO_URL + ") ***************** \n\n", (Object) entity);
         /*               This stuff should be caught by the integrity checker 
          AttrDef nameAttrDef = entity.getEtype().getNameAttrDef();
          Struct nameValue = (Struct) entity.getAttribute(nameAttrDef.getURL()).getValues().strs(0).getValue();
@@ -120,6 +124,16 @@ public class EntityServiceIT extends DisiTest {
     }
 
 
+    /**
+     * Shows reading non existing instances in sweb doesn't throw but just skips the result. 
+     */
+    @Test
+    public void readSwebNonExistingInstances(){
+	InstanceClient instanceClient = new InstanceClient(SwebConfiguration.getClientProtocol());
+	InstanceFilter instFilter = new InstanceFilter();
+	List<Instance> instances = instanceClient.readInstancesById(Lists.newArrayList(-1L), instFilter);
+	assertTrue(instances.isEmpty());
+    }
     
     @Test
     public void testReadNonExistingEntity() {
@@ -134,6 +148,7 @@ public class EntityServiceIT extends DisiTest {
     public void testReadNonExistingEntities() {
 
         List<String> entitieURLs = new ArrayList();
+        
         entitieURLs.add(um.entityIdToUrl(10000000000000000L));
         entitieURLs.add(um.etypeIdToUrl(RAVAZZONE_ID));
         
@@ -146,6 +161,7 @@ public class EntityServiceIT extends DisiTest {
     }
 
     @Test
+    @Ignore
     public void testUpdateNonExistingEntity() {
         Entity.Builder entityB = Entity.builder();        
         entityB.setEtypeId(FACILITY_URL);        
@@ -168,7 +184,7 @@ public class EntityServiceIT extends DisiTest {
         Entity entity =  converter.swebEntityToOeEntity(swebEntity, swebEntityType);
         checker.checkEntity(entity);
         Etype etype = ets.readEtype(entity.getEtypeId());
-        log.info(etype.getName().strings(Locale.ITALIAN).get(0));
+        LOG.info(etype.getName().strings(Locale.ITALIAN).get(0));
         assertEquals(etype.getName().strings(Locale.ITALIAN).get(0), "Infrastruttura");
     }
 
@@ -187,7 +203,7 @@ public class EntityServiceIT extends DisiTest {
         Entity entity = enServ.readEntity(RAVAZZONE_URL);
         checker.checkEntity(entity);
         Etype etype = ekb.getEtypeService().readEtype(entity.getEtypeId());
-        log.info(etype.getName().get(Locale.ITALIAN).get(0));
+        LOG.info(etype.getName().get(Locale.ITALIAN).get(0));
         assertEquals(etype.getName().get(Locale.ITALIAN).get(0), "Località");
     }
 
@@ -197,7 +213,7 @@ public class EntityServiceIT extends DisiTest {
         Entity entity = enServ.readEntity(CAMPANIL_PARTENZA_URL);
         checker.checkEntity(entity);
         Etype etype = ets.readEtype(entity.getEtypeId());
-        log.info(etype.getName().get(Locale.ITALIAN).get(0));
+        LOG.info(etype.getName().get(Locale.ITALIAN).get(0));
 
         assertTrue(entity.getName().get(Locale.ITALIAN).get(0).length() > 0);
         assertTrue(entity.getDescription().get(Locale.ITALIAN).get(0).length() > 0);
@@ -210,7 +226,7 @@ public class EntityServiceIT extends DisiTest {
         Structure struct = (Structure) ((EntityService) enServ).readSwebStructure(64001L);
         
         ComplexType etype = ((EtypeService) ets).readSwebComplexType(struct.getTypeId());
-        log.info(etype.getName().get("it"));
+        LOG.info(etype.getName().get("it"));
         assertEquals(etype.getName().get("it"), "Nome");
     }
 
@@ -227,10 +243,10 @@ public class EntityServiceIT extends DisiTest {
             checker.checkEntity(entity);
         }
 
-        log.info(entities.get(0).getName().get(Locale.ITALIAN).get(0));
+        LOG.info(entities.get(0).getName().get(Locale.ITALIAN).get(0));
         assertEquals("PALAZZETTO DELLO SPORT", entities.get(1).getName().get(Locale.ITALIAN).get(0));
         String name = readEtype(entities.get(1)).getName().get(Locale.ITALIAN).get(0);
-        log.info(name);
+        LOG.info(name);
         assertEquals("Infrastruttura", name);
     }
 
@@ -342,6 +358,8 @@ public class EntityServiceIT extends DisiTest {
 	Long conceptId = swebEtype.getConceptId();
 	it.unitn.disi.sweb.webapi.model.kb.concepts.Concept concept = ((KnowledgeService)  ekb.getKnowledgeService()).readConceptById(conceptId);
         ent.setTypeId(ROOT_ENTITY_ID);
+        LOG.warn("TODO - USING HARD-CODED ENTITYBASE ID SET TO 1");
+        ent.setEntityBaseId(1L);
         Value val = new Value();
         val.setValue(concept);
         Attribute attr = new Attribute();
@@ -364,17 +382,19 @@ public class EntityServiceIT extends DisiTest {
             String adName = atd.getName().str(Locale.ENGLISH);
             
             if (adName.equals("Name")) {
-                enb.putAttrs(atd.getId(), Attr.ofObject(atd, "TestName"));
+                enb.setNameAttr(Dict.of("TestName"), etype.getId(), ekb.getEtypeService());
             } else if (adName.equals("Class")) {                
-                enb.putAttrs(atd.getId(), Attr.ofObject(atd, 123L));
+        	
+        	Concept concept = Concept.builder()
+        		.setId(um.conceptIdToUrl(123L)).build();
+        	
+                enb.putAttrs(atd.getId(), Attr.ofObject(atd, concept));
             } else if (adName.equals("Latitude")) {
         	enb.putAttrs(atd.getId(), Attr.ofObject(atd, 12.123F));
             } else if (adName.equals("Longitude")) {
         	enb.putAttrs(atd.getId(), Attr.ofObject(atd, 56.567F));
             } else if (adName.equals("Opening hours")) {
-                //     logger.info(atd.getName());
-                //      logger.info(atd.getURL());
-        	
+                        	
         	Struct.Builder strub = Struct.builder();
         	
         	Etype opHoursEt = ets.readEtype(OPENING_HOURS_URL);
@@ -396,7 +416,7 @@ public class EntityServiceIT extends DisiTest {
         
         Entity newEntity = enServ.createEntity(enb.build());
         checker.checkEntity(newEntity);
-        log.info("Entity id:" + newEntity.getId());
+        LOG.info("Entity id:" + newEntity.getId());
         
         enServ.deleteEntity(newEntity.getId());
     }
@@ -409,7 +429,7 @@ public class EntityServiceIT extends DisiTest {
 
     /**
      * Andalo is nasty as it has a name type "Place Name" with ID 23, instead of
-     * the usual one with ID 10
+     * the usual one with ID 10 . Screw Andalo.
      */
     @Test
     public void testReadAndalo() {
@@ -422,7 +442,7 @@ public class EntityServiceIT extends DisiTest {
         
         AttrDef nameAttrDef = etype.nameAttrDef();
         
-        log.info("nameAttrDefURL = " + nameAttrDef.getId());
+        LOG.info("nameAttrDefURL = " + nameAttrDef.getId());
 
         Attr nameAttr = en.attr(nameAttrDef.getId());
 

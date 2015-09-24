@@ -10,6 +10,7 @@ import eu.trentorise.opendata.commons.OdtUtils;
 import eu.trentorise.opendata.disiclient.services.DisiEkb;
 import eu.trentorise.opendata.semantics.model.entity.Etype;
 import eu.trentorise.opendata.disiclient.services.EtypeService;
+import eu.trentorise.opendata.disiclient.services.KnowledgeService;
 import eu.trentorise.opendata.semantics.Checker;
 import eu.trentorise.opendata.semantics.DataTypes;
 import eu.trentorise.opendata.semantics.exceptions.CastException;
@@ -68,10 +69,14 @@ public final class Converter {
      */
     private static final ImmutableBiMap<String, DataType> ONE_TO_ONE_DATATYPES = ImmutableBiMap
 	    .<String, DataType> builder().put(DataTypes.BOOLEAN, DataType.BOOLEAN)
-	    .put(DataTypes.CONCEPT, DataType.CONCEPT).put(DataTypes.DATE, DataType.DATE)
-	    .put(DataTypes.FLOAT, DataType.FLOAT).put(DataTypes.INTEGER, DataType.INTEGER)
-	    .put(DataTypes.LONG, DataType.LONG).put(DataTypes.SEMANTIC_TEXT, DataType.SSTRING)
-	    .put(DataTypes.STRING, DataType.STRING).build();
+	    .put(DataTypes.CONCEPT, DataType.CONCEPT)
+	    .put(DataTypes.DATE, DataType.DATE)
+	    .put(DataTypes.FLOAT, DataType.FLOAT)
+	    .put(DataTypes.INTEGER, DataType.INTEGER)
+	    .put(DataTypes.LONG, DataType.LONG)
+	    .put(DataTypes.SEMANTIC_TEXT, DataType.SSTRING)
+	    .put(DataTypes.STRING, DataType.STRING)
+	    .build();
 
     private Attribute oeAttrToSwebAttribute(Attr oeAttr, boolean toCreate) {
 
@@ -295,7 +300,7 @@ public final class Converter {
 	AttributeDefinition swebAttrDef = swebAttributeDefinition(swebComplexType, swebAttribute.getDefinitionId());
 
 	AttrDef oeAttrDef = swebAttributeDefToOeAttrDef(swebAttrDef, null);
-	
+
 	b.setAttrDefId(um.attrDefToUrl(swebAttrDef));
 
 	if (swebAttribute.getConceptId() == null) {
@@ -352,9 +357,11 @@ public final class Converter {
 		if (swebVal.getValue() instanceof Long) {
 		    oeObj = um.entityIdToUrl((Long) swebVal.getValue());
 		} else if (swebVal.getValue() instanceof it.unitn.disi.sweb.webapi.model.eb.Instance) {
-		    it.unitn.disi.sweb.webapi.model.eb.Instance subSwebInstance = (it.unitn.disi.sweb.webapi.model.eb.Instance) swebVal.getValue();
-		    
-		    ComplexType perEntityRangeSwebComplexType = ekb.getEtypeService().readSwebComplexType(subSwebInstance.getTypeId());
+		    it.unitn.disi.sweb.webapi.model.eb.Instance subSwebInstance = (it.unitn.disi.sweb.webapi.model.eb.Instance) swebVal
+			    .getValue();
+
+		    ComplexType perEntityRangeSwebComplexType = ekb.getEtypeService()
+			    .readSwebComplexType(subSwebInstance.getTypeId());
 		    oeObj = swebInstanceToOeStruct(subSwebInstance, perEntityRangeSwebComplexType);
 		} else {
 		    String oeDatatype;
@@ -400,7 +407,9 @@ public final class Converter {
     }
 
     public Entity swebEntityToOeEntity(it.unitn.disi.sweb.webapi.model.eb.Entity entity, EntityType swebEntityType) {
-	checkArgument(entity.getTypeId() == (swebEntityType).getId(), "Entity getTypeId %s is different from provided entity type, which has id %s", entity.getTypeId(), swebEntityType.getId());
+	checkArgument(entity.getTypeId() == (swebEntityType).getId(),
+		"Entity getTypeId %s is different from provided entity type, which has id %s", entity.getTypeId(),
+		swebEntityType.getId());
 
 	Entity.Builder b = Entity.builder();
 
@@ -419,7 +428,9 @@ public final class Converter {
 
     public AStruct swebInstanceToOeStruct(it.unitn.disi.sweb.webapi.model.eb.Instance swebInstance,
 	    ComplexType swebComplexType) {
-	checkArgument(swebInstance.getTypeId() == swebComplexType.getId(), "instance getTypeId %s is different from provided complex type, which has id %s", swebInstance.getTypeId(), swebComplexType.getId());
+	checkArgument(swebInstance.getTypeId() == swebComplexType.getId(),
+		"instance getTypeId %s is different from provided complex type, which has id %s",
+		swebInstance.getTypeId(), swebComplexType.getId());
 
 	if (swebInstance instanceof it.unitn.disi.sweb.webapi.model.eb.Entity) {
 	    return swebEntityToOeEntity((it.unitn.disi.sweb.webapi.model.eb.Entity) swebInstance,
@@ -450,16 +461,27 @@ public final class Converter {
 	b.setDescription(Converter.mapToDict(cType.getDescription()));
 	b.setName(Converter.mapToDict(cType.getName()));
 	b.setStruct(swebIsComplexTypeOeStructure(cType));
+	// if ()
+	// b.setNameAttrDefId(nameAttrDefId);
 	List<AttributeDefinition> swebAttrDefs = cType.getAttributes();
 
-	for (AttributeDefinition ad : swebAttrDefs) {
+	for (AttributeDefinition swebAd : swebAttrDefs) {
 	    @Nullable
 	    ComplexType ct = null;
-	    if (DataType.COMPLEX_TYPE.equals(ad.getDataType())) {
-		ct = ekb.getEtypeService().getSwebCachedComplexType(Converter.swebAttrDefToRangeEntityTypeId(ad));
+	    if (DataType.COMPLEX_TYPE.equals(swebAd.getDataType())) {
+		ct = ekb.getEtypeService().getSwebCachedComplexType(Converter.swebAttrDefToRangeEntityTypeId(swebAd));
 	    }
-
-	    b.putAttrDefs(um.attrDefIdToUrl(ad.getId(), ad.getConceptId()), swebAttributeDefToOeAttrDef(ad, ct));
+	    
+	    // for nasty super complex name structure
+	    String oeAttrDefId = um.attrDefIdToUrl(swebAd.getId(), swebAd.getConceptId());
+	    if (swebAd.getConceptId() == KnowledgeService.NAME_CONCEPT_ID){
+		b.setNameAttrDefId(oeAttrDefId);
+	    }
+	    
+	    if (swebAd.getConceptId() == KnowledgeService.DESCRIPTION_CONCEPT_ID){
+		b.setDescrAttrDefId(oeAttrDefId);
+	    }
+	    b.putAttrDefs(oeAttrDefId, swebAttributeDefToOeAttrDef(swebAd, ct));
 	}
 
 	return b;
@@ -627,7 +649,7 @@ public final class Converter {
 	List<Attribute> newSwebAttrs = new ArrayList();
 
 	if (root) {
-	    Checker.of(DisiClients.getSingleton()).checkEntity(entity, true);
+	    ekb.getChecker().checkEntity(entity, true);
 	    for (Attr oeAttr : entity.getAttrs().values()) {
 		newSwebAttrs.add(oeAttrToSwebAttribute(oeAttr, toCreate));
 	    }

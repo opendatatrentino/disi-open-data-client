@@ -1,6 +1,8 @@
 package eu.trentorise.opendata.disiclient.services;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+
+import com.google.common.base.Throwables;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -33,6 +35,7 @@ import eu.trentorise.opendata.semantics.model.entity.Etype;
 
 import eu.trentorise.opendata.semantics.services.IEtypeService;
 import eu.trentorise.opendata.semantics.services.SearchResult;
+import eu.trentorise.opendata.semantics.exceptions.OpenEntityException;
 import eu.trentorise.opendata.semantics.exceptions.OpenEntityNotFoundException;
 import eu.trentorise.opendata.semantics.model.entity.AttrDef;
 import it.unitn.disi.sweb.webapi.model.kb.types.EntityType;
@@ -66,22 +69,62 @@ public class EtypeService implements IEtypeService {
     private static UrlMapper um;
 
     /* todo it's static, but it shouldn't be... */
-    private static final LoadingCache<Long, AttributeDefinition> swebAttributeDefinitionsCache=CacheBuilder.newBuilder().maximumSize(CACHE_SIZE).build(new CacheLoader<Long,AttributeDefinition>(){
+    private static final LoadingCache<Long, AttributeDefinition> swebAttributeDefinitionsCache = CacheBuilder
+	    .newBuilder().maximumSize(CACHE_SIZE).build(new CacheLoader<Long, AttributeDefinition>() {
 
-    @Override public AttributeDefinition load(Long id){LOG.info("Couldn't find attrdef with id "+id+" in cache, fetching it....");AttributeDefinitionClient attrDefsClient=new AttributeDefinitionClient(SwebConfiguration.getClientProtocol());AttributeDefinition ret=attrDefsClient.readAttributeDefinition(id,null);LOG.info("Attrdef with id "+id+" loaded in cache.");return ret;}});
+		@Override
+		public AttributeDefinition load(Long id) {
+		    LOG.info("Couldn't find attrdef with id " + id + " in cache, fetching it....");
+		    AttributeDefinitionClient attrDefsClient = new AttributeDefinitionClient(
+			    SwebConfiguration.getClientProtocol());
+		    AttributeDefinition ret = attrDefsClient.readAttributeDefinition(id, null);
+		    if (ret == null) {
+			throw new OpenEntityNotFoundException("Couldn't find sweb attribute definition with id " + id);
+		    } else {
+			LOG.info("Attrdef with id " + id + " loaded in cache.");
+			return ret;
+		    }
+		}
+	    });
 
     /** todo it's static, but it shouldn't be... */
-    private static final LoadingCache<Long, ComplexType> swebEntityTypesCacheById=CacheBuilder.newBuilder().maximumSize(CACHE_SIZE).build(new CacheLoader<Long,ComplexType>(){@Override public ComplexType load(Long id){LOG.info("Couldn't find etype with id "+id+" in cache, fetching it....");ComplexTypeClient ctc=new ComplexTypeClient(SwebConfiguration.getClientProtocol());ComplexTypeFilter ctFilter=new ComplexTypeFilter();
+    private static final LoadingCache<Long, ComplexType> swebEntityTypesCacheById = CacheBuilder
+	    .newBuilder()
+	    .maximumSize(CACHE_SIZE)
+	    .build(new CacheLoader<Long, ComplexType>() {
+		@Override
+		public ComplexType load(Long id) {
+		    LOG.info("Couldn't find etype with id " + id + " in cache, fetching it....");
+		    ComplexTypeClient ctc = new ComplexTypeClient(SwebConfiguration.getClientProtocol());
+		    ComplexTypeFilter ctFilter = new ComplexTypeFilter();
 
-    ctFilter.setIncludeRestrictions(true);ctFilter.setIncludeAttributes(true);ctFilter.setIncludeAttributesAsProperties(true);ComplexType complexType=ctc.readComplexType(id,ctFilter);
+		    ctFilter.setIncludeRestrictions(true);
+		    ctFilter.setIncludeAttributes(true);
+		    ctFilter.setIncludeAttributesAsProperties(true);
+		    ComplexType complexType = ctc.readComplexType(id, ctFilter);
 
-    AttributeDefinitionClient attrDefs=new AttributeDefinitionClient(SwebConfiguration.getClientProtocol());AttributeDefinitionFilter adf=new AttributeDefinitionFilter();
+		    if (complexType == null) {
+			throw new OpenEntityNotFoundException("Couldn't find sweb complex type of sweb id " + id);
+		    }
 
-    adf.setIncludeRestrictions(true);List<AttributeDefinition>swebAttrDefs=attrDefs.readAttributeDefinitions(id,null,null,adf);List<AttributeDefinition>attrDefList=new ArrayList();
+		    AttributeDefinitionClient attrDefs = new AttributeDefinitionClient(
+			    SwebConfiguration.getClientProtocol());
+		    AttributeDefinitionFilter adf = new AttributeDefinitionFilter();
 
-    for(AttributeDefinition swebAttrDef:swebAttrDefs){swebAttributeDefinitionsCache.put(swebAttrDef.getId(),swebAttrDef);attrDefList.add(swebAttrDef);}
+		    adf.setIncludeRestrictions(true);
+		    List<AttributeDefinition> swebAttrDefs = attrDefs.readAttributeDefinitions(id, null, null, adf);
+		    List<AttributeDefinition> attrDefList = new ArrayList();
 
-    complexType.setAttributes(attrDefList);LOG.info("Complex type with id "+id+" loaded in cache.");return complexType;}});
+		    for (AttributeDefinition swebAttrDef : swebAttrDefs) {
+			swebAttributeDefinitionsCache.put(swebAttrDef.getId(), swebAttrDef);
+			attrDefList.add(swebAttrDef);
+		    }
+
+		    complexType.setAttributes(attrDefList);
+		    LOG.info("Complex type with id " + id + " loaded in cache.");
+		    return complexType;
+		}
+	    });
 
     EtypeService(DisiEkb ekb) {
 	checkNotNull(ekb);
@@ -98,6 +141,10 @@ public class EtypeService implements IEtypeService {
 	return swebEntityTypesCacheById.getIfPresent(complexTypeId);
     }
 
+    /**
+     * 
+     * @throws OpenEntityNotFoundException
+     */
     public ComplexType readSwebComplexTypeByConceptId(Long conceptId) {
 	ComplexTypeClient ctc = new ComplexTypeClient(SwebConfiguration.getClientProtocol());
 	ComplexTypeFilter ctFilter = new ComplexTypeFilter();
@@ -108,6 +155,11 @@ public class EtypeService implements IEtypeService {
 	LOG.warn("The Knowledge base is set to default: '1'.");
 
 	List<ComplexType> complexTypes = ctc.readComplexTypes(1L, conceptId, null, ctFilter);
+
+	if (complexTypes.isEmpty()) {
+	    throw new OpenEntityNotFoundException("Couldn't find sweb complex type of concept id " + conceptId);
+	}
+
 	ComplexType complexType = complexTypes.get(0);
 	if (complexTypes.size() > 1) {
 	    LOG.warn("Searched for etype with concept " + conceptId + ", and " + complexTypes.size()
@@ -118,6 +170,10 @@ public class EtypeService implements IEtypeService {
 	return readSwebComplexType(complexType.getId());
     }
 
+    /**
+     * 
+     * throw OpenEntityNotFoundException if any of the etypes is not present.
+     */
     public List<ComplexType> readSwebComplexTypes(Iterable<Long> ids) {
 	List<ComplexType> ret = new ArrayList();
 	LOG.info("todo - reading etypes one by one (there's no etype export in sweb)");
@@ -127,11 +183,20 @@ public class EtypeService implements IEtypeService {
 	return ret;
     }
 
+    /**
+     * 
+     * @throw OpenEntityNotFoundException
+     */
     public ComplexType readSwebComplexType(long id) {
 	ComplexType cached = swebEntityTypesCacheById.getIfPresent(id);
 
 	if (cached == null) {
-	    return swebEntityTypesCacheById.getUnchecked(id);
+	    try {
+		return swebEntityTypesCacheById.getUnchecked(id);
+	    } catch (Exception ex) {
+		Throwables.propagateIfPossible(ex.getCause());
+		throw new OpenEntityException("Had some issue while reading sweb complex type with sweb id " + id);
+	    }
 	} else {
 	    LOG.info("Requested etype with id " + id + " was found in client cache.");
 	    return cached;
@@ -255,11 +320,17 @@ public class EtypeService implements IEtypeService {
     public AttrDef readAttrDef(Long id) {
 	AttributeDefinition cached = swebAttributeDefinitionsCache.getIfPresent(id);
 	if (cached == null) {
-	    cached = swebAttributeDefinitionsCache.getUnchecked(id);
+	    try {
+		cached = swebAttributeDefinitionsCache.getUnchecked(id);
+	    } catch (Exception ex) {
+		Throwables.propagateIfPossible(ex.getCause());
+		throw new OpenEntityException(
+			"Something wrong occurred when readeing attribute definition with sweb id " + id);
+	    }
 	} else {
 	    LOG.info("Requested attrDef with id " + id + " was found in client cache.");
 	}
-	
+
 	@Nullable
 	ComplexType ct = null;
 	if (DataType.COMPLEX_TYPE.equals(cached.getDataType())) {
@@ -268,7 +339,6 @@ public class EtypeService implements IEtypeService {
 
 	return Converter.swebAttributeDefToOeAttrDef(cached, ct);
     }
-    
 
     @Override
     public Etype readEtype(String url) {

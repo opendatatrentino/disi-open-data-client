@@ -10,16 +10,18 @@ import java.util.Locale;
 
 import org.junit.Test;
 
-
+import eu.trentorise.opendata.semantics.exceptions.OpenEntityNotFoundException;
 import eu.trentorise.opendata.semantics.model.entity.AttrDef;
 import eu.trentorise.opendata.semantics.model.entity.Etype;
 import eu.trentorise.opendata.semantics.services.SearchResult;
+import eu.trentorise.opendata.semantics.services.mock.MockEntityService;
 import eu.trentorise.opendata.commons.OdtUtils;
 import static eu.trentorise.opendata.disiclient.test.services.EntityServiceIT.FACILITY_URL;
 
 import eu.trentorise.opendata.semantics.services.IEtypeService;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 
 /**
@@ -28,7 +30,7 @@ import org.junit.Before;
  *
  *
  */
-public class EntityTypeServiceIT extends DisiTest {
+public class EtypeServiceIT extends DisiTest {
 
   
     private IEtypeService ets;
@@ -45,7 +47,7 @@ public class EntityTypeServiceIT extends DisiTest {
     }
 
     @Test
-    public void testreadEtypeByID() {
+    public void testReadEtypeById() {
         
         Etype etype = (Etype) ets.readEtype(FACILITY_URL);        
         checker.checkEtype(etype);       
@@ -53,9 +55,8 @@ public class EntityTypeServiceIT extends DisiTest {
     }
 
     @Test
-    public void testreadEtypesofStructure() {
-        
-        // EntityType etype = (EntityType) ets.getEntityType(12L);
+    public void testReadEtypesofStructure() {
+               
         Etype etype = (Etype) ets.readEtype(NAME_URL);
         checker.checkEtype(etype);        
     }
@@ -67,11 +68,7 @@ public class EntityTypeServiceIT extends DisiTest {
         List<Etype> etypes = ets.readAllEtypes();
         for (Etype etype : etypes) {
             checker.checkEtype(etype);
-            
-            //System.out.println("AttributeDef ETYPE Name:"+etype.getName().string(Locale.ENGLISH));
-            //	System.out.println("AttributeDefs:"+etype.getAttrDefs());
-            //	System.out.println("AttributeDef Name:"+etype.getNameAttrDef());
-            //	System.out.println("AttributeDef Description:"+etype.getDescriptionAttrDef());
+                   
             for (AttrDef ad : etype.getAttrDefs().values()) {
                 System.out.println("AttributeDef URL:" + ad.getId());
                 System.out.println("AttributeDef  Type:" + ad.getType());
@@ -87,16 +84,16 @@ public class EntityTypeServiceIT extends DisiTest {
     public void testReadRootTypes() {
         
         Etype rootEtype = ets.readRootEtype();                
-        assertEquals("Entity", rootEtype.getName().string(Locale.ENGLISH));        
+        assertEquals("Entity", rootEtype.getName().str(Locale.ENGLISH));        
         checker.checkEtype(rootEtype);
         
         Etype rootStructure = ets.readRootStruct();        
-        assertEquals("Structure", rootStructure.getName().string(Locale.ENGLISH));
+        assertEquals("Structure", rootStructure.getName().str(Locale.ENGLISH));
         checker.checkEtype(ets.readRootStruct());
     }
 
     @Test
-    public void testreadEtype() {
+    public void testReadEtype() {
         
         List<Etype> etypes = ets.readAllEtypes();
         for (Etype etype : etypes) {
@@ -106,11 +103,14 @@ public class EntityTypeServiceIT extends DisiTest {
         }
     }
 
-  
-
     @Test
-    public void testReadNonExistingEntityType() {        
-        assertEquals(null, ekb.getEtypeService().readEtype(SwebConfiguration.getUrlMapper().etypeIdToUrl(100000000000000000L)));
+    public void testReadNonExistingEntityType() {	
+	try {
+	    ekb.getEtypeService().readEtype(makeNonExistingEtypeUrl() );
+	    Assert.fail("Shouldn't arrive here!");
+	} catch (OpenEntityNotFoundException ex){
+	    
+	}
 
     }
 
@@ -119,7 +119,7 @@ public class EntityTypeServiceIT extends DisiTest {
         
         Locale locale = OdtUtils.languageTagToLocale("en");
         List<SearchResult> searchEtypes = ets.searchEtypes("Product", locale);
-        assertEquals("Product", searchEtypes.get(0).getName().string(Locale.ENGLISH));
+        assertEquals("Product", searchEtypes.get(0).getName().str(Locale.ENGLISH));
 
     }
 }

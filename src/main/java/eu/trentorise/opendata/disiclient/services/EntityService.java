@@ -17,25 +17,19 @@ import eu.trentorise.opendata.semantics.model.entity.Struct;
 import eu.trentorise.opendata.semantics.services.IEntityService;
 import eu.trentorise.opendata.traceprov.types.Concept;
 import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
-import it.unitn.disi.sweb.webapi.client.kb.VocabularyClient;
-
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
 import it.unitn.disi.sweb.webapi.model.eb.Name;
 import it.unitn.disi.sweb.webapi.model.eb.Structure;
 import it.unitn.disi.sweb.webapi.model.filters.InstanceFilter;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
 import it.unitn.disi.sweb.webapi.model.kb.types.EntityType;
-import it.unitn.disi.sweb.webapi.model.kb.vocabulary.Vocabulary;
-
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import javax.annotation.Nullable;
 
 import org.apache.http.client.ClientProtocolException;
@@ -176,6 +170,9 @@ public class EntityService implements IEntityService {
 	}
 
 	List<Instance> instances = readInstances(instanceIds);
+	if (instances.size() < instanceIds.size()){
+	    throw new OpenEntityNotFoundException("Expected " + instanceIds.size() + " entities, but found only " + instances.size());
+	}
 	List<Entity> ret = new ArrayList();
 
 	for (Instance epEnt : instances) {

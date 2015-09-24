@@ -1,6 +1,8 @@
 package eu.trentorise.opendata.disiclient.services;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+
+import com.google.common.base.Throwables;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -19,6 +21,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.trentorise.opendata.semantics.exceptions.OpenEntityException;
+import eu.trentorise.opendata.semantics.exceptions.OpenEntityNotFoundException;
 import eu.trentorise.opendata.semantics.services.IKnowledgeService;
 import eu.trentorise.opendata.semantics.services.SearchResult;
 import eu.trentorise.opendata.traceprov.types.Concept;
@@ -64,7 +68,7 @@ public class KnowledgeService implements IKnowledgeService {
                 // todo think about removal .removalListener(MY_LISTENER)
                 .build(
                         new CacheLoader<Long, it.unitn.disi.sweb.webapi.model.kb.concepts.Concept>() {
-                            @Nullable
+                            
                             @Override
                             public it.unitn.disi.sweb.webapi.model.kb.concepts.Concept load(Long conceptGuid) {
                                 LOG.info("Couldn't find concept with global id " + conceptGuid + " in cache, fetching it.");
@@ -72,7 +76,7 @@ public class KnowledgeService implements IKnowledgeService {
                                 LOG.warn("todo - fixed entity Base = 1");
                                 List<it.unitn.disi.sweb.webapi.model.kb.concepts.Concept> concepts = client.readConcepts(1L, conceptGuid, null, null, null, null);
                                 if (concepts.isEmpty()) {
-                                    return null;
+                                    throw new OpenEntityNotFoundException("Couldn't find concept with sweb global id " + conceptGuid);
                                 } else {
                                     if (concepts.size() > 1) {
                                         LOG.warn("todo - only the first concept is returned. The number of returned concepts were: " + concepts.size());
@@ -89,14 +93,14 @@ public class KnowledgeService implements IKnowledgeService {
                 // todo think about removal .removalListener(MY_LISTENER)
                 .build(
                         new CacheLoader<Long, it.unitn.disi.sweb.webapi.model.kb.concepts.Concept>() {
-                            @Nullable
+                            
                             @Override
                             public it.unitn.disi.sweb.webapi.model.kb.concepts.Concept load(Long conceptId) {
                                 LOG.info("Couldn't find concept with id " + conceptId + " in cache, fetching it.");
                                 ConceptClient client = new ConceptClient(SwebConfiguration.getClientProtocol());
                                 it.unitn.disi.sweb.webapi.model.kb.concepts.Concept conc = client.readConcept(conceptId, false);
                                 if (conc == null) {
-                                    return null;
+                                    throw new OpenEntityNotFoundException("Couldn't find concept with sweb id " + conceptId);
                                 } else {                                    
                                     conceptCacheByGuid.put(conc.getGlobalId(), conc);
                                     return conc;
@@ -121,7 +125,12 @@ public class KnowledgeService implements IKnowledgeService {
         checkNotNull(conceptId);
         it.unitn.disi.sweb.webapi.model.kb.concepts.Concept cached = conceptCacheById.getIfPresent(conceptId);
         if (cached == null) {
-            return conceptCacheById.getUnchecked(conceptId);
+            try {
+        	return conceptCacheById.getUnchecked(conceptId);
+            } catch (Exception ex){
+        	Throwables.propagateIfPossible(ex.getCause());
+        	throw new OpenEntityException("Something went wrong while reading the concept with sweb id " + conceptId);
+            }
         } else {
             LOG.info("Requested concept with id " + conceptId + " was found in client cache.");
             return cached;
@@ -133,7 +142,12 @@ public class KnowledgeService implements IKnowledgeService {
         checkNotNull(conceptGuid);
         it.unitn.disi.sweb.webapi.model.kb.concepts.Concept cached = conceptCacheByGuid.getIfPresent(conceptGuid);
         if (cached == null) {
-            return conceptCacheByGuid.getUnchecked(conceptGuid);
+            try {
+                return conceptCacheByGuid.getUnchecked(conceptGuid);
+            } catch (Exception ex){
+        	Throwables.propagateIfPossible(ex.getCause());
+        	throw new OpenEntityException("Something went wrong while reading the concept with sweb guid " + conceptGuid);
+            }            
         } else {
             LOG.info("Requested concept with id " + conceptGuid + " was found in client cache.");
             return cached;

@@ -203,4 +203,11 @@ public abstract class DisiTest {
 	return um.entityIdToUrl(10000000000000000L );
     }    
     
+    /**
+     * TODO this sucks
+     */    
+    public String makeNonExistingEtypeUrl(){
+	return um.etypeIdToUrl(100000000000000000L);
+    }
+        
 }
