@@ -7,11 +7,14 @@ import com.google.common.cache.LoadingCache;
 import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
 import eu.trentorise.opendata.disiclient.DisiClientException;
 import it.unitn.disi.sweb.webapi.client.kb.ConceptClient;
-
+import it.unitn.disi.sweb.webapi.client.kb.VocabularyClient;
+import it.unitn.disi.sweb.webapi.model.kb.vocabulary.Vocabulary;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -209,4 +212,14 @@ public class KnowledgeService implements IKnowledgeService {
                 SwebConfiguration.getUrlMapper().conceptUrlToId(sourceUrl));
     }
 
+    public Map<String, Long> readVocabularies() {
+ 	Map<String, Long> mapVocabs = new HashMap();
+ 	VocabularyClient vc = new VocabularyClient(SwebConfiguration.getClientProtocol());
+ 	List<Vocabulary> vocabs = vc.readVocabularies(1L, null, null);
+ 	for (Vocabulary v : vocabs) {
+ 	    mapVocabs.put(v.getLanguageCode(), v.getId());
+ 	}
+ 	return mapVocabs;
+     }
+    
 }

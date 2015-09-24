@@ -18,8 +18,11 @@ import eu.trentorise.opendata.commons.OdtUtils;
 
 import eu.trentorise.opendata.disiclient.services.KnowledgeService;
 import eu.trentorise.opendata.schemamatcher.util.SwebClientCrap;
+import eu.trentorise.opendata.semantics.exceptions.OpenEntityNotFoundException;
 import eu.trentorise.opendata.semantics.services.IKnowledgeService;
 import org.junit.After;
+import org.junit.Assert;
+
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 
@@ -50,13 +53,17 @@ public class KnowledgeServiceIT extends DisiTest {
     }
 
     @Test
-    public void testReadNonExistingConcept() {        
-        Concept con = kserv.readConcept("blabla");
-        assertEquals( null, con);
+    public void testReadNonExistingConcept() {    
+	try {
+	    Concept con = kserv.readConcept(makeNonExistingConceptUrl());
+	    Assert.fail();
+	} catch (OpenEntityNotFoundException ex){
+	    
+	}
     }
 
     @Test
-    public void testGetRootConcept() {
+    public void testReadRootConcept() {
         Concept concept = kserv.readRootConcept();
         checker.checkConcept(concept);        
     }
@@ -71,12 +78,29 @@ public class KnowledgeServiceIT extends DisiTest {
         List<String> conceptURLs = new ArrayList();
         String rootConceptURL = kserv.readRootConcept().getId();
 
-        conceptURLs.add("non-existing-url");
         conceptURLs.add(rootConceptURL);
+        
         List<Concept> concepts = kserv.readConcepts(conceptURLs);
-        assertEquals(concepts.get(0), null);
-        assertEquals(concepts.get(1).getId(), rootConceptURL);
+        assertEquals(concepts.get(0).getId(), rootConceptURL);
     }
+    
+    @Test
+    public void testReadNonExistingConcepts() {
+        List<String> conceptURLs = new ArrayList();
+        String rootConceptURL = kserv.readRootConcept().getId();
+
+        conceptURLs.add(rootConceptURL);
+        conceptURLs.add(makeNonExistingConceptUrl());
+        
+        try {
+            List<Concept> concepts = kserv.readConcepts(conceptURLs);
+            Assert.fail();
+        } catch (OpenEntityNotFoundException ex){
+            
+        }
+        
+    }
+    
 
     @Test
     public void testSearchConcept() {        
@@ -120,11 +144,18 @@ public class KnowledgeServiceIT extends DisiTest {
 
     @Test
     public void testGetConceptDistance() {
-        double scoreDist = kserv.getConceptsDistance(CONCEPT_1_URL, NAME_CONCEPT_URL);
-        ((KnowledgeService) ekb.getKnowledgeService()).getConceptHierarchyDiameter();
-        assertEquals(0, scoreDist, 0.1);
-        throw new UnsupportedOperationException("TODO IMPLEMENT ME!");
-        
+	
+	Concept rootConcept = kserv.readRootConcept();
+        double scoreDist = kserv.getConceptsDistance(rootConcept.getId(), rootConcept.getId());        
+        assertEquals(0, scoreDist, OdtUtils.TOLERANCE);                       
+    }
+    
+    @Test
+    public void testGetConceptNonZeroDistance() {
+	
+	Concept rootConcept = kserv.readRootConcept();
+        double scoreDist = kserv.getConceptsDistance(rootConcept.getId(), um.conceptIdToUrl(GYMNASIUM_CONCEPT_ID));        
+        assertTrue(scoreDist > 0);                       
     }
     
     @Test

@@ -189,4 +189,18 @@ public abstract class DisiTest {
     public static final long TELEPHONE_CONCEPT_ID = 23985L;
     public static final String ATTR_DEF_TELEPHONE_URL = um.attrDefIdToUrl(ATTR_DEF_TELEPHONE_ID, TELEPHONE_CONCEPT_ID);
 
+    /**
+     * TODO this sucks
+     */
+    public String makeNonExistingConceptUrl(){
+	return um.conceptIdToUrl(10000000000000000L );
+    }
+
+    /**
+     * TODO this sucks
+     */    
+    public String makeNonExistingEntityUrl(){
+	return um.entityIdToUrl(10000000000000000L );
+    }    
+    
 }

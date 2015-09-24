@@ -2,14 +2,14 @@ package eu.trentorise.opendata.disiclient.services;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
-import eu.trentorise.opendata.disiclient.DisiClientException;
 import eu.trentorise.opendata.semantics.Checker;
 import eu.trentorise.opendata.semantics.model.entity.AStruct;
 import eu.trentorise.opendata.semantics.model.entity.Attr;
 import eu.trentorise.opendata.semantics.model.entity.AttrDef;
+import eu.trentorise.opendata.semantics.model.entity.Entities;
 import eu.trentorise.opendata.semantics.model.entity.Entity;
 import eu.trentorise.opendata.semantics.services.SearchResult;
-
+import eu.trentorise.opendata.disiclient.DisiClientException;
 import eu.trentorise.opendata.disiclient.UrlMapper;
 import eu.trentorise.opendata.semantics.exceptions.OpenEntityNotFoundException;
 import eu.trentorise.opendata.semantics.model.entity.Etype;
@@ -41,6 +41,8 @@ import javax.annotation.Nullable;
 import org.apache.http.client.ClientProtocolException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Lists;
 
 public class EntityService implements IEntityService {
 
@@ -157,26 +159,25 @@ public class EntityService implements IEntityService {
     }
 
     @Override
-    public List<Entity> readEntities(List<String> entityUrls) {
+    public List<Entity> readEntities(Iterable<String> entityUrls) {
 
-	if (entityUrls.isEmpty()) {
+	List<Long> instanceIds = new ArrayList();
+
+	for (String entityURL : entityUrls) {
+	    try {
+		instanceIds.add(um.entityUrlToId(entityURL));
+	    } catch (Exception ex) {
+		throw new OpenEntityNotFoundException("Tried to read entity with ill formatted url: " + entityURL, ex);
+	    }
+	}
+
+	if (instanceIds.isEmpty()) {
 	    return new ArrayList();
 	}
 
-	List<Long> entityIDs = new ArrayList();
-
-	for (String entityURL : entityUrls) {
-	    entityIDs.add(SwebConfiguration.getUrlMapper().entityUrlToId(entityURL));
-	}
-
-	InstanceFilter instFilter = new InstanceFilter();
-	instFilter.setIncludeAttributes(true);
-	instFilter.setIncludeAttributesAsProperties(true);
-	instFilter.setIncludeSemantics(true);
-
-	List<Instance> instances = getInstanceClient().readInstancesById(entityIDs, instFilter);
-
+	List<Instance> instances = readInstances(instanceIds);
 	List<Entity> ret = new ArrayList();
+
 	for (Instance epEnt : instances) {
 	    EntityType swebEntityType = ets.readSwebEntityType(epEnt.getTypeId());
 	    Entity en = ekb.getConverter().swebEntityToOeEntity((it.unitn.disi.sweb.webapi.model.eb.Entity) epEnt,
@@ -185,6 +186,30 @@ public class EntityService implements IEntityService {
 	    ret.add(en);
 	}
 	return ret;
+    }
+
+    
+    public List<Instance> readInstances(Iterable<Long> instanceIds) {
+
+	InstanceFilter instFilter = new InstanceFilter();
+	instFilter.setIncludeAttributes(true);
+	instFilter.setIncludeAttributesAsProperties(true);
+	instFilter.setIncludeSemantics(true);
+
+	List<Instance> instances = getInstanceClient().readInstancesById(Lists.newArrayList(instanceIds), instFilter);
+
+	List<Entity> ret = new ArrayList();
+	List<String> etypeOeIds = new ArrayList();
+	List<Long> structIds = new ArrayList();
+	for (Instance epEnt : instances) {
+	    etypeOeIds.add(um.etypeIdToUrl(epEnt.getTypeId()));
+	}
+
+	// so we cache needed etypes
+	Entities.resolveEtypesById(etypeOeIds, ekb.getEtypeService());
+
+	return instances;
+
     }
 
     public Struct readName(long nameInstanceId) {
@@ -197,8 +222,9 @@ public class EntityService implements IEntityService {
 	Instance instance = getInstanceClient().readInstance(nameInstanceId, instFilter);
 
 	Name name = (Name) instance;
+	
 	ComplexType swebComplexType = ets.readSwebComplexType(name.getTypeId());
-	return ekb.getConverter().swebStructureToOeStruct(name, swebComplexType);
+	return Struct.copyOf(ekb.getConverter().swebInstanceToOeStruct(name, swebComplexType));
     }
 
     public Structure readSwebStructure(long entityID) {
@@ -213,16 +239,6 @@ public class EntityService implements IEntityService {
 	return (it.unitn.disi.sweb.webapi.model.eb.Structure) instance;
     }
 
-    public Map<String, Long> readVocabularies() {
-	Map<String, Long> mapVocabs = new HashMap();
-	VocabularyClient vc = new VocabularyClient(SwebConfiguration.getClientProtocol());
-	List<Vocabulary> vocabs = vc.readVocabularies(1L, null, null);
-	for (Vocabulary v : vocabs) {
-	    mapVocabs.put(v.getLanguageCode(), v.getId());
-	}
-	return mapVocabs;
-    }
-
     @Override
     public void updateEntity(Entity entity) {
 	throw new UnsupportedOperationException(
@@ -232,18 +248,8 @@ public class EntityService implements IEntityService {
     @Override
     public Entity readEntity(String URL) {
 
-	Long entityId;
-	try {
-	    entityId = SwebConfiguration.getUrlMapper().entityUrlToId(URL);
-	} catch (Exception ex) {
-	    throw new OpenEntityNotFoundException("Tried to read entity with ill formatted url: " + URL, ex);
-	}
+	return readEntities(Lists.newArrayList(URL)).get(0);
 
-	it.unitn.disi.sweb.webapi.model.eb.Entity swebEntity = readSwebEntity(entityId);
-
-	EntityType swebEntityType = ets.readSwebEntityType(swebEntity.getTypeId());
-
-	return ekb.getConverter().swebEntityToOeEntity(swebEntity, swebEntityType);
     }
 
     @Override
@@ -256,13 +262,9 @@ public class EntityService implements IEntityService {
     }
 
     @Override
-    public void exportToRdf(List<String> entityURLs, Writer writer) {
+    public void exportToRdf(Iterable<String> entityURLs, Writer writer) {
 
 	UrlMapper um = SwebConfiguration.getUrlMapper();
-
-	if (entityURLs.isEmpty()) {
-	    throw new IllegalArgumentException("The list of entities for export is empty");
-	}
 
 	String filename = "test" + System.currentTimeMillis();
 	EntityExportService ees = ekb.getEntityExportService();
@@ -272,6 +274,10 @@ public class EntityService implements IEntityService {
 
 	    Long eID = um.entityUrlToId(entityURL);
 	    entitiesID.add(eID);
+	}
+
+	if (entitiesID.isEmpty()) {
+	    throw new IllegalArgumentException("The list of entities for export is empty");
 	}
 
 	Long fileId = null;
@@ -307,13 +313,9 @@ public class EntityService implements IEntityService {
     }
 
     @Override
-    public void exportToJsonLd(List<String> entityURLs, Writer writer) throws DisiClientException {
+    public void exportToJsonLd(Iterable<String> entityURLs, Writer writer) throws DisiClientException {
 
 	UrlMapper um = SwebConfiguration.getUrlMapper();
-
-	if (entityURLs.isEmpty()) {
-	    throw new IllegalArgumentException("The list of entities to export is empty");
-	}
 
 	String filename = "test" + System.currentTimeMillis();
 	EntityExportService ees = ekb.getEntityExportService();
@@ -321,6 +323,10 @@ public class EntityService implements IEntityService {
 
 	for (String entityURL : entityURLs) {
 	    entitiesID.add(um.entityUrlToId(entityURL));
+	}
+
+	if (entitiesID.isEmpty()) {
+	    throw new IllegalArgumentException("The list of entities to export is empty");
 	}
 
 	Long fileId = null;
@@ -348,7 +354,7 @@ public class EntityService implements IEntityService {
     }
 
     @Override
-    public void exportToCsv(List<String> entityURLs, Writer writer) {
+    public void exportToCsv(Iterable<String> entityURLs, Writer writer) {
 	// TODO exportToCsv
 	throw new UnsupportedOperationException("todo to implement");
 
@@ -402,7 +408,37 @@ public class EntityService implements IEntityService {
 
 	ComplexType swebComplexType = ets.readSwebComplexType(swebStructure.getTypeId());
 
-	return ekb.getConverter().swebStructureToOeStruct(swebStructure, swebComplexType);
+	return ekb.getConverter().swebInstanceToOeStruct(swebStructure, swebComplexType);
+    }
+
+    @Override
+    public List<? extends AStruct> readStructs(Iterable<String> structUrls) {
+
+	List<Long> instanceIds = new ArrayList();
+
+	for (String structURL : structUrls) {
+	    try {
+		instanceIds.add(um.entityUrlToId(structURL));
+	    } catch (Exception ex) {
+		throw new OpenEntityNotFoundException("Tried to read entity with ill formatted url: " + structURL, ex);
+	    }
+	}
+
+	if (instanceIds.isEmpty()) {
+	    return new ArrayList();
+	}
+
+	List<Instance> instances = readInstances(instanceIds);
+	List<AStruct> ret = new ArrayList();
+
+	for (Instance swebInstance : instances) {
+	    EntityType swebEntityType = ets.readSwebEntityType(swebInstance.getTypeId());
+	    AStruct struct = ekb.getConverter().swebInstanceToOeStruct((it.unitn.disi.sweb.webapi.model.eb.Instance) swebInstance,
+		    swebEntityType);
+	    Checker.of(ekb).checkStruct(struct, false);
+	    ret.add(struct);
+	}
+	return ret;
     }
 
 }

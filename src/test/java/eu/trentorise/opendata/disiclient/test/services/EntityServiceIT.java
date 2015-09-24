@@ -42,6 +42,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 
 import org.apache.jena.riot.checker.CheckerBlankNodes;
 import org.junit.After;
@@ -96,7 +97,7 @@ public class EntityServiceIT extends DisiTest {
 
         checker.checkStruct(nameValue);
 
-        assertTrue(entity.getName().string(Locale.ITALIAN).length() > 0);
+        assertTrue(entity.getName().str(Locale.ITALIAN).length() > 0);
         // assertTrue(entity.getDescription().getString(Locale.ITALIAN).length() > 0);
 
     }
@@ -118,10 +119,12 @@ public class EntityServiceIT extends DisiTest {
 
     }
 
+
+    
     @Test
     public void testReadNonExistingEntity() {
         try {
-            ekb.getEntityService().readEntity(um.entityIdToUrl(10000000000000000L));
+            ekb.getEntityService().readEntity(makeNonExistingEntityUrl());
             Assert.fail("Shouldn't be able to read non existing entity!");
         } catch (OpenEntityNotFoundException ex){            
         }
