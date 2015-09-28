@@ -350,7 +350,7 @@ public class EtypeService implements IEtypeService {
 	List<Etype> etypes = readAllEtypes();
 	for (Etype etype : etypes) {
 
-	    if (etype.getName().string(Locale.ENGLISH).equals("Structure")) {
+	    if (etype.getName().str(Locale.ENGLISH).equals("Structure")) {
 		return etype;
 	    }
 	}

@@ -9,7 +9,7 @@ import java.util.Locale;
 import org.junit.Before;
 import org.junit.Test;
 
-import eu.trentorise.opendata.disiclient.services.Search;
+import eu.trentorise.opendata.disiclient.services.SearchService;
 
 import eu.trentorise.opendata.semantics.model.entity.Entity;
 import eu.trentorise.opendata.semantics.services.SearchResult;
@@ -19,10 +19,15 @@ import static eu.trentorise.opendata.disiclient.test.services.EntityServiceIT.LO
 import org.junit.After;
 
 
+/**
+ * todo this thing is quite useless!
+ * @author david_2
+ *
+ */
 public class SearchServiceIT extends DisiTest {
 
     
-    private Search searchService;
+    private SearchService searchService;
     
     @Before
     public void beforeMethod() {
@@ -44,18 +49,6 @@ public class SearchServiceIT extends DisiTest {
         assertNotNull(names);
     }
 
-    @Test
-    public void testsearchEntities() {
-       
-        
-        Locale locale = OdtUtils.languageTagToLocale("en");
 
-        List<SearchResult> sResults = searchService.searchEntities("Povo", LOCATION_URL, locale);
-        for (SearchResult sr : sResults) {
-            assertNotNull(sr.getId());
-            assertNotNull(sr.getName());
-
-        }
-    }
 
 }

@@ -118,6 +118,13 @@ public abstract class DisiTest {
      */
     public static final String ANDALO_URL = um.entityIdToUrl(ANDALO_ID);
 
+    static final long PUNTE_DI_CAMPIGLIO_ID = 33406L;
+    
+    /**
+     * Had problems while recreating this
+     */
+    static final String PUNTE_DI_CAMPIGLIO_URL = um.entityIdToUrl(PUNTE_DI_CAMPIGLIO_ID);
+    
     /** This is an etype */
     public static final long ROOT_ENTITY_ID = 21L;
     /** This is an etype */

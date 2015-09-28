@@ -1,28 +1,7 @@
 package eu.trentorise.opendata.disiclient.services;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
-import eu.trentorise.opendata.semantics.Checker;
-import eu.trentorise.opendata.semantics.model.entity.AStruct;
-import eu.trentorise.opendata.semantics.model.entity.Attr;
-import eu.trentorise.opendata.semantics.model.entity.AttrDef;
-import eu.trentorise.opendata.semantics.model.entity.Entities;
-import eu.trentorise.opendata.semantics.model.entity.Entity;
-import eu.trentorise.opendata.semantics.services.SearchResult;
-import eu.trentorise.opendata.disiclient.DisiClientException;
-import eu.trentorise.opendata.disiclient.UrlMapper;
-import eu.trentorise.opendata.semantics.exceptions.OpenEntityNotFoundException;
-import eu.trentorise.opendata.semantics.model.entity.Etype;
-import eu.trentorise.opendata.semantics.model.entity.Struct;
-import eu.trentorise.opendata.semantics.services.IEntityService;
-import eu.trentorise.opendata.traceprov.types.Concept;
-import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
-import it.unitn.disi.sweb.webapi.model.eb.Instance;
-import it.unitn.disi.sweb.webapi.model.eb.Name;
-import it.unitn.disi.sweb.webapi.model.eb.Structure;
-import it.unitn.disi.sweb.webapi.model.filters.InstanceFilter;
-import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
-import it.unitn.disi.sweb.webapi.model.kb.types.EntityType;
+
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,6 +9,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
 import javax.annotation.Nullable;
 
 import org.apache.http.client.ClientProtocolException;
@@ -37,6 +17,33 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+
+import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
+import eu.trentorise.opendata.disiclient.Converter;
+import eu.trentorise.opendata.disiclient.DisiClientException;
+import eu.trentorise.opendata.disiclient.UrlMapper;
+import eu.trentorise.opendata.semantics.Checker;
+import eu.trentorise.opendata.semantics.exceptions.OpenEntityNotFoundException;
+import eu.trentorise.opendata.semantics.model.entity.AStruct;
+import eu.trentorise.opendata.semantics.model.entity.Attr;
+import eu.trentorise.opendata.semantics.model.entity.AttrDef;
+import eu.trentorise.opendata.semantics.model.entity.Entities;
+import eu.trentorise.opendata.semantics.model.entity.Entity;
+import eu.trentorise.opendata.semantics.model.entity.Etype;
+import eu.trentorise.opendata.semantics.model.entity.Struct;
+import eu.trentorise.opendata.semantics.services.IEntityService;
+import eu.trentorise.opendata.semantics.services.SearchResult;
+import eu.trentorise.opendata.traceprov.types.Concept;
+import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
+import it.unitn.disi.sweb.webapi.model.eb.Instance;
+import it.unitn.disi.sweb.webapi.model.eb.Name;
+import it.unitn.disi.sweb.webapi.model.eb.Structure;
+import it.unitn.disi.sweb.webapi.model.eb.search.InstanceSearchResult;
+import it.unitn.disi.sweb.webapi.model.filters.InstanceFilter;
+import it.unitn.disi.sweb.webapi.model.filters.SearchResultFilter;
+import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
+import it.unitn.disi.sweb.webapi.model.kb.types.EntityType;
 
 public class EntityService implements IEntityService {
 
@@ -93,8 +100,11 @@ public class EntityService implements IEntityService {
 	    LOG.info("Assigning default class attribute " + etype.getConceptId() + " to entity " + entity.getId());
 
 	    Attr conceptAttr = Attr.ofObject(classAttrDef,
-		    Concept.builder().setId(classAttrDef.getConceptId()).build());
-	    return Entity.builder().from(entity).putAttrs(classAttrDef.getId(), conceptAttr).build();
+		    Concept.builder()
+			    .setId(classAttrDef.getConceptId())
+			    .build());
+	    return Entity.builder().from(entity)
+		    .putAttrs(classAttrDef.getId(), conceptAttr).build();
 	}
 
     }
@@ -155,27 +165,27 @@ public class EntityService implements IEntityService {
     @Override
     public List<Entity> readEntities(Iterable<String> entityUrls) {
 
-	List<Long> instanceIds = new ArrayList();
+	List<Long> requestedInstanceIds = new ArrayList();
 
 	for (String entityURL : entityUrls) {
 	    try {
-		instanceIds.add(um.entityUrlToId(entityURL));
+		requestedInstanceIds.add(um.entityUrlToId(entityURL));
 	    } catch (Exception ex) {
 		throw new OpenEntityNotFoundException("Tried to read entity with ill formatted url: " + entityURL, ex);
 	    }
 	}
 
-	if (instanceIds.isEmpty()) {
+	if (requestedInstanceIds.isEmpty()) {
 	    return new ArrayList();
 	}
 
-	List<Instance> instances = readInstances(instanceIds);
-	if (instances.size() < instanceIds.size()){
-	    throw new OpenEntityNotFoundException("Expected " + instanceIds.size() + " entities, but found only " + instances.size());
+	List<Instance> foundInstances = readInstances(requestedInstanceIds);
+	if (Sets.newHashSet(foundInstances).size() < Sets.newHashSet(requestedInstanceIds).size()) {
+	    throw new OpenEntityNotFoundException(Converter.swebIdsToOEIds(requestedInstanceIds), Converter.swebInstancesToOEIds(foundInstances));		   	    
 	}
 	List<Entity> ret = new ArrayList();
 
-	for (Instance epEnt : instances) {
+	for (Instance epEnt : foundInstances) {
 	    EntityType swebEntityType = ets.readSwebEntityType(epEnt.getTypeId());
 	    Entity en = ekb.getConverter().swebEntityToOeEntity((it.unitn.disi.sweb.webapi.model.eb.Entity) epEnt,
 		    swebEntityType);
@@ -185,7 +195,6 @@ public class EntityService implements IEntityService {
 	return ret;
     }
 
-    
     public List<Instance> readInstances(Iterable<Long> instanceIds) {
 
 	InstanceFilter instFilter = new InstanceFilter();
@@ -219,7 +228,7 @@ public class EntityService implements IEntityService {
 	Instance instance = getInstanceClient().readInstance(nameInstanceId, instFilter);
 
 	Name name = (Name) instance;
-	
+
 	ComplexType swebComplexType = ets.readSwebComplexType(name.getTypeId());
 	return Struct.copyOf(ekb.getConverter().swebInstanceToOeStruct(name, swebComplexType));
     }
@@ -370,15 +379,45 @@ public class EntityService implements IEntityService {
     }
 
     @Override
-    public List<SearchResult> searchEntities(String partialName, @Nullable String etypeURL, Locale locale) {
+    public List<SearchResult> searchEntities(String partialName, @Nullable String etypeUrl, Locale locale) {
+	checkNotNull(locale, "Locale can't be null, if it is unknown use Locale.ROOT instead");
 
 	LOG.warn("TODO - SETTING ENTITY PARTIAL NAME TO LOWERCASE");
-	String lowerCasepartialName = partialName.toLowerCase(locale);
+	String lowerCasedPartialName = partialName.toLowerCase(locale).trim();
 
-	List<SearchResult> entities;
+	List<SearchResult> entities = new ArrayList();
+	SearchResultFilter srf = new SearchResultFilter();
+	srf.setLocale(locale);
+	srf.setIncludeAttributesAsProperties(true);
+	Long swebEtypeId = null;
+	if (etypeUrl != null) {
+	    swebEtypeId = SwebConfiguration.getUrlMapper().etypeUrlToId(etypeUrl);
+	}
 
-	Search search = ekb.getSearchService();
-	entities = search.searchEntities(lowerCasepartialName, etypeURL, locale);
+	List<Instance> instances;
+
+	if (lowerCasedPartialName.isEmpty()) {
+	    LOG.warn("TODO - USING HARD CODED ENTITY BASE '1' IN SEARCH");
+	    instances = getInstanceClient().readInstances(1L, swebEtypeId, null, null, null);
+	} else {
+	    InstanceSearchResult result = getInstanceClient().searchInstances(lowerCasedPartialName, 1, swebEtypeId, null, srf,
+		    null);
+	    instances = result.getResults();	   
+	}
+
+	List<it.unitn.disi.sweb.webapi.model.eb.Entity> ents = ekb.getConverter()
+		    .swebInstancesToSwebEntities(instances);
+
+	
+	for (it.unitn.disi.sweb.webapi.model.eb.Entity e : ents) {
+	    try {
+	    SearchResult res = ekb.getConverter().makeSearchResult(e);
+	    entities.add(res);
+	    } catch (NullPointerException ex){
+		LOG.error("Screew it");
+	    }
+	    
+	}
 
 	return entities;
     }
@@ -430,7 +469,8 @@ public class EntityService implements IEntityService {
 
 	for (Instance swebInstance : instances) {
 	    EntityType swebEntityType = ets.readSwebEntityType(swebInstance.getTypeId());
-	    AStruct struct = ekb.getConverter().swebInstanceToOeStruct((it.unitn.disi.sweb.webapi.model.eb.Instance) swebInstance,
+	    AStruct struct = ekb.getConverter().swebInstanceToOeStruct(
+		    (it.unitn.disi.sweb.webapi.model.eb.Instance) swebInstance,
 		    swebEntityType);
 	    Checker.of(ekb).checkStruct(struct, false);
 	    ret.add(struct);

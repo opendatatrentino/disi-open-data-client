@@ -27,7 +27,7 @@ import eu.trentorise.opendata.semantics.services.SearchResult;
 import eu.trentorise.opendata.semtext.SemText;
 import eu.trentorise.opendata.traceprov.types.Concept;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
-
+import it.unitn.disi.sweb.webapi.model.eb.Instance;
 import it.unitn.disi.sweb.webapi.model.eb.Name;
 import it.unitn.disi.sweb.webapi.model.eb.Structure;
 
@@ -103,10 +103,14 @@ public final class Converter {
 			swebValue.setId(oeValue.getLocalID());
 		    }
 		    swebValue.setDataType(DataType.COMPLEX_TYPE);
-		    if (DataTypes.STRUCTURE.equals(oeAttrDef.getType().getDatatype())) {
-			swebValue.setValue(oeStructureToSwebStructure((Struct) oeValue.getObj(), toCreate));
+		    if (oeValue.getObj() instanceof String){
+			swebValue.setValue(um.entityUrlToId((String) oeValue.getObj()));
 		    } else {
-			swebValue.setValue(oeEntityToSwebEntity((Entity) oeValue.getObj(), false, false));
+        		if (DataTypes.STRUCTURE.equals(oeAttrDef.getType().getDatatype())) {
+        		    swebValue.setValue(oeStructureToSwebStructure((Struct) oeValue.getObj(), toCreate));
+        		} else {
+        			swebValue.setValue(oeEntityToSwebEntity((Entity) oeValue.getObj(), false, false));
+        		}
 		    }
 		    swebValues.add(swebValue);
 		}
@@ -219,12 +223,16 @@ public final class Converter {
 	return dictBuilder.build();
     }
 
-    public static Dict swebNamesToDict(List<Name> names) {
-	Dict.Builder dictBuilder = Dict.builder();
-	for (Name name : names) {
-	    dictBuilder.put(Converter.multimapToDict(name.getNames()));
+    public static Dict swebNamesToDict(@Nullable List<Name> names) {
+	if (names == null) {
+	    return Dict.of();
+	} else {
+	    Dict.Builder dictBuilder = Dict.builder();
+	    for (Name name : names) {
+		dictBuilder.put(Converter.multimapToDict(name.getNames()));
+	    }
+	    return dictBuilder.build();
 	}
-	return dictBuilder.build();
     }
 
     public static Dict semtextsToDict(Map<String, List<SemText>> semtextsMap) {
@@ -322,7 +330,8 @@ public final class Converter {
 
 	    for (Value swebVal : swebAttribute.getValues()) {
 		String swebString = (String) swebVal.getValue();
-		LocalizedString locString = LocalizedString.of(Locale.forLanguageTag(swebVal.getLanguageCode()),
+		LocalizedString locString = LocalizedString.of(
+			OdtUtils.languageTagToLocale(swebVal.getLanguageCode()),
 			swebString);
 		b.addValues(Val.builder().setLocalID(swebVal.getId()).setObj(locString).build());
 	    }
@@ -335,7 +344,7 @@ public final class Converter {
 		if (swebSemanticString == null) {
 		    LOG.warn("COULDN'T FIND SEMANTIC VALUE IN SWEB SSTRING VALUE WITH ID " + swebVal.getId()
 			    + ", CONVERTING ONLY  TEXT!");
-		    semText = SemText.of(Locale.forLanguageTag(swebVal.getLanguageCode()), swebString);
+		    semText = SemText.of(OdtUtils.languageTagToLocale(swebVal.getLanguageCode()), swebString);
 		} else {
 		    semText = DisiClients.getSingleton().getNLPService().getSemanticStringConverter()
 			    .semText(swebSemanticString, true);
@@ -406,23 +415,24 @@ public final class Converter {
 	return new Long((Integer) swebAttrDef.getRestrictionOnList().getDefaultValue());
     }
 
-    public Entity swebEntityToOeEntity(it.unitn.disi.sweb.webapi.model.eb.Entity entity, EntityType swebEntityType) {
-	checkArgument(entity.getTypeId() == (swebEntityType).getId(),
-		"Entity getTypeId %s is different from provided entity type, which has id %s", entity.getTypeId(),
+    public Entity swebEntityToOeEntity(it.unitn.disi.sweb.webapi.model.eb.Entity swebEntity,
+	    EntityType swebEntityType) {
+	checkArgument(swebEntity.getTypeId() == (swebEntityType).getId(),
+		"Entity getTypeId %s is different from provided entity type, which has id %s", swebEntity.getTypeId(),
 		swebEntityType.getId());
 
 	Entity.Builder b = Entity.builder();
 
-	for (Attribute a : entity.getAttributes()) {
+	for (Attribute a : swebEntity.getAttributes()) {
 	    String attrDefUrl = um.attrDefToUrl(swebAttributeDefinition(swebEntityType, a.getDefinitionId()));
 	    b.putAttrs(attrDefUrl, swebAttributeToOeAttr(a, swebEntityType));
 	}
 
-	b.setEtypeId(um.etypeIdToUrl(entity.getTypeId()));
-	b.setId(um.entityIdToUrl(entity.getId()));
+	b.setEtypeId(um.etypeIdToUrl(swebEntity.getTypeId()));
+	b.setId(um.entityIdToUrl(swebEntity.getId()));
 
-	b.setName(Converter.swebNamesToDict(entity.getNames()));
-	b.setDescription(Converter.swebSemanticStringsToDict(entity.getDescriptions()));
+	b.setName(Converter.swebNamesToDict(swebEntity.getNames()));
+	b.setDescription(Converter.swebSemanticStringsToDict(swebEntity.getDescriptions()));
 	return b.build();
     }
 
@@ -471,14 +481,14 @@ public final class Converter {
 	    if (DataType.COMPLEX_TYPE.equals(swebAd.getDataType())) {
 		ct = ekb.getEtypeService().getSwebCachedComplexType(Converter.swebAttrDefToRangeEntityTypeId(swebAd));
 	    }
-	    
+
 	    // for nasty super complex name structure
 	    String oeAttrDefId = um.attrDefIdToUrl(swebAd.getId(), swebAd.getConceptId());
-	    if (swebAd.getConceptId() == KnowledgeService.NAME_CONCEPT_ID){
+	    if (swebAd.getConceptId() == KnowledgeService.NAME_CONCEPT_ID) {
 		b.setNameAttrDefId(oeAttrDefId);
 	    }
-	    
-	    if (swebAd.getConceptId() == KnowledgeService.DESCRIPTION_CONCEPT_ID){
+
+	    if (swebAd.getConceptId() == KnowledgeService.DESCRIPTION_CONCEPT_ID) {
 		b.setDescrAttrDefId(oeAttrDefId);
 	    }
 	    b.putAttrDefs(oeAttrDefId, swebAttributeDefToOeAttrDef(swebAd, ct));
@@ -527,9 +537,9 @@ public final class Converter {
     }
 
     public SearchResult makeSearchResult(it.unitn.disi.sweb.webapi.model.eb.Entity swebInstance) {
-	Map<String, List<String>> names = swebInstance.getNames().iterator().next().getNames();
-	Dict name = Converter.multimapToDict(names);
-	String url = SwebConfiguration.getUrlMapper().entityIdToUrl(swebInstance.getId());
+
+	Dict name = ekb.getConverter().swebNamesToDict(swebInstance.getNames());
+	String url = um.entityIdToUrl(swebInstance.getId());
 
 	return SearchResult.of(url, name);
     }
@@ -576,7 +586,7 @@ public final class Converter {
 	Dict.Builder builder = Dict.builder();
 	for (String loc : swebDescr.keySet()) {
 	    for (SemanticString ss : swebDescr.get(loc)) {
-		builder.put(Locale.forLanguageTag(loc), ss.getText());
+		builder.put(OdtUtils.languageTagToLocale(loc), ss.getText());
 	    }
 	}
 	return builder.build();
@@ -626,7 +636,9 @@ public final class Converter {
      * @throws IllegalArgumentException
      *             if provided entity is not valid
      */
-    public it.unitn.disi.sweb.webapi.model.eb.Entity oeEntityToSwebEntity(Entity entity, boolean root,
+    public it.unitn.disi.sweb.webapi.model.eb.Entity oeEntityToSwebEntity(
+	    Entity entity,
+	    boolean root,
 	    boolean toCreate) {
 
 	LOG.info("converting entity.getURL = " + entity.getId() + " to sweb format");
@@ -709,6 +721,39 @@ public final class Converter {
 	b.setName(mapToDict(swebConcept.getName()));
 	b.setDescription(mapToDict(swebConcept.getDescription()));
 	return b.build();
+    }
+
+    /**
+     * Converts sweb {@code instance}(s) to open entity {@code Entity}, skipping
+     * sweb {@code Structure}(s)
+     */
+    public List<it.unitn.disi.sweb.webapi.model.eb.Entity> swebInstancesToSwebEntities(Iterable<Instance> instances) {
+	List<it.unitn.disi.sweb.webapi.model.eb.Entity> entities = new ArrayList();
+
+	for (Instance instance : instances) {
+	    if (instance instanceof it.unitn.disi.sweb.webapi.model.eb.Entity) {
+		it.unitn.disi.sweb.webapi.model.eb.Entity name = (it.unitn.disi.sweb.webapi.model.eb.Entity) instance;
+		entities.add(name);
+	    }
+	}
+
+	return entities;
+    }
+
+    public static List<String> swebIdsToOEIds(List<Long> swebIds) {
+	List<String> ret = new ArrayList();
+	for (Long swebId : swebIds) {
+	    ret.add(SwebConfiguration.getUrlMapper().entityIdToUrl(swebId));
+	}
+	return ret;
+    }
+
+    public static List<String> swebInstancesToOEIds(List<Instance> instances) {
+	List<String> ret = new ArrayList();
+	for (Instance instance : instances) {
+	    ret.add(SwebConfiguration.getUrlMapper().entityIdToUrl(instance.getId()));
+	}
+	return ret;
     }
 
 }

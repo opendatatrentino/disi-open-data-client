@@ -23,9 +23,15 @@ import eu.trentorise.opendata.disiclient.UrlMapper;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
 import javax.annotation.Nullable;
 
-public class Search {
 
-    Logger logger = LoggerFactory.getLogger(Search.class);
+/**
+ * TODO this thing is quite useless...
+ * @author david_2
+ *
+ */
+public class SearchService {
+
+    Logger logger = LoggerFactory.getLogger(SearchService.class);
     
     @Nullable
     private InstanceClient instanceClient;
@@ -41,7 +47,7 @@ public class Search {
     }
     
     
-    Search(DisiEkb ekb) {
+    SearchService(DisiEkb ekb) {
         checkNotNull(ekb);
         this.ekb = ekb;
         this.um = SwebConfiguration.getUrlMapper();
@@ -89,21 +95,7 @@ public class Search {
         return names;
     }
 
-    /**
-     * Structures are skipped
-     */
-    private List<it.unitn.disi.sweb.webapi.model.eb.Entity> swebInstancesToSwebEntities(Iterable<Instance> instances) {
-        List<it.unitn.disi.sweb.webapi.model.eb.Entity> entities = new ArrayList();        
-
-        for (Instance instance : instances) {            
-            if (instance instanceof it.unitn.disi.sweb.webapi.model.eb.Entity) {
-                it.unitn.disi.sweb.webapi.model.eb.Entity name = (it.unitn.disi.sweb.webapi.model.eb.Entity) instance;
-                entities.add(name);
-            }
-        }
-
-        return entities;
-    }
+ 
 
     /* dav 0.12 seems nobody calls this... 
     public List<Entity> conceptSearch(String conceptSearchQuery) {        
@@ -133,25 +125,6 @@ public class Search {
 //
 //	}
 
-    public List<SearchResult> searchEntities(String partialName, String etypeUrl, Locale locale) {
-        List<SearchResult> entities = new ArrayList();
-        SearchResultFilter srf = new SearchResultFilter();
-        srf.setLocale(locale);
-        srf.setIncludeAttributesAsProperties(true);
-        Long etype=null;
-        if(etypeUrl!=null){
-         etype = SwebConfiguration.getUrlMapper().etypeUrlToId(etypeUrl);
-        }
-        InstanceSearchResult result = getInstanceClient().searchInstances(partialName, 1, etype, null, srf, null);
-        List<Instance> resInstances = result.getResults();
-
-        List<it.unitn.disi.sweb.webapi.model.eb.Entity> ents = swebInstancesToSwebEntities(resInstances);
-        for (it.unitn.disi.sweb.webapi.model.eb.Entity e : ents) {
-            SearchResult res = ekb.getConverter().makeSearchResult(e);
-            entities.add(res);
-        }
-
-        return entities;
-    }
+   
 
 }

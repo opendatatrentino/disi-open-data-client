@@ -1,6 +1,5 @@
 package eu.trentorise.opendata.disiclient.test.services;
 
-
 import com.google.common.collect.Lists;
 import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
 
@@ -80,112 +79,129 @@ public class EntityServiceIT extends DisiTest {
 
     @Before
     public void before() {
-        enServ = ekb.getEntityService();
-        ets = ekb.getEtypeService();
+	enServ = ekb.getEntityService();
+	ets = ekb.getEtypeService();
     }
 
     @After
     public void after() {
-        enServ = null;
-        ets = null;
+	enServ = null;
+	ets = null;
     }
 
     @Test
     public void testReadPalazzettoNameEtype() {
 
-        Entity entity = ekb.getEntityService().readEntity(PALAZZETTO_URL);
-        LOG.info("\n\n *************   entity Palazzetto (" + PALAZZETTO_URL + ") ***************** \n\n", (Object) entity);
-                        
-        AttrDef nameAttrDef = ets.readEtype(entity.getEtypeId()).nameAttrDef();
-        Struct nameValue = (Struct) entity.attr(nameAttrDef.getId()).getValues().get(0).getObj();
+	Entity entity = ekb.getEntityService().readEntity(PALAZZETTO_URL);
+	LOG.info("\n\n *************   entity Palazzetto (" + PALAZZETTO_URL + ") ***************** \n\n",
+		(Object) entity);
 
-        checker.checkStruct(nameValue);
+	AttrDef nameAttrDef = ets.readEtype(entity.getEtypeId()).nameAttrDef();
+	Struct nameValue = (Struct) entity.attr(nameAttrDef.getId()).getValues().get(0).getObj();
 
-        assertTrue(entity.getName().str(Locale.ITALIAN).length() > 0);
-        // assertTrue(entity.getDescription().getString(Locale.ITALIAN).length() > 0);
+	checker.checkStruct(nameValue);
+
+	assertTrue(entity.getName().str(Locale.ITALIAN).length() > 0);
+	// assertTrue(entity.getDescription().getString(Locale.ITALIAN).length()
+	// > 0);
 
     }
 
     @Test
     public void testReadPalazzetto() {
 
-        Entity entity = ekb.getEntityService().readEntity(PALAZZETTO_URL);
-        LOG.info("\n\n *************   entity Palazzetto (" + PALAZZETTO_URL + ") ***************** \n\n", (Object) entity);
-        /*               This stuff should be caught by the integrity checker 
-         AttrDef nameAttrDef = entity.getEtype().getNameAttrDef();
-         Struct nameValue = (Struct) entity.getAttribute(nameAttrDef.getURL()).getValues().strs(0).getValue();
-         assertTrue(nameValue.getEtype() != null);
-         */
-        checker.checkEntity(entity);
+	Entity entity = ekb.getEntityService().readEntity(PALAZZETTO_URL);
+	LOG.info("\n\n *************   entity Palazzetto (" + PALAZZETTO_URL + ") ***************** \n\n",
+		(Object) entity);
+	/*
+	 * This stuff should be caught by the integrity checker AttrDef
+	 * nameAttrDef = entity.getEtype().getNameAttrDef(); Struct nameValue =
+	 * (Struct)
+	 * entity.getAttribute(nameAttrDef.getURL()).getValues().strs(0).
+	 * getValue(); assertTrue(nameValue.getEtype() != null);
+	 */
+	checker.checkEntity(entity);
 
-        assertTrue(entity.getName().string(Locale.ITALIAN).length() > 0);
-        // assertTrue(entity.getDescription().getString(Locale.ITALIAN).length() > 0);
+	assertTrue(entity.getName().string(Locale.ITALIAN).length() > 0);
+	// assertTrue(entity.getDescription().getString(Locale.ITALIAN).length()
+	// > 0);
 
     }
-
+    
+    @Test
+    public void testCreatePunteDiCampiglio(){
+	Entity en = enServ.readEntity(PUNTE_DI_CAMPIGLIO_URL);
+	Entity newEntity = enServ.createEntity(en);
+	checker.checkEntity(newEntity);
+    }
 
     /**
-     * Shows reading non existing instances in sweb doesn't throw but just skips the result. 
+     * Shows reading non existing instances in sweb doesn't throw but just skips
+     * the result.
      */
     @Test
-    public void readSwebNonExistingInstances(){
+    public void readSwebNonExistingInstances() {
 	InstanceClient instanceClient = new InstanceClient(SwebConfiguration.getClientProtocol());
 	InstanceFilter instFilter = new InstanceFilter();
 	List<Instance> instances = instanceClient.readInstancesById(Lists.newArrayList(-1L), instFilter);
 	assertTrue(instances.isEmpty());
     }
-    
+
     @Test
     public void testReadNonExistingEntity() {
-        try {
-            ekb.getEntityService().readEntity(makeNonExistingEntityUrl());
-            Assert.fail("Shouldn't be able to read non existing entity!");
-        } catch (OpenEntityNotFoundException ex){            
-        }
+	try {
+	    ekb.getEntityService().readEntity(makeNonExistingEntityUrl());
+	    Assert.fail("Shouldn't be able to read non existing entity!");
+	} catch (OpenEntityNotFoundException ex) {
+	}
     }
 
     @Test
     public void testReadNonExistingEntities() {
 
-        List<String> entitieURLs = new ArrayList();
-        
-        entitieURLs.add(um.entityIdToUrl(10000000000000000L));
-        entitieURLs.add(um.etypeIdToUrl(RAVAZZONE_ID));
-        
-        try {
-            List<Entity> entities = enServ.readEntities(entitieURLs);
-            Assert.fail("Shouldn't be able to read non existing entity!");
-        } catch (OpenEntityNotFoundException ex){
-            
-        }
+	List<String> entitieURLs = new ArrayList();
+
+	entitieURLs.add(um.entityIdToUrl(10000000000000000L));
+	entitieURLs.add(um.etypeIdToUrl(RAVAZZONE_ID));
+
+	try {
+	    List<Entity> entities = enServ.readEntities(entitieURLs);
+	    Assert.fail("Shouldn't be able to read non existing entity!");
+	} catch (OpenEntityNotFoundException ex) {
+
+	}
+    }
+
+    @Test
+    public void TestReadResidenceDesAlpes() {
+	Entity en = enServ.readEntity(RESIDENCE_DES_ALPES_URL);
+	checker.checkEntity(en);
     }
 
     @Test
     @Ignore
     public void testUpdateNonExistingEntity() {
-        Entity.Builder entityB = Entity.builder();        
-        entityB.setEtypeId(FACILITY_URL);        
-        entityB.setId(um.entityIdToUrl(10000000000000000L));
-        try {
-            enServ.updateEntity(entityB.build());
-            fail("Should have failed while updating non existing entity!");
-        }
-        catch (OpenEntityNotFoundException ex) {
+	Entity.Builder entityB = Entity.builder();
+	entityB.setEtypeId(FACILITY_URL);
+	entityB.setId(um.entityIdToUrl(10000000000000000L));
+	try {
+	    enServ.updateEntity(entityB.build());
+	    fail("Should have failed while updating non existing entity!");
+	} catch (OpenEntityNotFoundException ex) {
 
-        }
+	}
     }
 
     @Test
     public void testEntityReadByGlobalID() {
-	
-	
+
 	it.unitn.disi.sweb.webapi.model.eb.Entity swebEntity = ((EntityService) enServ).readEntityByGlobalId(10000466L);
 	EntityType swebEntityType = ((EtypeService) ets).readSwebEntityType(swebEntity.getTypeId());
-        Entity entity =  converter.swebEntityToOeEntity(swebEntity, swebEntityType);
-        checker.checkEntity(entity);
-        Etype etype = ets.readEtype(entity.getEtypeId());
-        LOG.info(etype.getName().strings(Locale.ITALIAN).get(0));
-        assertEquals(etype.getName().strings(Locale.ITALIAN).get(0), "Infrastruttura");
+	Entity entity = converter.swebEntityToOeEntity(swebEntity, swebEntityType);
+	checker.checkEntity(entity);
+	Etype etype = ets.readEtype(entity.getEtypeId());
+	LOG.info(etype.getName().strings(Locale.ITALIAN).get(0));
+	assertEquals(etype.getName().strings(Locale.ITALIAN).get(0), "Infrastruttura");
     }
 
     /**
@@ -195,64 +211,64 @@ public class EntityServiceIT extends DisiTest {
     @Test
     @Ignore
     public void testNullValues() {
-        throw new UnsupportedOperationException("TODO IMPLEMENT ME");
+	throw new UnsupportedOperationException("TODO IMPLEMENT ME");
     }
 
     @Test
     public void testReadEntityRavazzone() {
-        Entity entity = enServ.readEntity(RAVAZZONE_URL);
-        checker.checkEntity(entity);
-        Etype etype = ekb.getEtypeService().readEtype(entity.getEtypeId());
-        LOG.info(etype.getName().get(Locale.ITALIAN).get(0));
-        assertEquals(etype.getName().get(Locale.ITALIAN).get(0), "Località");
+	Entity entity = enServ.readEntity(RAVAZZONE_URL);
+	checker.checkEntity(entity);
+	Etype etype = ekb.getEtypeService().readEtype(entity.getEtypeId());
+	LOG.info(etype.getName().get(Locale.ITALIAN).get(0));
+	assertEquals(etype.getName().get(Locale.ITALIAN).get(0), "Località");
     }
 
     @Test
     public void testReadCampanilPartenza() {
 
-        Entity entity = enServ.readEntity(CAMPANIL_PARTENZA_URL);
-        checker.checkEntity(entity);
-        Etype etype = ets.readEtype(entity.getEtypeId());
-        LOG.info(etype.getName().get(Locale.ITALIAN).get(0));
+	Entity entity = enServ.readEntity(CAMPANIL_PARTENZA_URL);
+	checker.checkEntity(entity);
+	Etype etype = ets.readEtype(entity.getEtypeId());
+	LOG.info(etype.getName().get(Locale.ITALIAN).get(0));
 
-        assertTrue(entity.getName().get(Locale.ITALIAN).get(0).length() > 0);
-        assertTrue(entity.getDescription().get(Locale.ITALIAN).get(0).length() > 0);
-        assertTrue(entity.getDescription().get(Locale.ENGLISH).get(0).length() > 0);
-        assertNotNull(((SemText) entity.attr(ATTR_DEF_DESCRIPTION_URL).getValues().get(0).getObj()).getLocale());
+	assertTrue(entity.getName().get(Locale.ITALIAN).get(0).length() > 0);
+	assertTrue(entity.getDescription().get(Locale.ITALIAN).get(0).length() > 0);
+	assertTrue(entity.getDescription().get(Locale.ENGLISH).get(0).length() > 0);
+	assertNotNull(((SemText) entity.attr(ATTR_DEF_DESCRIPTION_URL).getValues().get(0).getObj()).getLocale());
     }
 
     @Test
     public void testReadStructure() {
-        Structure struct = (Structure) ((EntityService) enServ).readSwebStructure(64001L);
-        
-        ComplexType etype = ((EtypeService) ets).readSwebComplexType(struct.getTypeId());
-        LOG.info(etype.getName().get("it"));
-        assertEquals(etype.getName().get("it"), "Nome");
+	Structure struct = (Structure) ((EntityService) enServ).readSwebStructure(64001L);
+
+	ComplexType etype = ((EtypeService) ets).readSwebComplexType(struct.getTypeId());
+	LOG.info(etype.getName().get("it"));
+	assertEquals(etype.getName().get("it"), "Nome");
     }
 
     @Test
     public void testReadEntities() {
 
-        List<String> entitieURLs = new ArrayList();
-        entitieURLs.add(PALAZZETTO_URL);
+	List<String> entitieURLs = new ArrayList();
+	entitieURLs.add(PALAZZETTO_URL);
 
-        entitieURLs.add(RAVAZZONE_URL);
-        // entitieURLs.add(POVO_URL);
-        List<Entity> entities = enServ.readEntities(entitieURLs);
-        for (Entity entity : entities) {
-            checker.checkEntity(entity);
-        }
+	entitieURLs.add(RAVAZZONE_URL);
+	// entitieURLs.add(POVO_URL);
+	List<Entity> entities = enServ.readEntities(entitieURLs);
+	for (Entity entity : entities) {
+	    checker.checkEntity(entity);
+	}
 
-        LOG.info(entities.get(0).getName().get(Locale.ITALIAN).get(0));
-        assertEquals("PALAZZETTO DELLO SPORT", entities.get(1).getName().get(Locale.ITALIAN).get(0));
-        String name = readEtype(entities.get(1)).getName().get(Locale.ITALIAN).get(0);
-        LOG.info(name);
-        assertEquals("Infrastruttura", name);
+	LOG.info(entities.get(0).getName().get(Locale.ITALIAN).get(0));
+	assertEquals("PALAZZETTO DELLO SPORT", entities.get(1).getName().get(Locale.ITALIAN).get(0));
+	String name = readEtype(entities.get(1)).getName().get(Locale.ITALIAN).get(0);
+	LOG.info(name);
+	assertEquals("Infrastruttura", name);
     }
 
     @Test
     public void testReadZeroEntities() {
-        assertEquals(enServ.readEntities(new ArrayList<String>()).size(), 0);
+	assertEquals(enServ.readEntities(new ArrayList<String>()).size(), 0);
     }
 
     @Test
@@ -260,171 +276,184 @@ public class EntityServiceIT extends DisiTest {
     public void testUpdateEntity() {
 	throw new UnsupportedOperationException("TODO IMPLEMENT ME!");
 	/*
-        Entity entity =  enServ.readEntity(PALAZZETTO_URL);
-        List<Attribute> attrs = entity.getAttributes();
-        List<Attribute> attrs1 = new ArrayList();
-
-        for (Attribute atr : attrs) {
-            if (atr.getName().get("en").equalsIgnoreCase("Name")) {
-                attrs1.add(atr);
-            } else if (atr.getName().get("en").equalsIgnoreCase("Longitude")) {
-                //                AttrDef atDef = new AttributeDef(atr.getDefinitionId());
-                //                AttributeODR attr = enServ.createAttribute(atDef, 11.466f);
-                //                Attribute a = attr.convertToAttribute();
-                attrs1.add(atr);
-            } else if (atr.getName().get("en").equalsIgnoreCase("Latitude")) {
-                //                AttrDef atDef = new AttributeDef(atr.getDefinitionId());
-                //                AttributeODR attr = enServ.createAttribute(atDef, 46.289f);
-                //                Attribute a = attr.convertToAttribute();
-                attrs1.add(atr);
-
-            } else if (atr.getName().get("en").equalsIgnoreCase("Class")) {
-                Concept concept =  ekb.getKnowledgeService().readConcept(GYMNASIUM_CONCEPT_URL);
-                AttrDef atDef = new AttributeDef(atr.getDefinitionId());
-                AttributeODR attr = (AttributeODR) enServ.createAttribute(atDef, concept);
-                Attribute a = attr.asSwebAttribute();
-
-                attrs1.add(a);
-            }
-        }
-        Entity en = new Entity();
-        en.setEntityBaseId(1L);
-        en.setTypeId(FACILITY_ID);
-        en.setAttributes(attrs1);
-        EntityODR ent = new EntityODR(en);
-        String id = enServ.createEntityURL(ent);
-
-        EntityODR newEntityODR = (EntityODR) enServ.readEntity(id);
-
-        List<Attribute> newAttrs = newEntityODR.getAttributes();
-        //--------Entity Update Test start
-
-        assertEquals(4, newEntityODR.getAttributes().size());
-
-        AttributeDef openHourAD = new AttributeDef(ATTR_DEF_HOURS_OPENING_HOUR);
-        AttributeDef closeHourAD = new AttributeDef(ATTR_DEF_HOURS_CLOSING_HOUR);
-
-        HashMap<AttributeDef, Object> attrMap = new HashMap();
-        attrMap.put(openHourAD, "8:00");
-        attrMap.put(closeHourAD, "8.00" + System.currentTimeMillis());
-        AttrDef attrDef = new AttributeDef(66L);
-
-        Attr attr = enServ.createAttribute(attrDef, attrMap);
-
-        List<Attr> attributes = newEntityODR.getAttributes();
-        attributes.add(attr);
-        newEntityODR.setAttributes(attributes);
-
-        enServ.updateEntity(newEntityODR);
-
-        Entity updatedEntity = enServ.readEntity(id);
-        assertEquals(5, updatedEntity.getAttributes().size());
-        //--------Entity Update Test end---------
-        //--------Value Update Test start--------
-        Float testNewValue = 0.0f;
-        ValueODR val = new ValueODR(null, null, testNewValue);
-
-        val.setValue(testNewValue);
-
-        for (Attribute atr : newAttrs) {
-
-            if (atr.getName().get("en").equalsIgnoreCase("Longitude")) {
-                AttributeODR attrODR = new AttributeODR(atr);
-                //				ValueODR val = (ValueODR) attrODR.getValues().strs(0);
-                //				val.setValue(value);
-                enServ.updateAttributeValue(newEntityODR, attrODR, val);
-            }
-        }
-
-        EntityODR entityUpdValue = (EntityODR) enServ.readEntity(id);
-
-        List<Attribute> updAttributes = entityUpdValue.getAttributes();
-
-        for (Attribute atr : updAttributes) {
-            if (atr.getName().get("en").equalsIgnoreCase("Longitude")) {
-                assertEquals(testNewValue, atr.getValues().get(0).getValue());
-            }
-        }
-
-        enServ.deleteEntity(id);
-*/
+	 * Entity entity = enServ.readEntity(PALAZZETTO_URL); List<Attribute>
+	 * attrs = entity.getAttributes(); List<Attribute> attrs1 = new
+	 * ArrayList();
+	 * 
+	 * for (Attribute atr : attrs) { if
+	 * (atr.getName().get("en").equalsIgnoreCase("Name")) { attrs1.add(atr);
+	 * } else if (atr.getName().get("en").equalsIgnoreCase("Longitude")) {
+	 * // AttrDef atDef = new AttributeDef(atr.getDefinitionId()); //
+	 * AttributeODR attr = enServ.createAttribute(atDef, 11.466f); //
+	 * Attribute a = attr.convertToAttribute(); attrs1.add(atr); } else if
+	 * (atr.getName().get("en").equalsIgnoreCase("Latitude")) { // AttrDef
+	 * atDef = new AttributeDef(atr.getDefinitionId()); // AttributeODR attr
+	 * = enServ.createAttribute(atDef, 46.289f); // Attribute a =
+	 * attr.convertToAttribute(); attrs1.add(atr);
+	 * 
+	 * } else if (atr.getName().get("en").equalsIgnoreCase("Class")) {
+	 * Concept concept =
+	 * ekb.getKnowledgeService().readConcept(GYMNASIUM_CONCEPT_URL); AttrDef
+	 * atDef = new AttributeDef(atr.getDefinitionId()); AttributeODR attr =
+	 * (AttributeODR) enServ.createAttribute(atDef, concept); Attribute a =
+	 * attr.asSwebAttribute();
+	 * 
+	 * attrs1.add(a); } } Entity en = new Entity(); en.setEntityBaseId(1L);
+	 * en.setTypeId(FACILITY_ID); en.setAttributes(attrs1); EntityODR ent =
+	 * new EntityODR(en); String id = enServ.createEntityURL(ent);
+	 * 
+	 * EntityODR newEntityODR = (EntityODR) enServ.readEntity(id);
+	 * 
+	 * List<Attribute> newAttrs = newEntityODR.getAttributes();
+	 * //--------Entity Update Test start
+	 * 
+	 * assertEquals(4, newEntityODR.getAttributes().size());
+	 * 
+	 * AttributeDef openHourAD = new
+	 * AttributeDef(ATTR_DEF_HOURS_OPENING_HOUR); AttributeDef closeHourAD =
+	 * new AttributeDef(ATTR_DEF_HOURS_CLOSING_HOUR);
+	 * 
+	 * HashMap<AttributeDef, Object> attrMap = new HashMap();
+	 * attrMap.put(openHourAD, "8:00"); attrMap.put(closeHourAD, "8.00" +
+	 * System.currentTimeMillis()); AttrDef attrDef = new AttributeDef(66L);
+	 * 
+	 * Attr attr = enServ.createAttribute(attrDef, attrMap);
+	 * 
+	 * List<Attr> attributes = newEntityODR.getAttributes();
+	 * attributes.add(attr); newEntityODR.setAttributes(attributes);
+	 * 
+	 * enServ.updateEntity(newEntityODR);
+	 * 
+	 * Entity updatedEntity = enServ.readEntity(id); assertEquals(5,
+	 * updatedEntity.getAttributes().size()); //--------Entity Update Test
+	 * end--------- //--------Value Update Test start-------- Float
+	 * testNewValue = 0.0f; ValueODR val = new ValueODR(null, null,
+	 * testNewValue);
+	 * 
+	 * val.setValue(testNewValue);
+	 * 
+	 * for (Attribute atr : newAttrs) {
+	 * 
+	 * if (atr.getName().get("en").equalsIgnoreCase("Longitude")) {
+	 * AttributeODR attrODR = new AttributeODR(atr); // ValueODR val =
+	 * (ValueODR) attrODR.getValues().strs(0); // val.setValue(value);
+	 * enServ.updateAttributeValue(newEntityODR, attrODR, val); } }
+	 * 
+	 * EntityODR entityUpdValue = (EntityODR) enServ.readEntity(id);
+	 * 
+	 * List<Attribute> updAttributes = entityUpdValue.getAttributes();
+	 * 
+	 * for (Attribute atr : updAttributes) { if
+	 * (atr.getName().get("en").equalsIgnoreCase("Longitude")) {
+	 * assertEquals(testNewValue, atr.getValues().get(0).getValue()); } }
+	 * 
+	 * enServ.deleteEntity(id);
+	 */
     }
 
     @Test
     public void testSwebCreateMinimalEntity() {
-                
+
 	it.unitn.disi.sweb.webapi.model.eb.Entity ent = new it.unitn.disi.sweb.webapi.model.eb.Entity();
-	EntityType swebEtype = ((EtypeService)  ets).readSwebEntityType(ROOT_ENTITY_ID);
+	EntityType swebEtype = ((EtypeService) ets).readSwebEntityType(ROOT_ENTITY_ID);
 	Long conceptId = swebEtype.getConceptId();
-	it.unitn.disi.sweb.webapi.model.kb.concepts.Concept concept = ((KnowledgeService)  ekb.getKnowledgeService()).readConceptById(conceptId);
-        ent.setTypeId(ROOT_ENTITY_ID);
-        LOG.warn("TODO - USING HARD-CODED ENTITYBASE ID SET TO 1");
-        ent.setEntityBaseId(1L);
-        Value val = new Value();
-        val.setValue(concept);
-        Attribute attr = new Attribute();
-        attr.setDefinitionId(ATTR_DEF_CLASS_ID);
-        attr.setValues(Lists.newArrayList(val));
-        ent.setAttributes(Lists.newArrayList(attr));
-        InstanceClient instanceClient = new InstanceClient(SwebConfiguration.getClientProtocol());
-        instanceClient.create(ent);
+	it.unitn.disi.sweb.webapi.model.kb.concepts.Concept concept = ((KnowledgeService) ekb.getKnowledgeService())
+		.readConceptById(conceptId);
+	ent.setTypeId(ROOT_ENTITY_ID);
+	LOG.warn("TODO - USING HARD-CODED ENTITYBASE ID SET TO 1");
+	ent.setEntityBaseId(1L);
+	Value val = new Value();
+	val.setValue(concept);
+	Attribute attr = new Attribute();
+	attr.setDefinitionId(ATTR_DEF_CLASS_ID);
+	attr.setValues(Lists.newArrayList(val));
+	ent.setAttributes(Lists.newArrayList(attr));
+	InstanceClient instanceClient = new InstanceClient(SwebConfiguration.getClientProtocol());
+	instanceClient.create(ent);
     }
 
+    /**
+     * Creates just one entity and then deletes it.
+     */
     @Test
-    public void testCreateAttributeEntity() {
+    public void testCreateEntity() {
 
-        Etype etype = ekb.getEtypeService().readEtype(FACILITY_URL);
-        
-        Entity.Builder enb = Entity.builder();                
+	Etype etype = ekb.getEtypeService().readEtype(FACILITY_URL);
 
-        for (AttrDef atd : etype.getAttrDefs().values()) {
+	Entity.Builder enb = Entity.builder();
 
-            String adName = atd.getName().str(Locale.ENGLISH);
-            
-            if (adName.equals("Name")) {
-                enb.setNameAttr(Dict.of("TestName"), etype.getId(), ekb.getEtypeService());
-            } else if (adName.equals("Class")) {                
-        	
-        	Concept concept = Concept.builder()
-        		.setId(um.conceptIdToUrl(123L)).build();
-        	
-                enb.putAttrs(atd.getId(), Attr.ofObject(atd, concept));
-            } else if (adName.equals("Latitude")) {
-        	enb.putAttrs(atd.getId(), Attr.ofObject(atd, 12.123F));
-            } else if (adName.equals("Longitude")) {
-        	enb.putAttrs(atd.getId(), Attr.ofObject(atd, 56.567F));
-            } else if (adName.equals("Opening hours")) {
-                        	
-        	Struct.Builder strub = Struct.builder();
-        	
-        	Etype opHoursEt = ets.readEtype(OPENING_HOURS_URL);
-        	
-                AttrDef openHourAD = opHoursEt.attrDefById(ATTR_DEF_HOURS_OPENING_HOUR_URL);
-                AttrDef closeHourAD = opHoursEt.attrDefById(ATTR_DEF_HOURS_CLOSING_HOUR_URL);
+	enb.setNameAttr(Dict.of("TestName"), etype.getId(), ekb.getEtypeService());
 
-                HashMap<AttrDef, Object> attrMap = new HashMap();
-                strub.putAttrs(ATTR_DEF_HOURS_OPENING_HOUR_URL, Attr.ofObject(openHourAD, "8:00"));
-                strub.putAttrs(ATTR_DEF_HOURS_CLOSING_HOUR_URL, Attr.ofObject(closeHourAD, "18:00"));
-                
-                enb.putAttrs(ATTR_DEF_FACILITY_OPENING_HOURS_URL, Attr.ofObject(etype.attrDefById(ATTR_DEF_FACILITY_OPENING_HOURS_URL), strub.build()));
-            }
+	Concept concept = Concept.builder()
+		.setId(um.conceptIdToUrl(123L)).build();
+	enb.putObj(etype.attrDefByName("Class"), concept);
+	enb.putObj(etype.attrDefByName("Latitude"), 12.123F);
+	enb.putObj(etype.attrDefByName("Longitude"), 56.567F);
 
-        }
-        
-        
-        enb.setEtypeId(LOCATION_URL);
-        
-        Entity newEntity = enServ.createEntity(enb.build());
-        checker.checkEntity(newEntity);
-        LOG.info("Entity id:" + newEntity.getId());
-        
-        enServ.deleteEntity(newEntity.getId());
+	Struct.Builder strub = Struct.builder();
+
+	Etype opHoursEt = ets.readEtype(OPENING_HOURS_URL);
+
+	AttrDef openHourAD = opHoursEt.attrDefById(ATTR_DEF_HOURS_OPENING_HOUR_URL);
+	AttrDef closeHourAD = opHoursEt.attrDefById(ATTR_DEF_HOURS_CLOSING_HOUR_URL);
+
+	Map<AttrDef, Object> attrMap = new HashMap();
+	strub.putAttrs(ATTR_DEF_HOURS_OPENING_HOUR_URL, Attr.ofObject(openHourAD, "8:00"));
+	strub.putAttrs(ATTR_DEF_HOURS_CLOSING_HOUR_URL, Attr.ofObject(closeHourAD, "18:00"));
+	strub.setEtypeId(opHoursEt.getId());
+
+	enb.putObj(etype.attrDefById(ATTR_DEF_FACILITY_OPENING_HOURS_URL), strub.build());
+
+	enb.setEtypeId(FACILITY_URL);
+
+	Entity newEntity = enServ.createEntity(enb.build());
+	checker.checkEntity(newEntity);
+	LOG.info("Entity id:" + newEntity.getId());
+
+	enServ.deleteEntity(newEntity.getId());
     }
+
+    
+    @Test
+    public void testSearchAllEntities() {
+	List<SearchResult> res = enServ.searchEntities("", null, Locale.ROOT);
+	LOG.info("Found ", res.size(), " entities");
+	assertTrue(res.size() > 0);
+    }
+
+    /**
+     * Creates one entity for each etype and then deletes it.
+     */
+    @Test
+    public void testCreateOneEntityPerEtype() {
+	List<Etype> etypes = ets.readAllEtypes();
+
+	LOG.info("Read " + etypes.size() + " etypes. Going to create one entity per etype...");
+
+	List<String> enUrls = new ArrayList();
+		 
+	for (Etype etype : etypes) {
+	    List<SearchResult> results = enServ.searchEntities("", etype.getId(), Locale.ROOT);
+	    if (!results.isEmpty()) {
+		    enUrls.add(results.get(0).getId());
+		}	    
+	}
+
+	List<Entity> entities = enServ.readEntities(enUrls);
+
+	for (Entity en : entities) {
+	    Entity newEntity = enServ.createEntity(en);
+	    checker.checkEntity(newEntity);
+	    enServ.deleteEntity(newEntity.getId());
+	}
+
+    }
+
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
     private Etype readEtype(Entity en) {
-        return ekb.getEtypeService().readEtype(en.getEtypeId());
+	return ekb.getEtypeService().readEtype(en.getEtypeId());
     }
 
     /**
@@ -434,82 +463,71 @@ public class EntityServiceIT extends DisiTest {
     @Test
     public void testReadAndalo() {
 
-        Entity en = enServ.readEntity(ANDALO_URL);
+	Entity en = enServ.readEntity(ANDALO_URL);
 
-        checker.checkEntity(en);
+	checker.checkEntity(en);
 
-        Etype etype = readEtype(en);
-        
-        AttrDef nameAttrDef = etype.nameAttrDef();
-        
-        LOG.info("nameAttrDefURL = " + nameAttrDef.getId());
+	Etype etype = readEtype(en);
 
-        Attr nameAttr = en.attr(nameAttrDef.getId());
+	AttrDef nameAttrDef = etype.nameAttrDef();
 
-        assertEquals(nameAttrDef.getId(), nameAttr.getAttrDefId());
+	LOG.info("nameAttrDefURL = " + nameAttrDef.getId());
 
-        Struct nameStruct = (Struct) nameAttr.getValues().get(0).getObj();
+	Attr nameAttr = en.attr(nameAttrDef.getId());
 
-        assertEquals(nameAttrDef.getType().getEtypeId(), nameStruct.getEtypeId());
+	assertEquals(nameAttrDef.getId(), nameAttr.getAttrDefId());
+
+	Struct nameStruct = (Struct) nameAttr.getValues().get(0).getObj();
+
+	assertEquals(nameAttrDef.getType().getEtypeId(), nameStruct.getEtypeId());
 
     }
 
     @Test
     public void testReadRavazzone() {
-        Entity en = enServ.readEntity(RAVAZZONE_URL);
-        checker.checkEntity(en);
-    }
-
-
-    @Test
-    public void testEntitySearch() {
-        String etypeURL = um.etypeIdToUrl(18L);
-        Locale locale = OdtUtils.languageTagToLocale("it");
-        List<SearchResult> sResults = enServ.searchEntities("Povo", etypeURL, locale);
-        for (SearchResult sr : sResults) {
-            assertNotNull(sr.getId());
-            assertNotNull(sr.getName());
-        }
+	Entity en = enServ.readEntity(RAVAZZONE_URL);
+	checker.checkEntity(en);
     }
 
     @Test
-    public void testEntitySearchAndalo() {
-        String etypeURL = um.etypeIdToUrl(18L);
-        Locale locale = OdtUtils.languageTagToLocale("it");
-        List<SearchResult> sResults = enServ.searchEntities("Andalo", etypeURL, locale);
-        assertTrue(sResults.size() > 0);
+    public void testSearchAndalo() {
+	String enName = "Andalo";
+	List<SearchResult> sResults = enServ.searchEntities(enName, LOCATION_URL, Locale.ITALIAN);
+	assertTrue(sResults.size() > 0);
 
-        assertEquals("Andalo", sResults.get(0).getName().string(Locale.ITALIAN));
+	assertEquals(enName, sResults.get(0).getName().str(Locale.ITALIAN));
     }
 
     @Test
-    public void TestResidenceDesAlpes() {
-        Entity en = enServ.readEntity(RESIDENCE_DES_ALPES_URL);
-        checker.checkEntity(en);
+    public void testSearchEntities() {
+
+	Locale locale = OdtUtils.languageTagToLocale("en");
+
+	List<SearchResult> sResults = enServ.searchEntities("Povo", LOCATION_URL, locale);
+	for (SearchResult sr : sResults) {
+	    assertNotNull(sr.getId());
+	    assertNotNull(sr.getName());
+	}
     }
 
     @Test
     public void testSearchIncompleteEntity() {
-        List<SearchResult> res = enServ.searchEntities("roveret", null, Locale.ITALIAN);
-        assertTrue(res.size() > 0);
+	List<SearchResult> res = enServ.searchEntities("roveret", null, Locale.ITALIAN);
+	assertTrue(res.size() > 0);
     }
 
     @Test
     public void testSearchMultiWordEntity() {
-        List<SearchResult> res = enServ.searchEntities("borgo valsugana", null, Locale.ITALIAN);
-        assertTrue(res.size() > 0);
+	List<SearchResult> res = enServ.searchEntities("borgo valsugana", null, Locale.ITALIAN);
+	assertTrue(res.size() > 0);
     }
 
     @Test
     public void testSearchIncompleteMultiWordEntity() {
 
-        List<SearchResult> res = enServ.searchEntities("borgo valsu", null, Locale.ITALIAN);
-        assertTrue(res.size() > 0);
+	List<SearchResult> res = enServ.searchEntities("borgo valsu", null, Locale.ITALIAN);
+	assertTrue(res.size() > 0);
 
-    }
-
-    private long attrDefUrlToId(String url) {
-        return SwebConfiguration.getUrlMapper().attrDefUrlToId(url);
     }
 
 }

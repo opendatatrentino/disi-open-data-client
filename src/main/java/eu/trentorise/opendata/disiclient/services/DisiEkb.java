@@ -35,7 +35,7 @@ public class DisiEkb implements IEkb {
     private EtypeService entityTypeService;
     private EntityService entityService;
     /** disi client specific */
-    private Search searchService;
+    private SearchService searchService;
     /** disi client specific */
     private EntityExportService entityExportService;
     
@@ -119,7 +119,7 @@ public class DisiEkb implements IEkb {
         this.entityService = new EntityService(this);
         
         // disi specific
-        this.searchService = new Search(this);
+        this.searchService = new SearchService(this);
         this.entityExportService = new EntityExportService(this);
         this.checker = Checker.of(this);
     }
@@ -136,7 +136,7 @@ public class DisiEkb implements IEkb {
     /**
      * Disi client specific
      */
-    public Search getSearchService() {
+    public SearchService getSearchService() {
         return searchService;
     }
 

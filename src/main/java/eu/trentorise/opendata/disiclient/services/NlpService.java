@@ -21,6 +21,7 @@ import it.unitn.disi.sweb.webapi.client.nlp.ComponentClient;
 import it.unitn.disi.sweb.webapi.client.nlp.PipelineClient;
 import it.unitn.disi.sweb.webapi.model.NLPInput;
 import it.unitn.disi.sweb.webapi.model.PipelineDescription;
+import it.unitn.disi.sweb.webapi.model.eb.Instance;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,26 +37,26 @@ import org.slf4j.LoggerFactory;
  */
 public class NlpService implements INLPService {
 
-    private SemanticStringConverter semanticStringConverter = SemanticStringConverter.of(SwebConfiguration.getUrlMapper());
+    private SemanticStringConverter semanticStringConverter = SemanticStringConverter
+	    .of(SwebConfiguration.getUrlMapper());
 
     private NLTextConverter nltextConverter = NLTextConverter.of(SwebConfiguration.getUrlMapper());
 
     private static final Logger logger = LoggerFactory.getLogger(NlpService.class);
 
     private DisiEkb ekb;
-    
-    
-    NlpService(DisiEkb ekb){
-        checkNotNull(ekb);
-        this.ekb = ekb;
-        semanticStringConverter = SemanticStringConverter.of(SwebConfiguration.getUrlMapper());
-        nltextConverter = NLTextConverter.of(SwebConfiguration.getUrlMapper());    
+
+    NlpService(DisiEkb ekb) {
+	checkNotNull(ekb);
+	this.ekb = ekb;
+	semanticStringConverter = SemanticStringConverter.of(SwebConfiguration.getUrlMapper());
+	nltextConverter = NLTextConverter.of(SwebConfiguration.getUrlMapper());
     }
 
     public NLTextConverter getNltextConverter() {
-        return nltextConverter;
+	return nltextConverter;
     }
-    
+
     /**
      * For italian text and 1st knowledge base
      *
@@ -64,16 +65,16 @@ public class NlpService implements INLPService {
      */
     public List<NLText> runNlpItNEP(Iterable<String> texts) {
 
-        PipelineClient pipClient = new PipelineClient(SwebConfiguration.getClientProtocol());
-        NLPInput input = new NLPInput();
-        input.setText(Lists.newArrayList(texts));
-        logger.warn("USING HARDCODED VOCABULARY ID!");
-        NLText[] processedTexts = pipClient.run("NamedEntityPipeline", input, 1l);
-        //		for (NLText nlext : processedText) {
-        //		   System.out.println(nlext.toString());
-        //		}
+	PipelineClient pipClient = new PipelineClient(SwebConfiguration.getClientProtocol());
+	NLPInput input = new NLPInput();
+	input.setText(Lists.newArrayList(texts));
+	logger.warn("USING HARDCODED VOCABULARY ID!");
+	NLText[] processedTexts = pipClient.run("NamedEntityPipeline", input, 1l);
+	// for (NLText nlext : processedText) {
+	// System.out.println(nlext.toString());
+	// }
 
-        return Arrays.asList(processedTexts);
+	return Arrays.asList(processedTexts);
     }
 
     /**
@@ -84,16 +85,16 @@ public class NlpService implements INLPService {
      */
     public List<NLText> runNlpItODH(Iterable<String> texts) {
 
-        PipelineClient pipClient = new PipelineClient(SwebConfiguration.getClientProtocol());
-        NLPInput input = new NLPInput();
-        input.setText(Lists.newArrayList(texts));
-        logger.warn("USING HARDCODED VOCABULARY ID!");
-        NLText[] processedTexts = pipClient.run("ODHPipeline", input, 1l);
-        //		for (NLText nlext : processedText) {
-        //		   System.out.println(nlext.toString());
-        //		}
+	PipelineClient pipClient = new PipelineClient(SwebConfiguration.getClientProtocol());
+	NLPInput input = new NLPInput();
+	input.setText(Lists.newArrayList(texts));
+	logger.warn("USING HARDCODED VOCABULARY ID!");
+	NLText[] processedTexts = pipClient.run("ODHPipeline", input, 1l);
+	// for (NLText nlext : processedText) {
+	// System.out.println(nlext.toString());
+	// }
 
-        return Arrays.asList(processedTexts);
+	return Arrays.asList(processedTexts);
     }
 
     /**
@@ -104,114 +105,113 @@ public class NlpService implements INLPService {
      */
     public List<NLText> runNlpItNEDW(Iterable<String> texts) {
 
-        PipelineClient pipClient = new PipelineClient(SwebConfiguration.getClientProtocol());
-        NLPInput input = new NLPInput();
-        input.setText(Lists.newArrayList(texts));
-        logger.warn("USING HARDCODED VOCABULARY ID!");
-        NLText[] processedTexts = pipClient.run("NEDWSDPipeline", input, 1l);
-        //		for (NLText nlext : processedText) {
-        //		   System.out.println(nlext.toString());
-        //		}
+	PipelineClient pipClient = new PipelineClient(SwebConfiguration.getClientProtocol());
+	NLPInput input = new NLPInput();
+	input.setText(Lists.newArrayList(texts));
+	logger.warn("USING HARDCODED VOCABULARY ID!");
+	NLText[] processedTexts = pipClient.run("NEDWSDPipeline", input, 1l);
+	// for (NLText nlext : processedText) {
+	// System.out.println(nlext.toString());
+	// }
 
-        return Arrays.asList(processedTexts);
+	return Arrays.asList(processedTexts);
     }
 
     public NLText runNlpIt(String nlText) {
-        return runNlpItNEDW(Arrays.asList(nlText)).get(0);
+	return runNlpItNEDW(Arrays.asList(nlText)).get(0);
     }
 
     public List<PipelineDescription> readPipelinesDescription() {
-        PipelineClient pipClient = new PipelineClient(SwebConfiguration.getClientProtocol());
-        return pipClient.readPipelines();
+	PipelineClient pipClient = new PipelineClient(SwebConfiguration.getClientProtocol());
+	return pipClient.readPipelines();
     }
-    
 
     public SemText runNLP(String text) {
-        return runNLP(Arrays.asList(text), null).get(0);
+	return runNLP(Arrays.asList(text), null).get(0);
     }
 
     public SemText runNLP(String text, String domainURL) {
-        return runNLP(Arrays.asList(text), domainURL).get(0);
+	return runNLP(Arrays.asList(text), domainURL).get(0);
     }
 
     @Override
     public List<SemText> runNLP(Iterable<String> texts, @Nullable String domainURL) {
-        List<SemText> ret = new ArrayList();
-        if (SwebConfiguration.getUrlMapper().isConceptUrl(domainURL)) {
-            List<NLText> nlTexts = runNlpItODH(texts);
-            for (NLText nlText : nlTexts) {
-                SemText semText = nltextConverter.semText(nlText, false);
-                ret.add(extractEntities(semText, domainURL));
-            }
-            return ret;
-        }
-        if (SwebConfiguration.getUrlMapper().isEtypeUrl(domainURL)) {
-            List<NLText> nlTexts = runNlpItNEP(texts);
-            for (NLText nlText : nlTexts) {
-                SemText semText = nltextConverter.semText(nlText, false);
-                //extractEntities(semText, domainURL);
-                //ret.add(extractEntities(semText, domainURL));
-                ret.add(semText);
-            }
-            return ret;
-        }
-        if (domainURL == null) {
-            List<NLText> nlTexts = runNlpItNEDW(texts);
-            for (NLText nlText : nlTexts) {
-                ret.add(nltextConverter.semText(nlText, false));
-            }
-            return ret;
-        }
+	List<SemText> ret = new ArrayList();
+	if (SwebConfiguration.getUrlMapper().isConceptUrl(domainURL)) {
+	    List<NLText> nlTexts = runNlpItODH(texts);
+	    for (NLText nlText : nlTexts) {
+		SemText semText = nltextConverter.semText(nlText, false);
+		ret.add(extractEntities(semText, domainURL));
+	    }
+	    return ret;
+	}
+	if (SwebConfiguration.getUrlMapper().isEtypeUrl(domainURL)) {
+	    List<NLText> nlTexts = runNlpItNEP(texts);
+	    for (NLText nlText : nlTexts) {
+		SemText semText = nltextConverter.semText(nlText, false);
+		// extractEntities(semText, domainURL);
+		// ret.add(extractEntities(semText, domainURL));
+		ret.add(semText);
+	    }
+	    return ret;
+	}
+	if (domainURL == null) {
+	    List<NLText> nlTexts = runNlpItNEDW(texts);
+	    for (NLText nlText : nlTexts) {
+		ret.add(nltextConverter.semText(nlText, false));
+	    }
+	    return ret;
+	}
 
-        throw new UnsupportedOperationException("Domain " + domainURL + " is not supported yet.");
+	throw new UnsupportedOperationException("Domain " + domainURL + " is not supported yet.");
     }
 
     private SemText extractEntities(SemText semText, String etypeURL) {
 
-        SemText textEntities;
-        List<String> entVocab = collectEntitiesFromMeanings(semText);
-        List<String> filteredEntities = filterEntitiesByType(entVocab, etypeURL);
+	SemText textEntities;
+	List<String> entVocab = collectEntitiesFromMeanings(semText);
+	List<String> filteredEntities = filterEntitiesByType(entVocab, etypeURL);
 
-        List<Term> words = new ArrayList();
-        for (Term term : semText.terms()) {
+	List<Term> words = new ArrayList();
+	for (Term term : semText.terms()) {
 
-            Meaning wsm = term.getSelectedMeaning();
-            Meaning selectedMeaning;
-            MeaningStatus meaningStatus;
+	    Meaning wsm = term.getSelectedMeaning();
+	    Meaning selectedMeaning;
+	    MeaningStatus meaningStatus;
 
-            if ((wsm != null && MeaningKind.ENTITY.equals(wsm.getKind())) && (filteredEntities.contains(wsm.getId()))) {
-                selectedMeaning = wsm;
+	    if ((wsm != null && MeaningKind.ENTITY.equals(wsm.getKind())) && (filteredEntities.contains(wsm.getId()))) {
+		selectedMeaning = wsm;
 
-            } else {
-                selectedMeaning = null;
-            }
+	    } else {
+		selectedMeaning = null;
+	    }
 
-            List<Meaning> filteredMeanings = new ArrayList();
-            for (Meaning m : term.getMeanings()) {
-                if (MeaningKind.ENTITY.equals(m.getKind()) && (m.getId().length() > 0)) {
-                    if (filteredEntities.contains(m.getId())) {
-                        filteredMeanings.add(m);
-                    }
-                }
-            }
-            if (selectedMeaning == null) {
-                if (filteredMeanings.size() > 0) {
-                    meaningStatus = MeaningStatus.TO_DISAMBIGUATE;
-                } else {
-                    meaningStatus = null;
-                }
-            } else {
-                meaningStatus = term.getMeaningStatus();
-            }
+	    List<Meaning> filteredMeanings = new ArrayList();
+	    for (Meaning m : term.getMeanings()) {
+		if (MeaningKind.ENTITY.equals(m.getKind()) && (m.getId().length() > 0)) {
+		    if (filteredEntities.contains(m.getId())) {
+			filteredMeanings.add(m);
+		    }
+		}
+	    }
+	    if (selectedMeaning == null) {
+		if (filteredMeanings.size() > 0) {
+		    meaningStatus = MeaningStatus.TO_DISAMBIGUATE;
+		} else {
+		    meaningStatus = null;
+		}
+	    } else {
+		meaningStatus = term.getMeaningStatus();
+	    }
 
-            if (meaningStatus != null) {
+	    if (meaningStatus != null) {
 
-                words.add(Term.of(term.getStart(), term.getEnd(), meaningStatus, selectedMeaning, filteredMeanings));
+		words.add(Term.of(term.getStart(), term.getEnd(), meaningStatus, selectedMeaning, filteredMeanings));
 
-            }
-        }
-        textEntities = semText.withTerms(words);
-        return textEntities;
+	    }
+	}
+	textEntities = semText.withTerms(words);
+	return textEntities;
     }
 
     /**
@@ -222,81 +222,80 @@ public class NlpService implements INLPService {
      * @return
      */
     private List<String> collectEntitiesFromMeanings(SemText semText) {
-        List<String> entitiesId = new ArrayList();
-        for (Term term : semText.terms()) {
-            for (Meaning meaning : term.getMeanings()) {
-                if (MeaningKind.ENTITY.equals(meaning.getKind()) && (meaning.getId().length() > 0)) {
-                    entitiesId.add(meaning.getId());
-                }
-            }
+	List<String> entitiesId = new ArrayList();
+	for (Term term : semText.terms()) {
+	    for (Meaning meaning : term.getMeanings()) {
+		if (MeaningKind.ENTITY.equals(meaning.getKind()) && (meaning.getId().length() > 0)) {
+		    entitiesId.add(meaning.getId());
+		}
+	    }
 
-        }
-        return entitiesId;
+	}
+	return entitiesId;
     }
 
     private List<String> filterEntitiesByType(List<String> entitiesUrls, String etypeURL) {
-        List<String> filteredEntities = new ArrayList();
+	List<String> filteredEntities = new ArrayList();
 
-        
-        List<Entity> entities = DisiClients.getSingleton().getEntityService().readEntities(entitiesUrls);
+	List<Entity> entities = DisiClients.getSingleton().getEntityService().readEntities(entitiesUrls);
 
-        for (Entity e : entities) {
-            if (e.getEtypeId().equals(etypeURL)) {
-                filteredEntities.add(e.getId());
-            }
+	for (Entity e : entities) {
+	    if (e.getEtypeId().equals(etypeURL)) {
+		filteredEntities.add(e.getId());
+	    }
 
-        }
-        return filteredEntities;
+	}
+	return filteredEntities;
     }
 
     @Override
     public List<TermSearchResult> freeSearch(String partialName, Locale locale) {
+	
+	checkNotNull(locale, "Found null locale, if unknown use Locale.ROOT instead!");
+	
+	
+	String lowerCasePartialName = partialName.toLowerCase(locale);
 
-        String lowerCasePartialName = partialName.toLowerCase(locale);
+	List<SearchResult> entities = ekb.getEntityService().searchEntities(lowerCasePartialName, null, locale);
 
-        List<SearchResult> entities;
+	KnowledgeService ks = ekb.getKnowledgeService();
+	List<SearchResult> concepts = ks.searchConcepts(lowerCasePartialName, locale);
 
-        Search search = ekb.getSearchService();
-        entities = search.searchEntities(lowerCasePartialName, null, locale);
+	List<TermSearchResult> allSearchResult = new ArrayList();
 
-        KnowledgeService ks = ekb.getKnowledgeService();
-        List<SearchResult> concepts = ks.searchConcepts(lowerCasePartialName, locale);
+	if (entities.size() > 0) {
+	    for (SearchResult en : entities) {
+		TermSearchResult wsr = TermSearchResult.of(en.getId(), en.getName(), MeaningKind.ENTITY);
+		allSearchResult.add(wsr);
+	    }
+	}
+	if (concepts.size() > 0) {
+	    for (SearchResult con : concepts) {
+		TermSearchResult wsr = TermSearchResult.of(con.getId(), con.getName(), MeaningKind.CONCEPT);
+		allSearchResult.add(wsr);
 
-        List<TermSearchResult> allSearchResult = new ArrayList();
+	    }
+	}
 
-        if (entities.size() > 0) {
-            for (SearchResult en : entities) {
-                TermSearchResult wsr = TermSearchResult.of(en.getId(), en.getName(), MeaningKind.ENTITY);
-                allSearchResult.add(wsr);
-            }
-        }
-        if (concepts.size() > 0) {
-            for (SearchResult con : concepts) {
-                TermSearchResult wsr = TermSearchResult.of(con.getId(), con.getName(), MeaningKind.CONCEPT);
-                allSearchResult.add(wsr);
-
-            }
-        }
-
-        return allSearchResult;
+	return allSearchResult;
     }
 
     public SemanticStringConverter getSemanticStringConverter() {
-        return semanticStringConverter;
+	return semanticStringConverter;
     }
 
     public NLTextConverter getNLTextConverter() {
-        return nltextConverter;
+	return nltextConverter;
     }
 
     @Override
     public Locale detectLanguage(Iterable<String> inputStr) {
-        ComponentClient component = new ComponentClient(SwebConfiguration.getClientProtocol());
-        NLPInput input = new NLPInput();
-        input.setText(Lists.newArrayList(inputStr));
-        logger.warn("USING HARDCODED KB ID!");
-        NLText[] processedTexts = component.run("LanguageDetector", input, 1L);
+	ComponentClient component = new ComponentClient(SwebConfiguration.getClientProtocol());
+	NLPInput input = new NLPInput();
+	input.setText(Lists.newArrayList(inputStr));
+	logger.warn("USING HARDCODED KB ID!");
+	NLText[] processedTexts = component.run("LanguageDetector", input, 1L);
 
-        return OdtUtils.languageTagToLocale(processedTexts[0].getLanguage());
+	return OdtUtils.languageTagToLocale(processedTexts[0].getLanguage());
     }
 }
