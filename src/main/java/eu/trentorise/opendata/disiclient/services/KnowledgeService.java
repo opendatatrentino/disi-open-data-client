@@ -8,6 +8,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
 import eu.trentorise.opendata.disiclient.DisiClientException;
+import eu.trentorise.opendata.disiclient.UrlMapper;
 import it.unitn.disi.sweb.webapi.client.kb.ConceptClient;
 import it.unitn.disi.sweb.webapi.client.kb.VocabularyClient;
 import it.unitn.disi.sweb.webapi.model.kb.vocabulary.Vocabulary;
@@ -58,11 +59,12 @@ public class KnowledgeService implements IKnowledgeService {
     private final LoadingCache<Long, it.unitn.disi.sweb.webapi.model.kb.concepts.Concept> conceptCacheById;
     private final LoadingCache<Long, it.unitn.disi.sweb.webapi.model.kb.concepts.Concept> conceptCacheByGuid;
     private DisiEkb ekb;
-    
+    private UrlMapper um;
     
     KnowledgeService(DisiEkb ekb) {
         checkNotNull(ekb);
         this.ekb = ekb;
+        this.um = SwebConfiguration.getUrlMapper();
         conceptCacheByGuid = CacheBuilder.newBuilder()
                 .maximumSize(CACHE_SIZE)
                 // todo think about removal .removalListener(MY_LISTENER)
@@ -169,7 +171,7 @@ public class KnowledgeService implements IKnowledgeService {
     ) {
 
         LOG.warn("TODO - SETTING CONCEPT PARTIAL NAME TO LOWERCASE");
-        String lowerCasePartialName = partialName.toLowerCase(locale);
+        String lowerCasePartialName = partialName.toLowerCase(locale).trim();
 
         List<SearchResult> conceptRes = new ArrayList();
 
@@ -214,16 +216,14 @@ public class KnowledgeService implements IKnowledgeService {
         if (distanceInt < 0) {
             return 1.0;
         }
-        if (Math.abs(distanceInt) == 1) {
-            return 0.0;
-        }
+        
         return distanceInt * 1.0 / getConceptHierarchyDiameter();
     }
 
     @Override
     public double getConceptsDistance(String sourceUrl, String targetUrl) {
-        return getConceptsDistance(SwebConfiguration.getUrlMapper().conceptUrlToId(sourceUrl),
-                SwebConfiguration.getUrlMapper().conceptUrlToId(sourceUrl));
+        return getConceptsDistance(um.conceptUrlToId(sourceUrl),
+                um.conceptUrlToId(targetUrl));
     }
 
     public Map<String, Long> readVocabularies() {

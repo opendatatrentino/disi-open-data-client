@@ -14,6 +14,7 @@ import eu.trentorise.opendata.semantics.services.SearchResult;
 import eu.trentorise.opendata.semantics.services.TermSearchResult;
 import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
 import eu.trentorise.opendata.disiclient.DisiClients;
+import eu.trentorise.opendata.disiclient.UrlMapper;
 import eu.trentorise.opendata.semtext.nltext.NLTextConverter;
 import eu.trentorise.opendata.semtext.nltext.SemanticStringConverter;
 import it.unitn.disi.sweb.core.nlp.model.NLText;
@@ -37,10 +38,12 @@ import org.slf4j.LoggerFactory;
  */
 public class NlpService implements INLPService {
 
+    private UrlMapper um = SwebConfiguration.getUrlMapper();
+    
     private SemanticStringConverter semanticStringConverter = SemanticStringConverter
-	    .of(SwebConfiguration.getUrlMapper());
+	    .of(um);
 
-    private NLTextConverter nltextConverter = NLTextConverter.of(SwebConfiguration.getUrlMapper());
+    private NLTextConverter nltextConverter = NLTextConverter.of(um);
 
     private static final Logger logger = LoggerFactory.getLogger(NlpService.class);
 
@@ -49,8 +52,8 @@ public class NlpService implements INLPService {
     NlpService(DisiEkb ekb) {
 	checkNotNull(ekb);
 	this.ekb = ekb;
-	semanticStringConverter = SemanticStringConverter.of(SwebConfiguration.getUrlMapper());
-	nltextConverter = NLTextConverter.of(SwebConfiguration.getUrlMapper());
+	semanticStringConverter = SemanticStringConverter.of(um);
+	nltextConverter = NLTextConverter.of(um);
     }
 
     public NLTextConverter getNltextConverter() {
@@ -137,7 +140,14 @@ public class NlpService implements INLPService {
     @Override
     public List<SemText> runNLP(Iterable<String> texts, @Nullable String domainURL) {
 	List<SemText> ret = new ArrayList();
-	if (SwebConfiguration.getUrlMapper().isConceptUrl(domainURL)) {
+	if (domainURL == null) {
+	    List<NLText> nlTexts = runNlpItNEDW(texts);
+	    for (NLText nlText : nlTexts) {
+		ret.add(nltextConverter.semText(nlText, false));
+	    }
+	    return ret;
+	}
+	if (um.isConceptUrl(domainURL)) {
 	    List<NLText> nlTexts = runNlpItODH(texts);
 	    for (NLText nlText : nlTexts) {
 		SemText semText = nltextConverter.semText(nlText, false);
@@ -145,7 +155,7 @@ public class NlpService implements INLPService {
 	    }
 	    return ret;
 	}
-	if (SwebConfiguration.getUrlMapper().isEtypeUrl(domainURL)) {
+	if (um.isEtypeUrl(domainURL)) {
 	    List<NLText> nlTexts = runNlpItNEP(texts);
 	    for (NLText nlText : nlTexts) {
 		SemText semText = nltextConverter.semText(nlText, false);
@@ -155,13 +165,7 @@ public class NlpService implements INLPService {
 	    }
 	    return ret;
 	}
-	if (domainURL == null) {
-	    List<NLText> nlTexts = runNlpItNEDW(texts);
-	    for (NLText nlText : nlTexts) {
-		ret.add(nltextConverter.semText(nlText, false));
-	    }
-	    return ret;
-	}
+	
 
 	throw new UnsupportedOperationException("Domain " + domainURL + " is not supported yet.");
     }

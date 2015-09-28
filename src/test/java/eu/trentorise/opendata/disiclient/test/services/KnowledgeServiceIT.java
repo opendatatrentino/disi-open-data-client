@@ -155,7 +155,7 @@ public class KnowledgeServiceIT extends DisiTest {
 	
 	Concept rootConcept = kserv.readRootConcept();
         double scoreDist = kserv.getConceptsDistance(rootConcept.getId(), um.conceptIdToUrl(GYMNASIUM_CONCEPT_ID));        
-        assertTrue(scoreDist > 0);                       
+        assertTrue(scoreDist > 0.0);                       
     }
     
     @Test
