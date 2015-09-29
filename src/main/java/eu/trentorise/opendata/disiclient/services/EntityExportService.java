@@ -23,7 +23,6 @@ import eu.trentorise.opendata.disiclient.DisiClients;
 import eu.trentorise.opendata.disiclient.UrlMapper;
 
 
-import eu.trentorise.opendata.schemamatcher.util.SwebClientCrap;
 import eu.trentorise.opendata.semantics.model.entity.AttrDef;
 import eu.trentorise.opendata.semantics.model.entity.Etype;
 import eu.trentorise.opendata.semantics.DataTypes;
@@ -131,10 +130,10 @@ public class EntityExportService {
         try {
             globalID = obj.get("globalId").getAsLong();
             
-            Long locid = um.entityUrlToId(DisiClients.getSingleton().getEntityService().readEntityByGlobalId(globalID).getsUrl());
+            Long locid = um.entityUrlToId(ekb.getEntityService().readEntityByGlobalId(globalID).getsUrl());
 
             obj.remove("globalId");
-            String globalIdURL = SwebConfiguration.getUrlMapper().entityIdToUrl(locid);
+            String globalIdURL = um.entityIdToUrl(locid);
 
             obj.addProperty("globalId", globalIdURL);
         }
@@ -143,8 +142,8 @@ public class EntityExportService {
         }
 
 		//convert from global concept to local one
-        Long conceptTypeID = SwebClientCrap.readConceptGUID(typeId);
-
+        Long conceptTypeID = ekb.getKnowledgeService().readConceptByGuid(typeId).getId();
+        
         EtypeService ets = ekb.getEtypeService();
         /////////////////!!!!!!!!!!!!!IMPORTANT CHANGE THE ETYPE ID!!!!!!!!!!!!!!///////////
         ComplexType etype = ets.readSwebComplexTypeByConceptId(conceptTypeID);
@@ -160,8 +159,8 @@ public class EntityExportService {
 
             Long attrGlobalConceptID = attrObj.get("conceptId").getAsLong();
             obj.remove("conceptId");
-            Long attrConceptID = SwebClientCrap.readConceptGUID(attrGlobalConceptID);
-
+            Long attrConceptID = ekb.getKnowledgeService().readConceptByGuid(attrGlobalConceptID).getId();
+            
             //	System.out.println(attrConceptID);
             for (AttributeDefinition ad : attrDefs) {
                 

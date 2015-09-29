@@ -31,23 +31,27 @@ public class KnowledgeServiceIT extends DisiTest {
     
     Logger LOG = LoggerFactory.getLogger(KnowledgeServiceIT.class);
     
-    IKnowledgeService kserv;
+    IKnowledgeService ks;
+    KnowledgeService disiKs;
 
     @Before
     public void beforeMethod() {
         
-        kserv = ekb.getKnowledgeService();
+        ks = ekb.getKnowledgeService();
+        
+        disiKs = (KnowledgeService) ekb.getKnowledgeService();
     }
 
     @After
     public void afterMethod() {
-        kserv = null;        
+        ks = null;        
+        disiKs = null;
     }
 
     @Test
     public void testReadConcept() {
         
-        Concept con = kserv.readConcept(CONCEPT_3_URL);
+        Concept con = ks.readConcept(CONCEPT_3_URL);
         checker.checkConcept(con);
         assertEquals(con.getId(), CONCEPT_3_URL);
     }
@@ -55,7 +59,7 @@ public class KnowledgeServiceIT extends DisiTest {
     @Test
     public void testReadNonExistingConcept() {    
 	try {
-	    Concept con = kserv.readConcept(makeNonExistingConceptUrl());
+	    Concept con = ks.readConcept(makeNonExistingConceptUrl());
 	    Assert.fail();
 	} catch (OpenEntityNotFoundException ex){
 	    
@@ -64,36 +68,36 @@ public class KnowledgeServiceIT extends DisiTest {
 
     @Test
     public void testReadRootConcept() {
-        Concept concept = kserv.readRootConcept();
+        Concept concept = ks.readRootConcept();
         checker.checkConcept(concept);        
     }
 
     @Test
     public void testGetZeroConcepts() {
-        assertEquals(kserv.readConcepts(new ArrayList<String>()).size(), 0);
+        assertEquals(ks.readConcepts(new ArrayList<String>()).size(), 0);
     }
 
     @Test
     public void testReadConcepts() {
         List<String> conceptURLs = new ArrayList();
-        String rootConceptURL = kserv.readRootConcept().getId();
+        String rootConceptURL = ks.readRootConcept().getId();
 
         conceptURLs.add(rootConceptURL);
         
-        List<Concept> concepts = kserv.readConcepts(conceptURLs);
+        List<Concept> concepts = ks.readConcepts(conceptURLs);
         assertEquals(concepts.get(0).getId(), rootConceptURL);
     }
     
     @Test
     public void testReadNonExistingConcepts() {
         List<String> conceptURLs = new ArrayList();
-        String rootConceptURL = kserv.readRootConcept().getId();
+        String rootConceptURL = ks.readRootConcept().getId();
 
         conceptURLs.add(rootConceptURL);
         conceptURLs.add(makeNonExistingConceptUrl());
         
         try {
-            List<Concept> concepts = kserv.readConcepts(conceptURLs);
+            List<Concept> concepts = ks.readConcepts(conceptURLs);
             Assert.fail();
         } catch (OpenEntityNotFoundException ex){
             
@@ -104,7 +108,7 @@ public class KnowledgeServiceIT extends DisiTest {
 
     @Test
     public void testSearchConcept() {        
-        List<SearchResult> res = kserv.searchConcepts("vacation", Locale.ENGLISH);
+        List<SearchResult> res = ks.searchConcepts("vacation", Locale.ENGLISH);
         for (SearchResult r : res) {
 
             assertNotNull(r.getName());
@@ -114,54 +118,54 @@ public class KnowledgeServiceIT extends DisiTest {
 
     @Test
     public void testCapitalizedConcept() {
-        List<SearchResult> res = kserv.searchConcepts("Vacation", Locale.ENGLISH);        
+        List<SearchResult> res = ks.searchConcepts("Vacation", Locale.ENGLISH);        
         assertTrue(res.size() > 0);
     }
 
     @Test
     public void testSpacesConcept() {
-        List<SearchResult> res = kserv.searchConcepts("   vacation", Locale.ENGLISH);
+        List<SearchResult> res = ks.searchConcepts("   vacation", Locale.ENGLISH);
         assertTrue(res.size() > 0);
     }
 
     @Test
     public void testSearchIncompleteConcept() {
-        List<SearchResult> res = kserv.searchConcepts("vacatio", Locale.ENGLISH);
+        List<SearchResult> res = ks.searchConcepts("vacatio", Locale.ENGLISH);
         assertTrue(res.size() > 0);
     }
 
     @Test
     public void testSearchMultiWordConcept() {
-        List<SearchResult> res = kserv.searchConcepts("programming language", Locale.ENGLISH);        
+        List<SearchResult> res = ks.searchConcepts("programming language", Locale.ENGLISH);        
         assertTrue(res.size() > 0);
     }
 
     @Test
     public void testSearchIncompleteMultiWordConcept() {
-        List<SearchResult> res = kserv.searchConcepts("programming langu", Locale.ENGLISH);
+        List<SearchResult> res = ks.searchConcepts("programming langu", Locale.ENGLISH);
         assertTrue(res.size() > 0);
     }
 
     @Test
     public void testGetConceptDistance() {
 	
-	Concept rootConcept = kserv.readRootConcept();
-        double scoreDist = kserv.getConceptsDistance(rootConcept.getId(), rootConcept.getId());        
+	Concept rootConcept = ks.readRootConcept();
+        double scoreDist = ks.getConceptsDistance(rootConcept.getId(), rootConcept.getId());        
         assertEquals(0, scoreDist, OdtUtils.TOLERANCE);                       
     }
     
     @Test
     public void testGetConceptNonZeroDistance() {
 	
-	Concept rootConcept = kserv.readRootConcept();
-        double scoreDist = kserv.getConceptsDistance(rootConcept.getId(), um.conceptIdToUrl(GYMNASIUM_CONCEPT_ID));        
+	Concept rootConcept = ks.readRootConcept();
+        double scoreDist = ks.getConceptsDistance(rootConcept.getId(), um.conceptIdToUrl(GYMNASIUM_CONCEPT_ID));        
         assertTrue(scoreDist > 0.0);                       
     }
     
     @Test
     public void testLocalGlobalConceptId(){
         
-        assertTrue(SwebClientCrap.readConceptGUID(1) > 0);
+        assertTrue(disiKs.readConceptByGuid(1L).getId() > 0);
     }
 
 }

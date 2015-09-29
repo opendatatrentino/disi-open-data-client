@@ -120,9 +120,7 @@ public abstract class DisiTest {
 
     static final long PUNTE_DI_CAMPIGLIO_ID = 33406L;
     
-    /**
-     * Had problems while recreating this
-     */
+
     static final String PUNTE_DI_CAMPIGLIO_URL = um.entityIdToUrl(PUNTE_DI_CAMPIGLIO_ID);
     
     /** This is an etype */

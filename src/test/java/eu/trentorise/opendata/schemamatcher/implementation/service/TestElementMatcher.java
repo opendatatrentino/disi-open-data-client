@@ -19,7 +19,6 @@ import eu.trentorise.opendata.schemamatcher.implementation.services.SchemaImport
 import eu.trentorise.opendata.schemamatcher.model.ISchema;
 import eu.trentorise.opendata.schemamatcher.model.ISchemaElementCorrespondence;
 import eu.trentorise.opendata.schemamatcher.model.ISchemaElementMatcher;
-import eu.trentorise.opendata.schemamatcher.util.SwebClientCrap;
 import eu.trentorise.opendata.semantics.model.entity.Etype;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.IEtypeService;

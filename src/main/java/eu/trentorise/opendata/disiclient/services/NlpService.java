@@ -9,6 +9,7 @@ import eu.trentorise.opendata.semtext.MeaningStatus;
 import eu.trentorise.opendata.semtext.Meaning;
 import eu.trentorise.opendata.semtext.SemText;
 import eu.trentorise.opendata.semtext.Term;
+import eu.trentorise.opendata.semantics.services.EntityQuery;
 import eu.trentorise.opendata.semantics.services.INLPService;
 import eu.trentorise.opendata.semantics.services.SearchResult;
 import eu.trentorise.opendata.semantics.services.TermSearchResult;
@@ -260,7 +261,13 @@ public class NlpService implements INLPService {
 	
 	String lowerCasePartialName = partialName.toLowerCase(locale);
 
-	List<SearchResult> entities = ekb.getEntityService().searchEntities(lowerCasePartialName, null, locale);
+	EntityQuery query = EntityQuery.builder()
+		.setPartialName(partialName)
+		.setLocale(locale)
+		.build();
+
+	// notice searchEntities this one should already handle locale problems!
+	List<SearchResult> entities = ekb.getEntityService().searchEntities(query);
 
 	KnowledgeService ks = ekb.getKnowledgeService();
 	List<SearchResult> concepts = ks.searchConcepts(lowerCasePartialName, locale);

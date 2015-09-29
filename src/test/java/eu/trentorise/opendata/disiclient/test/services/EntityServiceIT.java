@@ -23,6 +23,7 @@ import eu.trentorise.opendata.disiclient.services.KnowledgeService;
 import static eu.trentorise.opendata.disiclient.test.services.DisiTest.ekb;
 import eu.trentorise.opendata.semantics.exceptions.OpenEntityNotFoundException;
 import eu.trentorise.opendata.semantics.model.entity.Etype;
+import eu.trentorise.opendata.semantics.services.EntityQuery;
 import eu.trentorise.opendata.semantics.services.IEntityService;
 import eu.trentorise.opendata.semantics.services.IEtypeService;
 import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
@@ -122,17 +123,43 @@ public class EntityServiceIT extends DisiTest {
 	 */
 	checker.checkEntity(entity);
 
-	assertTrue(entity.getName().string(Locale.ITALIAN).length() > 0);
+	assertTrue(entity.getName().str(Locale.ITALIAN).length() > 0);
 	// assertTrue(entity.getDescription().getString(Locale.ITALIAN).length()
 	// > 0);
 
     }
-    
+
+    /**
+     * Punte di campiglio had urls instead of Structure instance
+     */
     @Test
-    public void testCreatePunteDiCampiglio(){
+    public void testCreatePunteDiCampiglio() {
 	Entity en = enServ.readEntity(PUNTE_DI_CAMPIGLIO_URL);
 	Entity newEntity = enServ.createEntity(en);
 	checker.checkEntity(newEntity);
+    }
+
+    @Test
+    public void testCreateName() {
+
+	Dict.Builder namesBuilder = Dict.builder();
+	Dict newNames = namesBuilder.put(Locale.ITALIAN, "Buon Giorno")
+		.put(Locale.ENGLISH, "Hello")
+		.put(Locale.FRENCH, "Bonjour").build();
+	LOG.info(newNames.toString());
+
+	Entity entity = enServ.readEntity(PALAZZETTO_URL);
+	Entity.Builder enb = Entity.builder();
+	Etype etype = ets.readEtype(entity.getEtypeId());
+
+	enb.setNameAttr(newNames, entity.getEtypeId(), ets);
+	enb.putObj(etype.attrDefByName("Longitude"), 11.466894f);
+	enb.putObj(etype.attrDefByName("Latitude"), 46.289413f);
+
+	enb.setEtypeId(FACILITY_URL);
+	Entity newEn = enServ.createEntity(enb.build());
+	checker.checkEntity(newEn);
+
     }
 
     /**
@@ -413,10 +440,10 @@ public class EntityServiceIT extends DisiTest {
 	enServ.deleteEntity(newEntity.getId());
     }
 
-    
     @Test
     public void testSearchAllEntities() {
-	List<SearchResult> res = enServ.searchEntities("", null, Locale.ROOT);
+
+	List<SearchResult> res = enServ.searchEntities(EntityQuery.of());
 	LOG.info("Found ", res.size(), " entities");
 	assertTrue(res.size() > 0);
     }
@@ -431,12 +458,17 @@ public class EntityServiceIT extends DisiTest {
 	LOG.info("Read " + etypes.size() + " etypes. Going to create one entity per etype...");
 
 	List<String> enUrls = new ArrayList();
-		 
+
 	for (Etype etype : etypes) {
-	    List<SearchResult> results = enServ.searchEntities("", etype.getId(), Locale.ROOT);
+
+	    EntityQuery query = EntityQuery.builder()		    
+		    .setEtypeId(etype.getId())		    
+		    .build();
+
+	    List<SearchResult> results = enServ.searchEntities(query);
 	    if (!results.isEmpty()) {
-		    enUrls.add(results.get(0).getId());
-		}	    
+		enUrls.add(results.get(0).getId());
+	    }
 	}
 
 	List<Entity> entities = enServ.readEntities(enUrls);
@@ -492,18 +524,28 @@ public class EntityServiceIT extends DisiTest {
     @Test
     public void testSearchAndalo() {
 	String enName = "Andalo";
-	List<SearchResult> sResults = enServ.searchEntities(enName, LOCATION_URL, Locale.ITALIAN);
+	EntityQuery query = EntityQuery.builder()
+		.setPartialName(enName)
+		.setEtypeId(LOCATION_URL)
+		.setLocale(Locale.ENGLISH)
+		.build();
+
+	List<SearchResult> sResults = enServ.searchEntities(query);
 	assertTrue(sResults.size() > 0);
 
-	assertEquals(enName, sResults.get(0).getName().str(Locale.ITALIAN));
+	assertEquals(enName, sResults.get(0).getName().str(Locale.ENGLISH));
     }
 
     @Test
     public void testSearchEntities() {
 
-	Locale locale = OdtUtils.languageTagToLocale("en");
+	EntityQuery query = EntityQuery.builder()
+		.setPartialName("Povo")
+		.setEtypeId(LOCATION_URL)
+		.setLocale(Locale.ENGLISH)
+		.build();
 
-	List<SearchResult> sResults = enServ.searchEntities("Povo", LOCATION_URL, locale);
+	List<SearchResult> sResults = enServ.searchEntities(query);
 	for (SearchResult sr : sResults) {
 	    assertNotNull(sr.getId());
 	    assertNotNull(sr.getName());
@@ -512,20 +554,37 @@ public class EntityServiceIT extends DisiTest {
 
     @Test
     public void testSearchIncompleteEntity() {
-	List<SearchResult> res = enServ.searchEntities("roveret", null, Locale.ITALIAN);
+
+	EntityQuery query = EntityQuery.builder()
+		.setPartialName("roveret")
+		.setLocale(Locale.ITALIAN)
+		.build();
+
+	List<SearchResult> res = enServ.searchEntities(query);
 	assertTrue(res.size() > 0);
     }
 
     @Test
     public void testSearchMultiWordEntity() {
-	List<SearchResult> res = enServ.searchEntities("borgo valsugana", null, Locale.ITALIAN);
+
+	EntityQuery query = EntityQuery.builder()
+		.setPartialName("borgo valsugana")
+		.setLocale(Locale.ITALIAN)
+		.build();
+
+	List<SearchResult> res = enServ.searchEntities(query);
 	assertTrue(res.size() > 0);
     }
 
     @Test
     public void testSearchIncompleteMultiWordEntity() {
 
-	List<SearchResult> res = enServ.searchEntities("borgo valsu", null, Locale.ITALIAN);
+	EntityQuery query = EntityQuery.builder()
+		.setPartialName("borgo valsu")
+		.setLocale(Locale.ITALIAN)
+		.build();
+
+	List<SearchResult> res = enServ.searchEntities(query);
 	assertTrue(res.size() > 0);
 
     }

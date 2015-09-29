@@ -28,12 +28,12 @@ public class TestSchemaMatcherODRImplementation {
     private IEkb ekb;
     
     @Before
-    private void before(){
+    public void before(){
         ekb = ConfigLoader.init();
     }
     
     @After
-    private void after(){
+    public void after(){
         ekb = null;
     }
     

@@ -124,8 +124,11 @@ public class MatchingServiceIT extends DisiTest {
 
             ClassType classType = etypeToClassType(et);
             
-            List<SchemaMapping> schemaMappings = ekb.getSchemaMatchingService().matchSchemas(DcatMetadata.of(),
-                    ListType.of(classType),null);
+            List<SchemaMapping> schemaMappings = ekb.getSchemaMatchingService()
+        	    .matchSchemas(
+        		    	DcatMetadata.of(),
+        		    	ListType.of(classType), 
+        		    	null);
             
             assertEquals(allEntityTypes.size(), schemaMappings.size());
             
