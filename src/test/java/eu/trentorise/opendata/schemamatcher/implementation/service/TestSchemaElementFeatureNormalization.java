@@ -18,6 +18,7 @@ import eu.trentorise.opendata.schemamatcher.implementation.model.SchemaMatcherEx
 import eu.trentorise.opendata.schemamatcher.implementation.services.SchemaImport;
 import eu.trentorise.opendata.schemamatcher.model.ISchema;
 import eu.trentorise.opendata.schemamatcher.model.ISchemaElement;
+import eu.trentorise.opendata.semantics.DataTypes;
 import eu.trentorise.opendata.semantics.model.entity.Etype;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.IEtypeService;
@@ -66,7 +67,7 @@ public class TestSchemaElementFeatureNormalization {
         for (ISchemaElement sel : sourceSchemaElements) {
             if (sel.getElementContext().getElementDataType().equalsIgnoreCase("FLOAT")) {
                 for (ISchemaElement tel : targetSchemaElements) {
-                    if ((tel.getElementContext().getElementDataType().equalsIgnoreCase("xsd:float")) && (tel.getElementContent().getContentSize() > 0)) {
+                    if ((tel.getElementContext().getElementDataType().equalsIgnoreCase(DataTypes.FLOAT)) && (tel.getElementContent().getContentSize() > 0)) {
                         if (tel.getElementContext().getElementName().equalsIgnoreCase("Latitude") && sel.getElementContext().getElementName().equalsIgnoreCase("latitudine")) {
                             assertEquals(sefe.getStatisticalDistance(sel.getElementContent(), tel.getElementContent()), DIVERGENCE, DELTA);
                         }

@@ -100,12 +100,19 @@ public class EntityExportService {
         BufferedWriter bw = new BufferedWriter(writer);
 
         JsonStreamParser parser = new JsonStreamParser(new InputStreamReader(inputStream));
+        bw.write("[\n");
+        boolean first = true;
         while (parser.hasNext()) {
+            if (!first){
+        	bw.write(",\n");        	
+            }
+            first = false;
             JsonObject obj = semantifyJsonObject(parser.next());
             bw.write(obj.toString());
             bw.newLine();
             System.out.println(obj.toString());
         }
+        bw.write("]");
         bw.close();
     }
 
@@ -130,8 +137,10 @@ public class EntityExportService {
         try {
             globalID = obj.get("globalId").getAsLong();
             
-            Long locid = um.entityUrlToId(ekb.getEntityService().readEntityByGlobalId(globalID).getsUrl());
-
+            // dav commentedLong locid =  um.entityUrlToId(ekb.getEntityService().readEntityByGlobalId(globalID).getsUrl()); 
+        	    
+            Long locid = obj.get("id").getAsLong();
+            
             obj.remove("globalId");
             String globalIdURL = um.entityIdToUrl(locid);
 
@@ -141,7 +150,7 @@ public class EntityExportService {
             LOG.warn("SOMETHING WENT WRONG WHILE SEMANTIFYING JSON OBJECT - TODO INVESTIGATE THIS THING");
         }
 
-		//convert from global concept to local one
+	//convert from global concept to local one
         Long conceptTypeID = ekb.getKnowledgeService().readConceptByGuid(typeId).getId();
         
         EtypeService ets = ekb.getEtypeService();
@@ -160,16 +169,14 @@ public class EntityExportService {
             Long attrGlobalConceptID = attrObj.get("conceptId").getAsLong();
             obj.remove("conceptId");
             Long attrConceptID = ekb.getKnowledgeService().readConceptByGuid(attrGlobalConceptID).getId();
-            
-            //	System.out.println(attrConceptID);
+                    
             for (AttributeDefinition ad : attrDefs) {
                 
-				//System.out.println(ad.getConceptId());
-                //System.out.println(attrConceptID);
+		
                 if (ad.getConceptId().equals(attrConceptID)) {
 
                     String name = ad.getName().get("en");
-                    //	System.out.println(name);
+                
                     attrObj.remove("creationDate");
                     attrObj.remove("modificationDate");
                     attrObj.remove("dataType");

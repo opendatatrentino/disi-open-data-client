@@ -6,6 +6,7 @@ import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.commons.Dict;
 import eu.trentorise.opendata.commons.NotFoundException;
+import eu.trentorise.opendata.semantics.model.entity.AStruct;
 import eu.trentorise.opendata.semantics.model.entity.Attr;
 import eu.trentorise.opendata.semantics.model.entity.AttrDef;
 import eu.trentorise.opendata.semantics.model.entity.Entity;
@@ -20,6 +21,7 @@ import eu.trentorise.opendata.commons.OdtUtils;
 import eu.trentorise.opendata.disiclient.services.EtypeService;
 import eu.trentorise.opendata.disiclient.services.KnowledgeService;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static eu.trentorise.opendata.disiclient.test.services.DisiTest.ekb;
 import eu.trentorise.opendata.semantics.exceptions.OpenEntityNotFoundException;
 import eu.trentorise.opendata.semantics.model.entity.Etype;
@@ -272,6 +274,21 @@ public class EntityServiceIT extends DisiTest {
 	LOG.info(etype.getName().get("it"));
 	assertEquals(etype.getName().get("it"), "Nome");
     }
+    
+
+    @Test
+    public void testReadStruct() {
+
+        AStruct structure = enServ.readStruct(um.entityIdToUrl(DisiTest.KINDERGARDEN_CONTACT_ID));
+        Attr attr = structure.attr(EntityServiceIT.ATTR_DEF_TELEPHONE_URL);
+        checkNotNull(attr);
+        
+//		String url = structure.getEtypeURL();
+//		System.out.println(url);
+        assertEquals(EntityServiceIT.ATTR_DEF_TELEPHONE_URL, attr.getAttrDefId());
+        checker.checkStruct(structure, false);
+        assertNotNull(attr);
+    }    
 
     @Test
     public void testReadEntities() {

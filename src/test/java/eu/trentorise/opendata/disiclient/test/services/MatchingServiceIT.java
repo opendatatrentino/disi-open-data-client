@@ -120,7 +120,8 @@ public class MatchingServiceIT extends DisiTest {
 
         List<Etype> allEntityTypes = ekb.getEtypeService().readAllEtypes();
 
-        for (Etype et : allEntityTypes) {
+        // just 3 otherwise it takes forever since no instance caching is done...
+        for (Etype et : allEntityTypes.subList(0, 3)) {
 
             ClassType classType = etypeToClassType(et);
             
@@ -128,9 +129,14 @@ public class MatchingServiceIT extends DisiTest {
         	    .matchSchemas(
         		    	DcatMetadata.of(),
         		    	ListType.of(classType), 
-        		    	null);
+        		    	null);                      
+            
             
             assertEquals(allEntityTypes.size(), schemaMappings.size());
+            for (SchemaMapping sm : schemaMappings){
+        	checker.checkSchemaMapping(sm);
+            }
+            
             
             LOG.warn("TODO MATCHING SERVICE NEEDS BETTER TESTING");
         }

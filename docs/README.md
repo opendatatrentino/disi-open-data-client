@@ -29,7 +29,7 @@ Further configuration can be handled in with static class `SwebConfiguration`, w
 #### ID vs GUID
 
 Sweb supports local ids but also global ids (guids)
-Since mostly sweb api seems to prefer local ids, the `UrlMapper` class that tranlsates from sweb id to open entity url uses only local ids.
+Since mostly sweb api seems to prefer local ids, the `UrlMapper` (which is in semtext-nltext for dep hell problems) class that tranlsates from sweb id to open entity url uses only local ids.
 
 #### Caching
 

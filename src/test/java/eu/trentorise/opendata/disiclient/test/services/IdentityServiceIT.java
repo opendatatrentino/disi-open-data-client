@@ -55,9 +55,9 @@ import eu.trentorise.opendata.commons.validation.Preconditions;
  * 
  *
  */
-public class IdManagementServiceIT extends DisiTest {
+public class IdentityServiceIT extends DisiTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(IdManagementServiceIT.class);
+    private static final Logger LOG = LoggerFactory.getLogger(IdentityServiceIT.class);
 
     IEntityService enServ;
     IEtypeService ets;

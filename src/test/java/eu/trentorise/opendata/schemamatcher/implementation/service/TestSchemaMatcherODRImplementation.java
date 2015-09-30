@@ -37,7 +37,9 @@ public class TestSchemaMatcherODRImplementation {
         ekb = null;
     }
     
-    
+    /**
+     * TODO test is very slow....
+     */
     @Test
     public void testSchemaElementMatcherAllEtypes() throws IOException, SchemaMatcherException {
 
@@ -45,7 +47,7 @@ public class TestSchemaMatcherODRImplementation {
         MatchingService ms = new MatchingService(ekb);
         List<SchemaMapping> sc = ms.matchSchemasFile(file);
         for (SchemaMapping c : sc) {
-            LOG.info("Etype name: " + c.getTargetEtype().getName().string(Locale.ENGLISH) + " " + c.getScore());
+            LOG.info("Etype name: " + c.getTargetEtype().getName().str(Locale.ENGLISH) + " " + c.getScore());
 //			for(AttrCorrespondence ac: c.getAttributeCorrespondences()){
 //				LOGGER.info("Attribute: "+ac.getAttrDef().getName().getString(Locale.ENGLISH)+" score: "+ac.getScore()+ " index: "+ac.getColumnIndex());
 //			}
