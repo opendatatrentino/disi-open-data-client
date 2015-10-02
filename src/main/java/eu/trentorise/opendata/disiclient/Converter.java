@@ -87,7 +87,7 @@ public final class Converter {
 	ret.setDefinitionId(um.attrDefUrlToId(oeAttrDef.getId()));
 
 	if (!toCreate) {
-	    ret.setId(oeAttr.getLocalID());
+	    ret.setId(oeAttr.getLocalId());
 	}
 
 	if (!oeAttr.getValues().isEmpty()) {
@@ -100,7 +100,7 @@ public final class Converter {
 		for (Val oeValue : oeAttr.getValues()) {
 		    Value swebValue = new Value();
 		    if (!toCreate) {
-			swebValue.setId(oeValue.getLocalID());
+			swebValue.setId(oeValue.getLocalId());
 		    }
 		    swebValue.setDataType(DataType.COMPLEX_TYPE);
 		    if (oeValue.getObj() instanceof String){
@@ -120,7 +120,7 @@ public final class Converter {
 		for (Val oeValue : oeAttr.getValues()) {
 		    Value swebValue = new Value();
 		    if (!toCreate) {
-			swebValue.setId(oeValue.getLocalID());
+			swebValue.setId(oeValue.getLocalId());
 		    }
 		    swebValue.setDataType(DataType.CONCEPT);
 		    it.unitn.disi.sweb.webapi.model.kb.concepts.Concept swebConcept = new it.unitn.disi.sweb.webapi.model.kb.concepts.Concept();
@@ -134,7 +134,7 @@ public final class Converter {
 		for (Val oeValue : oeAttr.getValues()) {
 		    Value swebValue = new Value();
 		    if (!toCreate) {
-			swebValue.setId(oeValue.getLocalID());
+			swebValue.setId(oeValue.getLocalId());
 		    }
 		    swebValue.setDataType(DataType.NLSTRING);
 		    LocalizedString ls = (LocalizedString) oeValue.getObj();
@@ -146,7 +146,7 @@ public final class Converter {
 		for (Val oeValue : oeAttr.getValues()) {
 		    Value swebValue = new Value();
 		    if (!toCreate) {
-			swebValue.setId(oeValue.getLocalID());
+			swebValue.setId(oeValue.getLocalId());
 		    }
 		    swebValue.setDataType(DataType.SSTRING);
 		    SemText semText = (SemText) oeValue.getObj();
@@ -160,7 +160,7 @@ public final class Converter {
 		for (Val oeValue : oeAttr.getValues()) {
 		    Value swebValue = new Value();
 		    if (!toCreate) {
-			swebValue.setId(oeValue.getLocalID());
+			swebValue.setId(oeValue.getLocalId());
 		    }
 		    swebValue.setDataType(oeDatatypeToSweb(oeAttrDef.getType().getDatatype()));
 		    swebValue.setValue(oeValue.getObj());
@@ -170,7 +170,7 @@ public final class Converter {
 	    ret.setValues(swebValues);
 
 	} else {
-	    LOG.warn("Found openentity attribute with no values! Attribute id is " + oeAttr.getLocalID());
+	    LOG.warn("Found openentity attribute with no values! Attribute id is " + oeAttr.getLocalId());
 	}
 
 	return ret;
@@ -303,7 +303,7 @@ public final class Converter {
 
 	Attr.Builder b = Attr.builder();
 
-	b.setLocalID(swebAttribute.getId());
+	b.setLocalId(swebAttribute.getId());
 
 	AttributeDefinition swebAttrDef = swebAttributeDefinition(swebComplexType, swebAttribute.getDefinitionId());
 
@@ -324,7 +324,7 @@ public final class Converter {
 			.getValue();
 		Concept oeConcept = ekb.getConverter().swebConceptToOeConcept(swebConcept);
 
-		b.addValues(Val.builder().setLocalID(swebVal.getId()).setObj(oeConcept).build());
+		b.addValues(Val.builder().setLocalId(swebVal.getId()).setObj(oeConcept).build());
 	    }
 	} else if (DataType.NLSTRING.equals(swebAttribute.getDataType())) {
 
@@ -333,7 +333,7 @@ public final class Converter {
 		LocalizedString locString = LocalizedString.of(
 			OdtUtils.languageTagToLocale(swebVal.getLanguageCode()),
 			swebString);
-		b.addValues(Val.builder().setLocalID(swebVal.getId()).setObj(locString).build());
+		b.addValues(Val.builder().setLocalId(swebVal.getId()).setObj(locString).build());
 	    }
 	} else if (DataType.SSTRING.equals(swebAttribute.getDataType())) {
 
@@ -350,7 +350,7 @@ public final class Converter {
 			    .semText(swebSemanticString, true);
 		}
 
-		b.addValues(Val.builder().setLocalID(swebVal.getId()).setObj(semText).build());
+		b.addValues(Val.builder().setLocalId(swebVal.getId()).setObj(semText).build());
 	    }
 	} else if (DataType.COMPLEX_TYPE.equals(swebAttribute.getDataType())) {
 
@@ -384,13 +384,13 @@ public final class Converter {
 			    "Found unhandled object type in sweb value with id " + swebVal.getId());
 		}
 
-		b.addValues(Val.builder().setLocalID(swebVal.getId()).setObj(oeObj).build());
+		b.addValues(Val.builder().setLocalId(swebVal.getId()).setObj(oeObj).build());
 	    }
 
 	} else {
 	    for (Value swebVal : swebAttribute.getValues()) {
 		Checker.checkObj(swebVal.getValue(), oeAttrDef.getType(), false);
-		b.addValues(Val.builder().setLocalID(swebVal.getId()).setObj(swebVal.getValue()).build());
+		b.addValues(Val.builder().setLocalId(swebVal.getId()).setObj(swebVal.getValue()).build());
 	    }
 	}
 	return b.build();
