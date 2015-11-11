@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import eu.trentorise.opendata.semantics.services.SearchResult;
 import eu.trentorise.opendata.traceprov.types.Concept;
-import eu.trentorise.opendata.commons.OdtUtils;
+import eu.trentorise.opendata.commons.TodUtils;
 
 import eu.trentorise.opendata.disiclient.services.KnowledgeService;
 import eu.trentorise.opendata.schemamatcher.util.SwebClientCrap;
@@ -151,7 +151,7 @@ public class KnowledgeServiceIT extends DisiTest {
 	
 	Concept rootConcept = ks.readRootConcept();
         double scoreDist = ks.getConceptsDistance(rootConcept.getId(), rootConcept.getId());        
-        assertEquals(0, scoreDist, OdtUtils.TOLERANCE);                       
+        assertEquals(0, scoreDist, TodUtils.TOLERANCE);                       
     }
     
     @Test

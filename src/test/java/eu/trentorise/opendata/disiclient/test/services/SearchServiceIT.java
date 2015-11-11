@@ -13,7 +13,7 @@ import eu.trentorise.opendata.disiclient.services.SearchService;
 
 import eu.trentorise.opendata.semantics.model.entity.Entity;
 import eu.trentorise.opendata.semantics.services.SearchResult;
-import eu.trentorise.opendata.commons.OdtUtils;
+import eu.trentorise.opendata.commons.TodUtils;
 import eu.trentorise.opendata.disiclient.services.DisiEkb;
 import static eu.trentorise.opendata.disiclient.test.services.EntityServiceIT.LOCATION_URL;
 import org.junit.After;

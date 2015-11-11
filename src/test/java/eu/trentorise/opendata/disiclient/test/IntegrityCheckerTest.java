@@ -10,7 +10,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import static eu.trentorise.opendata.commons.OdtUtils.checkNotDirtyUrl;
+import static eu.trentorise.opendata.commons.TodUtils.checkNotDirtyUrl;
 import eu.trentorise.opendata.disiclient.services.DisiEkb;
 import eu.trentorise.opendata.disiclient.test.services.DisiTest;
 import eu.trentorise.opendata.disiclient.test.services.EntityServiceIT;

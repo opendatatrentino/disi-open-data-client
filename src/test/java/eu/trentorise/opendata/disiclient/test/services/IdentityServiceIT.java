@@ -1,7 +1,7 @@
 package eu.trentorise.opendata.disiclient.test.services;
 
 import eu.trentorise.opendata.commons.Dict;
-import eu.trentorise.opendata.commons.OdtUtils;
+import eu.trentorise.opendata.commons.TodUtils;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 
 import eu.trentorise.opendata.disiclient.test.ConfigLoader;
@@ -275,7 +275,7 @@ public class IdentityServiceIT extends DisiTest {
 	Entity.Builder enb = Entity.builder().from(newEntity);
 	
 
-	enb.setAttrs(OdtUtils.putKey(newEntity.getAttrs(),
+	enb.setAttrs(TodUtils.putKey(newEntity.getAttrs(),
 		ATTR_DEF_PART_OF_URL,	
 		Attr.ofObject(ets.readAttrDef(ATTR_DEF_PART_OF_URL),
 			mockEs.newEntity("http://trial/instances/new/1234567", etype, Dict.of(), Dict.of()))));			

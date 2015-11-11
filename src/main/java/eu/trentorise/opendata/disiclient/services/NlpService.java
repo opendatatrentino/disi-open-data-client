@@ -2,7 +2,7 @@ package eu.trentorise.opendata.disiclient.services;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.collect.Lists;
-import eu.trentorise.opendata.commons.OdtUtils;
+import eu.trentorise.opendata.commons.TodUtils;
 import eu.trentorise.opendata.semantics.model.entity.Entity;
 import eu.trentorise.opendata.semtext.MeaningKind;
 import eu.trentorise.opendata.semtext.MeaningStatus;
@@ -307,6 +307,6 @@ public class NlpService implements INLPService {
 	logger.warn("USING HARDCODED KB ID!");
 	NLText[] processedTexts = component.run("LanguageDetector", input, 1L);
 
-	return OdtUtils.languageTagToLocale(processedTexts[0].getLanguage());
+	return TodUtils.languageTagToLocale(processedTexts[0].getLanguage());
     }
 }

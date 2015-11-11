@@ -6,7 +6,7 @@ import com.google.common.collect.ImmutableBiMap;
 import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
 import eu.trentorise.opendata.commons.Dict;
 import eu.trentorise.opendata.commons.LocalizedString;
-import eu.trentorise.opendata.commons.OdtUtils;
+import eu.trentorise.opendata.commons.TodUtils;
 import eu.trentorise.opendata.disiclient.services.DisiEkb;
 import eu.trentorise.opendata.semantics.model.entity.Etype;
 import eu.trentorise.opendata.disiclient.services.EtypeService;
@@ -202,7 +202,7 @@ public final class Converter {
 	Iterator<?> it = map.entrySet().iterator();
 	while (it.hasNext()) {
 	    Map.Entry pairs = (Map.Entry) it.next();
-	    Locale l = OdtUtils.languageTagToLocale((String) pairs.getKey());
+	    Locale l = TodUtils.languageTagToLocale((String) pairs.getKey());
 	    dictBuilder = dictBuilder.put(l, (String) pairs.getValue());
 	}
 	return dictBuilder.build();
@@ -213,7 +213,7 @@ public final class Converter {
 	Iterator<?> it = map.entrySet().iterator();
 	while (it.hasNext()) {
 	    Map.Entry pairs = (Map.Entry) it.next();
-	    Locale l = OdtUtils.languageTagToLocale((String) pairs.getKey());
+	    Locale l = TodUtils.languageTagToLocale((String) pairs.getKey());
 
 	    List<String> vals = (List<String>) pairs.getValue();
 
@@ -246,7 +246,7 @@ public final class Converter {
 	Iterator<?> it = semtextsMap.entrySet().iterator();
 	while (it.hasNext()) {
 	    Map.Entry pairs = (Map.Entry) it.next();
-	    Locale l = OdtUtils.languageTagToLocale((String) pairs.getKey());
+	    Locale l = TodUtils.languageTagToLocale((String) pairs.getKey());
 	    List<SemText> vals = (List<SemText>) pairs.getValue();
 	    List<String> strings = new ArrayList();
 	    for (SemText stexts : vals) {
@@ -331,7 +331,7 @@ public final class Converter {
 	    for (Value swebVal : swebAttribute.getValues()) {
 		String swebString = (String) swebVal.getValue();
 		LocalizedString locString = LocalizedString.of(
-			OdtUtils.languageTagToLocale(swebVal.getLanguageCode()),
+			TodUtils.languageTagToLocale(swebVal.getLanguageCode()),
 			swebString);
 		b.addValues(Val.builder().setLocalId(swebVal.getId()).setObj(locString).build());
 	    }
@@ -344,7 +344,7 @@ public final class Converter {
 		if (swebSemanticString == null) {
 		    LOG.warn("COULDN'T FIND SEMANTIC VALUE IN SWEB SSTRING VALUE WITH ID " + swebVal.getId()
 			    + ", CONVERTING ONLY  TEXT!");
-		    semText = SemText.of(OdtUtils.languageTagToLocale(swebVal.getLanguageCode()), swebString);
+		    semText = SemText.of(TodUtils.languageTagToLocale(swebVal.getLanguageCode()), swebString);
 		} else {
 		    semText = DisiClients.getSingleton().getNLPService().getSemanticStringConverter()
 			    .semText(swebSemanticString, true);
@@ -586,7 +586,7 @@ public final class Converter {
 	Dict.Builder builder = Dict.builder();
 	for (String loc : swebDescr.keySet()) {
 	    for (SemanticString ss : swebDescr.get(loc)) {
-		builder.put(OdtUtils.languageTagToLocale(loc), ss.getText());
+		builder.put(TodUtils.languageTagToLocale(loc), ss.getText());
 	    }
 	}
 	return builder.build();
