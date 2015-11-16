@@ -184,8 +184,8 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>it.unitn.disi.sweb.tod</groupId>
-            <artifactId>sweb-webapi-tod-client</artifactId>
+            <groupId>it.unitn.disi.sweb.odt</groupId>
+            <artifactId>sweb-webapi-odt-client</artifactId>
             <version>1.0.1-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
