@@ -1,5 +1,8 @@
 package eu.trentorise.opendata.disiclient.services;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.google.common.collect.Lists;
+import eu.trentorise.opendata.disiclient.Converter;
 import eu.trentorise.opendata.disiclient.DisiClientException;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
@@ -10,6 +13,7 @@ import eu.trentorise.opendata.disiclient.model.entity.ValueODR;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.semantics.IntegrityChecker;
 import eu.trentorise.opendata.semantics.NotFoundException;
+import eu.trentorise.opendata.semantics.impl.model.SearchResult;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
@@ -22,6 +26,7 @@ import eu.trentorise.opendata.semantics.services.model.DataTypes;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
+import it.unitn.disi.sweb.webapi.client.AbstractApiClient;
 import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
 import it.unitn.disi.sweb.webapi.client.kb.VocabularyClient;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
@@ -30,6 +35,7 @@ import it.unitn.disi.sweb.webapi.model.eb.Instance;
 import it.unitn.disi.sweb.webapi.model.eb.Name;
 import it.unitn.disi.sweb.webapi.model.eb.Value;
 import it.unitn.disi.sweb.webapi.model.filters.InstanceFilter;
+import it.unitn.disi.sweb.webapi.model.filters.SearchResultFilter;
 import it.unitn.disi.sweb.webapi.model.kb.concepts.Concept;
 import it.unitn.disi.sweb.webapi.model.kb.types.DataType;
 import it.unitn.disi.sweb.webapi.model.kb.vocabulary.Vocabulary;
@@ -44,6 +50,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
 
@@ -57,7 +64,10 @@ public class EntityService implements IEntityService {
     Logger logger = LoggerFactory.getLogger(EntityService.class);
 
     private IProtocolClient api;
-    private DisiEkb disiEkb; 
+    private DisiEkb disiEkb;
+
+    @Nullable
+    private InstanceClient instanceClient;
 
     public EntityService(IProtocolClient api) {
         this.api = api;
@@ -72,7 +82,7 @@ public class EntityService implements IEntityService {
     public Long createEntity(IEntity entity) {
 
         EntityODR ent = EntityODR.disify(entity, true);
-        
+
         Entity e = ent.convertToEntity();
         InstanceClient instanceCl = new InstanceClient(this.api);
         logger.info(e.toString());
@@ -107,19 +117,19 @@ public class EntityService implements IEntityService {
 
         //System.out.println("Class exists: truw");
         Long id = null;
-        
+
         // filthy hack to purge ids...
         e.setId(null);
         e.setGlobalId(null);
-        for (Attribute a : e.getAttributes()){
+        for (Attribute a : e.getAttributes()) {
             a.setId(null);
             a.setInstanceId(null);
-            for (Value v : a.getValues()){
-                v.setId(null);     
+            for (Value v : a.getValues()) {
+                v.setId(null);
                 v.setAttributeId(null);
             }
         }
-        
+
         try {
             id = instanceCl.create(e);
         }
@@ -182,19 +192,19 @@ public class EntityService implements IEntityService {
         instFilter.setIncludeAttributesAsProperties(true);
         instFilter.setIncludeSemantics(true);
         Instance instance = instanceCl.readInstance(entityID, instFilter);
-      
+
         Entity entity = (Entity) instance;
         EntityODR en = new EntityODR(this.api, entity);
-     //   IntegrityChecker.checkEntity(en);
+        //   IntegrityChecker.checkEntity(en);
         return en;
     }
-    
+
     public Long readEntityGlobalID(long globalID) {
-    	  InstanceClient instanceCl = new InstanceClient(this.api);
-          Instance instance =   instanceCl.readEntityByGloabalId(1L, globalID, null);
-        
-          Entity entity = (Entity) instance;
-          return entity.getId();
+        InstanceClient instanceCl = new InstanceClient(this.api);
+        Instance instance = instanceCl.readEntityByGloabalId(1L, globalID, null);
+
+        Entity entity = (Entity) instance;
+        return entity.getId();
     }
 
     public List<IEntity> readEntities(List<String> entityURLs) {
@@ -221,8 +231,8 @@ public class EntityService implements IEntityService {
         List<IEntity> ret = new ArrayList<IEntity>();
         for (Entity epEnt : entities) {
             EntityODR en = new EntityODR(this.api, epEnt);
-            IntegrityChecker.checkEntity(en);            
-            ret.add(en);            
+            IntegrityChecker.checkEntity(en);
+            ret.add(en);
         }
         return ret;
     }
@@ -331,30 +341,27 @@ public class EntityService implements IEntityService {
                 return createStructureAttribute(attrDef, hashMaps);
             }
 
-        }  else {
-            if (value instanceof Collection) {
-                List<ValueODR> valsODR = new ArrayList<ValueODR>();
-                for (Object obj : (Collection) value) {
-                    ValueODR valODR = new ValueODR();
-                    if (obj instanceof IEntity){
-                        valODR.setValue(EntityODR.disify((IEntity) obj, false));
-                    } else {
-                        valODR.setValue(obj);
-                    }
-                    
-                    valsODR.add(valODR);
+        } else if (value instanceof Collection) {
+            List<ValueODR> valsODR = new ArrayList<ValueODR>();
+            for (Object obj : (Collection) value) {
+                ValueODR valODR = new ValueODR();
+                if (obj instanceof IEntity) {
+                    valODR.setValue(EntityODR.disify((IEntity) obj, false));
+                } else {
+                    valODR.setValue(obj);
                 }
-                return new AttributeODR(attrDef, valsODR);
-            } else {
-                    ValueODR valODR = new ValueODR();
-                    if (value instanceof IEntity){
-                        valODR.setValue(EntityODR.disify((IEntity) value, false));
-                    } else {
-                        valODR.setValue(value);
-                    }
-                return new AttributeODR(attrDef, valODR);
-            }
 
+                valsODR.add(valODR);
+            }
+            return new AttributeODR(attrDef, valsODR);
+        } else {
+            ValueODR valODR = new ValueODR();
+            if (value instanceof IEntity) {
+                valODR.setValue(EntityODR.disify((IEntity) value, false));
+            } else {
+                valODR.setValue(value);
+            }
+            return new AttributeODR(attrDef, valODR);
         }
     }
 
@@ -417,12 +424,11 @@ public class EntityService implements IEntityService {
 
         AttributeDef adef = (AttributeDef) attrDef;
         attributeStructure.setTypeId(adef.getRangeEntityTypeID());
-        
-        
-        for (Iterator<IAttributeDef> it = atributes.keySet().iterator(); it.hasNext();) {            
+
+        for (Iterator<IAttributeDef> it = atributes.keySet().iterator(); it.hasNext();) {
             IAttributeDef ad = it.next();
             AttributeODR aodr = createAttribute(ad, atributes.get(ad));
-            attrs.add(aodr.convertToAttribute());            
+            attrs.add(aodr.convertToAttribute());
         }
         attributeStructure.setAttributes(attrs);
         return attributeStructure;
@@ -509,8 +515,8 @@ public class EntityService implements IEntityService {
     public AttributeODR createNameAttributeODR(IAttributeDef attrDef, Object name) {
 
         Attribute entityNameAttribute = new Attribute();
-        entityNameAttribute.setDefinitionId(attrDef.getGUID());        
-                
+        entityNameAttribute.setDefinitionId(attrDef.getGUID());
+
         Name nameStructure = new Name();
         nameStructure.setEntityBaseId(1L);
         logger.warn("TODO HARDCODED ENTITY BASE ID TO 1.");
@@ -570,9 +576,9 @@ public class EntityService implements IEntityService {
 
     public void updateEntity(IEntity entity) {
         EntityODR ent;
-        
+
         ent = EntityODR.disify(entity, true);
-        
+
         Entity e = ent.convertToEntity();
         InstanceClient instanceCl = new InstanceClient(this.api);
         try {
@@ -715,16 +721,53 @@ public class EntityService implements IEntityService {
         return en;
     }
 
+    private InstanceClient getInstanceClient() {
+        if (instanceClient == null) {
+            instanceClient = new InstanceClient(WebServiceURLs.getClientProtocol());
+        }
+        return instanceClient;
+    }
+
+    @Override
     public List<ISearchResult> searchEntities(String partialName, @Nullable String etypeURL, Locale locale) {
-        List<ISearchResult> entities = new ArrayList<ISearchResult>();
 
-        Search search = new Search(disiEkb);
-        entities = search.searchEntities(partialName, etypeURL, locale);
+        if (locale == null || locale.equals(Locale.ROOT)) {
 
-        
-        
-        
-        return entities;
+            logger.warn("TODO - Setting hard coded locale ENGLISH and ITALIAN");
+            List<Locale> defaultLocales = Lists.newArrayList(Locale.ENGLISH, Locale.ITALIAN);
+            locale = defaultLocales.get(0);
+        }
+
+        logger.warn("TODO - SETTING ENTITY PARTIAL NAME TO LOWERCASE");
+        String lowerCasedPartialName = partialName.toLowerCase(locale).trim();
+
+        List<ISearchResult> ret = new ArrayList();
+        SearchResultFilter srf = new SearchResultFilter();
+        srf.setLocale(locale);
+        srf.setIncludeAttributesAsProperties(true);
+        Long swebEtypeId = null;
+        if (etypeURL != null) {
+            swebEtypeId = WebServiceURLs.urlToEtypeID(etypeURL);
+        }
+
+        List<Instance> instances;
+
+        if (lowerCasedPartialName.isEmpty()) {
+            logger.warn("TODO - USING HARD CODED ENTITY BASE '1' IN SEARCH");
+            instances = getInstanceClient().readInstances(1L, swebEtypeId, null, null, null);
+            List<it.unitn.disi.sweb.webapi.model.eb.Entity> swebEntities = 
+                    Converter.swebInstancesToSwebEntities(instances);
+
+            for (it.unitn.disi.sweb.webapi.model.eb.Entity swebEntity : swebEntities) {
+                SearchResult res = Converter.makeSearchResult(swebEntity);
+                ret.add(res);
+            }
+
+        } else {
+            return new SearchEntityNameClient().searchEntitiesByName(partialName, etypeURL, locale);
+        }
+
+        return ret;
     }
 
     /* (non-Javadoc)
@@ -733,4 +776,89 @@ public class EntityService implements IEntityService {
     public boolean isTemporaryURL(String entityURL) {
         return entityURL.contains("instances/new/");
     }
+
+    private class SearchEntityNameClient extends AbstractApiClient<SwebEntitySearchResultWrapper> {
+
+        public SearchEntityNameClient() {
+            super(WebServiceURLs.getClientProtocol(),
+                    SwebEntitySearchResultWrapper.class,
+                    "/search/byName",
+                    "SwebEntitySearchResult");
+        }
+
+        /**
+         * @since 0.11.1
+         */
+        public List<ISearchResult> searchEntitiesByName(String partialName, @Nullable String etypeURL, @Nullable Locale locale) {
+            // BASE_URL/search/byName?query=borgo%20valsu&isPrefix=true&entityBase=1&includeCount=false&idsOnly=false&pageIndex=1&pageSize=10&maxDepth=1&includeSemantics=false&maxValues=10&includeAttributes=false&createAttributeMap=false&attributeFilterType=ATTRIBUTE_DEF_ID&includeAttributesAsProperties=true&includeTimestamps=false&locale=all
+
+            Map<String, String> params = new HashMap();
+            params.put("query", partialName);
+
+            logger.warn("TODO - SETTING ENTITY BASE TO 1 IN SEARCH");
+
+            params.put("isPrefix", "true");
+            params.put("entityBase", "1");
+            params.put("includeAttributesAsProperties", "true");
+
+            if (etypeURL != null) {
+                params.put("type", String.valueOf(WebServiceURLs.urlToEtypeID(etypeURL)));
+            }
+
+            logger.warn("TODO - SETTING LOCALE TO 'all' IN SEARCH");
+            params.put("locale", "all");
+
+            SwebEntitySearchResultWrapper results = this.read("/search/byName", params);
+
+            List<ISearchResult> ret = new ArrayList();
+
+            Dict dict;
+            for (SwebEntitySearchResult swebSr : results.results) {
+
+                if (swebSr.names == null) {
+                    dict = new Dict();
+                } else {
+                    dict = new Dict();
+                    for (SwebNameResult name : swebSr.names) {
+                        dict = dict.merge(Converter.multimapToDict(name.names));
+                    }
+                }
+
+                ret.add(new SearchResult(WebServiceURLs.entityIDToURL(swebSr.id), dict));
+            }
+
+            return ret;
+
+        }
+
+        @Override
+        protected String getIdPath(long id) {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    private static class SwebNameResult {
+
+        public Map<String, List<String>> names;
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    private static class SwebEntitySearchResultWrapper {
+
+        public List<SwebEntitySearchResult> results;
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    private static class SwebEntitySearchResult {
+
+        public long id;
+        public long entityBaseId;
+        public long typeId;
+        public List<SwebNameResult> names;
+        public long globalId;
+    }
+
 }

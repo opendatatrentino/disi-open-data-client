@@ -1,6 +1,5 @@
 package eu.trentorise.opendata.disiclient.test.services;
 
-import com.google.common.collect.ImmutableList;
 import eu.trentorise.opendata.disiclient.services.DisiEkb;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.KnowledgeService;

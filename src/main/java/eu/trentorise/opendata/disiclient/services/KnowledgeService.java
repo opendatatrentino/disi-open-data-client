@@ -98,7 +98,9 @@ public class KnowledgeService implements IKnowledgeService {
     }
 
     public List<ISearchResult> searchConcepts(String partialName, Locale locale) {
-
+        logger.warn("TODO - SETTING CONCEPT PARTIAL NAME TO LOWERCASE");
+        partialName = partialName.toLowerCase(locale).trim();
+        
         List<ISearchResult> conceptRes = new ArrayList<ISearchResult>();
         
         ConceptClient client = new ConceptClient(WebServiceURLs.getClientProtocol(locale));

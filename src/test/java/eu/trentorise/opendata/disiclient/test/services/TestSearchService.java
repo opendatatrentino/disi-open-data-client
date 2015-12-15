@@ -1,5 +1,6 @@
 package eu.trentorise.opendata.disiclient.test.services;
 
+import eu.trentorise.opendata.disiclient.services.EntityService;
 import static org.junit.Assert.assertNotNull;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
@@ -51,13 +52,13 @@ public class TestSearchService {
     }
 
     @Test
-    public void testsearchEntities() {
+    public void testSearchEntities() {
 
-        Search searchService = new Search(api);
+        EntityService entityService = new EntityService(api);
         String etypeURL = WebServiceURLs.etypeIDToURL(18L);
         Locale locale = TraceProvUtils.languageTagToLocale("en");
 
-        List<ISearchResult> sResults = searchService.searchEntities("Povo", etypeURL, locale);
+        List<ISearchResult> sResults = entityService.searchEntities("Povo", etypeURL, locale);
         for (ISearchResult sr : sResults) {
             assertNotNull(sr.getURL());
             assertNotNull(sr.getName());

@@ -151,25 +151,4 @@ public class Search {
         this.api = WebServiceURLs.getClientProtocol();
     }
 
-    public List<ISearchResult> searchEntities(String partialName, String etypeURL, Locale locale) {
-        List<ISearchResult> entities = new ArrayList<ISearchResult>();
-        SearchResultFilter srf = new SearchResultFilter();
-        srf.setLocale(locale);
-        srf.setIncludeAttributesAsProperties(true);
-        Long etype=null;
-        if(etypeURL!=null){
-         etype = WebServiceURLs.urlToEtypeID(etypeURL);
-        }
-        InstanceSearchResult result = client.searchInstances(partialName, 1, etype, null, srf, null);
-        List<Instance> resInstances = result.getResults();
-
-        List<Entity> ents = getEntities(resInstances);
-        for (Entity e : ents) {
-            SearchResult res = new SearchResult(e);
-            entities.add(res);
-        }
-
-        return entities;
-    }
-
 }

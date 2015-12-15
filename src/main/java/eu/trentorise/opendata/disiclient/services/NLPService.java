@@ -237,10 +237,10 @@ public class NLPService implements INLPService {
 		return filteredEntities;
 	}
 
-	public List<IWordSearchResult> freeSearch(String partialName, Locale locale) {		
+	public List<IWordSearchResult> freeSearch(String partialName, Locale locale) {	                                                    
 		List<ISearchResult> entities = new ArrayList<ISearchResult>();
 
-		Search search = new Search( WebServiceURLs.getClientProtocol());
+		EntityService search = new EntityService( WebServiceURLs.getClientProtocol());
 		entities = search.searchEntities(partialName.toLowerCase(), null, locale);
 
 		KnowledgeService ks = new KnowledgeService();
