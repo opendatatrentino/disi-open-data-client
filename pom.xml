@@ -302,22 +302,22 @@
         <dependency>
             <groupId>it.unitn.disi.sweb</groupId>
             <artifactId>sweb-webapi-kb-model</artifactId>
-            <version>3.0.1-SNAPSHOT</version>
+            <version>3.0.1-RELEASE</version>
         </dependency>
         <dependency>
             <groupId>it.unitn.disi.sweb</groupId>
             <artifactId>sweb-webapi-kb-client</artifactId>
-            <version>3.0.1-SNAPSHOT</version>
+            <version>3.0.1-RELEASE</version>
         </dependency>
         <dependency>
             <groupId>it.unitn.disi.sweb</groupId>
             <artifactId>sweb-webapi-eb-model</artifactId>
-            <version>3.0.1-SNAPSHOT</version>
+            <version>3.0.1-RELEASE</version>
         </dependency>
         <dependency>
             <groupId>it.unitn.disi.sweb</groupId>
             <artifactId>sweb-webapi-eb-client</artifactId>
-            <version>3.0.1-SNAPSHOT</version>
+            <version>3.0.1-RELEASE</version>
         </dependency>
         <dependency>
             <groupId>eu.trentorise.opendata</groupId>
