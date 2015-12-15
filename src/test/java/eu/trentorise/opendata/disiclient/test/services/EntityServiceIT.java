@@ -5,36 +5,26 @@ import eu.trentorise.opendata.columnrecognizers.SwebConfiguration;
 
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.commons.Dict;
-import eu.trentorise.opendata.commons.NotFoundException;
 import eu.trentorise.opendata.semantics.model.entity.AStruct;
 import eu.trentorise.opendata.semantics.model.entity.Attr;
 import eu.trentorise.opendata.semantics.model.entity.AttrDef;
 import eu.trentorise.opendata.semantics.model.entity.Entity;
 import eu.trentorise.opendata.semantics.model.entity.Struct;
-import eu.trentorise.opendata.semantics.model.entity.Struct.Builder;
-import eu.trentorise.opendata.semantics.model.entity.Val;
 import eu.trentorise.opendata.semtext.SemText;
 import eu.trentorise.opendata.traceprov.types.Concept;
 import eu.trentorise.opendata.semantics.services.SearchResult;
-import eu.trentorise.opendata.semantics.services.mock.MockEntityService;
-import eu.trentorise.opendata.commons.TodUtils;
 import eu.trentorise.opendata.disiclient.services.EtypeService;
 import eu.trentorise.opendata.disiclient.services.KnowledgeService;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static eu.trentorise.opendata.disiclient.test.services.DisiTest.ekb;
 import eu.trentorise.opendata.semantics.exceptions.OpenEntityNotFoundException;
 import eu.trentorise.opendata.semantics.model.entity.Etype;
 import eu.trentorise.opendata.semantics.services.EntityQuery;
 import eu.trentorise.opendata.semantics.services.IEntityService;
 import eu.trentorise.opendata.semantics.services.IEtypeService;
-import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
-import it.unitn.disi.sweb.webapi.client.eb.EbClient;
 import it.unitn.disi.sweb.webapi.client.eb.InstanceClient;
-import it.unitn.disi.sweb.webapi.client.kb.ComplexTypeClient;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 
-import it.unitn.disi.sweb.webapi.model.eb.EntityBase;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
 import it.unitn.disi.sweb.webapi.model.eb.Structure;
 import it.unitn.disi.sweb.webapi.model.eb.Value;
@@ -48,9 +38,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
-
-import org.apache.jena.riot.checker.CheckerBlankNodes;
 import org.junit.After;
 import org.junit.Assert;
 
@@ -155,8 +142,8 @@ public class EntityServiceIT extends DisiTest {
 	Etype etype = ets.readEtype(entity.getEtypeId());
 
 	enb.setNameAttr(newNames, entity.getEtypeId(), ets);
-	enb.putObj(etype.attrDefByName("Longitude"), 11.466894f);
-	enb.putObj(etype.attrDefByName("Latitude"), 46.289413f);
+	enb.putObj(etype.attrDefByIdOrName("Longitude"), 11.466894f);
+	enb.putObj(etype.attrDefByIdOrName("Latitude"), 46.289413f);
 
 	enb.setEtypeId(FACILITY_URL);
 	Entity newEn = enServ.createEntity(enb.build());
@@ -430,9 +417,9 @@ public class EntityServiceIT extends DisiTest {
 
 	Concept concept = Concept.builder()
 		.setId(um.conceptIdToUrl(123L)).build();
-	enb.putObj(etype.attrDefByName("Class"), concept);
-	enb.putObj(etype.attrDefByName("Latitude"), 12.123F);
-	enb.putObj(etype.attrDefByName("Longitude"), 56.567F);
+	enb.putObj(etype.attrDefByIdOrName("Class"), concept);
+	enb.putObj(etype.attrDefByIdOrName("Latitude"), 12.123F);
+	enb.putObj(etype.attrDefByIdOrName("Longitude"), 56.567F);
 
 	Struct.Builder strub = Struct.builder();
 
