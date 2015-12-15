@@ -65,6 +65,10 @@ import org.slf4j.LoggerFactory;
  */
 public class TestEntityService {
 
+    // little hack so we force cong loading prior of etypeIDToURL calls in static initializers
+    private static DisiEkb myekb =  ConfigLoader.init();
+    
+    
     public static final long OPENING_HOURS = 7L;
     public static final String OPENING_HOURS_URL = etypeIDToURL(OPENING_HOURS);
 

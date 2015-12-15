@@ -107,6 +107,19 @@ public class EntityService implements IEntityService {
 
         //System.out.println("Class exists: truw");
         Long id = null;
+        
+        // filthy hack to purge ids...
+        e.setId(null);
+        e.setGlobalId(null);
+        for (Attribute a : e.getAttributes()){
+            a.setId(null);
+            a.setInstanceId(null);
+            for (Value v : a.getValues()){
+                v.setId(null);     
+                v.setAttributeId(null);
+            }
+        }
+        
         try {
             id = instanceCl.create(e);
         }
