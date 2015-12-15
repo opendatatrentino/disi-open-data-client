@@ -1,6 +1,7 @@
 package eu.trentorise.opendata.disiclient.test.services;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
@@ -682,9 +683,7 @@ System.out.println(entityURL);
         List<ISearchResult> sResults = enServ.searchEntities("Andalo", etypeURL, locale);
         assertTrue(sResults.size() > 0);
         
-        assertEquals("Andalo", sResults.get(0).getName().getString(Locale.ITALIAN));
-
-        
+        assertEquals("Andalo", sResults.get(0).getName().getString(Locale.ENGLISH));       
     }
     
     @Test
