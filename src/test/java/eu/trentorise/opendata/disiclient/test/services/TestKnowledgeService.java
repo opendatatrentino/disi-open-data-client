@@ -1,6 +1,5 @@
 package eu.trentorise.opendata.disiclient.test.services;
 
-import eu.trentorise.opendata.disiclient.services.EntityService;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -14,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.trentorise.opendata.disiclient.services.KnowledgeService;
+import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.disiclient.test.ConfigLoader;
 import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
@@ -33,7 +33,7 @@ public class TestKnowledgeService {
     @Test
     public void testReadConcept() {
         KnowledgeService kserv = new KnowledgeService();
-        String url = "http://opendata.disi.unitn.it:8080/odr/concepts/120";
+        String url = WebServiceURLs.conceptIDToURL(120);
         IConcept con = kserv.readConcept(url);
         assertEquals(con.getURL(), url);
     }

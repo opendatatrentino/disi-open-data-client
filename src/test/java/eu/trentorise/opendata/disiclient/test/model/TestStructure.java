@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import eu.trentorise.opendata.disiclient.model.entity.StructureODR;
 import eu.trentorise.opendata.disiclient.services.EntityService;
+import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.disiclient.test.ConfigLoader;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import org.junit.Before;
@@ -24,7 +25,7 @@ public class TestStructure {
         EntityService es = new EntityService();
         Long entityID = 64008L;
         StructureODR structure = es.readStructure(entityID);
-        IAttribute attribute = structure.getAttribute("http://opendata.disi.unitn.it:8080/odr/attributedefinitions/177");
+        IAttribute attribute = structure.getAttribute(WebServiceURLs.attrDefIDToURL(177));
 //		String url = structure.getEtypeURL();
 //		System.out.println(url);
 

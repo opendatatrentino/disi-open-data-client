@@ -64,7 +64,8 @@ public class SemanticTextFactoryTest {
 
     @Test
     public void testConceptIDConverter() {
-        Long conceptID = WebServiceURLs.urlToConceptID("http://opendata.disi.unitn.it:8080/odr/concepts/1");
+        
+        Long conceptID = WebServiceURLs.urlToConceptID(WebServiceURLs.getURL() +"/concepts/1");
         System.out.println(conceptID);
     }
 
@@ -76,7 +77,7 @@ public class SemanticTextFactoryTest {
 
     @Test
     public void testEntityIDConverter() {
-        Long conceptID = WebServiceURLs.urlToEntityID("http://opendata.disi.unitn.it:8080/odr/instances/1");
+        Long conceptID = WebServiceURLs.urlToEntityID(WebServiceURLs.getURL() +"/instances/1");
         System.out.println(conceptID);
     }
 
