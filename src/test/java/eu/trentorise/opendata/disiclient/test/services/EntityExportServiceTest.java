@@ -40,11 +40,11 @@ public class EntityExportServiceTest {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public static final long ENTITY1 = 1L;
-    public static final String ENTITY1_URL = WebServiceURLs.entityIDToURL(ENTITY1);
+    public static  String ENTITY1_URL;
     public static final long ENTITY2 = 4L;
-    public static final String ENTITY2_URL = WebServiceURLs.entityIDToURL(ENTITY2);
+    public static String ENTITY2_URL;
     public static final long ENTITY3 = 7;
-    public static final String ENTITY3_URL = WebServiceURLs.entityIDToURL(ENTITY3);
+    public static String ENTITY3_URL;
     List<String> entities;
     EntityExportService ess = new EntityExportService();
     EntityService es = new EntityService();

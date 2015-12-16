@@ -65,20 +65,17 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class TestEntityService {
-
-    // little hack so we force cong loading prior of etypeIDToURL calls in static initializers
-    private static DisiEkb myekb =  ConfigLoader.init();
-    
     
     public static final long OPENING_HOURS = 7L;
-    public static final String OPENING_HOURS_URL = etypeIDToURL(OPENING_HOURS);
+    public static String OPENING_HOURS_URL;
 
     public static final long ATTR_DEF_FACILITY_OPENING_HOURS = 66L;
-    public static final String ATTR_DEF_FACILITY_OPENING_HOURS_URL = attrDefIDToURL(ATTR_DEF_FACILITY_OPENING_HOURS);
+    public static String ATTR_DEF_FACILITY_OPENING_HOURS_URL;
+    
     public static final long ATTR_DEF_HOURS_OPENING_HOUR = 31L;
-    public static final String ATTR_DEF_HOURS_OPENING_HOUR_URL = attrDefIDToURL(ATTR_DEF_HOURS_OPENING_HOUR);
+    public static String ATTR_DEF_HOURS_OPENING_HOUR_URL;
     public static final long ATTR_DEF_HOURS_CLOSING_HOUR = 30L;
-    public static final String ATTR_DEF_HOURS_CLOSING_HOUR_URL = attrDefIDToURL(ATTR_DEF_HOURS_CLOSING_HOUR);
+    public static String ATTR_DEF_HOURS_CLOSING_HOUR_URL;
 
     public static final long PALAZZETTO_ID = 64000L;
     
@@ -87,29 +84,29 @@ public class TestEntityService {
      * Palazzetto is a Facility. It doesn't have description. Its concept is gymnasium.
      */
     
-    public static final String PALAZZETTO_URL = entityIDToURL(PALAZZETTO_ID);
+    public static String PALAZZETTO_URL;
     public static final String PALAZZETTO_NAME_IT = "PALAZZETTO DELLO SPORT";
     public static final long GYMNASIUM_CONCEPT_ID = 18565L;
-    public static final String GYMNASIUM_CONCEPT_URL = conceptIDToURL(GYMNASIUM_CONCEPT_ID);
+    public static String GYMNASIUM_CONCEPT_URL;
 
     /**
      * Ravazzone is a cool district of Mori.
      */
     public static final long RAVAZZONE_ID = 15001L;
-    public static final String RAVAZZONE_URL = entityIDToURL(RAVAZZONE_ID);
+    public static String RAVAZZONE_URL;
     public static final String RAVAZZONE_NAME_IT = "Ravazzone";
     public static final String RAVAZZONE_NAME_EN = "Ravazzone";
     public static final long ADMINISTRATIVE_DISTRICT_CONCEPT_ID = 10001L;
-    public static final String ADMIN_DISTRICT_CONCEPT_URL = conceptIDToURL(ADMINISTRATIVE_DISTRICT_CONCEPT_ID);
+    public static  String ADMIN_DISTRICT_CONCEPT_URL;
 
     public static final long RESIDENCE_DES_ALPES_ID = 66206L;
-    public static final String RESIDENCE_DES_ALPES_URL = entityIDToURL(RESIDENCE_DES_ALPES_ID);
+    public static String RESIDENCE_DES_ALPES_URL;
     
     /**
      * Rovereto URl
      */
     public static final long POVO_ID = 1024;
-    public static final String POVO_URL = entityIDToURL(POVO_ID);
+    public static String POVO_URL;
 
     /**
      * "Campanil partenza" is a Facility. Entity concept is Detachable
@@ -117,57 +114,57 @@ public class TestEntityService {
      * English. Name is only in Italian.
      */
     public static final long CAMPANIL_PARTENZA_ID = 64235L;
-    public static final String CAMPANIL_PARTENZA_URL = entityIDToURL(CAMPANIL_PARTENZA_ID);
+    public static String CAMPANIL_PARTENZA_URL;
     public static final long DETACHABLE_CHAIRLIFT_CONCEPT_ID = 111009L;
-    public static final String DETACHABLE_CHAIRLIFT_CONCEPT_URL = conceptIDToURL(DETACHABLE_CHAIRLIFT_CONCEPT_ID);
+    public static String DETACHABLE_CHAIRLIFT_CONCEPT_URL;
     public static final String CAMPANIL_PARTENZA_NAME_IT = "Campanil partenza";
 
     /**
      * Andalo is one of those nasty locations with "Place Name" as Name type
      */
     public static final long ANDALO_ID = 2089L;
-    public static final String ANDALO_URL = entityIDToURL(ANDALO_ID);
+    public static String ANDALO_URL;
 
     public static final long CLASS_CONCEPT_ID = 21987L;
-    public static final String CLASS_CONCEPT_ID_URL = conceptIDToURL(CLASS_CONCEPT_ID);
+    public static String CLASS_CONCEPT_ID_URL ;
 
     public static final long ROOT_ENTITY_ID = 21L;
-    public static final String ROOT_ENTITY_URL = etypeIDToURL(ROOT_ENTITY_ID);
+    public static String ROOT_ENTITY_URL;
 
     public static final Long LOCATION_ID = 18L;
-    public static final String LOCATION_URL = etypeIDToURL(LOCATION_ID);
+    public static String LOCATION_URL ;
     
     
     // Facility
     public static final long FACILITY_ID = 12L;
-    public static final String FACILITY_URL = etypeIDToURL(FACILITY_ID);
+    public static String FACILITY_URL ;
 
     public static final long ATTR_DEF_LATITUDE_ID = 69L;
-    public static final String ATTR_DEF_LATITUDE_URL = attrDefIDToURL(ATTR_DEF_LATITUDE_ID);
+    public static String ATTR_DEF_LATITUDE_URL ;
     public static final long ATTR_DEF_LONGITUDE_ID = 68L;
-    public static final String ATTR_DEF_LONGITUDE_URL = attrDefIDToURL(ATTR_DEF_LONGITUDE_ID);
+    public static String ATTR_DEF_LONGITUDE_URL;
     public static final long ATTR_DEF_CLASS = 58L;
-    public static final String ATTR_DEF_CLASS_URL = attrDefIDToURL(ATTR_DEF_CLASS);
+    public static String ATTR_DEF_CLASS_URL;
     public static final long ATTR_DEF_DESCRIPTION = 62L;
-    public static final String ATTR_DEF_DESCRIPTION_URL = attrDefIDToURL(ATTR_DEF_DESCRIPTION);
+    public static String ATTR_DEF_DESCRIPTION_URL;
     
     public static final long ATTR_DEF_PART_OF = 60L;
     /** Part-of has {@link #ROOT_ENTITY_URL} as range */
-    public static final String ATTR_DEF_PART_OF_URL = attrDefIDToURL(ATTR_DEF_PART_OF);
+    public static String ATTR_DEF_PART_OF_URL;
 
     public static final long NAME_ID = 10L;
-    public static final String NAME_URL = etypeIDToURL(NAME_ID);
+    public static String NAME_URL  ;
 
     // Shopping facility
     public static final long SHOPPING_FACILITY_ID = 1L;
-    public static final String SHOPPING_FACILITY_URL = etypeIDToURL(SHOPPING_FACILITY_ID);    
+    public static String SHOPPING_FACILITY_URL ;
     
     // Certified product stuff 
     public static final long CERTIFIED_PRODUCT_ID = 17L;
-    public static final String CERTIFIED_PRODUCT_URL = etypeIDToURL(CERTIFIED_PRODUCT_ID);
+    public static String CERTIFIED_PRODUCT_URL ;
 
     public static final long ATTR_TYPE_OF_CERTIFICATE = 110L;
-    public static final String ATTR_TYPE_OF_CERTIFICATE_URL = attrDefIDToURL(ATTR_TYPE_OF_CERTIFICATE);
+    public static String ATTR_TYPE_OF_CERTIFICATE_URL ;
 
     /**
      * It is of type 'Certified product' NOTE: CREATED WITH ODR, WILL DISAPPEAR
@@ -177,7 +174,7 @@ public class TestEntityService {
     /**
      * NOTE: CREATED WITH ODR, WILL DISAPPEAR FROM SERVER ONCE IT IS REGENERATED
      */
-    public static final String MELA_VAL_DI_NON_URL = WebServiceURLs.entityIDToURL(MELA_VAL_DI_NON);
+    public static  String MELA_VAL_DI_NON_URL;
 
     private IProtocolClient api;
 
