@@ -4,7 +4,6 @@ import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.model.odt.IDResult;
 
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -16,6 +15,7 @@ import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.services.model.AssignmentResult;
 import eu.trentorise.opendata.semantics.services.model.IIDResult;
+
 
 public class IDRes extends IDResult implements IIDResult {
 
@@ -33,15 +33,20 @@ public class IDRes extends IDResult implements IIDResult {
 
     }
 
+    /**
+     * By default sets NEW with a random sweb id.
+     *
+     * @param en
+     */
     public IDRes(IEntity en) {
 
         super.setResult(ASSIGNMENT_RESULT.ID_NEW);
-        super.setSwebID((long) randInt(0, 10000000));
-        this.asResult=AssignmentResult.NEW;
+        super.setSwebID(WebServiceURLs.randId());
+        this.asResult = AssignmentResult.NEW;
         this.entity = en;
 
     }
-    
+
     public IEntity getResultEntity() {
         if (this.api == null) {
             this.api = WebServiceURLs.getClientProtocol();
@@ -61,7 +66,7 @@ public class IDRes extends IDResult implements IIDResult {
         }
 
         if (getAssignmentResult() == AssignmentResult.NEW) {
-			//	EntityService es = new EntityService(this.api);
+            //	EntityService es = new EntityService(this.api);
 
             //IEntity ent = 	entityForNewResults();
             //this.entity = ent;
@@ -112,22 +117,11 @@ public class IDRes extends IDResult implements IIDResult {
     }
 
     public void setEntity(IEntity entity) {
-
         this.entity = entity;
     }
 
     public String getURL() {
-        String fullUrl = WebServiceURLs.getURL();        
-        String url = fullUrl + "/instances/new/" + super.getSwebID();
-        return url;
-    }
-    
-    public static int randInt(int min, int max) {
-
-        Random rand = new Random();
-        int randomNum = rand.nextInt((max - min) + 1) + min;
-
-        return randomNum;
+        return WebServiceURLs.makeNewIstanceUrl(super.getSwebID());
     }
 
 //	private IEntity entityForNewResults(){

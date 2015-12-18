@@ -8,6 +8,7 @@ import it.unitn.disi.sweb.webapi.model.eb.Value;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.entity.IValue;
+import it.unitn.disi.sweb.webapi.model.eb.Structure;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
@@ -62,8 +63,14 @@ public class ValueODR extends Value implements IValue {
             if (value.getClass().equals(Name.class)) {
                 Instance instance = (Instance) this.value;
                 EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
-                StructureODR name = es.readName(instance.getId());
-                this.value = name;
+                if (instance.getId() == null){
+                    // 0.11.1 horrible hack, maybe it will work
+                    // note: Name is a structure
+                    this.value = new StructureODR().convertToStructure((Structure) this.value);
+                } else {
+                    StructureODR name = es.readName(instance.getId());
+                    this.value = name;                    
+                }
             }
             if (value.getClass().equals(it.unitn.disi.sweb.webapi.model.eb.Structure.class)) {
                 StructureODR s = new StructureODR();

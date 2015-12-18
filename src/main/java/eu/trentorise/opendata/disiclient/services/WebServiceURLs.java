@@ -6,6 +6,7 @@ import eu.trentorise.opendata.semantics.IntegrityException;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.ProtocolFactory;
 import java.util.Locale;
+import java.util.Random;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -185,6 +186,34 @@ public class WebServiceURLs {
             url = checkNotNull(DisiConfiguration.getString("sweb.webapi.host"));              
             port = Integer.parseInt(DisiConfiguration.getString("sweb.webapi.port"));            
             root = checkNotNull(DisiConfiguration.getString("sweb.webapi.root"));
+    }
+
+    /**     
+     * 
+     * Returns an id not used by entitypedia... if you're lucky.
+     * 
+     * Good Lord forgive us sinners.
+     * 
+     * @since 0.11.1
+     */
+    public static long randId() {
+        Random rand = new Random();
+        return (Long.MAX_VALUE / 3)  + (rand.nextLong() / 2);       
+    }
+
+    /**
+     * 
+     * @since 0.11.1
+     */
+    public static String makeNewIstanceUrl() {
+        return makeNewIstanceUrl(randId());
+    }
+    
+    /**
+     * @since 0.11.1
+     */    
+    public static String makeNewIstanceUrl(long id) {
+        return getURL() + "/" + EntityService.NEW_INSTANCE_PREFIX + id;
     }
     
 }

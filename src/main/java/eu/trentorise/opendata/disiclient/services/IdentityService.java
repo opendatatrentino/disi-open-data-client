@@ -6,7 +6,6 @@ import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.Name;
 import it.unitn.disi.sweb.webapi.model.eb.Value;
-import it.unitn.disi.sweb.webapi.model.odt.IDResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,11 +19,16 @@ import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityODR;
 import eu.trentorise.opendata.disiclient.model.entity.EntityType;
 import eu.trentorise.opendata.disiclient.services.model.IDRes;
+import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
+import eu.trentorise.opendata.semantics.model.entity.IStructure;
+import eu.trentorise.opendata.semantics.model.entity.IValue;
 import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
 import eu.trentorise.opendata.semantics.services.IIdentityService;
 import eu.trentorise.opendata.semantics.services.model.IIDResult;
+import it.unitn.disi.sweb.webapi.model.eb.Instance;
+import it.unitn.disi.sweb.webapi.model.eb.Structure;
 
 public class IdentityService implements IIdentityService {
 
@@ -104,9 +108,11 @@ public class IdentityService implements IIdentityService {
 //                Entity entity = entODR.convertToEntity();
 //                resEntities.add(entity);
 //            }
-          //  List<IDResult> results = idManCl.assignIdentifier(resEntities, 0);
+            //  List<IDResult> results = idManCl.assignIdentifier(resEntities, 0);
             List<IIDResult> idResults = new ArrayList<IIDResult>();
-            for (IEntity en : entities) {
+            for (IEntity en : entities) {                
+                // Let's give structures the new id they deserve...
+                idify(en);
                 IDRes idRes = new IDRes(en);
                 idResults.add(idRes);
             }
@@ -146,6 +152,34 @@ public class IdentityService implements IIdentityService {
             logger.warn("No class attribute is assigned for the entity. Default class attribute is assigned");
         }
         return ent;
+    }
+
+    /**
+     * Recursively provides all the entities and structures with a new random id. 
+     * 
+     * @since 0.11.1
+     */
+    private static void idify(IStructure enodr) { 
+        
+        if (enodr.getEtypeURL().equals("http://opendata-dev.disi.unitn.it:8080/odr-api/types/7")){
+            System.out.println("attention...");
+        }
+            
+        if (enodr instanceof Instance){
+            Instance inst = (Instance ) enodr;
+            inst.setId(WebServiceURLs.randId());            
+        } else {
+            enodr.setURL(WebServiceURLs.makeNewIstanceUrl());
+        }
+        for (IAttribute a : enodr.getStructureAttributes()) {
+            for (IValue v : a.getValues()) {
+                Object value = v.getValue();                
+                if (value instanceof IStructure) {                    
+                    idify((IStructure) value);
+                }
+            }
+        }
+
     }
 
 }

@@ -68,6 +68,7 @@ public class EntityService implements IEntityService {
 
     @Nullable
     private InstanceClient instanceClient;
+    public static String NEW_INSTANCE_PREFIX = "instances/new/";
 
     public EntityService(IProtocolClient api) {
         this.api = api;
@@ -774,7 +775,7 @@ public class EntityService implements IEntityService {
      * @see eu.trentorise.opendata.semantics.services.IEntityService#isTemporaryURL(java.lang.String)
      */
     public boolean isTemporaryURL(String entityURL) {
-        return entityURL.contains("instances/new/");
+        return entityURL.contains(NEW_INSTANCE_PREFIX);
     }
 
     private class SearchEntityNameClient extends AbstractApiClient<SwebEntitySearchResultWrapper> {

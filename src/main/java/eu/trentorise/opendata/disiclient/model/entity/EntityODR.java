@@ -2,10 +2,8 @@ package eu.trentorise.opendata.disiclient.model.entity;
 
 import com.google.common.collect.ImmutableList;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
-import eu.trentorise.opendata.disiclient.services.DisiEkb;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.KnowledgeService;
-import eu.trentorise.opendata.disiclient.services.NLPService;
 import eu.trentorise.opendata.disiclient.services.SemanticTextFactory;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.urlToEntityID;
@@ -24,7 +22,6 @@ import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
 import it.unitn.disi.sweb.webapi.client.kb.ComplexTypeClient;
-import it.unitn.disi.sweb.webapi.model.Pagination;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Duration;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
