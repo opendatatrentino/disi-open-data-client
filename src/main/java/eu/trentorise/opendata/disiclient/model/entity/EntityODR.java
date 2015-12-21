@@ -1,5 +1,6 @@
 package eu.trentorise.opendata.disiclient.model.entity;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.collect.ImmutableList;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.disiclient.services.EntityService;
@@ -83,6 +84,7 @@ public class EntityODR extends StructureODR implements IEntity {
     }
 
     public EntityODR(IProtocolClient api, Entity entity) {
+        checkNotNull(entity);
 
         this.api = api;
         super.setId((Long) entity.getId());
@@ -241,7 +243,7 @@ public class EntityODR extends StructureODR implements IEntity {
         at.setValues(fixedVals);
     }
 
-	//	public EntityODR(IProtocolClient api, Instance instance){
+    //	public EntityODR(IProtocolClient api, Instance instance){
     //
     //		this.api=api;
     //		super.setId(instance.getId());
@@ -314,11 +316,18 @@ public class EntityODR extends StructureODR implements IEntity {
         if ((this.names == null) && (super.getId() == null)) {
             return dict;
         } else if (this.names == null) {
-            EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
-            EntityODR e = (EntityODR) es.readEntity(super.getId());
-            this.names = e.getNames();
-            this.descriptions = e.getDescriptions();
-            this.classConceptId = e.getClassConceptId();
+            if (super.getId() != null) {
+                EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
+                try {
+                    EntityODR e = (EntityODR) es.readEntity(super.getId());
+                    this.names = e.getNames();
+                
+                    this.descriptions = e.getDescriptions();
+                    this.classConceptId = e.getClassConceptId();
+                } catch (NullPointerException ex){
+                    logger.warn("0.11.1 - Got null pointer exception while fetching name, probably structure was considered as new.");
+                }
+            }
         } else {
             for (Name name : this.names) {
                 Map<String, List<String>> nameMap = name.getNames();
@@ -420,7 +429,7 @@ public class EntityODR extends StructureODR implements IEntity {
             List<IAttribute> atrs = convertToAttributeODR(super.getAttributes());
             return atrs;
         } else {
-            AttributeClient attrCl = new AttributeClient(this.api);            
+            AttributeClient attrCl = new AttributeClient(this.api);
             Long id = super.getId();
             if (id == null || getTypeId() == null) {
                 return new ArrayList();
@@ -436,7 +445,7 @@ public class EntityODR extends StructureODR implements IEntity {
     public void setEntityAttributes(List<IAttribute> attributes) {
         //client side
         super.setAttributes(convertToAttributes(attributes));
-		//server side
+        //server side
         //		InstanceClient instanceCl= new  InstanceClient(api);
         //		Instance instance = instanceCl.readInstance(super.getId(), null);
         //		List<Attribute> attrs = new ArrayList<Attribute>();
@@ -483,7 +492,7 @@ public class EntityODR extends StructureODR implements IEntity {
         EntityType etype = (EntityType) type;
         this.etype = etype;
         super.setTypeId(etype.getGUID());
-		//on the server
+        //on the server
         //		InstanceClient instanceCl= new  InstanceClient(this.api);
         //		Instance instance = instanceCl.readInstance(super.getId(), null);
         //		instance.setTypeId(type.getGUID());
@@ -530,7 +539,7 @@ public class EntityODR extends StructureODR implements IEntity {
                 if ((at.getConceptId() != null) && (at.getConceptId() == KnowledgeService.DESCRIPTION_CONCEPT_ID)) {
                     List<Value> vals = at.getValues();
                     List<Value> fixedVals = new ArrayList<Value>();
-                    
+
                     for (Value val : vals) {
                         if (val.getValue() instanceof String) {
                             fixedVals.add(val);
@@ -576,9 +585,9 @@ public class EntityODR extends StructureODR implements IEntity {
                             fixedVals.add(val);
                         }
                     }
-                    
+
                     atFixed.setValues(fixedVals);
-                    
+
                 }
 
                 attrsFixed.add(atFixed);
