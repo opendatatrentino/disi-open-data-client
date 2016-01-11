@@ -13,6 +13,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
+import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
@@ -20,6 +21,7 @@ import eu.trentorise.opendata.semantics.model.knowledge.IDict;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.Dict;
 import eu.trentorise.opendata.semantics.services.model.DataTypes;
 import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
+import it.unitn.disi.sweb.webapi.model.kb.types.RestrictionOnList;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
@@ -36,8 +38,8 @@ public class AttributeDef implements IAttributeDef {
     public Map<String, String> name;
     private long typeId;
     private boolean presence;
-    private boolean isSet;
-    private Integer entityTypeID;
+    private boolean isSet;    
+    private Long entityTypeID;
     private IConcept concept;
 
     public AttributeDef(AttributeDefinition attrDef) {
@@ -50,9 +52,10 @@ public class AttributeDef implements IAttributeDef {
         this.description = attrDef.getDescription();
         this.name = attrDef.getName();
         this.typeId = attrDef.getTypeId();
-        if (attrDef.getRestrictionOnList() != null) {
-            this.entityTypeID = (Integer) attrDef.getRestrictionOnList().getDefaultValue();
-        }
+
+        fixEntityTypeID(attrDef);
+        
+
         if ((attrDef.getPresence().equals("STRICTLY_MANDATORY")) || (attrDef.getPresence().equals("MANDATORY"))) {
             this.presence = true;
         } else {
@@ -60,6 +63,29 @@ public class AttributeDef implements IAttributeDef {
         }
     }
 
+    /**
+     * Sets the range etype id, or defaults to root if none is found.
+     * See https://github.com/opendatatrentino/disi-open-data-client/issues/22
+     * @since 0.11.1
+     */
+    private void fixEntityTypeID(AttributeDefinition attrDef){
+        if ("COMPLEX_TYPE".equals(this.dataType) 
+                || "ENTITY".equals(this.dataType)
+                || "STRUCTURE".equals(this.dataType)){
+            if (attrDef.getRestrictionOnList() == null) {                
+                // see https://github.com/opendatatrentino/disi-open-data-client/issues/22
+                
+                if ("ENTITY".equals(this.dataType)){ 
+                   this.entityTypeID =new EntityTypeService().readSwebRootEtype().getId();
+                } else if ("STRUCTURE".equals(this.dataType) || "COMPLEX_TYPE".equals(this.dataType)) {
+                   this.entityTypeID =new EntityTypeService().readSwebRootStructure().getId();
+                }                
+            } else {
+                this.entityTypeID = new Long((Integer) attrDef.getRestrictionOnList().getDefaultValue());
+            }            
+        }
+    }
+    
     public AttributeDef(long id) {
         AttributeDefinitionClient attrDefClient = new AttributeDefinitionClient(getClientProtocol());
         AttributeDefinitionFilter attrDefFilter = new AttributeDefinitionFilter();
@@ -73,9 +99,10 @@ public class AttributeDef implements IAttributeDef {
         this.description = attrDef.getDescription();
         this.name = attrDef.getName();
         this.typeId = attrDef.getTypeId();
-        if (attrDef.getRestrictionOnList() != null) {
-            this.entityTypeID = (Integer) attrDef.getRestrictionOnList().getDefaultValue();
-        }
+
+        fixEntityTypeID(attrDef);
+
+                
         if ((attrDef.getPresence().equals("STRICTLY_MANDATORY")) || (attrDef.getPresence().equals("MANDATORY"))) {
             this.presence = true;
         } else {
@@ -101,8 +128,8 @@ public class AttributeDef implements IAttributeDef {
 
     public String getDataType() {
         if (this.dataType.equals("COMPLEX_TYPE")) {
-            ComplexTypeClient ctc = new ComplexTypeClient(getClientProtocol());
-            ComplexType cType = ctc.readComplexType(this.entityTypeID, null);
+                       
+            ComplexType cType = new EntityTypeService().readSwebEtype(this.entityTypeID);
             if (cType.getClass().getName().equalsIgnoreCase("it.unitn.disi.sweb.webapi.model.kb.types.EntityType")) {
                 return DataTypes.ENTITY;
             } else {
@@ -257,7 +284,7 @@ public class AttributeDef implements IAttributeDef {
         Iterator<?> it = this.name.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pairs = (Map.Entry) it.next();
-            Locale l = TraceProvUtils.languageTagToLocale((String) pairs.getKey());            
+            Locale l = TraceProvUtils.languageTagToLocale((String) pairs.getKey());
             dict = dict.putTranslation(l, (String) pairs.getValue());
 
         }
@@ -284,5 +311,6 @@ public class AttributeDef implements IAttributeDef {
     public boolean isList() {
         return this.isSet;
     }
+    
 
 }

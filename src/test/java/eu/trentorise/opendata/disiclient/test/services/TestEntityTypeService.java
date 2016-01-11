@@ -13,6 +13,7 @@ import eu.trentorise.opendata.disiclient.model.entity.EntityType;
 import eu.trentorise.opendata.disiclient.services.DisiEkb;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import eu.trentorise.opendata.disiclient.test.ConfigLoader;
+import eu.trentorise.opendata.semantics.IntegrityChecker;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.services.IEkb;
@@ -76,11 +77,13 @@ public class TestEntityTypeService {
                 System.out.println("AttributeDef URL:" + ad.getURL());
                 System.out.println("AttributeDef  DataType:" + ad.getEType());
             }
+            IntegrityChecker.checkEntityType(etype);
         }
         long timeEnd = System.currentTimeMillis();
         long finalTime = timeEnd - timeStart;
         System.out.println(finalTime);
         assertNotNull(etypes.get(0));
+        
     }
     
     @Test
@@ -128,5 +131,5 @@ public class TestEntityTypeService {
         List<ISearchResult> searchEtypes = ets.searchEntityTypes("Product", locale);
         assertEquals("Product", searchEtypes.get(0).getName().getString(Locale.ENGLISH));
 
-    }
+    }    
 }
