@@ -9,6 +9,8 @@ import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.entity.IValue;
 import it.unitn.disi.sweb.webapi.model.eb.Structure;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
@@ -17,6 +19,8 @@ import it.unitn.disi.sweb.webapi.model.eb.Structure;
  */
 public class ValueODR extends Value implements IValue {
 
+    private static final Logger logger = LoggerFactory.getLogger(ValueODR.class.getName());
+    
     private Long id;
     private Long attrId;
     private Object value;
@@ -106,7 +110,8 @@ public class ValueODR extends Value implements IValue {
         if (super.getVocabularyId() != null) {
             value.setVocabularyId(super.getVocabularyId());
         } else {
-        	 value.setVocabularyId(1L);
+            logger.warn("NO VOCABULARY IS PROVIDED, SETTING IT TO '1'");
+            value.setVocabularyId(1L);
         }
 
         

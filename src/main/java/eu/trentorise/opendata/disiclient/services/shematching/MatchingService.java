@@ -19,6 +19,7 @@ import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
 import eu.trentorise.opendata.disiclient.model.entity.EntityType;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
+import eu.trentorise.opendata.disiclient.services.KnowledgeService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.disiclient.services.model.AttributeCorrespondence;
 import eu.trentorise.opendata.disiclient.services.model.SchemaCorrespondence;
@@ -53,7 +54,6 @@ public class MatchingService implements ISemanticMatchingService {
         if (odrName == -1) {
             logger.warn("Concept recognizer is unable to extract concept for resource name: " + resourceContext.getResourceName());
         }
-        //long odrName=2923L;
         EntityTypeService etypeService = new EntityTypeService();
         List<IEntityType> etypes = etypeService.getAllEntityTypes();
         List<ISchemaCorrespondence> schemaCorespondences = new ArrayList<ISchemaCorrespondence>();
@@ -130,8 +130,8 @@ public class MatchingService implements ISemanticMatchingService {
 
         for (ColumnConceptCandidate ccc : columnHeaders) {
 
-            ConceptODR codr = new ConceptODR();
-            codr = codr.readConceptGlobalID(ccc.getConceptID());
+            
+            ConceptODR codr = new KnowledgeService().readConceptGlobalID(ccc.getConceptID());
 
             AttributeCorrespondence attrCor = new AttributeCorrespondence();
             HashMap<IAttributeDef, Float> attrMap = new HashMap<IAttributeDef, Float>();

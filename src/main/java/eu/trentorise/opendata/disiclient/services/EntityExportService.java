@@ -124,8 +124,8 @@ public class EntityExportService {
 
 
 		//convert from global concept to local one
-		ConceptODR codr = new ConceptODR();
-		Long conceptTypeID = codr.readConceptGUID(typeId);
+		
+		Long conceptTypeID = new KnowledgeService().readConceptGUID(typeId);
 
 		EntityTypeService ets = new EntityTypeService();
 		/////////////////!!!!!!!!!!!!!IMPORTANT CHANGE THE ETYPE ID!!!!!!!!!!!!!!///////////
@@ -142,7 +142,7 @@ public class EntityExportService {
 
 			Long attrGlobalConceptID = attrObj.get("conceptId").getAsLong();
 			obj.remove("conceptId");
-			Long attrConceptID = codr.readConceptGUID(attrGlobalConceptID);
+			Long attrConceptID = new KnowledgeService().readConceptGUID(attrGlobalConceptID);
 
 			//	System.out.println(attrConceptID);
 			for (IAttributeDef atDef : attrDefs) {

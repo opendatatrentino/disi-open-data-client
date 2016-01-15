@@ -57,7 +57,7 @@ public class NLPService implements INLPService {
 		PipelineClient pipClient = new PipelineClient(getClientProtocol());
 		NLPInput input = new NLPInput();
 		input.setText(texts);
-		logger.warn("USING HARDCODED VOCABULARY ID!");
+		logger.warn("USING HARDCODED KB ID!");
 		NLText[] processedTexts = pipClient.run("NamedEntityPipeline", input, 1l);
 		//		for (NLText nlext : processedText) {
 		//		   System.out.println(nlext.toString());
@@ -77,7 +77,7 @@ public class NLPService implements INLPService {
 		PipelineClient pipClient = new PipelineClient(getClientProtocol());
 		NLPInput input = new NLPInput();
 		input.setText(texts);
-		logger.warn("USING HARDCODED VOCABULARY ID!");
+		logger.warn("USING HARDCODED KB ID!");
 		NLText[] processedTexts = pipClient.run("ODHPipeline", input, 1l);
 		//		for (NLText nlext : processedText) {
 		//		   System.out.println(nlext.toString());
@@ -98,7 +98,7 @@ public class NLPService implements INLPService {
 		PipelineClient pipClient = new PipelineClient(getClientProtocol());
 		NLPInput input = new NLPInput();
 		input.setText(texts);
-		logger.warn("USING HARDCODED VOCABULARY ID!");
+		logger.warn("USING HARDCODED KB ID!");
 		NLText[] processedTexts = pipClient.run("NEDWSDPipeline", input, 1l);
 		//		for (NLText nlext : processedText) {
 		//		   System.out.println(nlext.toString());

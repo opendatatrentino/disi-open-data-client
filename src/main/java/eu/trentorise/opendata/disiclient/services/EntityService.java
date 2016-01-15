@@ -142,8 +142,8 @@ public class EntityService implements IEntityService {
 
     public Attribute createClassAttribute(Long attrDefClassAtrID, Long conceptID) {
         IAttributeDef atrDef = new AttributeDef(attrDefClassAtrID);
-        ConceptODR concept = new ConceptODR();
-        concept = concept.readConcept(conceptID);
+        
+        ConceptODR concept = new KnowledgeService().readConcept(conceptID);
         AttributeODR atrODR = createAttribute(atrDef, concept);
         Attribute a = atrODR.convertToAttribute();
         return a;
@@ -403,14 +403,14 @@ public class EntityService implements IEntityService {
                 ValueODR valODR = new ValueODR();
                 valODR.setValue(descrToSemText(obj));
                 valsODR.add(valODR);
-                logger.warn("Vocabulary id is set to default '1'.");
+                logger.warn("HARDCODING VOCABULARY TO '1' WHILE BUILDING DESCRIPTION ATTRIBUTE");                
                 valODR.setVocabularyId(1L);
             }
             return new AttributeODR(attrDef, valsODR);
         } else {
             ValueODR val = new ValueODR();
             val.setValue(descrToSemText(descr));
-            logger.warn("Vocabulary id is set to default '1'.");
+            logger.warn("HARDCODING VOCABULARY TO '1' WHILE BUILDING DESCRIPTION ATTRIBUTE");                
             val.setVocabularyId(1L);
             return new AttributeODR(attrDef, val);
         }
@@ -455,7 +455,7 @@ public class EntityService implements IEntityService {
 
     public HashMap<String, Long> getVocabularies() {
         HashMap<String, Long> mapVocabs = new HashMap<String, Long>();
-        VocabularyClient vc = new VocabularyClient(api);
+        VocabularyClient vc = new VocabularyClient(api);        
         List<Vocabulary> vocabs = vc.readVocabularies(1L, null, null);
         for (Vocabulary v : vocabs) {
             mapVocabs.put(v.getLanguageCode(), v.getId());

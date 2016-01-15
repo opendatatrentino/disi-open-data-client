@@ -14,6 +14,7 @@ import java.util.Map;
 
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
+import eu.trentorise.opendata.disiclient.services.KnowledgeService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
@@ -192,8 +193,8 @@ public class AttributeDef implements IAttributeDef {
 
     public IConcept getConcept() {
         long id = this.conceptId;
-        ConceptODR concept = new ConceptODR();
-        this.concept = concept.readConcept(id);
+        
+        this.concept = new KnowledgeService().readConcept(id);
         return this.concept;
     }
 

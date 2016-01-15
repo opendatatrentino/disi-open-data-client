@@ -37,33 +37,7 @@ public class ConceptODR implements IConcept {
         this.description = con.getDescription();
     }
 
-    public ConceptODR readConcept(long conceptId) {
-
-        ConceptClient client = new ConceptClient(WebServiceURLs.getClientProtocol());
-        Concept conc = client.readConcept(conceptId, false);
-
-        ConceptODR conceptODR = new ConceptODR(conc);
-        return conceptODR;
-    }
-
-    public ConceptODR readConceptGlobalID(long glId) {
-
-        ConceptClient client = new ConceptClient(WebServiceURLs.getClientProtocol());
-        logger.warn("Entity Base is 1");
-        List<Concept> concepts = client.readConcepts(1L, glId, null, null, null, null);
-        ConceptODR conceptODR = new ConceptODR(concepts.get(0));
-        logger.warn("Only the first concept is returned. The number of returned concepts is: " + concepts.size());
-        return conceptODR;
-    }
-
-    public Long readConceptGUID(long glId) {
-        ConceptClient client = new ConceptClient(WebServiceURLs.getClientProtocol());
-        logger.warn("Entity Base is 1");
-        List<Concept> concepts = client.readConcepts(1L, glId, null, null, null, null);
-        logger.warn("Only the first concept is returned. The number of returned concepts is: " + concepts.size());
-        return concepts.get(0).getId();
-    }
-
+  
     //	private List<ConceptODR> readConcepts(String label){
     //		ConceptClient client = new ConceptClient(WebServiceURLs.getClientProtocol());
     //		List <ConceptODR> conOdrList = new ArrayList<ConceptODR>();

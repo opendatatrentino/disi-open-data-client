@@ -20,6 +20,7 @@ import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import eu.trentorise.opendata.disiclient.services.IdentityService;
+import eu.trentorise.opendata.disiclient.services.KnowledgeService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.disiclient.services.model.SchemaCorrespondence;
 import eu.trentorise.opendata.disiclient.services.shematching.MatchingService;
@@ -320,8 +321,8 @@ public class IntegrityCheckerTest {
     //@Test
     public void testCheckConcepts() {
 
-        ConceptODR concept = new ConceptODR();
-        concept = concept.readConcept(1L);
+        
+        ConceptODR concept = new KnowledgeService().readConcept(1L);
         iChecker.checkConcept(concept);
 
     }

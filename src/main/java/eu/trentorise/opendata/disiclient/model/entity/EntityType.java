@@ -2,6 +2,7 @@ package eu.trentorise.opendata.disiclient.model.entity;
 
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
+import eu.trentorise.opendata.disiclient.services.KnowledgeService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
@@ -60,10 +61,8 @@ public class EntityType implements IEntityType {
         return name;
     }
 
-    public IConcept getConcept() {
-        ConceptODR concept = new ConceptODR();
-        concept = concept.readConcept(conceptId);
-        return concept;
+    public IConcept getConcept() {        
+        return new KnowledgeService().readConcept(conceptId);        
     }
 
     public void setConcept(IConcept concept) {

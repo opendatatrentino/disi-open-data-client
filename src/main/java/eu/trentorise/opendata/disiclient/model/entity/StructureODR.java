@@ -19,6 +19,7 @@ import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import eu.trentorise.opendata.disiclient.services.KnowledgeService;
+import static eu.trentorise.opendata.disiclient.services.KnowledgeService.CONTACT_CONCEPT_GLOBAL_ID;
 import eu.trentorise.opendata.disiclient.services.SemanticTextFactory;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
@@ -30,8 +31,9 @@ import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
 
 
 public class StructureODR extends Instance implements IStructure {    
-	 public static final Long PART_OF_CONCEPT_ID1 = 5l;
-	    public static final Long PART_OF_CONCEPT_ID2 = 22l;
+    
+
+         
     public Long getLocalID() {
         return super.getId();
     }
@@ -77,7 +79,7 @@ public class StructureODR extends Instance implements IStructure {
         for (Attribute at : attributes) {
             if (at.getConceptId() == null) {
                 continue;
-            } else if (at.getConceptId() == KnowledgeService.DESCRIPTION_CONCEPT_ID) {
+            } else if (at.getConceptId() == KnowledgeService.DESCRIPTION_CONCEPT_GLOBAL_ID) {
                 List<Value> vals = at.getValues();
                 List<Value> fixedVals = new ArrayList<Value>();
 
@@ -146,7 +148,8 @@ public class StructureODR extends Instance implements IStructure {
                 }
                 at.setValues(fixedVals);
             } else {
-                if ((at.getConceptId() == PART_OF_CONCEPT_ID1) && (at.getValues().size() != 0)) { // todo hardcoded long
+                // todo hardcoded long
+                if ((at.getConceptId() == new KnowledgeService().readConceptGUID(0)) && (at.getValues().size() != 0)) { 
                     List<Value> vals = at.getValues();
                     List<Value> fixedVals = new ArrayList<Value>();
                     EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
@@ -163,7 +166,7 @@ public class StructureODR extends Instance implements IStructure {
                         }
                     }
                     at.setValues(fixedVals);
-                } else if (at.getConceptId() == 111001L) { // todo hardcoded long
+                } else if (at.getConceptId().equals(new KnowledgeService().readConceptGlobalID(CONTACT_CONCEPT_GLOBAL_ID).getId())) {
                     List<Value> vals = at.getValues();
                     List<Value> fixedVals = new ArrayList<Value>();
                     EntityService es = new EntityService(WebServiceURLs.getClientProtocol());

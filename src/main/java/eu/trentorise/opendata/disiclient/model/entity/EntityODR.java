@@ -1,5 +1,6 @@
 package eu.trentorise.opendata.disiclient.model.entity;
 
+import com.google.common.base.Objects;
 import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.collect.ImmutableList;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
@@ -43,6 +44,16 @@ import java.util.Locale;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static eu.trentorise.opendata.disiclient.services.KnowledgeService.CONTACT_CONCEPT_GLOBAL_ID;
+import static eu.trentorise.opendata.disiclient.services.KnowledgeService.DESCRIPTION_CONCEPT_GLOBAL_ID;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static eu.trentorise.opendata.disiclient.services.KnowledgeService.PART_OF_CONCEPT_GLOBAL_ID;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
@@ -53,8 +64,6 @@ public class EntityODR extends StructureODR implements IEntity {
 
     private static final Logger logger = LoggerFactory.getLogger(EntityODR.class.getName());
 
-    public static final Long PART_OF_CONCEPT_ID1 = 5l;
-    public static final Long PART_OF_CONCEPT_ID2 = 22l;
 
     private List<Name> names;
 
@@ -96,7 +105,7 @@ public class EntityODR extends StructureODR implements IEntity {
         for (Attribute at : attrs) {
             if (at.getConceptId() == null) {
                 continue;
-            } else if (at.getConceptId() == KnowledgeService.DESCRIPTION_CONCEPT_ID) {
+            } else if (at.getConceptId().equals(new KnowledgeService().readConceptGlobalID(DESCRIPTION_CONCEPT_GLOBAL_ID).getId())) {
                 List<Value> vals = at.getValues();
                 List<Value> fixedVals = new ArrayList<Value>();
 
@@ -166,7 +175,7 @@ public class EntityODR extends StructureODR implements IEntity {
                 at.setValues(fixedVals);
             } else {
                 logger.warn("IN EntityODR CONSTRUCTOR: WE NEED GENERIC CODE FOR RELATIONAL ATTRIBUTES! TODO REVIEW!");
-                if ((at.getConceptId() == PART_OF_CONCEPT_ID1) && (at.getValues().size() != 0)) { // todo hardcoded long
+                if ((at.getConceptId().equals(new KnowledgeService().readConceptGlobalID(PART_OF_CONCEPT_GLOBAL_ID).getId())) && (at.getValues().size() != 0)) { 
                     List<Value> vals = at.getValues();
                     List<Value> fixedVals = new ArrayList<Value>();
                     EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
@@ -184,7 +193,8 @@ public class EntityODR extends StructureODR implements IEntity {
                         }
                     }
                     at.setValues(fixedVals);
-                } else if (at.getConceptId() == 111001L) { // todo hardcoded long
+                    
+                } else if (at.getConceptId().equals(new KnowledgeService().readConceptGlobalID(CONTACT_CONCEPT_GLOBAL_ID).getId())) { 
                     List<Value> vals = at.getValues();
                     List<Value> fixedVals = new ArrayList<Value>();
                     EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
@@ -536,14 +546,14 @@ public class EntityODR extends StructureODR implements IEntity {
                 atFixed.setInstanceId(at.getInstanceId());
                 atFixed.setName(at.getName());
 
-                if ((at.getConceptId() != null) && (at.getConceptId() == KnowledgeService.DESCRIPTION_CONCEPT_ID)) {
+                if ((at.getConceptId() != null) && (at.getConceptId() == KnowledgeService.DESCRIPTION_CONCEPT_GLOBAL_ID)) {
                     List<Value> vals = at.getValues();
                     List<Value> fixedVals = new ArrayList<Value>();
 
                     for (Value val : vals) {
                         if (val.getValue() instanceof String) {
                             fixedVals.add(val);
-                            logger.warn("No vocabulary is provided. Vocabulary is set to default '1");
+                            logger.warn("NO VOCABULARY IS PROVIDED, SETTING IT TO '1'");
                             val.setVocabularyId(1L);
                         } else {
                             EntityService es = new EntityService();

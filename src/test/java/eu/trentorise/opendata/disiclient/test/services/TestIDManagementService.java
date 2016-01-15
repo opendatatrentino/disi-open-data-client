@@ -8,6 +8,7 @@ import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import eu.trentorise.opendata.disiclient.services.IdentityService;
+import eu.trentorise.opendata.disiclient.services.KnowledgeService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.disiclient.test.ConfigLoader;
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.ATTR_DEF_PART_OF_URL;
@@ -161,8 +162,8 @@ public class TestIDManagementService {
                 attrs1.add(a);
                 //					
             } else if (atr.getName().get("en").equalsIgnoreCase("Class")) {
-                ConceptODR concept = new ConceptODR();
-                concept = concept.readConcept(GYMNASIUM_CONCEPT_ID);
+                
+                ConceptODR concept = new KnowledgeService().readConcept(GYMNASIUM_CONCEPT_ID);
                 IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
                 AttributeODR attr = enServ.createAttribute(atDef, concept);
                 Attribute a = attr.convertToAttribute();
@@ -348,9 +349,8 @@ public class TestIDManagementService {
             } //			else if (atr.getName().get("en").equalsIgnoreCase("Class")){
             //				attrs1.add(atr);
             //			}
-            else if (atr.getName().get("en").equalsIgnoreCase("Class")) {
-                ConceptODR concept = new ConceptODR();
-                concept = concept.readConcept(GYMNASIUM_CONCEPT_ID);
+            else if (atr.getName().get("en").equalsIgnoreCase("Class")) {                
+                ConceptODR concept = new KnowledgeService().readConcept(GYMNASIUM_CONCEPT_ID);
                 IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
                 AttributeODR attr = enServ.createAttribute(atDef, concept);
                 Attribute a = attr.convertToAttribute();

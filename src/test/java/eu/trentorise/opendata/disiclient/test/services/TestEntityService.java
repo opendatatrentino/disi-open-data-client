@@ -12,6 +12,7 @@ import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.disiclient.services.DisiEkb;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
+import eu.trentorise.opendata.disiclient.services.KnowledgeService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.attrDefIDToURL;
 import static eu.trentorise.opendata.disiclient.services.WebServiceURLs.conceptIDToURL;
@@ -439,8 +440,8 @@ System.out.println(entityURL);
                 attrs1.add(atr);
 
             } else if (atr.getName().get("en").equalsIgnoreCase("Class")) {
-                ConceptODR concept = new ConceptODR();
-                concept = concept.readConcept(GYMNASIUM_CONCEPT_ID);
+                
+                ConceptODR concept = new KnowledgeService().readConcept(GYMNASIUM_CONCEPT_ID);
                 IAttributeDef atDef = new AttributeDef(atr.getDefinitionId());
                 AttributeODR attr = es.createAttribute(atDef, concept);
                 Attribute a = attr.convertToAttribute();
