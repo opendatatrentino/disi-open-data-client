@@ -17,6 +17,7 @@ import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
 import eu.trentorise.opendata.semantics.services.IKnowledgeService;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 import java.util.HashMap;
+import javax.annotation.Nullable;
 
 /**
  * Updated in 0.11.1 to support caching, see https://github.com/opendatatrentino/disi-open-data-client/issues/23
@@ -164,15 +165,20 @@ public class KnowledgeService implements IKnowledgeService {
 
     /**
      * Ported from ConceptODR
-     *
+     * 
      * @since 0.11.1
      */    
+    @Nullable
     public ConceptODR readConceptGlobalID(long glId) {
 
         if (swebGlobalIdToConcepts.get(glId) == null) {
             ConceptClient client = new ConceptClient(WebServiceURLs.getClientProtocol());
             logger.warn("Entity Base is 1");
             List<Concept> concepts = client.readConcepts(1L, glId, null, null, null, null);
+            if (concepts.isEmpty()){
+                logger.info("readConceptGlobalID: Couldn't find concept with global id " + glId + ", returning null");
+                return null;
+            }
             ConceptODR conceptODR = new ConceptODR(concepts.get(0));
             logger.warn("Only the first concept is returned. The number of returned concepts is: " + concepts.size());
             swebGlobalIdToConcepts.put(glId, concepts.get(0));
@@ -192,8 +198,14 @@ public class KnowledgeService implements IKnowledgeService {
      *
      * @since 0.11.1
      */
+    @Nullable
     public Long readConceptGUID(long glId) {
-        return readConceptGlobalID(glId).getId();
+        ConceptODR ret = readConceptGlobalID(glId);
+        if (ret == null) {
+            return null;            
+        } else {
+            return ret.getId();
+        }
     }
 
 }

@@ -130,35 +130,38 @@ public class MatchingService implements ISemanticMatchingService {
 
         for (ColumnConceptCandidate ccc : columnHeaders) {
 
-            
             ConceptODR codr = new KnowledgeService().readConceptGlobalID(ccc.getConceptID());
+            if (codr == null) {
+                logger.warn("COULDN'T FIND CONCEPT " + ccc.getConceptID() + " in KB, IGNORING IT!");
+            } else {
+                AttributeCorrespondence attrCor = new AttributeCorrespondence();
+                HashMap<IAttributeDef, Float> attrMap = new HashMap<IAttributeDef, Float>();
 
-            AttributeCorrespondence attrCor = new AttributeCorrespondence();
-            HashMap<IAttributeDef, Float> attrMap = new HashMap<IAttributeDef, Float>();
+                long sourceConceptID = codr.getId();
+                attrCor.setColumnIndex(ccc.getColumnNumber() - 1);
+                attrCor.setHeaderConceptID(sourceConceptID);
+                List<Entry<Long, Long>> batch = new ArrayList<Entry<Long, Long>>();
+                for (IAttributeDef attrDef : eTypeAttributes) {
+                    AttributeDef attr = (AttributeDef) attrDef;
+                    //ConceptODR attrConcept = (ConceptODR)attr.getConcept();
+                    //				System.out.println(attr.getName(Locale.ENGLISH));
+                    //				System.out.println(attr.getETypeURL());
+                    long targetConceptID = attr.getConceptId();
+                    Map.Entry<Long, Long> entry = new AbstractMap.SimpleEntry<Long, Long>(sourceConceptID, targetConceptID);
+                    batch.add(entry);
+                }
+                List<Integer> distances = getBatchDistance(batch);
+                for (int i = 0; i < eTypeAttributes.size(); i++) {
+                    AttributeDef attr = (AttributeDef) eTypeAttributes.get(i);
+                    float score = getScore(distances.get(i));
+                    attrMap.put(attr, score);
+                }
+                attrCor.setAttrMap(attrMap);
+                attrCor.computeHighestAttrCorrespondence(attrCorrespondenceList);
 
-            long sourceConceptID = codr.getId();
-            attrCor.setColumnIndex(ccc.getColumnNumber() - 1);
-            attrCor.setHeaderConceptID(sourceConceptID);
-            List<Entry<Long, Long>> batch = new ArrayList<Entry<Long, Long>>();
-            for (IAttributeDef attrDef : eTypeAttributes) {
-                AttributeDef attr = (AttributeDef) attrDef;
-                //ConceptODR attrConcept = (ConceptODR)attr.getConcept();
-                //				System.out.println(attr.getName(Locale.ENGLISH));
-                //				System.out.println(attr.getETypeURL());
-                long targetConceptID = attr.getConceptId();
-                Map.Entry<Long, Long> entry = new AbstractMap.SimpleEntry<Long, Long>(sourceConceptID, targetConceptID);
-                batch.add(entry);
+                attrCorrespondenceList.add(attrCor);
+
             }
-            List<Integer> distances = getBatchDistance(batch);
-            for (int i = 0; i < eTypeAttributes.size(); i++) {
-                AttributeDef attr = (AttributeDef) eTypeAttributes.get(i);
-                float score = getScore(distances.get(i));
-                attrMap.put(attr, score);
-            }
-            attrCor.setAttrMap(attrMap);
-            attrCor.computeHighestAttrCorrespondence(attrCorrespondenceList);
-
-            attrCorrespondenceList.add(attrCor);
         }
 
         return attrCorrespondenceList;
