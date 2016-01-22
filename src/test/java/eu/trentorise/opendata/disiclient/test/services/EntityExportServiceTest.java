@@ -46,13 +46,16 @@ public class EntityExportServiceTest {
     public static final long ENTITY3 = 7;
     public static String ENTITY3_URL;
     List<String> entities;
-    EntityExportService ess = new EntityExportService();
-    EntityService es = new EntityService();
+    EntityExportService ess;
+    EntityService es;
 
 
     @Before
     public void beforeMethod() {
         ConfigLoader.init();
+        ess = new EntityExportService();
+        es = new EntityService();
+        
         entities = new ArrayList<String>();
         entities.add(ENTITY1_URL);
         entities.add(ENTITY2_URL);
