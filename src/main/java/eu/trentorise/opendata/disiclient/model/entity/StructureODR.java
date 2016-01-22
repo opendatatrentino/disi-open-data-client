@@ -148,7 +148,7 @@ public class StructureODR extends Instance implements IStructure {
                 }
                 at.setValues(fixedVals);
             } else {
-                // todo hardcoded long
+                // todo hardcoded long bah I'm tired of this crap
                 if ((at.getConceptId() == new KnowledgeService().readConceptGUID(0)) && (at.getValues().size() != 0)) { 
                     List<Value> vals = at.getValues();
                     List<Value> fixedVals = new ArrayList<Value>();

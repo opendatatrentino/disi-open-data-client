@@ -124,12 +124,14 @@ public class EntityExportService {
 
 
 		//convert from global concept to local one
+                //david: but typeId can't be a concept !!!
 		
-		Long conceptTypeID = new KnowledgeService().readConceptGUID(typeId);
+		// dav commented Long conceptTypeID = new KnowledgeService().readConceptGUID(typeId);
 
 		EntityTypeService ets = new EntityTypeService();
 		/////////////////!!!!!!!!!!!!!IMPORTANT CHANGE THE ETYPE ID!!!!!!!!!!!!!!///////////
-		EntityType etype = ets.getEntityTypeByConcept(conceptTypeID);
+		// dav commented EntityType etype = ets.getEntityTypeByConcept(conceptTypeID);
+                EntityType etype = ets.getEntityType(typeId);
 
 		List<IAttributeDef> attrDefs = etype.getAttributeDefs();
 
