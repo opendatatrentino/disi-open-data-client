@@ -1,8 +1,6 @@
 package eu.trentorise.opendata.disiclient.test.services;
 
 import static eu.trentorise.opendata.disiclient.test.services.TestEntityService.NAME_URL;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 import java.util.Locale;
@@ -10,33 +8,85 @@ import java.util.Locale;
 import org.junit.Test;
 
 import eu.trentorise.opendata.disiclient.model.entity.EntityType;
-import eu.trentorise.opendata.disiclient.services.DisiEkb;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
+import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.disiclient.test.ConfigLoader;
+import static eu.trentorise.opendata.disiclient.test.services.TestKnowledgeService.cleanCreatedConcepts;
+import static eu.trentorise.opendata.disiclient.test.services.TestKnowledgeService.makeName;
 import eu.trentorise.opendata.semantics.IntegrityChecker;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.services.IEkb;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
+import it.unitn.disi.sweb.webapi.client.kb.ComplexTypeClient;
+import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
+import java.util.HashSet;
+import java.util.Set;
+import org.junit.After;
 import org.junit.Before;
-import org.parboiled.common.ImmutableList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.util.ArrayList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static eu.trentorise.opendata.disiclient.test.services.TestKnowledgeService.createConcept;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
  * @author David Leoni <david.leoni@unitn.it>
- * @date 28 July 2014
  *
  */
 public class TestEntityTypeService {
 
+    private static Logger logger = LoggerFactory.getLogger(TestEntityTypeService.class);
+
     private IEkb disiEkb;
-    
+
+    /**
+     * @since 0.11.1
+     */
+    private static Set<Long> createdEtypeIds = new HashSet();
+
+
+    /**
+     * Tries to clean previously created etypes, if fails at least empties
+     * internal list.
+     * @since 0.11.1
+     */
+    public static void resetCreatedEtypes() {
+        try {
+            cleanCreatedEtypes();
+        }
+        catch (Exception ex) {
+            logger.error("Failed to clean created etypes. Current list is : " + createdEtypeIds);
+            logger.error("Resetting internal list.", ex);
+            createdEtypeIds = new HashSet();
+        }
+    }
+
     @Before
-    public void beforeMethod(){
+    public void beforeMethod() {
         disiEkb = ConfigLoader.init();
+        resetCreatedEtypes();
+        TestKnowledgeService.resetCreatedConcepts();
     }
     
+    
+    @After
+    public void afterMethod() {
+
+        cleanCreatedEtypes();
+        TestKnowledgeService.cleanCreatedConcepts();
+        disiEkb = null;
+    }
+
     @Test
     public void testGetEntityTypeByID() {
         EntityTypeService ets = new EntityTypeService();
@@ -83,9 +133,9 @@ public class TestEntityTypeService {
         long finalTime = timeEnd - timeStart;
         System.out.println(finalTime);
         assertNotNull(etypes.get(0));
-        
+
     }
-    
+
     @Test
     public void testGetRootsTypes() {
         EntityTypeService ets = new EntityTypeService();
@@ -119,8 +169,54 @@ public class TestEntityTypeService {
     }
 
     @Test
-    public void testReadNonExistingEntityType() {        
+    public void testReadNonExistingEntityType() {
         assertEquals(null, disiEkb.getEntityTypeService().getEntityType("http://blabla.com"));
+
+    }
+
+    @Test
+    public void testRefreshEtypes() {
+        ComplexTypeClient ctc = new ComplexTypeClient(WebServiceURLs.getClientProtocol());
+        ComplexType swebEtype = new ComplexType();
+
+        long concId = createConcept();
+        swebEtype.setConceptId(concId);
+
+        String enName1 = "Disi client test etype 1";
+
+        swebEtype.setName(makeName(enName1, "Etype di test dal disi client"));
+        swebEtype.setDescription(makeName("a", "b"));
+
+        logger.warn("TODO USING USUAL HARDCODED KNOWLEDGE BASE 1 ...");
+        swebEtype.setKnowledgeBaseId(1L);
+
+        long id = ctc.create(swebEtype);
+
+        createdEtypeIds.add(id);
+
+        EntityTypeService ets = new EntityTypeService();
+
+        IEntityType readEtype = ets.readEntityType(WebServiceURLs.etypeIDToURL(id));
+
+        assertEquals(enName1, readEtype.getName().getString(Locale.ENGLISH));
+
+        ComplexType readSwebEtype = ctc.readComplexType(id, null);
+
+        String enName2 = "Disi client test etype 2";
+        readSwebEtype.setName(makeName(enName2, "Etype di test dal disi client"));
+
+        ctc.update(readSwebEtype);
+
+        ComplexType readSwebEtype2 = ctc.readComplexType(id, null);
+        assertEquals(enName2, readSwebEtype2.getName().get("en"));
+
+        IEntityType readEtype2 = ets.readEntityType(WebServiceURLs.etypeIDToURL(id));
+        assertEquals(enName1, readEtype2.getName().getString(Locale.ENGLISH));
+
+        ets.refreshEtypes();
+
+        IEntityType readEtype3 = ets.readEntityType(WebServiceURLs.etypeIDToURL(id));
+        assertEquals(enName2, readEtype3.getName().getString(Locale.ENGLISH));
 
     }
 
@@ -131,5 +227,18 @@ public class TestEntityTypeService {
         List<ISearchResult> searchEtypes = ets.searchEntityTypes("Product", locale);
         assertEquals("Product", searchEtypes.get(0).getName().getString(Locale.ENGLISH));
 
-    }    
+    }
+
+    public static void cleanCreatedEtypes() {
+        logger.info("Cleaning previously created etypes...");
+        for (Long etypeId : createdEtypeIds) {
+            ComplexTypeClient ctc = new ComplexTypeClient(WebServiceURLs.getClientProtocol());
+            ComplexType swebType = ctc.readComplexType(etypeId, null);
+            if (swebType != null) {
+                logger.info("Cleaning etype " + etypeId + " ...");
+                ctc.delete(swebType);
+            }
+        }
+        createdEtypeIds = new HashSet();
+    }
 }

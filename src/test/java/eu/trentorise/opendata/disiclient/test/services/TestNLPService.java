@@ -41,6 +41,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Testing the client implementaion of NLP services.
@@ -470,7 +473,7 @@ public class TestNLPService {
     public void testNLPWithConceptRestriction() {
         logger.warn("ONLY TESTING WITH ROOT CONCEPT!");
      
-        String rootConceptURL = disiEkb.getKnowledgeService().getRootConcept().getURL();
+        String rootConceptURL = disiEkb.getKnowledgeService().readRootConcept().getURL();
         INLPService nlpService = disiEkb.getNLPService();
         List<ISemanticText> semTexts = nlpService.runNLP(Arrays.asList(MIXED_ENTITIES_AND_CONCEPTS), rootConceptURL);
         testFiltering(semTexts.get(0), MeaningKind.CONCEPT, rootConceptURL);

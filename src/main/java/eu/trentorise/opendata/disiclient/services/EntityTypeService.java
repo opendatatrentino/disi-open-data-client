@@ -27,12 +27,16 @@ import org.slf4j.LoggerFactory;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
 import eu.trentorise.opendata.disiclient.model.entity.EntityType;
 import eu.trentorise.opendata.disiclient.services.model.SearchResult;
+import eu.trentorise.opendata.semantics.NotFoundException;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.model.entity.IUniqueIndex;
 import eu.trentorise.opendata.semantics.services.IEntityTypeService;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
+import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.Date;
 import javax.annotation.Nullable;
 
 /**
@@ -48,23 +52,32 @@ public class EntityTypeService implements IEntityTypeService {
     private static final Comparator SINGLE = new ValueComparator();
 
     /**
+     * TODO this is static but shouldn't be...
+     * @since 0.11.1
+     */    
+    private static Map<Long, ComplexType> swebEtypes = new HashMap();
+    
+    /**
+     * TODO this is static but shouldn't be...
+     * Is {@code null} when no population occurred.
      * @since 0.11.1
      */
     @Nullable
-    private static List<ComplexType> swebEtypes;
-    
+    private static Timestamp cachePopulationTime;
+
     /**
-     * Fetches and caches all sweb complex types, which are also patched with singular attr
-     * defs fetches for... some reason.
+     * Fetches and caches all sweb complex types, which are also patched with
+     * singular attr defs fetches for... some reason.
      *
      * @since 0.11.1
      */
-    public List<ComplexType> readAllSwebComplexTypes() {
-        if (swebEtypes != null){            
-            return swebEtypes;
+    public Map<Long, ComplexType> readAllSwebComplexTypes() {
+        if (cachePopulationTime != null) {
+            return Collections.unmodifiableMap(swebEtypes);
         }
-        logger.info("Found empty etype cache, going to populate it...");
         
+        logger.info("Found empty etype cache, going to populate it...");
+
         KbClient kbClient = new KbClient(getClientProtocol());
 
         //TODO decide what to do with knowledge base id which knowldege base id to take the first one? 
@@ -81,7 +94,7 @@ public class EntityTypeService implements IEntityTypeService {
         List<ComplexType> complexTypeList = ctc.readComplexTypes(kbId, null, null, ctFilter);
 
         AttributeDefinitionClient attrDefs = new AttributeDefinitionClient(getClientProtocol());
-        List<ComplexType> etypes = new ArrayList();
+        Map<Long, ComplexType> etypes = new HashMap();
 
         for (ComplexType cType : complexTypeList) {
 
@@ -98,16 +111,17 @@ public class EntityTypeService implements IEntityTypeService {
             cType.setAttributes(attributeDefList);
             //	System.out.println(eType.toString());
 
-            etypes.add(cType);
+            etypes.put(cType.getId(), cType);
         }
-        swebEtypes = etypes;
+        swebEtypes = etypes;        
+        cachePopulationTime = new Timestamp(new Date().getTime());
         return etypes;
     }
 
     public List<IEntityType> getAllEntityTypes() {
         List<IEntityType> ret = new ArrayList();
-        List<ComplexType> swebCtypes = readAllSwebComplexTypes();
-        for (ComplexType swebCtype : swebCtypes){
+        Map<Long, ComplexType> swebCtypes = readAllSwebComplexTypes();
+        for (ComplexType swebCtype : swebCtypes.values()) {
             EntityType oeEtype = new EntityType(swebCtype);
             ret.add(oeEtype);
         }
@@ -142,31 +156,23 @@ public class EntityTypeService implements IEntityTypeService {
             attributeDefList.add(attributeDef);
         }
         eType.setAttrs(attributeDefList);
+        swebEtypes.put(complexType.getId(), complexType);
         return eType;
     }
 
+    /**
+     *  Returns the cached etype or fetches one from the server.
+    */
     public EntityType getEntityType(long id) {
-        ComplexTypeClient ctc = new ComplexTypeClient(getClientProtocol());
-        ComplexTypeFilter ctFilter = new ComplexTypeFilter();
-        ctFilter.setIncludeRestrictions(true);
-        ctFilter.setIncludeAttributes(true);
-        ctFilter.setIncludeAttributesAsProperties(true);
-        ComplexType complexType = ctc.readComplexType(id, ctFilter);
-
-        EntityType eType = new EntityType(complexType);
-        AttributeDefinitionClient attrDefs = new AttributeDefinitionClient(getClientProtocol());
-        AttributeDefinitionFilter adf = new AttributeDefinitionFilter();
-        adf.setIncludeRestrictions(true);
-        List<AttributeDefinition> attrDefList = attrDefs.readAttributeDefinitions(id, null, null, adf);
-        List<IAttributeDef> attributeDefList = new ArrayList<IAttributeDef>();
-
-        for (AttributeDefinition attrDef : attrDefList) {
-
-            IAttributeDef attributeDef = new AttributeDef(attrDef);
-            attributeDefList.add(attributeDef);
+        if (cachePopulationTime == null){
+                readAllEntityTypes();
         }
-        eType.setAttrs(attributeDefList);
-        return eType;
+        if (swebEtypes.containsKey(id)) {
+            return new EntityType(swebEtypes.get(id));
+        } else {                                
+            throw new NotFoundException("Can't find etype with local id " + id + " in cache!");
+        }
+
     }
 
     public void addAttributeDefToEtype(IEntityType entityType,
@@ -301,6 +307,30 @@ public class EntityTypeService implements IEntityTypeService {
         return getEntityTypes(URLs);
     }
 
+    @Override
+    public void refreshEtypes() {
+        // todo naive but can work
+        swebEtypes = new HashMap();
+        cachePopulationTime = null;
+        getAllEntityTypes();
+    }
+
+    @Override
+    public boolean isEtypeCached(String etypeUrl) {
+        return swebEtypes.containsKey(WebServiceURLs.urlToEtypeID(etypeUrl));
+    }
+
+    @Override
+    public IEntityType getEtype(String etypeUrl) {
+        ComplexType retSweb = swebEtypes.get(WebServiceURLs.urlToEtypeID(etypeUrl));
+        if (retSweb == null) {
+            throw new NotFoundException("Requested etype " + etypeUrl + " in cache, couldn't find it!");
+        } else {
+            return new EntityType(retSweb);
+
+        }
+    }
+
     private static final class ValueComparator<V extends Comparable<? super V>>
             implements Comparator<Map.Entry<?, V>> {
 
@@ -312,10 +342,10 @@ public class EntityTypeService implements IEntityTypeService {
     /**
      * @since 0.11.1
      * @throws DisiClientException if not found
-     */    
+     */
     public ComplexType readSwebRootStructure() {
-        List<ComplexType> ctypes = readAllSwebComplexTypes();
-        for (ComplexType ctype : ctypes) {
+        Map<Long, ComplexType> ctypes = readAllSwebComplexTypes();
+        for (ComplexType ctype : ctypes.values()) {
             if (ctype.getName().get("en").equals("Structure")) {
                 return ctype;
             }
@@ -323,7 +353,6 @@ public class EntityTypeService implements IEntityTypeService {
         throw new DisiClientException("Couldn't find root structure named 'Structure'!");
     }
 
-    
     public IEntityType getRootStructure() {
         return new EntityType(readSwebRootStructure());
     }
@@ -335,25 +364,25 @@ public class EntityTypeService implements IEntityTypeService {
      */
     public it.unitn.disi.sweb.webapi.model.kb.types.ComplexType readSwebEtype(Long id) {
         checkNotNull(id, "Found null sweb etype id!");
-        List<ComplexType> ctypes = readAllSwebComplexTypes();
-        for (ComplexType ctype : ctypes){
-            if (ctype.getId().equals(id)){
-                return  ctype;
-            }            
+        Collection<ComplexType> ctypes = readAllSwebComplexTypes().values();
+        for (ComplexType ctype : ctypes) {
+            if (ctype.getId().equals(id)) {
+                return ctype;
+            }
         }
         throw new DisiClientException("Couldn't find etype with id " + id);
     }
-    
+
     /**
      *
      * @since 0.11.1
      * @throws DisiClientException if not found
      */
     public it.unitn.disi.sweb.webapi.model.kb.types.EntityType readSwebRootEtype() {
-        List<ComplexType> ctypes = readAllSwebComplexTypes();
+        Collection<ComplexType> ctypes = readAllSwebComplexTypes().values();
         for (ComplexType ctype : ctypes) {
             if (ctype.getName().get("en").equals("Entity")) {
-               return (it.unitn.disi.sweb.webapi.model.kb.types.EntityType) ctype;
+                return (it.unitn.disi.sweb.webapi.model.kb.types.EntityType) ctype;
             }
         }
         throw new DisiClientException("Couldn't find root etype named 'Entity'!!");

@@ -59,6 +59,10 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
@@ -80,7 +84,7 @@ public class TestEntityService {
 
     public static final long PALAZZETTO_ID = 64000L;
     
-    public static final long NORGO_VALSUGANA_ID = 64000L;
+    public static final long BORGO_VALSUGANA_ID = 64000L;
     /**
      * Palazzetto is a Facility. It doesn't have description. Its concept is gymnasium.
      */

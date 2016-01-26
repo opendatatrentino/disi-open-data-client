@@ -13,14 +13,19 @@ import org.slf4j.LoggerFactory;
 
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.disiclient.services.model.SearchResult;
+import eu.trentorise.opendata.semantics.NotFoundException;
 import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
 import eu.trentorise.opendata.semantics.services.IKnowledgeService;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
+import it.unitn.disi.sweb.webapi.model.Pagination;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import javax.annotation.Nullable;
 
 /**
- * Updated in 0.11.1 to support caching, see https://github.com/opendatatrentino/disi-open-data-client/issues/23
+ * Updated in 0.11.1 to support caching, see
+ * https://github.com/opendatatrentino/disi-open-data-client/issues/23
+ *
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
  * @author David Leoni <david.leoni@unitn.it>
  *
@@ -37,15 +42,22 @@ public class KnowledgeService implements IKnowledgeService {
     public static final long DESCRIPTION_CONCEPT_GLOBAL_ID = 3L;
     public static final long PART_OF_CONCEPT_GLOBAL_ID = 22L;
     public static final long CONTACT_CONCEPT_GLOBAL_ID = 120775L;
-        
 
     /**
      * Maps sweb global id to concept
+     *
+     * todo static but shoudln't be...
+     *
+     * @since 0.11.1
      */
     private static final HashMap<Long, Concept> swebGlobalIdToConcepts = new HashMap();
 
     /**
      * Maps sweb local id to concept
+     *
+     * todo static but shouldn't be...
+     *
+     * @since 0.11.1
      */
     private static final HashMap<Long, Concept> swebLocalIdToConcepts = new HashMap();
 
@@ -62,7 +74,7 @@ public class KnowledgeService implements IKnowledgeService {
     //		return iconcepts;
     //	}
     @Override
-    public IConcept getConcept(String URL) {
+    public IConcept readConcept(String URL) {
 
         Long conceptId;
 
@@ -92,35 +104,20 @@ public class KnowledgeService implements IKnowledgeService {
     }
 
     @Override
-    public List<IConcept> getConcepts(List<String> URLs) {
+    public List<IConcept> readConcepts(List<String> URLs) {
         List<IConcept> concepts = new ArrayList<IConcept>();
 
         for (String url : URLs) {
-            IConcept c = getConcept(url);
+            IConcept c = readConcept(url);
             concepts.add(c);
         }
         return concepts;
     }
 
     @Override
-    public IConcept getRootConcept() {
+    public IConcept readRootConcept() {
         ConceptODR concept = readConcept(ROOT_CONCEPT_GLOBAL_ID);
         return concept;
-    }
-
-    @Override
-    public List<IConcept> readConcepts(List<String> URLs) {
-        return getConcepts(URLs);
-    }
-
-    @Override
-    public IConcept readConcept(String URL) {
-        return getConcept(URL);
-    }
-
-    @Override
-    public IConcept readRootConcept() {
-        return getRootConcept();
     }
 
     @Override
@@ -133,11 +130,11 @@ public class KnowledgeService implements IKnowledgeService {
         ConceptClient client = new ConceptClient(WebServiceURLs.getClientProtocol(locale));
         logger.warn("Knowledge base is set to default (1)");
         List<Concept> concepts = client.readConcepts(1L, null, partialName, null, null, null);
-               
+
         for (Concept c : concepts) {
             swebGlobalIdToConcepts.put(c.getGlobalId(), c);
             swebLocalIdToConcepts.put(c.getId(), c);
-            
+
             ConceptODR codr = new ConceptODR(c);
             SearchResult sr = new SearchResult(codr);
             conceptRes.add(sr);
@@ -165,9 +162,9 @@ public class KnowledgeService implements IKnowledgeService {
 
     /**
      * Ported from ConceptODR
-     * 
+     *
      * @since 0.11.1
-     */    
+     */
     @Nullable
     public ConceptODR readConceptGlobalID(long glId) {
 
@@ -175,7 +172,7 @@ public class KnowledgeService implements IKnowledgeService {
             ConceptClient client = new ConceptClient(WebServiceURLs.getClientProtocol());
             logger.warn("Entity Base is 1");
             List<Concept> concepts = client.readConcepts(1L, glId, null, null, null, null);
-            if (concepts.isEmpty()){
+            if (concepts.isEmpty()) {
                 logger.info("readConceptGlobalID: Couldn't find concept with global id " + glId + ", returning null");
                 return null;
             }
@@ -193,8 +190,7 @@ public class KnowledgeService implements IKnowledgeService {
     }
 
     /**
-     * Ported from ConceptODR, careful this one actually returns
-     * the LOCAL ID
+     * Ported from ConceptODR, careful this one actually returns the LOCAL ID
      *
      * @since 0.11.1
      */
@@ -202,10 +198,32 @@ public class KnowledgeService implements IKnowledgeService {
     public Long readConceptGUID(long glId) {
         ConceptODR ret = readConceptGlobalID(glId);
         if (ret == null) {
-            return null;            
+            return null;
         } else {
             return ret.getId();
         }
+    }
+
+    @Override
+    public IConcept getConcept(String conceptUrl) {
+        Concept swebRet = swebLocalIdToConcepts.get(WebServiceURLs.urlToConceptID(conceptUrl));
+        if (swebRet == null) {
+            throw new NotFoundException("Couldn't find concept " + conceptUrl);
+        } else {
+            return new ConceptODR(swebRet);
+        }
+    }
+
+    @Override
+    public void clearConceptsCache() {
+        swebLocalIdToConcepts.clear();
+        swebGlobalIdToConcepts.clear();
+
+    }
+
+    @Override
+    public boolean isConceptCached(String conceptUrl) {
+        return swebLocalIdToConcepts.containsKey(WebServiceURLs.urlToConceptID(conceptUrl));
     }
 
 }

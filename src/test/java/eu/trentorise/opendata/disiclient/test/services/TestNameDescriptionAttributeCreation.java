@@ -24,6 +24,7 @@ import eu.trentorise.opendata.disiclient.test.ConfigLoader;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.Dict;
 import org.junit.Before;
+import static org.junit.Assert.assertNotNull;
 
 public class TestNameDescriptionAttributeCreation {
 
