@@ -37,7 +37,7 @@ public class ConceptODR implements IConcept {
             this.globalID = -1;
         } else {
             this.globalID = globId;
-        }        
+        }                
         this.name = con.getName();
         this.description = con.getDescription();
     }
@@ -89,6 +89,10 @@ public class ConceptODR implements IConcept {
         return dict;
     }
 
+    /**
+     * 
+     *  Modified in 0.11.1 to returns the name, or, it empty, the label assumed to be in English.
+     */
     public IDict getName() {
         Dict dict = new Dict();
         Iterator<?> it = this.name.entrySet().iterator();
@@ -98,7 +102,12 @@ public class ConceptODR implements IConcept {
             dict = dict.putTranslation(l, (String) pairs.getValue());
 
         }
-        return dict;
+        if (dict.isEmpty()){
+            return new Dict(this.label, Locale.ENGLISH);
+        } else {
+            return dict;
+        }
+        
     }
 
 }

@@ -14,12 +14,15 @@ import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.disiclient.test.ConfigLoader;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
+import eu.trentorise.opendata.semantics.model.knowledge.IDict;
 import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
 import it.unitn.disi.sweb.webapi.client.kb.ComplexTypeClient;
 import it.unitn.disi.sweb.webapi.client.kb.ConceptClient;
+import it.unitn.disi.sweb.webapi.client.kb.SynsetClient;
 import it.unitn.disi.sweb.webapi.model.kb.concepts.Concept;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
+import it.unitn.disi.sweb.webapi.model.kb.vocabulary.Synset;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -62,6 +65,7 @@ public class TestKnowledgeService {
         return ret;
     }
 
+    
     /**
      * Creates a new random concept on the entity base using raw sweb client.
      *
@@ -74,9 +78,9 @@ public class TestKnowledgeService {
         conc.setKnowledgeBaseId(1L);
 
         long uuid = UUID.randomUUID().getLeastSignificantBits();
-        conc.setLabel("test " + uuid);
-        conc.setName(makeName("Test concept of Disi client " + uuid, "Concetto di test del Disi client " + uuid));
-        conc.setDescription(makeName("a", "b"));
+        conc.setLabel("Disi Client Test Concept " + uuid);
+        
+        // NOTE: name and description are actually computed, so they won't be stored on server as part of the concept !!
 
         long ret = client.create(conc);
         createdConceptIds.add(ret);
@@ -227,15 +231,20 @@ public class TestKnowledgeService {
         
         Concept swebConcept = client.readConcept(concId, false);        
 
+        assertTrue(swebConcept.getName().isEmpty());
+     
         IConcept readConcept = ks.readConcept(WebServiceURLs.conceptIDToURL(concId));        
         String enName1 = readConcept.getName().getString(Locale.ENGLISH);
         
+        IDict name = readConcept.getName();
+                
+        
         assertEquals(readConcept.getName().getString(Locale.ENGLISH),
-                     swebConcept.getName().get("en"));
+                     swebConcept.getLabel());
         
         String enName2 = "Disi client test concept #2";
-        swebConcept.setName(makeName(enName2, "b"));
-        
+        swebConcept.setLabel(enName2);
+                
         client.update(swebConcept);
         
         IConcept readConcept2 = ks.readConcept(WebServiceURLs.conceptIDToURL(concId));

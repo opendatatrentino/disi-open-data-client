@@ -132,7 +132,10 @@ public class KnowledgeService implements IKnowledgeService {
         List<Concept> concepts = client.readConcepts(1L, null, partialName, null, null, null);
 
         for (Concept c : concepts) {
-            swebGlobalIdToConcepts.put(c.getGlobalId(), c);
+            if (c.getGlobalId() != null){
+                swebGlobalIdToConcepts.put(c.getGlobalId(), c);
+            }
+            
             swebLocalIdToConcepts.put(c.getId(), c);
 
             ConceptODR codr = new ConceptODR(c);
@@ -148,7 +151,9 @@ public class KnowledgeService implements IKnowledgeService {
             ConceptClient client = new ConceptClient(WebServiceURLs.getClientProtocol());
             Concept conc = client.readConcept(conceptId, false);
 
-            swebGlobalIdToConcepts.put(conc.getGlobalId(), conc);
+            if (conc.getGlobalId() != null){
+                swebGlobalIdToConcepts.put(conc.getGlobalId(), conc);
+            }
             swebLocalIdToConcepts.put(conc.getId(), conc);
 
             ConceptODR conceptODR = new ConceptODR(conc);
@@ -177,7 +182,7 @@ public class KnowledgeService implements IKnowledgeService {
                 return null;
             }
             ConceptODR conceptODR = new ConceptODR(concepts.get(0));
-            logger.warn("Only the first concept is returned. The number of returned concepts is: " + concepts.size());
+            logger.warn("Only the first concept is returned. The number of returned concepts is: " + concepts.size());            
             swebGlobalIdToConcepts.put(glId, concepts.get(0));
             swebLocalIdToConcepts.put(concepts.get(0).getId(), concepts.get(0));
             return conceptODR;
