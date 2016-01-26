@@ -307,6 +307,9 @@ public class EntityTypeService implements IEntityTypeService {
         return getEntityTypes(URLs);
     }
 
+    /**
+     *  @since 0.11.1
+     */    
     @Override
     public void refreshEtypes() {
         // todo naive but can work
@@ -315,11 +318,17 @@ public class EntityTypeService implements IEntityTypeService {
         getAllEntityTypes();
     }
 
+    /**
+     *  @since 0.11.1
+     */    
     @Override
     public boolean isEtypeCached(String etypeUrl) {
         return swebEtypes.containsKey(WebServiceURLs.urlToEtypeID(etypeUrl));
     }
 
+    /**
+     *  @since 0.11.1
+     */    
     @Override
     public IEntityType getEtype(String etypeUrl) {
         ComplexType retSweb = swebEtypes.get(WebServiceURLs.urlToEtypeID(etypeUrl));

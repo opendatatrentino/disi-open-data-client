@@ -209,6 +209,9 @@ public class KnowledgeService implements IKnowledgeService {
         }
     }
 
+    /**
+     *  @since 0.11.1
+     */    
     @Override
     public IConcept getConcept(String conceptUrl) {
         Concept swebRet = swebLocalIdToConcepts.get(WebServiceURLs.urlToConceptID(conceptUrl));
@@ -219,6 +222,9 @@ public class KnowledgeService implements IKnowledgeService {
         }
     }
 
+    /**
+     *  @since 0.11.1
+     */
     @Override
     public void clearConceptsCache() {
         swebLocalIdToConcepts.clear();
@@ -226,6 +232,9 @@ public class KnowledgeService implements IKnowledgeService {
 
     }
 
+    /**
+     *  @since 0.11.1
+     */    
     @Override
     public boolean isConceptCached(String conceptUrl) {
         return swebLocalIdToConcepts.containsKey(WebServiceURLs.urlToConceptID(conceptUrl));

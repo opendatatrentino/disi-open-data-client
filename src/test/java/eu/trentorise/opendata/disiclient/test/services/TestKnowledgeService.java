@@ -220,6 +220,9 @@ public class TestKnowledgeService {
         assertTrue(res.size() > 0);
     }
 
+    /**
+     * @since 0.11.1
+     */
     @Test
     public void testClearConceptCache() {
                 
