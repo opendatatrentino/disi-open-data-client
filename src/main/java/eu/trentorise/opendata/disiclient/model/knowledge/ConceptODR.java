@@ -32,7 +32,12 @@ public class ConceptODR implements IConcept {
     public ConceptODR(Concept con) {
         this.label = con.getLabel();
         this.id = con.getId();
-        this.globalID = con.getGlobalId();
+        Long globId = con.getGlobalId();
+        if (globId == null){
+            this.globalID = -1;
+        } else {
+            this.globalID = globId;
+        }        
         this.name = con.getName();
         this.description = con.getDescription();
     }
