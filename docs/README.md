@@ -33,7 +33,15 @@ Since mostly sweb api seems to prefer local ids, the `UrlMapper` (which is in se
 
 #### Caching
 
-Sweb clients seem not to have any caching, so we implemented Etype and Concept caching. Currently there is no way to refresh the cache elements once they're loaded.
+Sweb clients seem not to have any caching, so we implemented Etype and Concept caching. In branch-0.11  there is some way to refresh the cache elements once they're loaded.
+
+### Etypes
+
+Each Etype must have a unique Concept associated to it, otherwise etype creation fails.
+
+### Concepts
+
+Concepts name derives from synsets associated to the Concept. To each concept you can associate a `label` string, though (and the label is _not_ a name)
 
 
 
