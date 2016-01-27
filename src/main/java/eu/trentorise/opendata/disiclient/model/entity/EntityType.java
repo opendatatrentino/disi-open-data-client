@@ -1,6 +1,7 @@
 package eu.trentorise.opendata.disiclient.model.entity;
 
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
+import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.KnowledgeService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
@@ -19,6 +20,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
@@ -27,6 +30,8 @@ import java.util.Map;
  */
 public class EntityType implements IEntityType {
 
+    private static final Logger logger = LoggerFactory.getLogger(EntityType.class);
+    
     private long conceptId;
     private List<IAttributeDef> attrs;
     private long id;
@@ -41,8 +46,12 @@ public class EntityType implements IEntityType {
         this.name = cType.getName();
         this.attrs = new ArrayList();
         List<AttributeDefinition> swebAttrDefs = cType.getAttributes();
-        for (AttributeDefinition swebAttrDef : swebAttrDefs){
-            attrs.add(new AttributeDef(swebAttrDef));
+        if (swebAttrDefs == null){
+            logger.warn("Found Complex type with id " + cType.getId() + " with attrdefs null, setting empty attr defs.");
+        } else {
+            for (AttributeDefinition swebAttrDef : swebAttrDefs){
+                attrs.add(new AttributeDef(swebAttrDef));
+            }            
         }
     }
 

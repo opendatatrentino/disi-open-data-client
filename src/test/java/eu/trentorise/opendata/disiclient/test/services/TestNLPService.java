@@ -254,7 +254,7 @@ public class TestNLPService {
         IMeaning m = word.getSelectedMeaning();
         KnowledgeService ks = new KnowledgeService();
 
-        IConcept concept = ks.getConcept(word.getSelectedMeaning().getURL());
+        IConcept concept = ks.readConcept(word.getSelectedMeaning().getURL());
         assertTrue(concept != null);
         assertEquals(word.getSelectedMeaning().getURL(), concept.getURL());
 

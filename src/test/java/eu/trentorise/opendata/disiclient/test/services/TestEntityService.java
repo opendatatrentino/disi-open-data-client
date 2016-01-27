@@ -24,6 +24,7 @@ import eu.trentorise.opendata.semantics.NotFoundException;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
+import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.model.entity.IStructure;
 import eu.trentorise.opendata.semantics.model.entity.IValue;
 import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
@@ -288,7 +289,7 @@ public class TestEntityService {
         EntityODR entityToCreate = new EntityODR();
         List<Attribute> attributes = new ArrayList<Attribute>();
         ComplexType cType = ctypecl.readComplexType(inst.getTypeId(), null);
-        EntityType etype = new EntityType(cType);
+        IEntityType etype = new EntityTypeService().readEntityType(WebServiceURLs.etypeIDToURL(cType.getId()));
 		//List<Name> names = new ArrayList<Name>();
 
         //instantiation of variables
