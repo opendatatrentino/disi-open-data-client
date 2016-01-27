@@ -54,13 +54,15 @@ public class EntityTypeService implements IEntityTypeService {
 
     /**
      * TODO this is static but shouldn't be...
+     *
      * @since 0.11.1
-     */    
+     */
     private static Map<Long, ComplexType> swebEtypes = new ConcurrentHashMap();
-    
+
     /**
-     * TODO this is static but shouldn't be...
-     * Is {@code null} when no population occurred.
+     * TODO this is static but shouldn't be... Is {@code null} when no
+     * population occurred.
+     *
      * @since 0.11.1
      */
     @Nullable
@@ -76,7 +78,7 @@ public class EntityTypeService implements IEntityTypeService {
         if (cachePopulationTime != null) {
             return Collections.unmodifiableMap(swebEtypes);
         }
-        
+
         logger.info("Found empty etype cache, going to populate it...");
 
         KbClient kbClient = new KbClient(getClientProtocol());
@@ -114,7 +116,7 @@ public class EntityTypeService implements IEntityTypeService {
 
             etypes.put(cType.getId(), cType);
         }
-        swebEtypes = etypes;        
+        swebEtypes = etypes;
         cachePopulationTime = new Timestamp(new Date().getTime());
         return etypes;
     }
@@ -162,15 +164,13 @@ public class EntityTypeService implements IEntityTypeService {
     }
 
     /**
-     *  Returns the cached etype or fetches one from the server.
-    */
+     * Returns the cached etype
+     */
+    @Override
     public EntityType getEntityType(long id) {
-        if (cachePopulationTime == null){
-                readAllEntityTypes();
-        }
         if (swebEtypes.containsKey(id)) {
             return new EntityType(swebEtypes.get(id));
-        } else {                                
+        } else {
             throw new NotFoundException("Can't find etype with local id " + id + " in cache!");
         }
 
@@ -197,15 +197,6 @@ public class EntityTypeService implements IEntityTypeService {
      */
     private IProtocolClient getClientProtocol() {
         return WebServiceURLs.getClientProtocol();
-    }
-
-    public List<IEntityType> getEntityTypes(List<String> URLs) {
-        List<IEntityType> etypes = new ArrayList<IEntityType>();
-
-        for (String url : URLs) {
-            etypes.add(getEntityType(url));
-        }
-        return etypes;
     }
 
     public EntityType getEntityType(String URL) {
@@ -288,29 +279,55 @@ public class EntityTypeService implements IEntityTypeService {
         return keyView;
     }
 
+    @Override
     public List<IEntityType> readAllEntityTypes() {
         return getAllEntityTypes();
     }
 
+    @Override
     public IEntityType readEntityType(String URL) {
-        return getEntityType(URL);
+        if (cachePopulationTime == null) {
+            readAllEntityTypes();
+        }
+        long id;
+        try {
+            id = WebServiceURLs.urlToEtypeID(URL);
+        }
+        catch (Exception ex) {
+            return null;
+        }
+        if (swebEtypes.containsKey(id)) {
+            return new EntityType(swebEtypes.get(id));
+        } else {
+            return null;
+        }
+
     }
 
+    @Override
     public IEntityType readRootStructure() {
-        return getRootStructure();
+        return new EntityType(readSwebRootStructure());
     }
 
+    @Override
     public IEntityType readRootEtype() {
-        return getRootEtype();
+        return new EntityType(readSwebRootEtype());
     }
 
+    @Override
     public List<IEntityType> readEntityTypes(List<String> URLs) {
-        return getEntityTypes(URLs);
+        List<IEntityType> etypes = new ArrayList<IEntityType>();
+
+        for (String url : URLs) {
+            etypes.add(getEntityType(url));
+        }
+        return etypes;
+
     }
 
     /**
-     *  @since 0.11.1
-     */    
+     * @since 0.11.1
+     */
     @Override
     public void refreshEtypes() {
         // todo naive but can work
@@ -320,16 +337,16 @@ public class EntityTypeService implements IEntityTypeService {
     }
 
     /**
-     *  @since 0.11.1
-     */    
+     * @since 0.11.1
+     */
     @Override
     public boolean isEtypeCached(String etypeUrl) {
         return swebEtypes.containsKey(WebServiceURLs.urlToEtypeID(etypeUrl));
     }
 
     /**
-     *  @since 0.11.1
-     */    
+     * @since 0.11.1
+     */
     @Override
     public IEntityType getEtype(String etypeUrl) {
         ComplexType retSweb = swebEtypes.get(WebServiceURLs.urlToEtypeID(etypeUrl));
@@ -363,10 +380,6 @@ public class EntityTypeService implements IEntityTypeService {
         throw new DisiClientException("Couldn't find root structure named 'Structure'!");
     }
 
-    public IEntityType getRootStructure() {
-        return new EntityType(readSwebRootStructure());
-    }
-
     /**
      *
      * @since 0.11.1
@@ -398,7 +411,4 @@ public class EntityTypeService implements IEntityTypeService {
         throw new DisiClientException("Couldn't find root etype named 'Entity'!!");
     }
 
-    public IEntityType getRootEtype() {
-        return new EntityType(readSwebRootEtype());
-    }
 }

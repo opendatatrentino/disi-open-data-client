@@ -11,7 +11,6 @@ import eu.trentorise.opendata.disiclient.model.entity.EntityType;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.disiclient.test.ConfigLoader;
-import static eu.trentorise.opendata.disiclient.test.services.TestKnowledgeService.cleanCreatedConcepts;
 import static eu.trentorise.opendata.disiclient.test.services.TestKnowledgeService.makeName;
 import eu.trentorise.opendata.semantics.IntegrityChecker;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
@@ -27,14 +26,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.ArrayList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static eu.trentorise.opendata.disiclient.test.services.TestKnowledgeService.createConcept;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -66,7 +58,7 @@ public class TestEntityTypeService {
         }
         catch (Exception ex) {
             logger.error("Failed to clean created etypes. Current list is : " + createdEtypeIds);
-            logger.error("Resetting internal list.", ex);
+            logger.error("Resetting internal list.", ex);            
             createdEtypeIds = new HashSet();
         }
     }
@@ -139,8 +131,8 @@ public class TestEntityTypeService {
     @Test
     public void testGetRootsTypes() {
         EntityTypeService ets = new EntityTypeService();
-        assertEquals("Entity", ets.getRootEtype().getName().getString(Locale.ENGLISH));
-        assertEquals("Structure", ets.getRootStructure().getName().getString(Locale.ENGLISH));
+        assertEquals("Entity", ets.readRootEtype().getName().getString(Locale.ENGLISH));
+        assertEquals("Structure", ets.readRootStructure().getName().getString(Locale.ENGLISH));
 
     }
 
@@ -176,6 +168,7 @@ public class TestEntityTypeService {
 
     @Test
     public void testRefreshEtypes() {
+        
         ComplexTypeClient ctc = new ComplexTypeClient(WebServiceURLs.getClientProtocol());
         ComplexType swebEtype = new ComplexType();
 
@@ -191,9 +184,9 @@ public class TestEntityTypeService {
         swebEtype.setKnowledgeBaseId(1L);
 
         long id = ctc.create(swebEtype);
-
         createdEtypeIds.add(id);
-
+        new EntityTypeService().refreshEtypes();
+        
         EntityTypeService ets = new EntityTypeService();
 
         IEntityType readEtype = ets.readEntityType(WebServiceURLs.etypeIDToURL(id));
