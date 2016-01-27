@@ -20,6 +20,8 @@ import eu.trentorise.opendata.semantics.services.model.ISearchResult;
 import it.unitn.disi.sweb.webapi.model.Pagination;
 import java.sql.Timestamp;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nullable;
 
 /**
@@ -50,7 +52,7 @@ public class KnowledgeService implements IKnowledgeService {
      *
      * @since 0.11.1
      */
-    private static final HashMap<Long, Concept> swebGlobalIdToConcepts = new HashMap();
+    private static final Map<Long, Concept> swebGlobalIdToConcepts = new ConcurrentHashMap();
 
     /**
      * Maps sweb local id to concept
@@ -59,7 +61,7 @@ public class KnowledgeService implements IKnowledgeService {
      *
      * @since 0.11.1
      */
-    private static final HashMap<Long, Concept> swebLocalIdToConcepts = new HashMap();
+    private static final Map<Long, Concept> swebLocalIdToConcepts = new ConcurrentHashMap();
 
     private static final Logger logger = LoggerFactory.getLogger(KnowledgeService.class);
 

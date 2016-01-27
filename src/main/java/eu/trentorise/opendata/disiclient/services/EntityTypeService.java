@@ -37,6 +37,7 @@ import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Date;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nullable;
 
 /**
@@ -55,7 +56,7 @@ public class EntityTypeService implements IEntityTypeService {
      * TODO this is static but shouldn't be...
      * @since 0.11.1
      */    
-    private static Map<Long, ComplexType> swebEtypes = new HashMap();
+    private static Map<Long, ComplexType> swebEtypes = new ConcurrentHashMap();
     
     /**
      * TODO this is static but shouldn't be...
