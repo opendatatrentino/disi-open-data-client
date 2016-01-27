@@ -17,6 +17,7 @@ import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import eu.trentorise.opendata.disiclient.services.KnowledgeService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
+import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.model.knowledge.IConcept;
 import eu.trentorise.opendata.semantics.model.knowledge.IDict;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.Dict;
@@ -174,14 +175,14 @@ public class AttributeDef implements IAttributeDef {
         }
     }
 
-    public EntityType getRangeEType() {
+    @Override
+    public IEntityType getRangeEType() {
         if (this.dataType.equals("COMPLEX_TYPE")) {
 
             ComplexTypeClient ctc = new ComplexTypeClient(getClientProtocol());
-            if (this.entityTypeID != null) {
-                ComplexType cType = ctc.readComplexType(this.entityTypeID, null);
-                EntityType etype = new EntityType(cType);
-                return etype;
+            if (this.entityTypeID != null) {                
+                return new EntityTypeService().readEntityType(WebServiceURLs.etypeIDToURL(this.entityTypeID));
+                
             } else {
                 return null;
             }

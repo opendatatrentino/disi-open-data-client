@@ -1,7 +1,6 @@
 package eu.trentorise.opendata.disiclient.model.entity;
 
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
-import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import eu.trentorise.opendata.disiclient.services.KnowledgeService;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
@@ -40,6 +39,11 @@ public class EntityType implements IEntityType {
         this.id = cType.getId();
         this.description = cType.getDescription();
         this.name = cType.getName();
+        this.attrs = new ArrayList();
+        List<AttributeDefinition> swebAttrDefs = cType.getAttributes();
+        for (AttributeDefinition swebAttrDef : swebAttrDefs){
+            attrs.add(new AttributeDef(swebAttrDef));
+        }
     }
 
     public EntityType() {
@@ -68,10 +72,6 @@ public class EntityType implements IEntityType {
     public void setConcept(IConcept concept) {
 
         ConceptODR conc = (ConceptODR) concept;
-        ComplexTypeClient ctypeCl = new ComplexTypeClient(WebServiceURLs.getClientProtocol());
-        ComplexType ctype = ctypeCl.readComplexType(this.conceptId, null);
-        // set concept on server-side 
-        ctype.setConceptId(conc.getId());
         //set concept on client-side
         this.conceptId = conc.getId();
     }
@@ -89,14 +89,7 @@ public class EntityType implements IEntityType {
     }
 
     public List<IAttributeDef> getAttributeDefs() {
-        if (this.attrs != null) {
-            return this.attrs;
-        } else {
-            EntityTypeService ets = new EntityTypeService();
-            EntityType etype = ets.getEntityType(this.id);
-            this.attrs = etype.getAttributeDefs();
-            return this.attrs;
-        }
+        return this.attrs;
     }
 
     public void addAttributeD(AttributeDef attrDef) {
@@ -109,9 +102,6 @@ public class EntityType implements IEntityType {
         List<AttributeDefinition> attrList = attrDefCl.readAttributeDefinitions(this.id, null, null, null);
         ArrayList<AttributeDefinition> atrList = new ArrayList<AttributeDefinition>(attrList);
         atrList.add(attrDef.convertAttributeDefinition());
-        ComplexTypeClient ctypeCl = new ComplexTypeClient(WebServiceURLs.getClientProtocol());
-        ComplexType ctype = ctypeCl.readComplexType(this.id, null);
-        ctype.setAttributes(attrList);
     }
 
     public void removeAttributeDef(long attrDefID) {
@@ -134,9 +124,7 @@ public class EntityType implements IEntityType {
                 break;
             }
         }
-        ComplexTypeClient ctypeCl = new ComplexTypeClient(WebServiceURLs.getClientProtocol());
-        ComplexType ctype = ctypeCl.readComplexType(this.conceptId, null);
-        ctype.setAttributes(attrList);
+
     }
 
     public List<IUniqueIndex> getUniqueIndexes() {

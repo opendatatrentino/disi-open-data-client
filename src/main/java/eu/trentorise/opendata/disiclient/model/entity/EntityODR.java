@@ -78,6 +78,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkNotNull;
+import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
@@ -508,15 +509,12 @@ public class EntityODR extends StructureODR implements IEntity {
     public IEntityType getEtype() {
         if (this.etype != null) {
             return this.etype;
-        } else {
-            ComplexTypeClient ctc = new ComplexTypeClient(this.api);
+        } else {            
             Long typeId = super.getTypeId();
             if (typeId == null) {
                 return null;
-            }
-            ComplexType ctype = ctc.readComplexType(typeId, null);
-            EntityType etype = new EntityType(ctype);
-            this.etype = etype;
+            }                        
+            this.etype = new EntityTypeService().readEntityType(WebServiceURLs.etypeIDToURL(typeId));
         }
         return etype;
     }
