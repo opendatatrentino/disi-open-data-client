@@ -183,7 +183,7 @@ public class TestEntityService {
 
     private IProtocolClient api;
 
-    Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger logger = LoggerFactory.getLogger(TestEntityService.class);
 
     IEkb ekb;
     

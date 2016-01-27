@@ -46,7 +46,7 @@ import javax.annotation.Nullable;
  */
 public class EntityTypeService implements IEntityTypeService {
 
-    Logger logger = LoggerFactory.getLogger(EntityTypeService.class);
+    private static final Logger logger = LoggerFactory.getLogger(EntityTypeService.class);
 
     public static final double MAX_SCORE_FOR_NO_FIRST_LETTER_MATCH = 0.3;
     private static final Comparator SINGLE = new ValueComparator();

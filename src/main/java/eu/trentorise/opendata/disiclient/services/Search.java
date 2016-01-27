@@ -24,7 +24,7 @@ import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
 
 public class Search {
 
-    Logger logger = LoggerFactory.getLogger(Search.class);
+    private static final Logger logger = LoggerFactory.getLogger(Search.class);
 
     IProtocolClient api;
     InstanceClient client;

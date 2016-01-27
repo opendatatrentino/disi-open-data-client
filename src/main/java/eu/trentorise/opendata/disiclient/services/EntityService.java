@@ -61,7 +61,7 @@ import org.slf4j.LoggerFactory;
 
 public class EntityService implements IEntityService {
 
-    Logger logger = LoggerFactory.getLogger(EntityService.class);
+    private static final Logger logger = LoggerFactory.getLogger(EntityService.class);
 
     private IProtocolClient api;
     private DisiEkb disiEkb;

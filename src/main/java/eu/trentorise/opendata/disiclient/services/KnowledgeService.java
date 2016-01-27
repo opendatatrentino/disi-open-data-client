@@ -61,7 +61,7 @@ public class KnowledgeService implements IKnowledgeService {
      */
     private static final HashMap<Long, Concept> swebLocalIdToConcepts = new HashMap();
 
-    Logger logger = LoggerFactory.getLogger(KnowledgeService.class);
+    private static final Logger logger = LoggerFactory.getLogger(KnowledgeService.class);
 
     //	public List<IConcept> getConcepts(List<Long> GUIDs) {
     //		List<IConcept> iconcepts = new ArrayList<IConcept>();

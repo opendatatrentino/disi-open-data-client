@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public class NLPService implements INLPService {
 
-	Logger logger = LoggerFactory.getLogger(NLPService.class);
+	private static final  Logger logger = LoggerFactory.getLogger(NLPService.class);
 
 	public List<ISemanticText> disambiguateColumns(ITableResource table,
 			IResourceContext context) {

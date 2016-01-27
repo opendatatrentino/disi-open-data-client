@@ -32,7 +32,7 @@ import it.unitn.disi.sweb.webapi.model.eb.Structure;
 
 public class IdentityService implements IIdentityService {
 
-    Logger logger = LoggerFactory.getLogger(IdentityService.class);
+    private static final Logger logger = LoggerFactory.getLogger(IdentityService.class);
 
     private EntityODR convertNameAttr(EntityODR ent) {
         List<Attribute> attrs = ent.getAttributes();

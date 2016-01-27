@@ -45,7 +45,7 @@ import static org.junit.Assert.assertNotNull;
  */
 public class TestEntityTypeService {
 
-    private static Logger logger = LoggerFactory.getLogger(TestEntityTypeService.class);
+    private static final Logger logger = LoggerFactory.getLogger(TestEntityTypeService.class);
 
     private IEkb disiEkb;
 

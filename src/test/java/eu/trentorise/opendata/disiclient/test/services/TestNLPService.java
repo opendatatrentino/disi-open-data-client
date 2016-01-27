@@ -54,7 +54,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class TestNLPService {
 
-    Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger logger = LoggerFactory.getLogger(TestNLPService.class);
 
     
     DisiEkb disiEkb;

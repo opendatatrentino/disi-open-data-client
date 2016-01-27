@@ -49,7 +49,7 @@ public class TestKnowledgeService {
 
     public static final long CAR_GLOBAL_CONCEPT_ID = 15944L;
 
-    private static Logger logger = LoggerFactory.getLogger(TestKnowledgeService.class);
+    private static final Logger logger = LoggerFactory.getLogger(TestKnowledgeService.class);
 
     private static Set<Long> createdConceptIds = new HashSet();
 
