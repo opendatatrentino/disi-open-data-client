@@ -253,7 +253,7 @@ public class TestEntityService {
         EntityODR entity = new EntityODR();        
         IEntityService es = ekb.getEntityService();
         entity.setEntityAttributes(new ArrayList<IAttribute>());
-        entity.setEtype(ekb.getEntityTypeService().getEntityType(FACILITY_URL));
+        entity.setEtype(ekb.getEntityTypeService().readEntityType(FACILITY_URL));
         entity.setEntityBaseId(1L);
         entity.setURL("http://blabla.org");
         try {

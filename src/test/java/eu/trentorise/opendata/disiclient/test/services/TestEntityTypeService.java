@@ -170,7 +170,7 @@ public class TestEntityTypeService {
 
     @Test
     public void testReadNonExistingEntityType() {
-        assertEquals(null, disiEkb.getEntityTypeService().getEntityType("http://blabla.com"));
+        assertEquals(null, disiEkb.getEntityTypeService().readEntityType("http://blabla.com"));
 
     }
 
