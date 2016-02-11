@@ -130,7 +130,7 @@ public class EntityODR extends StructureODR implements IEntity {
         for (Attribute at : attrs) {
             if (at.getConceptId() == null) {
                 continue;
-            } else if (at.getConceptId().equals(new KnowledgeService().readConceptGlobalID(DESCRIPTION_CONCEPT_GLOBAL_ID).getId())) {
+            } else if (at.getConceptId().equals(new KnowledgeService().readConceptGUID(DESCRIPTION_CONCEPT_GLOBAL_ID))) {
                 List<Value> vals = at.getValues();
                 List<Value> fixedVals = new ArrayList<Value>();
 
@@ -200,7 +200,7 @@ public class EntityODR extends StructureODR implements IEntity {
                 at.setValues(fixedVals);
             } else {
                 logger.warn("IN EntityODR CONSTRUCTOR: WE NEED GENERIC CODE FOR RELATIONAL ATTRIBUTES! TODO REVIEW!");
-                if ((at.getConceptId().equals(new KnowledgeService().readConceptGlobalID(PART_OF_CONCEPT_GLOBAL_ID).getId())) && (at.getValues().size() != 0)) { 
+                if ((at.getConceptId().equals(new KnowledgeService().readConceptGUID(PART_OF_CONCEPT_GLOBAL_ID))) && (at.getValues().size() != 0)) { 
                     List<Value> vals = at.getValues();
                     List<Value> fixedVals = new ArrayList<Value>();
                     EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
@@ -219,7 +219,7 @@ public class EntityODR extends StructureODR implements IEntity {
                     }
                     at.setValues(fixedVals);
                     
-                } else if (at.getConceptId().equals(new KnowledgeService().readConceptGlobalID(CONTACT_CONCEPT_GLOBAL_ID).getId())) { 
+                } else if (at.getConceptId().equals(new KnowledgeService().readConceptGUID(CONTACT_CONCEPT_GLOBAL_ID))) { 
                     List<Value> vals = at.getValues();
                     List<Value> fixedVals = new ArrayList<Value>();
                     EntityService es = new EntityService(WebServiceURLs.getClientProtocol());

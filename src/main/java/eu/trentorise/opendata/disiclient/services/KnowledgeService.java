@@ -27,7 +27,11 @@ import javax.annotation.Nullable;
 /**
  * Updated in 0.11.1 to support caching, see
  * https://github.com/opendatatrentino/disi-open-data-client/issues/23
+<<<<<<< HEAD
  *
+=======
+ * 
+>>>>>>> fix23-hardcoded-concepts
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
  * @author David Leoni <david.leoni@unitn.it>
  *
@@ -65,44 +69,42 @@ public class KnowledgeService implements IKnowledgeService {
 
     private static final Logger logger = LoggerFactory.getLogger(KnowledgeService.class);
 
-    //	public List<IConcept> getConcepts(List<Long> GUIDs) {
-    //		List<IConcept> iconcepts = new ArrayList<IConcept>();
+    // public List<IConcept> getConcepts(List<Long> GUIDs) {
+    // List<IConcept> iconcepts = new ArrayList<IConcept>();
     //
-    //		for (Long guid :GUIDs){
-    //			ConceptODR con = new ConceptODR();
-    //			con = con.readConceptGlobalID(guid);
-    //			iconcepts.add(con);
-    //		}
-    //		return iconcepts;
-    //	}
+    // for (Long guid :GUIDs){
+    // ConceptODR con = new ConceptODR();
+    // con = con.readConceptGlobalID(guid);
+    // iconcepts.add(con);
+    // }
+    // return iconcepts;
+    // }
     @Override
     public IConcept readConcept(String URL) {
 
-        Long conceptId;
+	Long conceptId;
 
-        String s;
-        try {
-            s = URL.substring(URL.indexOf("ts/") + 3);
-        }
-        catch (Exception e) {
-            return null;
+	String s;
+	try {
+	    s = URL.substring(URL.indexOf("ts/") + 3);
+	} catch (Exception e) {
+	    return null;
 
-            //throw new DisiClientException("Wrong Concept URL!");
-        }
+	    // throw new DisiClientException("Wrong Concept URL!");
+	}
 
-        try {
-            conceptId = Long.parseLong(s);
-        }
-        catch (Exception e) {
-            return null;
+	try {
+	    conceptId = Long.parseLong(s);
+	} catch (Exception e) {
+	    return null;
 
-            //throw new DisiClientException("Wrong concept ID!");
-        }
+	    // throw new DisiClientException("Wrong concept ID!");
+	}
 
-        ConceptODR concept = new ConceptODR();
-        concept = readConcept(conceptId);
+	ConceptODR concept = new ConceptODR();
+	concept = readConcept(conceptId);
 
-        return concept;
+	return concept;
     }
 
     @Override
@@ -165,6 +167,7 @@ public class KnowledgeService implements IKnowledgeService {
             logger.info("Reading cached concept " + ret.getURL() + "  ...");
             return ret;
         }
+
     }
 
     /**
@@ -193,7 +196,6 @@ public class KnowledgeService implements IKnowledgeService {
             logger.info("Reading cached concept " + ret.getURL() + "  ...");
             return ret;
         }
-
     }
 
     /**
