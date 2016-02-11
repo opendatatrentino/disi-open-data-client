@@ -79,7 +79,7 @@ public class StructureODR extends Instance implements IStructure {
         for (Attribute at : attributes) {
             if (at.getConceptId() == null) {
                 continue;
-            } else if (at.getConceptId() == KnowledgeService.DESCRIPTION_CONCEPT_GLOBAL_ID) {
+            } else if (at.getConceptId() == new KnowledgeService().readConceptGUID(KnowledgeService.DESCRIPTION_CONCEPT_GLOBAL_ID)) {
                 List<Value> vals = at.getValues();
                 List<Value> fixedVals = new ArrayList<Value>();
 
@@ -166,7 +166,7 @@ public class StructureODR extends Instance implements IStructure {
                         }
                     }
                     at.setValues(fixedVals);
-                } else if (at.getConceptId().equals(new KnowledgeService().readConceptGlobalID(CONTACT_CONCEPT_GLOBAL_ID).getId())) {
+                } else if (at.getConceptId().equals(new KnowledgeService().readConceptGUID(CONTACT_CONCEPT_GLOBAL_ID))) {
                     List<Value> vals = at.getValues();
                     List<Value> fixedVals = new ArrayList<Value>();
                     EntityService es = new EntityService(WebServiceURLs.getClientProtocol());

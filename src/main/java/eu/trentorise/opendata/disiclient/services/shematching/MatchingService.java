@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.annotation.Nullable;
+
 import org.apache.log4j.Logger;
 
 import eu.trentorise.opendata.columnrecognizers.ColumnConceptCandidate;
@@ -131,12 +133,18 @@ public class MatchingService implements ISemanticMatchingService {
         for (ColumnConceptCandidate ccc : columnHeaders) {
 
             
-            ConceptODR codr = new KnowledgeService().readConceptGlobalID(ccc.getConceptID());
-
+            Long sourceConceptIDLong = new KnowledgeService().readConceptGUID(ccc.getConceptID());
+            long sourceConceptID;
+            if (sourceConceptIDLong == null){
+                sourceConceptID = -1;
+            } else {
+                sourceConceptID = sourceConceptIDLong;
+            }
+            
             AttributeCorrespondence attrCor = new AttributeCorrespondence();
             HashMap<IAttributeDef, Float> attrMap = new HashMap<IAttributeDef, Float>();
 
-            long sourceConceptID = codr.getId();
+            
             attrCor.setColumnIndex(ccc.getColumnNumber() - 1);
             attrCor.setHeaderConceptID(sourceConceptID);
             List<Entry<Long, Long>> batch = new ArrayList<Entry<Long, Long>>();
