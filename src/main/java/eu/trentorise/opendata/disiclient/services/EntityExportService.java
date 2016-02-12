@@ -18,6 +18,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonStreamParser;
 
+import eu.trentorise.opendata.disiclient.DisiClientException;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
 import eu.trentorise.opendata.disiclient.model.entity.EntityType;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
@@ -75,17 +76,48 @@ public class EntityExportService {
 		return finJsonObject;
 	}
 
+	/**
+	 * @throws IOException 
+	 * @since 0.3.6 
+	 */
+	private void writeObj(BufferedWriter bw, JsonObject obj) throws IOException{
+	    obj = semantifyJsonObject(obj);
+	    bw.write(obj.toString());
+	    bw.newLine();
+	    System.out.println(obj.toString());
+	    
+	}
+	
 	public void convertToJsonLd(InputStream inputStream, Writer writer) throws IOException {
 
 		BufferedWriter bw = new BufferedWriter(writer);
 
 		JsonStreamParser parser = new JsonStreamParser(new InputStreamReader(inputStream));
-		while (parser.hasNext()) {
-			JsonObject obj = semantifyJsonObject(parser.next());
-			bw.write(obj.toString());
-			bw.newLine();
-			System.out.println(obj.toString());
+		
+		JsonElement first; 
+		if (parser.hasNext()){
+		    first = parser.next();
+		    
+		    if (first instanceof JsonObject){
+			writeObj(bw, (JsonObject) first);
+
+			while (parser.hasNext()) {
+			    writeObj(bw, (JsonObject) parser.next());
+			}
+			
+		    } else if (first instanceof JsonArray){
+			for (JsonElement subEl : first.getAsJsonArray()){
+			    writeObj(bw, subEl.getAsJsonObject());
+			}
+			
+		    } else {
+			throw new DisiClientException("Couldn't export to json ld, couldn't recognize format of entities exported from entiybase! Found: " + first.getClass());
+		    }
+
+		} else {
+		    System.out.println("Couldn't find anything in the entity stream, generating empty jsonld file");
 		}
+		
 		bw.close();
 	}
 
@@ -98,6 +130,8 @@ public class EntityExportService {
 	 */
 	public JsonObject semantifyJsonObject(JsonElement jsonInput) throws IOException {
 
+	    	
+	    
 		JsonObject o = (JsonObject) jsonInput;
 		JsonObject obj = (JsonObject) o.get("entity");
 		Long typeId = obj.get("typeId").getAsLong();
