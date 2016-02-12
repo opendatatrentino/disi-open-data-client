@@ -3,6 +3,8 @@ package eu.trentorise.opendata.disiclient.model.entity;
 import com.google.common.base.Objects;
 import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.collect.ImmutableList;
+
+import eu.trentorise.opendata.disiclient.DisiClientException;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.KnowledgeService;
@@ -95,6 +97,8 @@ public class EntityODR extends StructureODR implements IEntity {
 
         logger.warn("TRYING TO CREATE EntityODR FROM SWEB Entity IN EntityODR CONSTRUCTOR. TODO REVIEW THIS CODE!");
         for (Attribute at : attrs) {
+            IAttributeDef ad = new EntityTypeService().readEntityType(WebServiceURLs.etypeIDToURL(entity.getTypeId()))
+            	.getAttrDef(WebServiceURLs.attrDefIDToURL(at.getDefinitionId()));
             if (at.getConceptId() == null) {
                 continue;
             } else if (at.getConceptId().equals(new KnowledgeService().readConceptGUID(DESCRIPTION_CONCEPT_GLOBAL_ID))) {
@@ -115,7 +119,8 @@ public class EntityODR extends StructureODR implements IEntity {
                     }
                 }
                 at.setValues(fixedVals);
-            } else if (at.getValues().get(0).getValue() instanceof Name) {
+            } else if (!at.getValues().isEmpty() 
+        	    && at.getValues().get(0).getValue() instanceof Name) {
                 List<Value> values = at.getValues();
                 for (Value v : values) {
                     Name n = (Name) v.getValue();
@@ -165,6 +170,46 @@ public class EntityODR extends StructureODR implements IEntity {
                     fixedVals.add(fixedVal);
                 }
                 at.setValues(fixedVals);           
+            } else if (DataTypes.STRUCTURE.equals(ad.getDataType())
+        	       || DataTypes.ENTITY.equals(ad.getDataType())){
+        	List<Value> vals = at.getValues();
+                List<Value> fixedVals = new ArrayList<Value>();
+
+                for (Value val : vals) {
+
+            
+                    Object c =  val.getValue();
+                    StructureODR oeStructure ;
+                    if (c instanceof Long){
+                	
+                	if (DataTypes.STRUCTURE.equals(ad.getDataType())){
+                	    oeStructure = new EntityService().readStructure((Long) c);
+                	} else if (DataTypes.ENTITY.equals(ad.getDataType())) {
+                	    oeStructure = new EntityService().readEntity((Long) c);
+                	} else {
+                	    throw new DisiClientException("Unsupported datatype for sweb COMPLEX_TYPE !");
+                	}
+                    } else if (c instanceof Entity){
+                	oeStructure = new EntityODR(WebServiceURLs.getClientProtocol(), (Entity) c);
+                    } else if (c instanceof Instance){
+                	oeStructure = StructureODR.convertToStructure( (Instance) c);                	
+                    } else {
+                	throw new DisiClientException("Unrecognized class while reading value of COMPLEX_INSTANCE: " + c);
+                    }
+                    
+                    ValueODR fixedVal = new ValueODR();
+                    fixedVal.setId(val.getId());                    
+                    fixedVal.setValue(oeStructure);
+		    if (oeStructure == null){
+			logger.warn("FOUND NULL VALUE FOR SWEB ATTRIBUTE WITH ID" + at.getId() + ", SWEB DATATYPE " + at.getDataType() + " AND OE DATATYPE " + ad.getDataType()+ " , discarding it!");
+		    } else {
+			fixedVals.add(fixedVal);
+		    }
+                    fixedVals.add(fixedVal);
+                }
+                at.setValues(fixedVals);           
+        	
+ 
             }
         }
 

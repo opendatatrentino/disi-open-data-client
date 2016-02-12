@@ -45,9 +45,7 @@ public class KnowledgeService implements IKnowledgeService {
     /**
      * Note: in odt db it is equal to local id
      */
-    public static final long DESCRIPTION_CONCEPT_GLOBAL_ID = 3L;
-    public static final long PART_OF_CONCEPT_GLOBAL_ID = 22L;
-    public static final long CONTACT_CONCEPT_GLOBAL_ID = 120775L;
+    public static final long DESCRIPTION_CONCEPT_GLOBAL_ID = 3L;    
 
     /**
      * Maps sweb global id to concept

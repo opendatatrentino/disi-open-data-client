@@ -3,8 +3,10 @@ package eu.trentorise.opendata.disiclient.model.entity;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
 import it.unitn.disi.sweb.webapi.client.eb.AttributeClient;
 import it.unitn.disi.sweb.webapi.model.eb.Attribute;
+import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
 import it.unitn.disi.sweb.webapi.model.eb.Name;
+import it.unitn.disi.sweb.webapi.model.eb.Structure;
 import it.unitn.disi.sweb.webapi.model.eb.Value;
 import it.unitn.disi.sweb.webapi.model.eb.sstring.SemanticString;
 import it.unitn.disi.sweb.webapi.model.kb.concepts.Concept;
@@ -14,6 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import eu.trentorise.opendata.disiclient.DisiClientException;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.disiclient.services.EntityService;
@@ -22,256 +27,313 @@ import eu.trentorise.opendata.disiclient.services.KnowledgeService;
 import eu.trentorise.opendata.disiclient.services.SemanticTextFactory;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
+import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.model.entity.IStructure;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.SemanticText;
+import eu.trentorise.opendata.semantics.services.model.DataTypes;
 import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
 
+public class StructureODR extends Instance implements IStructure {
 
-public class StructureODR extends Instance implements IStructure {    
+    private static final Logger logger = LoggerFactory.getLogger(StructureODR.class);
     
-
-         
     public Long getLocalID() {
-        return super.getId();
+	return super.getId();
     }
 
     public StructureODR() {
     }
 
-
     public List<IAttribute> getStructureAttributes() {
-        if (super.getAttributes() != null) {
-            List<IAttribute> atrs = convertToAttributeODR(super.getAttributes());
-            return atrs;
-        } else {
-            AttributeClient attrCl = new AttributeClient(getClientProtocol());
-            List<Attribute> attrs = attrCl.readAttributes(super.getId(), null, null);
-            super.setAttributes(attrs);
-            List<IAttribute> attrODR = convertToAttributeODR(attrs);
-            return attrODR;
-        }
+	if (super.getAttributes() != null) {
+	    List<IAttribute> atrs = convertToAttributeODR(super.getAttributes());
+	    return atrs;
+	} else {
+	    AttributeClient attrCl = new AttributeClient(getClientProtocol());
+	    List<Attribute> attrs = attrCl.readAttributes(super.getId(), null, null);
+	    super.setAttributes(attrs);
+	    List<IAttribute> attrODR = convertToAttributeODR(attrs);
+	    return attrODR;
+	}
     }
 
     public void setStructureAttributes(List<IAttribute> attributes) {
-        super.setAttributes(convertToAttributes(attributes));
+	super.setAttributes(convertToAttributes(attributes));
     }
 
     public IEntityType getEtype() {
-        EntityTypeService ets = new EntityTypeService();
-        Long id = super.getTypeId();
-        if (id == null) {
-            throw new RuntimeException("Got a null id for super.getTypeId() in Structure.java!");
-        } else {
-            return ets.getEntityType((long) id);
-        }
+	EntityTypeService ets = new EntityTypeService();
+	Long id = super.getTypeId();
+	if (id == null) {
+	    throw new RuntimeException("Got a null id for super.getTypeId() in Structure.java!");
+	} else {
+	    return ets.getEntityType((long) id);
+	}
     }
 
     public void setEtype(IEntityType type) {
-        throw new UnsupportedOperationException("todo to implement");
+	throw new UnsupportedOperationException("todo to implement");
     }
 
     private List<IAttribute> convertToAttributeODR(List<Attribute> attributes) {
-        List<IAttribute> attributesODR = new ArrayList<IAttribute>();
-        //++++++++++++++
-        for (Attribute at : attributes) {
-            if (at.getConceptId() == null) {
-                continue;
-            } else if (at.getConceptId() == new KnowledgeService().readConceptGUID(KnowledgeService.DESCRIPTION_CONCEPT_GLOBAL_ID)) {
-                List<Value> vals = at.getValues();
-                List<Value> fixedVals = new ArrayList<Value>();
+	List<IAttribute> attributesODR = new ArrayList<IAttribute>();
+	// ++++++++++++++
+	for (Attribute at : attributes) {
+	    IAttributeDef ad = new EntityTypeService()
+		    .readEntityType(WebServiceURLs.etypeIDToURL(this.getTypeId()))
+		    .getAttrDef(WebServiceURLs.attrDefIDToURL(at.getDefinitionId()));
 
-                for (Value val : vals) {
-                    if (val.getValue() instanceof SemanticText) {
-                        fixedVals.add(val);
-                    } else {
-                        SemanticText semtext = SemanticTextFactory.semanticText((SemanticString) val.getSemanticValue());
-                        Locale loc = TraceProvUtils.languageTagToLocale(val.getLanguageCode()); // dav so java 6 doesn't bother us Locale.forLanguageTag(val.getLanguageCode());
-                        SemanticText stext = semtext.with(loc);
-                        Value fixedVal = new Value();
-                        fixedVal.setValue(stext);
-                        fixedVal.setId(val.getId());
-                        fixedVals.add(fixedVal);
-                    }
-                }
-                at.setValues(fixedVals);
-            } else if (at.getValues().get(0).getValue() instanceof Name) {
-                List<Value> values = at.getValues();
-                for (Value v : values) {
-                    Name n = (Name) v.getValue();
-                    List<Attribute> atrs = n.getAttributes();
-                    for (Attribute a : atrs) {
+	    if (at.getConceptId() == null) {
+		continue;
+	    } else if (at.getConceptId() == new KnowledgeService()
+		    .readConceptGUID(KnowledgeService.DESCRIPTION_CONCEPT_GLOBAL_ID)) {
+		List<Value> vals = at.getValues();
+		List<Value> fixedVals = new ArrayList<Value>();
 
-                        if (a.getDataType() == DataType.CONCEPT) {
-                            List<Value> vals = a.getValues();
-                            List<Value> fixedVals = new ArrayList<Value>();
+		for (Value val : vals) {
+		    if (val.getValue() instanceof SemanticText) {
+			fixedVals.add(val);
+		    } else {
+			SemanticText semtext = SemanticTextFactory
+				.semanticText((SemanticString) val.getSemanticValue());
+			Locale loc = TraceProvUtils.languageTagToLocale(val.getLanguageCode()); // dav
+												// so
+												// java
+												// 6
+												// doesn't
+												// bother
+												// us
+												// Locale.forLanguageTag(val.getLanguageCode());
+			SemanticText stext = semtext.with(loc);
+			Value fixedVal = new Value();
+			fixedVal.setValue(stext);
+			fixedVal.setId(val.getId());
+			fixedVals.add(fixedVal);
+		    }
+		}
+		at.setValues(fixedVals);
+	    } else if (!at.getValues().isEmpty()
+		    && at.getValues().get(0).getValue() instanceof Name) {
+		List<Value> values = at.getValues();
+		for (Value v : values) {
+		    Name n = (Name) v.getValue();
+		    List<Attribute> atrs = n.getAttributes();
+		    for (Attribute a : atrs) {
 
-                            for (Value val : vals) {
+			if (a.getDataType() == DataType.CONCEPT) {
+			    List<Value> vals = a.getValues();
+			    List<Value> fixedVals = new ArrayList<Value>();
 
-                                if (val.getValue().getClass().equals(ConceptODR.class)) {
-                                    fixedVals.add(val);
-                                    continue;
-                                }
-                                Concept c = (Concept) val.getValue();
-                                ConceptODR codr = new ConceptODR(c);
+			    for (Value val : vals) {
 
-                                ValueODR fixedVal = new ValueODR();
-                                fixedVal.setId(val.getId());
-                                // fixedVal.setDataType(IConcept.class);
-                                fixedVal.setValue(codr);
-                                fixedVals.add(fixedVal);
-                            }
-                            a.setValues(fixedVals);
-                        }
-                    }
-                }
-            } else if (at.getDataType() == DataType.CONCEPT) {
-                List<Value> vals = at.getValues();
-                List<Value> fixedVals = new ArrayList<Value>();
+				if (val.getValue().getClass().equals(ConceptODR.class)) {
+				    fixedVals.add(val);
+				    continue;
+				}
+				Concept c = (Concept) val.getValue();
+				ConceptODR codr = new ConceptODR(c);
 
-                for (Value val : vals) {
+				ValueODR fixedVal = new ValueODR();
+				fixedVal.setId(val.getId());
+				// fixedVal.setDataType(IConcept.class);
+				fixedVal.setValue(codr);
+				fixedVals.add(fixedVal);
+			    }
+			    a.setValues(fixedVals);
+			}
+		    }
+		}
+	    } else if (at.getDataType() == DataType.CONCEPT) {
+		List<Value> vals = at.getValues();
+		List<Value> fixedVals = new ArrayList<Value>();
 
-                    if (val.getValue().getClass().equals(ConceptODR.class)) {
-                        fixedVals.add(val);
-                        continue;
-                    }
-                    Concept c = (Concept) val.getValue();
-                    ConceptODR codr = new ConceptODR(c);
+		for (Value val : vals) {
 
-                    ValueODR fixedVal = new ValueODR();
-                    fixedVal.setId(val.getId());
-                    // fixedVal.setDataType(IConcept.class);
-                    fixedVal.setValue(codr);
-                    fixedVals.add(fixedVal);
-                }
-                at.setValues(fixedVals);            
-            }
-        }
-        
-        //++++++++++++++
-        for (Attribute attr : attributes) {
-        	
-        
-                
-            AttributeODR attrODR = new AttributeODR(getClientProtocol(), attr);
-            attributesODR.add(attrODR);
-        }
-        return attributesODR;
+		    if (val.getValue().getClass().equals(ConceptODR.class)) {
+			fixedVals.add(val);
+			continue;
+		    }
+		    Concept c = (Concept) val.getValue();
+		    ConceptODR codr = new ConceptODR(c);
+
+		    ValueODR fixedVal = new ValueODR();
+		    fixedVal.setId(val.getId());
+		    // fixedVal.setDataType(IConcept.class);
+		    fixedVal.setValue(codr);
+		    fixedVals.add(fixedVal);
+		}
+		at.setValues(fixedVals);
+	    } else if (DataTypes.STRUCTURE.equals(ad.getDataType())
+		    || DataTypes.ENTITY.equals(ad.getDataType())) {
+		List<Value> vals = at.getValues();
+		List<Value> fixedVals = new ArrayList<Value>();
+
+		for (Value val : vals) {
+
+		    Object c = val.getValue();
+		    StructureODR oeStructure;
+		    if (c instanceof Long) {
+
+			if (DataTypes.STRUCTURE.equals(ad.getDataType())) {
+			    oeStructure = new EntityService().readStructure((Long) c);
+			} else if (DataTypes.ENTITY.equals(ad.getDataType())) {
+			    oeStructure = new EntityService().readEntity((Long) c);
+			} else {
+			    throw new DisiClientException("Unsupported datatype for sweb COMPLEX_TYPE !");
+			}
+		    } else if (c instanceof Entity) {
+			oeStructure = new EntityODR(WebServiceURLs.getClientProtocol(), (Entity) c);
+		    } else if (c instanceof Instance) {
+			oeStructure = StructureODR.convertToStructure((Instance) c);
+		    } else if (c == null){			
+			oeStructure = null;
+		    } else {
+			throw new DisiClientException(
+				"Unrecognized class while reading value of COMPLEX_INSTANCE: " + c);
+		    }
+
+		    ValueODR fixedVal = new ValueODR();
+		    fixedVal.setId(val.getId());
+		    fixedVal.setValue(oeStructure);
+		    if (oeStructure == null){
+			logger.warn("FOUND NULL VALUE FOR SWEB ATTRIBUTE WITH ID" + at.getId() + ", SWEB DATATYPE " + at.getDataType() + " AND OE DATATYPE " + ad.getDataType()+ " , discarding it!");
+		    } else {
+			fixedVals.add(fixedVal);
+		    }
+		    
+		}
+		at.setValues(fixedVals);
+
+	    }
+	}
+
+	// ++++++++++++++
+	for (Attribute attr : attributes) {
+
+	    AttributeODR attrODR = new AttributeODR(getClientProtocol(), attr);
+	    attributesODR.add(attrODR);
+	}
+	return attributesODR;
     }
 
     public List<Attribute> convertToAttributes(List<IAttribute> attributes) {
-        List<Attribute> attrs = new ArrayList<Attribute>();
-        for (IAttribute attr : attributes) {
-            AttributeODR attribute = (AttributeODR) attr;
-            Attribute at = attribute.convertToAttribute();
-            attrs.add(at);
-        }
-        return attrs;
+	List<Attribute> attrs = new ArrayList<Attribute>();
+	for (IAttribute attr : attributes) {
+	    AttributeODR attribute = (AttributeODR) attr;
+	    Attribute at = attribute.convertToAttribute();
+	    attrs.add(at);
+	}
+	return attrs;
     }
 
     private IProtocolClient getClientProtocol() {
-        return WebServiceURLs.getClientProtocol();
+	return WebServiceURLs.getClientProtocol();
     }
 
     public String getURL() {
-        String fullUrl = WebServiceURLs.getURL();
-        //if(super.getId()!=null){
-        String url = fullUrl + "/instances/" + super.getId();
-        return url;
+	String fullUrl = WebServiceURLs.getURL();
+	// if(super.getId()!=null){
+	String url = fullUrl + "/instances/" + super.getId();
+	return url;
     }
 
     public void setURL(String url) {
-        throw new UnsupportedOperationException("todo to implement");
+	throw new UnsupportedOperationException("todo to implement");
 
     }
 
     public IAttribute getAttribute(String attrDefURL) {
-        List<IAttribute> attributes = getStructureAttributes();
-        for (IAttribute attribute : attributes) {
-            if (attribute.getAttributeDefinition().getURL().equals(attrDefURL)) {
-                return attribute;
-            }
-        }
-        throw new DisiClientException("There is no attribute having attributeDef URL: " + attrDefURL + " in the structure with URL " + getURL());
+	List<IAttribute> attributes = getStructureAttributes();
+	for (IAttribute attribute : attributes) {
+	    if (attribute.getAttributeDefinition().getURL().equals(attrDefURL)) {
+		return attribute;
+	    }
+	}
+	throw new DisiClientException("There is no attribute having attributeDef URL: " + attrDefURL
+		+ " in the structure with URL " + getURL());
     }
 
     public String getEtypeURL() {
-        String fullUrl = WebServiceURLs.getURL();
-        String url = fullUrl + "/types/" + super.getTypeId();
-        return url;
+	String fullUrl = WebServiceURLs.getURL();
+	String url = fullUrl + "/types/" + super.getTypeId();
+	return url;
     }
 
-    public StructureODR convertToStructure(it.unitn.disi.sweb.webapi.model.eb.Structure st) {
-        StructureODR s = new StructureODR();
-        s.setAttributes(st.getAttributes());
-        s.setEntityBaseId(st.getEntityBaseId());
-        s.setTypeId(st.getTypeId());
-        s.setId(st.getId());
-        return s;
+    /**
+     * 0.11.1 made static for
+     * https://github.com/opendatatrentino/disi-open-data-client/issues/33
+     */
+    public static StructureODR convertToStructure(Instance st) {
+	StructureODR s = new StructureODR();
+	s.setAttributes(st.getAttributes());
+	s.setEntityBaseId(st.getEntityBaseId());
+	s.setTypeId(st.getTypeId());
+	s.setId(st.getId());
+	return s;
     }
 
     public it.unitn.disi.sweb.webapi.model.eb.Structure convertToSwebStructure(StructureODR s) {
 
-        it.unitn.disi.sweb.webapi.model.eb.Structure strSweb = new it.unitn.disi.sweb.webapi.model.eb.Structure();
-        List<Attribute> attrs = s.getAttributes();
-        List<Attribute> attrsFixed = new ArrayList<Attribute>();
+	it.unitn.disi.sweb.webapi.model.eb.Structure strSweb = new it.unitn.disi.sweb.webapi.model.eb.Structure();
+	List<Attribute> attrs = s.getAttributes();
+	List<Attribute> attrsFixed = new ArrayList<Attribute>();
 
-        for (Attribute a : attrs) {
-            Attribute atFixed = new Attribute();
-            atFixed.setCategoryId(a.getCategoryId());
-            atFixed.setConceptId(a.getConceptId());
-            atFixed.setDataType(a.getDataType());
-            atFixed.setDefinitionId(a.getDefinitionId());
-            atFixed.setId(a.getId());
-            atFixed.setInstanceId(a.getInstanceId());
-            atFixed.setName(a.getName());
+	for (Attribute a : attrs) {
+	    Attribute atFixed = new Attribute();
+	    atFixed.setCategoryId(a.getCategoryId());
+	    atFixed.setConceptId(a.getConceptId());
+	    atFixed.setDataType(a.getDataType());
+	    atFixed.setDefinitionId(a.getDefinitionId());
+	    atFixed.setId(a.getId());
+	    atFixed.setInstanceId(a.getInstanceId());
+	    atFixed.setName(a.getName());
 
-            if ((a.getValues().get(0).getValue() instanceof EntityODR)) {
-                List<Value> vals = a.getValues();
-                List<Value> valsF = new ArrayList();
-                for (Value v : vals) {
-                    EntityODR e = (EntityODR) v.getValue();
-                    Value vf = new Value();
-                    vf.setValue(e.convertToEntity());
-                    valsF.add(vf);
-                }
-                atFixed.setValues(valsF);
+	    if ((a.getValues().get(0).getValue() instanceof EntityODR)) {
+		List<Value> vals = a.getValues();
+		List<Value> valsF = new ArrayList();
+		for (Value v : vals) {
+		    EntityODR e = (EntityODR) v.getValue();
+		    Value vf = new Value();
+		    vf.setValue(e.convertToEntity());
+		    valsF.add(vf);
+		}
+		atFixed.setValues(valsF);
 
-            } else if (((a.getValues().get(0).getValue() instanceof StructureODR))) {
-                List<Value> vals = a.getValues();
-                List<Value> valsF = new ArrayList();
+	    } else if (((a.getValues().get(0).getValue() instanceof StructureODR))) {
+		List<Value> vals = a.getValues();
+		List<Value> valsF = new ArrayList();
 
-                for (Value v : vals) {
-                    StructureODR strODR = (StructureODR) v.getValue();
-                    it.unitn.disi.sweb.webapi.model.eb.Structure strFixed = convertToSwebStructure(strODR);
+		for (Value v : vals) {
+		    StructureODR strODR = (StructureODR) v.getValue();
+		    it.unitn.disi.sweb.webapi.model.eb.Structure strFixed = convertToSwebStructure(strODR);
 
-                    Value vf = new Value();
-                    vf.setValue(strFixed);
-                    valsF.add(vf);
-                }
-                atFixed.setValues(valsF);
-            } else {
-                List<Value> vals = a.getValues();
-                List<Value> valsF = new ArrayList();
+		    Value vf = new Value();
+		    vf.setValue(strFixed);
+		    valsF.add(vf);
+		}
+		atFixed.setValues(valsF);
+	    } else {
+		List<Value> vals = a.getValues();
+		List<Value> valsF = new ArrayList();
 
-                for (Value v : vals) {
-                    Value vf = new Value();                    
-                    vf.setValue(v.getValue());
-                    valsF.add(vf);
-                }
-                atFixed.setValues(valsF);
-            }
-            attrsFixed.add(atFixed);
-        }
-        strSweb.setAttributes(attrsFixed);
+		for (Value v : vals) {
+		    Value vf = new Value();
+		    vf.setValue(v.getValue());
+		    valsF.add(vf);
+		}
+		atFixed.setValues(valsF);
+	    }
+	    attrsFixed.add(atFixed);
+	}
+	strSweb.setAttributes(attrsFixed);
 
-        strSweb.setEntityBaseId(s.getEntityBaseId());
-        strSweb.setId(s.getId());
-        strSweb.setTypeId(s.getTypeId());
+	strSweb.setEntityBaseId(s.getEntityBaseId());
+	strSweb.setId(s.getId());
+	strSweb.setTypeId(s.getTypeId());
 
-        return strSweb;
+	return strSweb;
     }
 
-    
 }

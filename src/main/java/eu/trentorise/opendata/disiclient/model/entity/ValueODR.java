@@ -84,8 +84,19 @@ public class ValueODR extends Value implements IValue {
 
             return this.value;
         } else {
+
             AttributeClient attrClient = new AttributeClient(this.api);
-            this.value = attrClient.readValue(this.attrId, this.id, null).getValue();
+            
+            Value readValue = null;
+            if (this.attrId != null && this.id != null){
+                readValue = attrClient.readValue(this.attrId, this.id, null);	
+            }
+
+            if (readValue == null){
+        	logger.warn("ValueODR.getValue: Found null id or attrId inside ValueODR, returning null as value!");
+            } else {
+        	this.value = readValue.getValue();
+            }
 
         }
         return value;
