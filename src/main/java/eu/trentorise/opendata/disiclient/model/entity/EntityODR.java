@@ -44,40 +44,7 @@ import java.util.Locale;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static eu.trentorise.opendata.disiclient.services.KnowledgeService.CONTACT_CONCEPT_GLOBAL_ID;
 import static eu.trentorise.opendata.disiclient.services.KnowledgeService.DESCRIPTION_CONCEPT_GLOBAL_ID;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static eu.trentorise.opendata.disiclient.services.KnowledgeService.PART_OF_CONCEPT_GLOBAL_ID;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkNotNull;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 
 /**
@@ -197,45 +164,7 @@ public class EntityODR extends StructureODR implements IEntity {
                     fixedVal.setValue(codr);
                     fixedVals.add(fixedVal);
                 }
-                at.setValues(fixedVals);
-            } else {
-                logger.warn("IN EntityODR CONSTRUCTOR: WE NEED GENERIC CODE FOR RELATIONAL ATTRIBUTES! TODO REVIEW!");
-                if ((at.getConceptId().equals(new KnowledgeService().readConceptGUID(PART_OF_CONCEPT_GLOBAL_ID))) && (at.getValues().size() != 0)) { 
-                    List<Value> vals = at.getValues();
-                    List<Value> fixedVals = new ArrayList<Value>();
-                    EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
-                    logger.info("PART_OF attrbiute can not have multiple values, we take the first (and only) one");
-                    if (vals.size() > 0) {
-                        Instance inst = (Instance) vals.get(0).getValue();
-                        IEntity e = es.readEntity(inst.getId());
-                        //	EntityODR enodr = new EntityODR(WebServiceURLs.getClientProtocol(), e);
-
-                        for (Value v : vals) {
-                            Value fixedVal = new Value();
-                            fixedVal.setId(v.getId());
-                            fixedVal.setValue(e);
-                            fixedVals.add(fixedVal);
-                        }
-                    }
-                    at.setValues(fixedVals);
-                    
-                } else if (at.getConceptId().equals(new KnowledgeService().readConceptGUID(CONTACT_CONCEPT_GLOBAL_ID))) { 
-                    List<Value> vals = at.getValues();
-                    List<Value> fixedVals = new ArrayList<Value>();
-                    EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
-                    for (Value v : vals) {
-                        Instance inst = (Instance) v.getValue();
-                        IStructure e = es.readStructure(inst.getId());
-
-                        Value fixedVal = new Value();
-                        fixedVal.setId(v.getId());
-                        fixedVal.setValue(e);
-
-                        fixedVals.add(fixedVal);
-
-                        at.setValues(fixedVals);
-                    }
-                }
+                at.setValues(fixedVals);           
             }
         }
 

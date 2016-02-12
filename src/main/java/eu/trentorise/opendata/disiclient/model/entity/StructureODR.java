@@ -19,7 +19,6 @@ import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.EntityTypeService;
 import eu.trentorise.opendata.disiclient.services.KnowledgeService;
-import static eu.trentorise.opendata.disiclient.services.KnowledgeService.CONTACT_CONCEPT_GLOBAL_ID;
 import eu.trentorise.opendata.disiclient.services.SemanticTextFactory;
 import eu.trentorise.opendata.disiclient.services.WebServiceURLs;
 import eu.trentorise.opendata.semantics.model.entity.IAttribute;
@@ -146,43 +145,7 @@ public class StructureODR extends Instance implements IStructure {
                     fixedVal.setValue(codr);
                     fixedVals.add(fixedVal);
                 }
-                at.setValues(fixedVals);
-            } else {
-                // todo hardcoded long bah I'm tired of this crap
-                if ((at.getConceptId() == new KnowledgeService().readConceptGUID(0)) && (at.getValues().size() != 0)) { 
-                    List<Value> vals = at.getValues();
-                    List<Value> fixedVals = new ArrayList<Value>();
-                    EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
-                    if (vals.size() > 0) {
-                        Instance inst = (Instance) vals.get(0).getValue();
-                        IEntity e = es.readEntity(inst.getId());
-                        //	EntityODR enodr = new EntityODR(WebServiceURLs.getClientProtocol(), e);
-
-                        for (Value v : vals) {
-                            Value fixedVal = new Value();
-                            fixedVal.setId(v.getId());
-                            fixedVal.setValue(e);
-                            fixedVals.add(fixedVal);
-                        }
-                    }
-                    at.setValues(fixedVals);
-                } else if (at.getConceptId().equals(new KnowledgeService().readConceptGUID(CONTACT_CONCEPT_GLOBAL_ID))) {
-                    List<Value> vals = at.getValues();
-                    List<Value> fixedVals = new ArrayList<Value>();
-                    EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
-                    for (Value v : vals) {
-                        Instance inst = (Instance) v.getValue();
-                        IStructure e = es.readStructure(inst.getId());
-
-                        Value fixedVal = new Value();
-                        fixedVal.setId(v.getId());
-                        fixedVal.setValue(e);
-
-                        fixedVals.add(fixedVal);
-
-                        at.setValues(fixedVals);
-                    }
-                }
+                at.setValues(fixedVals);            
             }
         }
         

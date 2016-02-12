@@ -296,14 +296,14 @@ public class EntityService implements IEntityService {
         Instance instance = instanceCl.readInstance(entityID, instFilter);
 
         it.unitn.disi.sweb.webapi.model.eb.Structure structure = (it.unitn.disi.sweb.webapi.model.eb.Structure) instance;
-        StructureODR structureName = new StructureODR();
-        structureName.setAttributes(structure.getAttributes());
-        structureName.setTypeId(structure.getTypeId());
-        structureName.setEntityBaseId(1L);
-        structureName.setId(structure.getId());
+        StructureODR ret = new StructureODR();
+        ret.setAttributes(structure.getAttributes());
+        ret.setTypeId(structure.getTypeId());
+        ret.setEntityBaseId(1L);
+        ret.setId(structure.getId());
         //EntityODR en = new EntityODR(this.api,entity);
 
-        return structureName;
+        return ret;
     }
 
     public void addAttribute(IEntity entity, IAttribute attribute) {
