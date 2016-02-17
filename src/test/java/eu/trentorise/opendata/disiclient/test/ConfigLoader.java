@@ -77,6 +77,8 @@ public class ConfigLoader {
 
         TestEntityService.ANDALO_URL = WebServiceURLs.entityIDToURL(TestEntityService.ANDALO_ID);
 
+        TestEntityService.FARMACIA_SILVESTRI_URL = WebServiceURLs.entityIDToURL(TestEntityService.FARMACIA_SILVESTRI_ID);
+        
         TestEntityService.CLASS_CONCEPT_ID_URL = WebServiceURLs.conceptIDToURL(TestEntityService.CLASS_CONCEPT_ID);
 
         TestEntityService.ROOT_ENTITY_URL = WebServiceURLs.etypeIDToURL(TestEntityService.ROOT_ENTITY_ID);

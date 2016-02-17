@@ -324,7 +324,7 @@ public class EntityODR extends StructureODR implements IEntity {
         Dict dict = new Dict();
         if ((this.names == null) && (super.getId() == null)) {
             return dict;
-        } else if (this.names == null) {
+        } else if (this.names == null ) {
             if (super.getId() != null) {
                 EntityService es = new EntityService(WebServiceURLs.getClientProtocol());
                 try {
