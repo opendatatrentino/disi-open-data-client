@@ -295,7 +295,8 @@ public class EntityService implements IEntityService {
 
         Instance instance = instanceCl.readInstance(entityID, instFilter);
 
-        it.unitn.disi.sweb.webapi.model.eb.Instance structure = (it.unitn.disi.sweb.webapi.model.eb.Structure) instance;
+
+        it.unitn.disi.sweb.webapi.model.eb.Instance structure = (it.unitn.disi.sweb.webapi.model.eb.Instance) instance;
         StructureODR ret = new StructureODR();
         ret.setAttributes(structure.getAttributes());
         ret.setTypeId(structure.getTypeId());
