@@ -564,7 +564,6 @@ public class TestEntityService {
 
     }
 
-    @Parameters({"true", "false"})
     @Test
     public void testCreateAttributeEntity() {
 	EntityService es = new EntityService(api);
