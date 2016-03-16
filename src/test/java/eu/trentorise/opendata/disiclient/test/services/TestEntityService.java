@@ -1,6 +1,10 @@
 package eu.trentorise.opendata.disiclient.test.services;
 
 import com.google.common.collect.ImmutableList;
+import org.junit.experimental.theories.Theories;
+import org.junit.experimental.theories.Theory;
+import org.junit.experimental.theories.suppliers.TestedOn;
+
 import com.google.common.collect.Lists;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeDef;
 import eu.trentorise.opendata.disiclient.model.entity.AttributeODR;
@@ -43,11 +47,15 @@ import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.EntityBase;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+import junitparams.naming.TestCaseName;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -59,18 +67,27 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.Description;
+import org.junit.runner.RunWith;
+import org.junit.runners.model.FrameworkMethod;
+import org.junit.runners.model.InitializationError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import eu.trentorise.opendata.disiclient.test.DisiClientTestRunner;
+ 
+
+
 
 /**
  * @author Ivan Tankoyeu <tankoyeu@disi.unitn.it>
  * @author David Leoni <david.leoni@unitn.it>
  *
  */
+ @RunWith(DisiClientTestRunner.class)
 public class TestEntityService {
 
     public static final long OPENING_HOURS = 7L;
@@ -110,10 +127,14 @@ public class TestEntityService {
     public static final long RESIDENCE_DES_ALPES_ID = 66206L;
     public static String RESIDENCE_DES_ALPES_URL;
 
+    public static final long COMANO_ID = 15007L;
+    public static String COMANO_URL;
+    
+    
     /**
      * Rovereto URl
      */
-    public static final long POVO_ID = 1024;
+    public static final long POVO_ID = 1024L;
     public static String POVO_URL;
 
     /**
@@ -286,16 +307,21 @@ public class TestEntityService {
 	assertEquals(entity.getEtype().getName().getStrings(Locale.ITALIAN).get(0), "Infrastruttura");
     }
 
-    @Test
-    public void testCreateDeleteEntity() {
 
+    @Test
+    @Parameters({"false", 
+    "true" })
+    //@TestCaseName("[{index}] {method}: {params}")
+    public void testCreateDeleteEntity(
+	    boolean omitClass) {	 
+	
 	// initialising variables
 	EntityService es = new EntityService(api);
 	InstanceClient instanceClient = new InstanceClient(api);
 	AttributeClient attrClient = new AttributeClient(api);
 	ComplexTypeClient ctypecl = new ComplexTypeClient(api);
 
-	Instance inst = instanceClient.readInstance(15007L, null);
+	Instance inst = instanceClient.readInstance(COMANO_ID, null);
 
 	EntityODR entityToCreate = new EntityODR();
 	List<Attribute> attributes = new ArrayList<Attribute>();
@@ -304,16 +330,19 @@ public class TestEntityService {
 	// List<Name> names = new ArrayList<Name>();
 
 	// instantiation of variables
-	attributes = attrClient.readAttributes(15007L, null, null);
+	attributes = attrClient.readAttributes(COMANO_ID, null, null);
 	// EntityTypeService es = new EntityTypeService();
 	// EntityType etype= es.getEntityType(e.getTypeId());
 
 	List<IAttributeDef> attrDefs = etype.getAttributeDefs();
 	Long attrDefClassAtrID = null;
+	String classAttrDefUrl = null;
+	
 	for (IAttributeDef adef : attrDefs) {
 
 	    if (adef.getName().getString(Locale.ENGLISH).equalsIgnoreCase("class")) {
 		attrDefClassAtrID = adef.getGUID();
+		classAttrDefUrl = adef.getURL();
 		break;
 	    }
 	}
@@ -323,7 +352,8 @@ public class TestEntityService {
 
 	for (Attribute a : attributes) {
 
-	    if (a.getDefinitionId() != attrDefClassAtrID) {
+	    if (!omitClass || a.getDefinitionId() != attrDefClassAtrID) {
+		  
 		// System.out.println(a.getName().get("en"));
 		a.setInstanceId(null);
 		a.setId(null);
@@ -332,8 +362,7 @@ public class TestEntityService {
 		System.out.println(a.getValues());
 		// a.setValues(null);
 		attrsEntityToCreate.add(a);
-	    }
-	    break;
+	    }	    
 	}
 	// logger.info("Etype id: "+inst.getTypeId());
 	// assigning variables
@@ -355,6 +384,11 @@ public class TestEntityService {
 	    // inst = instanceClient.readInstance(id, null);
 	    System.out.println(entityURL);
 	    EntityBase ebafter = ebc.readEntityBase(1L, null);
+	    IEntity en = es.readEntity(entityURL);
+	    IAttribute attr = en.getAttribute(classAttrDefUrl);
+	    // independently of omitClass, we have one.
+	    assertEquals(1, attr.getValues().size());
+	    
 	    int instanceNumAfter = ebafter.getInstancesNumber();
 	    assertEquals(instanceNum + 1, instanceNumAfter);
 	} finally {
@@ -530,6 +564,7 @@ public class TestEntityService {
 
     }
 
+    @Parameters({"true", "false"})
     @Test
     public void testCreateAttributeEntity() {
 	EntityService es = new EntityService(api);

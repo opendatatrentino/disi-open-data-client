@@ -104,7 +104,7 @@ public class EntityService implements IEntityService {
 
         for (Attribute a : e.getAttributes()) {
 
-            if (a.getDefinitionId() == attrDefClassAtrID) {
+            if (a.getDefinitionId().equals(attrDefClassAtrID)) {
                 isExistAttrClass = true;
                 break;
             }
