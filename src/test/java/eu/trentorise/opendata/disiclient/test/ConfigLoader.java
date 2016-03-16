@@ -106,6 +106,8 @@ public class ConfigLoader {
         TestEntityService.ATTR_TYPE_OF_CERTIFICATE_URL = WebServiceURLs.attrDefIDToURL(TestEntityService.ATTR_TYPE_OF_CERTIFICATE);
 
         TestEntityService.MELA_VAL_DI_NON_URL = WebServiceURLs.entityIDToURL(TestEntityService.MELA_VAL_DI_NON);
+        
+        TestEntityService.COMANO_URL = WebServiceURLs.entityIDToURL(TestEntityService.COMANO_ID);
 
         EntityExportServiceTest.ENTITY1_URL = WebServiceURLs.entityIDToURL(EntityExportServiceTest.ENTITY1);
         EntityExportServiceTest.ENTITY2_URL = WebServiceURLs.entityIDToURL(EntityExportServiceTest.ENTITY2);
