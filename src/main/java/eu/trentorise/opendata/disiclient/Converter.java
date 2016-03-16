@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @since 0.11.1
- * @author da
  */
 public class Converter {
     

@@ -19,6 +19,7 @@ import eu.trentorise.opendata.semantics.model.entity.IEntityType;
 import eu.trentorise.opendata.semantics.model.entity.IStructure;
 import eu.trentorise.opendata.semantics.model.entity.IValue;
 import eu.trentorise.opendata.semantics.model.knowledge.IDict;
+import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.Dict;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.SemanticText;
 import eu.trentorise.opendata.semantics.services.model.DataTypes;
@@ -587,6 +588,18 @@ public class EntityODR extends StructureODR implements IEntity {
                             fixedVal.setValue(ebStr);
                             fixedVal.setId(val.getId());
                             fixedVals.add(fixedVal);
+                        } else if (val.getValue() instanceof ISemanticText){
+                            SemanticString ss = SemanticTextFactory.semanticString((ISemanticText) val.getValue());
+                            Value fixedVal = new Value();
+                            fixedVal.setValue(ss);
+                            fixedVal.setId(val.getId());
+                            fixedVals.add(fixedVal);
+                        } else if (val.getValue() instanceof ConceptODR){
+                            Concept swebConcept = ((ConceptODR) val.getValue()).convertToSwebConcept();
+                            Value fixedVal = new Value();
+                            fixedVal.setValue(swebConcept);
+                            fixedVal.setId(val.getId());
+                            fixedVals.add(fixedVal);                            
                         } else {
                             fixedVals.add(val);
                         }

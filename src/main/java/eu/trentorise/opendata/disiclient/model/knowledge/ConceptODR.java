@@ -6,10 +6,8 @@ import eu.trentorise.opendata.semantics.model.knowledge.IDict;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.Dict;
 import eu.trentorise.opendata.traceprov.impl.TraceProvUtils;
 import it.unitn.disi.sweb.webapi.client.IProtocolClient;
-import it.unitn.disi.sweb.webapi.client.kb.ConceptClient;
 import it.unitn.disi.sweb.webapi.model.kb.concepts.Concept;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -110,4 +108,22 @@ public class ConceptODR implements IConcept {
         
     }
 
+    /**
+     * @since 0.11.1
+     */
+    public Concept convertToSwebConcept(){
+	Concept ret = new Concept();
+        ret.setLabel(this.getLabel());
+        ret.setId(this.id);
+        Long swebGlobId;
+        if (this.globalID == -1){
+            swebGlobId = null;
+        } else {
+            swebGlobId = this.globalID;
+        }
+        ret.setGlobalId(swebGlobId);
+        ret.setName(this.name);
+        ret.setDescription(this.description);
+        return ret;
+    }
 }
