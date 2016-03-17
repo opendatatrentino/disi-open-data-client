@@ -46,6 +46,10 @@ import it.unitn.disi.sweb.webapi.model.eb.Attribute;
 import it.unitn.disi.sweb.webapi.model.eb.Entity;
 import it.unitn.disi.sweb.webapi.model.eb.EntityBase;
 import it.unitn.disi.sweb.webapi.model.eb.Instance;
+import it.unitn.disi.sweb.webapi.model.eb.Name;
+import it.unitn.disi.sweb.webapi.model.eb.Value;
+import it.unitn.disi.sweb.webapi.model.eb.sstring.SemanticString;
+import it.unitn.disi.sweb.webapi.model.kb.concepts.Concept;
 import it.unitn.disi.sweb.webapi.model.kb.types.ComplexType;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
@@ -797,5 +801,75 @@ public class TestEntityService {
 	List<ISearchResult> res = enServ.searchEntities("borgo valsu", null, Locale.ITALIAN);
 	assertTrue(res.size() > 0);
     }
+    
+    
+    /**
+     * Creates instance only using sweb InstanceClient.
+     * 
+     * Shows in sweb you can't put SemanticString as an object inside a Value, 
+     * you need to put a string and call Value.setSemanticValue(ss) 
+     * 
+     * Three attributes are created: name, publication date and class to fulfill an identifying set and
+     * adds also the attribute 'Abstract', which is a SemanticString. The latter was causing the server 
+     * to throw a 
+     * <pre>
+     *       java.lang.ClassCastException: java.lang.Integer cannot be cast to java.lang.String
+     *       at it.unitn.disi.sweb.webapi.server.translators.impl.ValueTranslator.syncValue(ValueTranslator.java:297)
+     * </pre>
+     *
+     * @since 0.11.1
+     */
+    @Ignore  // only for digiuni, and fixed by #37
+    @Test
+    public void testCreateSemanticStringInDigiUni(){
 
+	InstanceClient ic = new InstanceClient(WebServiceURLs.getClientProtocol());
+	
+	Entity ent = new Entity();	
+	ent.setEntityBaseId(1L);
+	ent.setTypeId(208L); // thesis
+	
+	Name name = new Name();
+	name.setTypeId(8L);	
+	name.setEntityBaseId(1L);
+	addSwebValue(name, 65L, "zeName" ,"en");
+	
+	addSwebValue(ent, 407L, name, null);
+	addSwebValue(ent, 399L, 5, null); // publication date
+	Concept concept = new Concept();
+	concept.setId(33910L); // class
+	addSwebValue(ent, 408L, concept, null); 
+	
+	// this was giving the problem:
+	SemanticString ss = new SemanticString("bla");
+	Value val = addSwebValue(ent, 400L, ss.getText(), null);  // Abstract
+	val.setSemanticValue(ss);
+	
+	long res = ic.create(ent);
+	
+	logger.info("Done creating entity " + WebServiceURLs.entityIDToURL(res));
+    }
+
+    /**
+     * Creates Attribute and fills it with obj as value's value, then returns the added Value.
+     * @since 0.11.1
+     */
+    private static Value addSwebValue(Instance inst, Long attrDefId, Object obj, String languageCode){
+		
+	if (inst.getAttributes() == null){
+	    inst.setAttributes(new ArrayList());
+	}
+	
+	Attribute attr = new Attribute();	
+	attr.setDefinitionId(attrDefId);	
+	List<Value> values = new ArrayList();	
+	Value val = new Value();	
+	val.setValue(obj);		
+	val.setLanguageCode(languageCode);
+	
+	values.add(val);
+	attr.setValues(values);
+	inst.getAttributes().add(attr);
+	return val;
+    }
 }

@@ -530,6 +530,10 @@ public class EntityODR extends StructureODR implements IEntity {
         entity.setTypeId(this.getTypeId());
         entity.setDuration(this.duration);
         List<Attribute> attrs = super.getAttributes();
+        
+        EntityService es = new EntityService();
+        HashMap<String, Long> vocabularyMap = es.getVocabularies();
+        
         if (attrs != null) {
             List<Attribute> attrsFixed = new ArrayList<Attribute>();
 
@@ -543,71 +547,57 @@ public class EntityODR extends StructureODR implements IEntity {
                 atFixed.setInstanceId(at.getInstanceId());
                 atFixed.setName(at.getName());
 
-                if ((at.getConceptId() != null) && (at.getConceptId() == KnowledgeService.DESCRIPTION_CONCEPT_GLOBAL_ID)) {
-                    List<Value> vals = at.getValues();
-                    List<Value> fixedVals = new ArrayList<Value>();
-
-                    for (Value val : vals) {
-                        if (val.getValue() instanceof String) {
-                            fixedVals.add(val);
-                            logger.warn("NO VOCABULARY IS PROVIDED, SETTING IT TO '1'");
-                            val.setVocabularyId(1L);
-                        } else {
-                            EntityService es = new EntityService();
-                            HashMap<String, Long> vocabularyMap = es.getVocabularies();
-
-                            SemanticText st = (SemanticText) val.getValue();
-                            SemanticString sstring = convertSemTextToSemString(st);
-                            Locale l = st.getLocale();
-                            Long vocabularyID = vocabularyMap.get(TraceProvUtils.localeToLanguageTag(l));
-
-                            Value fixedVal = new Value();
-                            fixedVal.setSemanticValue(sstring);
-                            fixedVal.setValue(sstring.getText());
-                            fixedVal.setId(val.getId());
-                            fixedVals.add(fixedVal);
-
-                            fixedVal.setVocabularyId(vocabularyID);
-                        }
+                List<Value> fixedVals = new ArrayList<Value>();
+                for (Value val : at.getValues()) {
+            	
+                    if (val.getValue() instanceof String) {
+                         fixedVals.add(val);
+                         logger.warn("NO VOCABULARY IS PROVIDED, SETTING IT TO '1'");
+                         val.setVocabularyId(1L);
+                    } else if (val.getValue() instanceof ISemanticText){                                                         
+    
+                         SemanticText st = (SemanticText) val.getValue();
+                         SemanticString sstring = convertSemTextToSemString(st);
+                         
+                         Value fixedVal = new Value();
+                         
+                         Locale l = st.getLocale();
+                         if (l != null){                         	
+                     		Long vocabularyId = vocabularyMap.get(TraceProvUtils.localeToLanguageTag(l));
+                     		fixedVal.setVocabularyId(vocabularyId);
+                         }
+                         
+                         fixedVal.setSemanticValue(sstring);
+                         fixedVal.setValue(sstring.getText());
+                         fixedVal.setId(val.getId());
+                         fixedVals.add(fixedVal);
+    
+                     } else if (val.getValue() instanceof EntityODR) {
+                        EntityODR enodr = (EntityODR) val.getValue();
+                        Entity en = enodr.convertToEntity();
+                        Value fixedVal = new Value();
+                        fixedVal.setValue(en);
+                        fixedVal.setId(val.getId());
+                        fixedVals.add(fixedVal);
+                    } else if (val.getValue() instanceof StructureODR) {
+                        StructureODR structureODR = (StructureODR) val.getValue();
+                        Structure ebStr = structureODR.convertToSwebStructure(structureODR);
+                        Value fixedVal = new Value();
+                        fixedVal.setValue(ebStr);
+                        fixedVal.setId(val.getId());
+                        fixedVals.add(fixedVal);
+                    } else if (val.getValue() instanceof ConceptODR){
+                        Concept swebConcept = ((ConceptODR) val.getValue()).convertToSwebConcept();
+                        Value fixedVal = new Value();
+                        fixedVal.setValue(swebConcept);
+                        fixedVal.setId(val.getId());
+                        fixedVals.add(fixedVal);                            
+                    } else {
+                        fixedVals.add(val);
                     }
-                    atFixed.setValues(fixedVals);
-                } else {
-                    List<Value> fixedVals = new ArrayList<Value>();
-                    for (Value val : at.getValues()) {
-                        if (val.getValue() instanceof EntityODR) {
-                            EntityODR enodr = (EntityODR) val.getValue();
-                            Entity en = enodr.convertToEntity();
-                            Value fixedVal = new Value();
-                            fixedVal.setValue(en);
-                            fixedVal.setId(val.getId());
-                            fixedVals.add(fixedVal);
-                        } else if (val.getValue() instanceof StructureODR) {
-                            StructureODR structureODR = (StructureODR) val.getValue();
-                            Structure ebStr = structureODR.convertToSwebStructure(structureODR);
-                            Value fixedVal = new Value();
-                            fixedVal.setValue(ebStr);
-                            fixedVal.setId(val.getId());
-                            fixedVals.add(fixedVal);
-                        } else if (val.getValue() instanceof ISemanticText){
-                            SemanticString ss = SemanticTextFactory.semanticString((ISemanticText) val.getValue());
-                            Value fixedVal = new Value();
-                            fixedVal.setValue(ss);
-                            fixedVal.setId(val.getId());
-                            fixedVals.add(fixedVal);
-                        } else if (val.getValue() instanceof ConceptODR){
-                            Concept swebConcept = ((ConceptODR) val.getValue()).convertToSwebConcept();
-                            Value fixedVal = new Value();
-                            fixedVal.setValue(swebConcept);
-                            fixedVal.setId(val.getId());
-                            fixedVals.add(fixedVal);                            
-                        } else {
-                            fixedVals.add(val);
-                        }
-                    }
-
-                    atFixed.setValues(fixedVals);
-
                 }
+
+                atFixed.setValues(fixedVals);               
 
                 attrsFixed.add(atFixed);
             }
