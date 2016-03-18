@@ -19,6 +19,7 @@ import eu.trentorise.opendata.semantics.model.entity.IAttributeDef;
 import eu.trentorise.opendata.semantics.model.entity.IEntity;
 import eu.trentorise.opendata.semantics.model.entity.IValue;
 import eu.trentorise.opendata.semantics.model.knowledge.IDict;
+import eu.trentorise.opendata.semantics.model.knowledge.ISemanticText;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.Dict;
 import eu.trentorise.opendata.semantics.model.knowledge.impl.SemanticText;
 import eu.trentorise.opendata.semantics.services.IEntityService;
@@ -372,19 +373,19 @@ public class EntityService implements IEntityService {
      * @return the description as SemanticText
      * @throws IllegalArgumentException if descr is not of the proper type
      */
-    private SemanticText descrToSemText(Object descr) {
+    private ISemanticText descrToSemText(Object descr) {
         if (descr instanceof String) {
             /* david there should be only SemanticText 
              descr= new SemanticString();
              String s = (String) value;
              descr.setText(s); */
             return new SemanticText((String) descr);
-        } else if (descr instanceof SemanticText) {
+        } else if (descr instanceof ISemanticText) {
             /* david  there should be only SemanticText 
              SemanticText st= (SemanticText) value;
              descr = SemanticTextFactory.semanticString(st);
              */
-            return (SemanticText) descr;
+            return (ISemanticText) descr;
         } else {
             throw new IllegalArgumentException("Wrong value for the attribute is given! Accepted values are String and SemanticText.");
         }

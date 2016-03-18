@@ -556,7 +556,7 @@ public class EntityODR extends StructureODR implements IEntity {
                          val.setVocabularyId(1L);
                     } else if (val.getValue() instanceof ISemanticText){                                                         
     
-                         SemanticText st = (SemanticText) val.getValue();
+                         ISemanticText st = (ISemanticText) val.getValue();
                          SemanticString sstring = convertSemTextToSemString(st);
                          
                          Value fixedVal = new Value();
@@ -644,8 +644,8 @@ public class EntityODR extends StructureODR implements IEntity {
         while (it.hasNext()) {
             Map.Entry pairs = (Map.Entry) it.next();
             Locale l = TraceProvUtils.languageTagToLocale((String) pairs.getKey());
-            ArrayList<SemanticText> vals = (ArrayList<SemanticText>) pairs.getValue();
-            for (SemanticText stexts : vals) {
+            ArrayList<ISemanticText> vals = (ArrayList<ISemanticText>) pairs.getValue();
+            for (ISemanticText stexts : vals) {
                 dict = dict.putTranslation(l, stexts.getText());
             }
         }
@@ -675,7 +675,7 @@ public class EntityODR extends StructureODR implements IEntity {
 
             List<SemanticString> SStringList = (List<SemanticString>) pairs.getValue();
             for (SemanticString sstring : SStringList) {
-                SemanticText stext = (SemanticText) SemanticTextFactory.semanticText(sstring);
+                SemanticText stext =  SemanticTextFactory.semanticText(sstring);
                 sTextList.add(stext);
             }
             odrDescriptionMap.put((String) pairs.getKey(), sTextList);
@@ -688,19 +688,17 @@ public class EntityODR extends StructureODR implements IEntity {
 
     private SemanticText convertSemanticStringToText(SemanticString sstring) {
 
-        SemanticText stext = (SemanticText) SemanticTextFactory.semanticText(sstring);
+        return  SemanticTextFactory.semanticText(sstring);
 
-        return stext;
     }
 
-    private SemanticString convertSemTextToSemString(SemanticText stext) {
+    private SemanticString convertSemTextToSemString(ISemanticText stext) {
 
-        SemanticString sstring = SemanticTextFactory.semanticString(stext);
-
-        return sstring;
+        return SemanticTextFactory.semanticString(stext);
+       
     }
 
-    public Map<String, List<SemanticString>> convertDescriptionToSWEB(Map<String, List<SemanticText>> descriptionSText) {
+    public Map<String, List<SemanticString>> convertDescriptionToSWEB(Map<String, ? extends List<? extends ISemanticText>> descriptionSText) {
 
         Map<String, List<SemanticString>> epDescriptionMap = new HashMap<String, List<SemanticString>>();
         if (descriptionSText == null) {
@@ -712,9 +710,9 @@ public class EntityODR extends StructureODR implements IEntity {
             Map.Entry pairs = (Map.Entry) it.next();
             List<SemanticString> sStringList = new ArrayList<SemanticString>();
 
-            List<SemanticText> SStringList = (List<SemanticText>) pairs.getValue();
-            for (SemanticText stext : SStringList) {
-                SemanticString sstring = (SemanticString) SemanticTextFactory.semanticString(stext);
+            List<ISemanticText> SStringList = (List<ISemanticText>) pairs.getValue();
+            for (ISemanticText stext : SStringList) {
+                SemanticString sstring = SemanticTextFactory.semanticString(stext);
 
                 sStringList.add(sstring);
             }
