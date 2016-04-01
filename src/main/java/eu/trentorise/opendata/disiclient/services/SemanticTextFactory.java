@@ -449,7 +449,7 @@ public class SemanticTextFactory {
      */
     private static TreeSet<IMeaning> makeSortedMeanings(Set<? extends NLMeaning> meanings) {
         TreeSet<IMeaning> ts = new TreeSet<IMeaning>(Collections.reverseOrder());
-        for (NLMeaning m : meanings) {
+        for (NLMeaning m : meanings) {            
             MeaningKind kind = null;
             String url = null;
             Long id = null;

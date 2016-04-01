@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableList;
 
 import eu.trentorise.opendata.disiclient.DisiClientException;
 import eu.trentorise.opendata.disiclient.model.knowledge.ConceptODR;
+import eu.trentorise.opendata.disiclient.services.DisiEkb;
 import eu.trentorise.opendata.disiclient.services.EntityService;
 import eu.trentorise.opendata.disiclient.services.KnowledgeService;
 import eu.trentorise.opendata.disiclient.services.SemanticTextFactory;
@@ -565,13 +566,30 @@ public class EntityODR extends StructureODR implements IEntity {
                          if (l != null){                         	
                      		Long vocabularyId = vocabularyMap.get(TraceProvUtils.localeToLanguageTag(l));
                      		fixedVal.setVocabularyId(vocabularyId);
+                     		fixedVal.setLanguageCode(TraceProvUtils.localeToLanguageTag(l));
                          }
                          
                          fixedVal.setSemanticValue(sstring);
                          fixedVal.setValue(sstring.getText());
                          fixedVal.setId(val.getId());
+                         
                          fixedVals.add(fixedVal);
-    
+                     } else if (val.getValue() instanceof IDict){
+                	 
+                	 Value fixedVal = new Value();
+                	 IDict dict = (IDict) val.getValue();
+                	 
+                	ISemanticText st = dict.toSemText(new DisiEkb().getDefaultLocales());
+                        fixedVal.setValue(st.getText());
+                        fixedVal.setId(val.getId());
+                        Locale l = st.getLocale();
+                        logger.warn("FOUND A DICT INSIDE A SWEB VALUE, CONVERTING IT TO STRING USING LOCALE " + l);
+                        if (l != null){                         	
+                 		Long vocabularyId = vocabularyMap.get(TraceProvUtils.localeToLanguageTag(l));
+                 		fixedVal.setVocabularyId(vocabularyId);
+                 		fixedVal.setLanguageCode(TraceProvUtils.localeToLanguageTag(l));
+                        }
+                        fixedVals.add(fixedVal);
                      } else if (val.getValue() instanceof EntityODR) {
                         EntityODR enodr = (EntityODR) val.getValue();
                         Entity en = enodr.convertToEntity();

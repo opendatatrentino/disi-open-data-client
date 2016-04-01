@@ -574,10 +574,18 @@ public class EntityService implements IEntityService {
             IValue newValue) {
         AttributeODR attr = (AttributeODR) attribute;
         attr.updateValue(newValue);
-
     }
 
+    /**
+     * 0.11.1 : disabled it, now always throws UnsupportedOperationException. 
+     * See https://github.com/opendatatrentino/disi-open-data-client/issues/39
+     * @throws UnsupportedOperationException
+     */
     public void updateEntity(IEntity entity) {
+	
+	throw new UnsupportedOperationException("Entity update is currently not supported !!");
+	
+	/*
         EntityODR ent;
 
         ent = EntityODR.disify(entity, true);
@@ -590,6 +598,7 @@ public class EntityService implements IEntityService {
         catch (IllegalArgumentException ex) {
             throw new NotFoundException("Such an entity does not exists.");
         }
+        */
     }
 
     public EntityODR readEntity(String URL) {

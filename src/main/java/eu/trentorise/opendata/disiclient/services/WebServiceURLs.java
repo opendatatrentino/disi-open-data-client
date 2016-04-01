@@ -216,4 +216,20 @@ public class WebServiceURLs {
         return getURL() + "/" + EntityService.NEW_INSTANCE_PREFIX + id;
     }
     
+    /**
+     * Temporary, this mirrors Odred.urlToKos
+     * @since 0.11.1
+     */
+    public static String urlToKos(String URL, String kosPrefix){
+        int lastSlashIndex = URL.lastIndexOf('/');
+        if (lastSlashIndex >= 0) {
+            String localId = URL.substring(lastSlashIndex + 1);
+            return kosPrefix + localId;
+        } else {
+            logger.warn("Couldn't convert URL ", URL, " to Kos url");
+            return URL;
+        }
+    }
+    
+    
 }
