@@ -229,7 +229,20 @@ public class WebServiceURLs {
             logger.warn("Couldn't convert URL ", URL, " to Kos url");
             return URL;
         }
-    }
+    }  
     
+    /**
+     * Temporary, this mirrors Odred.conceptUrlToKos
+     */
+    public static String conceptUrlToKos(String URL, String kosUrl, String locale) {
+        return urlToKos(URL, kosUrl + "/#/kb/formal/") + "/" + locale;
+    }
+    /**
+     * Temporary, this mirrors Odred.entityUrlToKos
+     * @since 0.11.1
+     */
+    public static String entityUrlToKos(String URL, String kosUrl) {
+        return urlToKos(URL, kosUrl + "/#/eb/instance/");
+    }
     
 }
