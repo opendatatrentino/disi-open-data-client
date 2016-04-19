@@ -287,6 +287,7 @@ public class TestEntityService {
     }
 
     @Test
+    @Ignore
     public void testUpdateNonExistingEntity() {
 	EntityODR entity = new EntityODR();
 	IEntityService es = ekb.getEntityService();
@@ -474,6 +475,7 @@ public class TestEntityService {
     }
 
     @Test
+    @Ignore
     public void testUpdateEntity() {
 	EntityService es = new EntityService(api);
 	EntityODR entity = (EntityODR) es.readEntity(64000L);
